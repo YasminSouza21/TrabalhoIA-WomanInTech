@@ -13,4 +13,5 @@ Requisições são chamadas ao modelo: cada passo do agente é uma. Skills conta
 | Início | Sessão | Requisições | Skills | Subagentes | Vermelhas / verdes | Ciclos | Nasceu verde | Juntos | Alertas |
 |---|---|---|---|---|---|---|---|---|---|
 | 19/09 19:12 | [Análise inicial e requisitos do Marco 1 em Go](ses_f44454556ffenD5ir1G15EWtyW.md) | 39 | grilling | — | 0 / 2 | 0 | 0 | 1 | — |
-| | **Total: 1 sessões** | 39 | grilling | — | 0 / 2 | 0 | 0 | 1 | — |
+| 19/09 19:52 | [Rodada 2 do M1: Grade de Atividades](ses_f442087b9ffephBjXWFQ4Sj5hM.md) | 26 | grilling | — | 0 / 0 | 0 | 0 | 0 | — |
+| | **Total: 2 sessões** | 65 | grilling (2) | — | 0 / 2 | 0 | 0 | 1 | — |
