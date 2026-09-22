@@ -2,6 +2,10 @@
 
 Este projeto utiliza o OpenCode com agentes especializados para garantir a qualidade e fidelidade ao contrato.
 
+## Stack
+
+O backend é Dart executável com `dart:io`; a interface é Flutter web. O contrato `contrato-api.md`, as specs, entrevistas e auditorias históricas são preservados e não devem ser alterados.
+
 ## Agentes Disponíveis
 
 - **@auditor**: Audita módulos contra suas specs e testes. Possui acesso apenas de leitura para garantir imparcialidade.

@@ -1,9 +1,15 @@
 {
-  "stack": "Go 1.23 + net/http; interface em Flutter web",
+  "stack": "Dart 3 + dart:io; interface em Flutter web",
   "api": {
     "pasta": "api",
-    "instalar": "go mod download",
-    "iniciar": "go run ."
+    "instalar": "dart pub get",
+    "iniciar": "dart run bin/server.dart"
   },
-  "testes": ["go test ./..."]
+  "frontend": {
+    "pasta": "frontend",
+    "instalar": "flutter pub get",
+    "testar": "flutter test",
+    "build": "flutter build web --release"
+  },
+  "testes": ["dart test", "flutter test"]
 }
