@@ -10,6 +10,18 @@ class ApiFailure implements Exception {
   String toString() => code;
 }
 
+class Inscricao {
+  Inscricao(this.json);
+  final Map<String, dynamic> json;
+  String get id => json['id'] as String;
+  String get atividadeId => json['atividadeId'] as String;
+  String get participanteId => json['participanteId'] as String;
+  String get status => json['status'] as String;
+  int? get posicaoNaEspera => json['posicaoNaEspera'] as int?;
+  String? get convocadaAte => json['convocadaAte'] as String?;
+  String get criadaEm => json['criadaEm'] as String;
+}
+
 class Activity {
   Activity(this.json);
   final Map<String, dynamic> json;
@@ -107,6 +119,29 @@ class ApiClient {
 
   Future<List<Map<String, dynamic>>> rooms() async =>
       (await _request('GET', '/salas') as List).cast<Map<String, dynamic>>();
+  Future<List<Inscricao>> listarInscricoes({String? atividadeId}) async {
+    final query = <String, String>{
+      if (atividadeId != null && atividadeId.isNotEmpty)
+        'atividadeId': atividadeId,
+    };
+    final suffix = query.isEmpty ? '' : '?${Uri(queryParameters: query).query}';
+    final data = await _request('GET', '/inscricoes$suffix') as List;
+    return data
+        .cast<Map<String, dynamic>>()
+        .map((json) => Inscricao(json))
+        .toList();
+  }
+  Future<Inscricao> inscricaoDetalhe(String id) async =>
+      Inscricao(await _request('GET', '/inscricoes/$id') as Map<String, dynamic>);
+  Future<Inscricao> inscrever(String atividadeId) async => Inscricao(
+      await _request('POST', '/atividades/$atividadeId/inscricoes')
+          as Map<String, dynamic>);
+  Future<Inscricao> cancelarInscricao(String id) async => Inscricao(
+      await _request('POST', '/inscricoes/$id/cancelamento')
+          as Map<String, dynamic>);
+  Future<Inscricao> confirmarConvocacao(String id) async => Inscricao(
+      await _request('POST', '/inscricoes/$id/confirmacao')
+          as Map<String, dynamic>);
   Future<Map<String, dynamic>> activity(String id) async =>
       await _request('GET', '/atividades/$id') as Map<String, dynamic>;
   Future<Map<String, dynamic>> create(Map<String, dynamic> body) async =>
