@@ -26,9 +26,24 @@ class Meeting {
 }
 
 class Enrollment {
-  Enrollment(this.activityId, this.status);
+  Enrollment(
+      {required this.activityId,
+      required this.status,
+      this.id = '',
+      this.participantId = '',
+      this.sequenceNumber = 0,
+      DateTime? createdAt,
+      this.standingPosition,
+      this.convocationDeadline})
+      : createdAt = createdAt ?? DateTime.now().toUtc();
   final String activityId;
   final String status;
+  final String id;
+  final String participantId;
+  final int sequenceNumber;
+  final DateTime createdAt;
+  final int? standingPosition;
+  final DateTime? convocationDeadline;
 }
 
 class Activity {
@@ -116,6 +131,8 @@ class ApiServer {
       if (path == '/salas') return await _roomsRoute(request);
       if (path == '/atividades') return await _activitiesRoute(request);
       if (path.startsWith('/atividades/')) return await _activityRoute(request);
+      if (path == '/inscricoes') return await _inscricoesRoute(request);
+      if (path.startsWith('/inscricoes/')) return await _inscricaoRoute(request);
       _finish(request, 404);
     } catch (_) {
       _json(request, 500, ApiError('ERRO_INTERNO').toJson());
@@ -151,14 +168,15 @@ class ApiServer {
     return user;
   }
 
-  bool _authorized(HttpRequest request, String? role) {
+  bool _authorized(HttpRequest request, String? role,
+      {String roleError = 'SOMENTE_ORGANIZACAO'}) {
     final user = _user(request, role: role);
     if (user == null) {
       _error(request, 401, 'USUARIO_DESCONHECIDO');
       return false;
     }
     if (user.role == 'forbidden') {
-      _error(request, 403, 'SOMENTE_ORGANIZACAO');
+      _error(request, 403, roleError);
       return false;
     }
     return true;
@@ -182,6 +200,8 @@ class ApiServer {
         request.uri.path.split('/').where((part) => part.isNotEmpty).toList();
     if (parts.length < 2 || parts.length > 3) return _finish(request, 404);
     final id = parts[1];
+    if (parts.length == 3 && parts[2] == 'inscricoes')
+      return _inscricaoCreateRoute(request, id);
     if (activities[id] == null) {
       if (!_authorized(request, request.method == 'GET' ? null : 'organizacao'))
         return;
@@ -399,6 +419,86 @@ class ApiServer {
     };
   }
 
+  Future<void> _inscricoesRoute(HttpRequest request) async {
+    if (request.method != 'GET') return _finish(request, 405);
+    if (!_authorized(request, null)) return;
+    final user = _user(request)!;
+    final atividadeId = request.uri.queryParameters['atividadeId'];
+    final result = enrollments
+        .where((e) =>
+            (user.role == 'organizacao' || e.participantId == user.id) &&
+            (atividadeId == null ||
+                atividadeId.isEmpty ||
+                e.activityId == atividadeId))
+        .toList()
+      ..sort((a, b) => a.sequenceNumber.compareTo(b.sequenceNumber));
+    _json(request, 200, result.map(_inscricaoJson).toList());
+  }
+
+  Future<void> _inscricaoRoute(HttpRequest request) async {
+    final parts =
+        request.uri.path.split('/').where((part) => part.isNotEmpty).toList();
+    if (parts.length < 2 || parts.length > 3) return _finish(request, 404);
+    final id = parts[1];
+    final mutation = parts.length == 3 &&
+        request.method == 'POST' &&
+        (parts[2] == 'cancelamento' || parts[2] == 'confirmacao');
+    if (mutation) return _inscricaoMutation(request, id);
+    if (request.method != 'GET' || parts.length != 2)
+      return _finish(request, 405);
+    if (!_authorized(request, null)) return;
+    final user = _user(request)!;
+    final enrollment = _findEnrollment(id);
+    if (enrollment == null) return _error(request, 404, 'NAO_ENCONTRADO');
+    if (user.role != 'organizacao' && enrollment.participantId != user.id)
+      return _error(request, 404, 'NAO_ENCONTRADO');
+    _json(request, 200, _inscricaoJson(enrollment));
+  }
+
+  Future<void> _inscricaoCreateRoute(
+      HttpRequest request, String activityId) async {
+    if (request.method != 'POST') return _finish(request, 405);
+    if (!_authorized(request, 'participante',
+        roleError: 'SOMENTE_PARTICIPANTE'))
+      return;
+    if (activities[activityId] == null)
+      return _error(request, 404, 'NAO_ENCONTRADO');
+    if (await _readMutationBody(request) == _BodyParse.invalid)
+      return _error(request, 422, 'DADOS_INVALIDOS');
+    _error(request, 501, 'NAO_IMPLEMENTADO');
+  }
+
+  Future<void> _inscricaoMutation(HttpRequest request, String id) async {
+    if (!_authorized(request, 'participante',
+        roleError: 'SOMENTE_PARTICIPANTE'))
+      return;
+    if (_findEnrollment(id) == null)
+      return _error(request, 404, 'NAO_ENCONTRADO');
+    if (await _readMutationBody(request) == _BodyParse.invalid)
+      return _error(request, 422, 'DADOS_INVALIDOS');
+    _error(request, 501, 'NAO_IMPLEMENTADO');
+  }
+
+  Enrollment? _findEnrollment(String id) {
+    for (final enrollment in enrollments) {
+      if (enrollment.id == id) return enrollment;
+    }
+    return null;
+  }
+
+  Map<String, Object?> _inscricaoJson(Enrollment enrollment) => {
+        'id': enrollment.id,
+        'atividadeId': enrollment.activityId,
+        'participanteId': enrollment.participantId,
+        'status': enrollment.status,
+        'posicaoNaEspera':
+            enrollment.status == 'em_espera' ? enrollment.standingPosition : null,
+        'convocadaAte': enrollment.status == 'convocada'
+            ? _formatDate(enrollment.convocationDeadline!)
+            : null,
+        'criadaEm': _formatDate(enrollment.createdAt),
+      };
+
   Future<Object?> _body(HttpRequest request) async {
     final text = await utf8.decoder.bind(request).join();
     if (text.trim().isEmpty) return null;
@@ -408,6 +508,16 @@ class ApiServer {
       return value;
     } catch (_) {
       return null;
+    }
+  }
+
+  Future<_BodyParse> _readMutationBody(HttpRequest request) async {
+    final text = await utf8.decoder.bind(request).join();
+    if (text.trim().isEmpty) return _BodyParse.valid;
+    try {
+      return jsonDecode(text) is Map ? _BodyParse.valid : _BodyParse.invalid;
+    } catch (_) {
+      return _BodyParse.invalid;
     }
   }
 
@@ -425,3 +535,5 @@ class ApiServer {
     request.response.close();
   }
 }
+
+enum _BodyParse { valid, invalid }
