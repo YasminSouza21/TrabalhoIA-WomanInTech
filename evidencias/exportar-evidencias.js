@@ -292,15 +292,30 @@ function placar(saida) {
   return null;
 }
 
-// Veredito de uma execução: compilação Dart quebrada ("Failed to load"/"Some tests
-// failed") nunca é verde, mesmo quando o pipe devolve exit 0.
+// O Dart "compact reporter" fecha a saída com o resumo: a última linha não vazia. Um
+// "Some tests failed" aí (mesmo com "-0", mesmo quando o pipe devolve exit 0) é falha
+// real; um "Failed to load" no começo de uma linha é o diagnóstico de compilação
+// quebrada. As mesmas frases dentro do *nome* de um teste — TAP ("# Subtest:", "ok N -")
+// ou Dart ("00:00 +N: nome") — não são diagnóstico e não podem marcar vermelho.
+function fimDeTextoFalhou(texto) {
+  const linhas = String(texto).replace(/\x1b\[[0-9;]*m/g, '')
+    .split('\n').map((l) => l.trim()).filter(Boolean);
+  const ultima = linhas[linhas.length - 1];
+  if (!ultima) return false;
+  return /\+\d+(?:\s+~\d+)?(?:\s+-\d+)?:\s*Some tests failed\.?$/.test(ultima)
+    || /^Some tests failed\.?$/.test(ultima);
+}
+
+// Veredito de uma execução: compilação Dart quebrada ("Failed to load" no início de
+// linha, ou resumo "Some tests failed" fechando a saída) nunca é verde, mesmo com exit 0.
 function resultadoDeTeste(saida, codigoDoProcesso, status) {
   const texto = String(saida ?? '');
   const p = placar(texto);
   const vermelho = (p !== null && p.falhou > 0)
     || (typeof codigoDoProcesso === 'number' && codigoDoProcesso !== 0)
     || status === 'error'
-    || /Failed to load|Some tests failed/.test(texto);
+    || /^[ \t]*Failed to load\s+["'“]?\S/m.test(texto)
+    || fimDeTextoFalhou(texto);
   const verde = !vermelho && ((p !== null && p.falhou === 0) || codigoDoProcesso === 0);
   return { p, vermelho, verde };
 }

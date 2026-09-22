@@ -78,3 +78,47 @@ test('resultadoDeTeste: exit 1 é vermelho e não verde', () => {
   assert.equal(r.vermelho, true);
   assert.equal(r.verde, false);
 });
+
+// False positive real: a frase dentro do título de um teste TAP verde (ou num nome de
+// teste Dart) não é diagnóstico de falha e não pode marcar vermelho.
+test('resultadoDeTeste: node --test 15 verdes com títulos citando "Failed to load"/"Some tests failed" e exit 0 é verde', () => {
+  const titulos = [
+    'ehComandoDeTeste reconhece "&" com caminho entre aspas terminado em dart.exe',
+    'ehComandoDeTeste reconhece "&" com caminho entre aspas terminado em flutter.bat',
+    'ehComandoDeTeste reconhece caminho entre aspas sem "&" terminado em dart.exe',
+    'ehComandoDeTeste reconhece flutter.bat test sem aspas',
+    'ehComandoDeTeste reconhece dart test no Linux',
+    'ehComandoDeTeste reconhece flutter test no Linux',
+    'ehComandoDeTeste rejeita git commit -m "dart test"',
+    'ehComandoDeTeste rejeita echo dart test',
+    'ehComandoDeTeste rejeita analyze',
+    'ehComandoDeTeste rejeita pub get',
+    'ehComandoDeTeste rejeita dart test citado num commit',
+    'resultadoDeTeste: "Failed to load" é vermelho mesmo com exit 0 no pipe',
+    'resultadoDeTeste: "Some tests failed" é vermelho mesmo com exit 0',
+    'resultadoDeTeste: "All tests passed" com exit 0 é verde',
+    'resultadoDeTeste: exit 1 é vermelho e não verde',
+  ];
+  const tap = `${titulos.map((t, i) => `# Subtest: ${t}\nok ${i + 1} - ${t}`).join('\n')}
+# tests ${titulos.length}
+# pass ${titulos.length}
+# fail 0`;
+  const r = m.resultadoDeTeste(tap, 0, undefined);
+  assert.equal(r.p.ok, 15);
+  assert.equal(r.p.falhou, 0);
+  assert.equal(r.vermelho, false);
+  assert.equal(r.verde, true);
+});
+
+test('resultadoDeTeste: Dart "All tests passed" com nome de teste contendo as frases e exit 0 é verde', () => {
+  const saida = [
+    '00:01 +1: resultadoDeTeste: "Failed to load" é vermelho mesmo com exit 0 no pipe',
+    '00:02 +2: resultadoDeTeste: "Some tests failed" é vermelho mesmo com exit 0',
+    '00:03 +2: All tests passed',
+  ].join('\n');
+  const r = m.resultadoDeTeste(saida, 0, undefined);
+  assert.equal(r.p.ok, 2);
+  assert.equal(r.p.falhou, 0);
+  assert.equal(r.vermelho, false);
+  assert.equal(r.verde, true);
+});
