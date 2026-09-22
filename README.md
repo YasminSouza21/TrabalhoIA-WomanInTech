@@ -37,4 +37,56 @@ O documento de requisitos é para vocês consultarem na rodada 2 da entrevista, 
 
 ---
 
+## Módulo M2 — Inscrições e lista de espera (implementado)
+
+Backend em `api/` (Dart 3 + `dart:io`, sem banco ou serviço externo) e frontend em `frontend/` (Flutter web). Requer SDK Dart e Flutter instalados.
+
+### Backend
+
+Instalação e servidor:
+
+```bash
+cd api
+dart pub get
+MODO_TESTE=1 PORT=3000 dart run bin/server.dart
+```
+
+PowerShell (mesma pasta `api/`):
+
+```powershell
+cd api
+dart pub get
+$env:MODO_TESTE="1"; $env:PORT="3000"; dart run bin/server.dart
+```
+
+- `PORT` define a porta (padrão 3000).
+- Verificação do backend: `dart test` e `dart analyze` (iguais em Linux e PowerShell).
+- Smoke: `dart run tool/smoke_m2.dart` (executar em `api/`) — inicia o próprio servidor (`MODO_TESTE=1` na porta 3000) e aborta, sem tocar nenhum serviço, se a porta 3000 já estiver ocupada.
+
+### Frontend
+
+```bash
+cd frontend
+flutter pub get
+flutter run -d chrome --dart-define=API_BASE_URL=http://localhost:3000
+```
+
+O nome real da variável no `ApiClient` é `API_BASE_URL` (padrão `http://localhost:3000`), lida em `frontend/lib/api_client.dart:70`. Verificação: `flutter analyze`, `flutter test` e `flutter build web --release` (mesmos comandos em Linux e PowerShell).
+
+### Persistência — produção vs. modo de teste
+
+- **Produção** (sem `MODO_TESTE`): o estado M1/M2 e a sequência de ordem de inserção são persistidos em arquivo JSON local, padronizado em `data/estado.json` relativo ao diretório `api/` (cwd); `ARQUIVO_ESTADO` sobrescreve o caminho (R40). Como o estado fica em memória e é reescrito no arquivo, rode **uma única instância por arquivo**.
+- **Modo de teste** (`MODO_TESTE=1`): estado em memória isolada — não lê nem escreve o arquivo; `POST /_teste/reset` recarrega os dados iniciais e o relógio é controlado por `PUT/GET /_teste/relogio` (R41).
+
+### Documentação e evidências do M2
+
+- Entrevista: `entrevistas/M2-inscricoes.md`.
+- Spec: `specs/M2-inscricoes.md`.
+- Dono/equipe: `EQUIPE.md` — M2 é de Clara L Peretti (`claraperetti`).
+- Evidências: `evidencias/sessoes/clara-l-peretti/`.
+- Rastreabilidade: as decisões P-01 a P-29 da Rodada 2 são regras locais delegadas pela usuária em 22/09/2026 com base no `contrato-api.md` e na spec do M1. **Não foram validadas contra requisitos externos do professor** e não há fonte externa inventada.
+- Auditoria: a auditoria final do M2 será registrada em `auditorias/M2-inscricoes-final.md` — **ainda pendente**, não concluída.
+
+---
+
 As skills da aula foram reescritas pelo professor a partir de [mattpocock/skills](https://github.com/mattpocock/skills).
