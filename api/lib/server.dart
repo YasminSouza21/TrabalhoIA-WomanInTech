@@ -26,23 +26,21 @@ class Meeting {
 }
 
 class Enrollment {
-  Enrollment(
-      {required this.activityId,
-      required this.status,
-      this.id = '',
-      this.participantId = '',
-      this.sequenceNumber = 0,
-      DateTime? createdAt,
-      this.standingPosition,
-      this.convocationDeadline})
-      : createdAt = createdAt ?? DateTime.now().toUtc();
-  final String activityId;
-  final String status;
+  Enrollment({
+    required this.id,
+    required this.activityId,
+    required this.participantId,
+    required this.status,
+    required this.sequenceNumber,
+    required this.createdAt,
+    this.convocationDeadline,
+  });
   final String id;
+  final String activityId;
   final String participantId;
+  String status;
   final int sequenceNumber;
   final DateTime createdAt;
-  final int? standingPosition;
   final DateTime? convocationDeadline;
 }
 
@@ -88,9 +86,11 @@ class ApiServer {
   final activities = <String, Activity>{};
   final enrollments = <Enrollment>[];
   late DateTime clock;
+  int _enrollmentSequence = 0;
 
   void reset() {
     clock = modoTeste ? DateTime.utc(2026, 10, 13, 12) : DateTime.now().toUtc();
+    _enrollmentSequence = 0;
     users
       ..clear()
       ..addAll({
@@ -461,11 +461,28 @@ class ApiServer {
     if (!_authorized(request, 'participante',
         roleError: 'SOMENTE_PARTICIPANTE'))
       return;
-    if (activities[activityId] == null)
+    final activity = activities[activityId];
+    if (activity == null)
       return _error(request, 404, 'NAO_ENCONTRADO');
     if (await _readMutationBody(request) == _BodyParse.invalid)
       return _error(request, 422, 'DADOS_INVALIDOS');
-    _error(request, 501, 'NAO_IMPLEMENTADO');
+    if (activity.cancelled)
+      return _error(request, 422, 'ATIVIDADE_CANCELADA');
+    if (!clock.isBefore(activity.meetings.first.start))
+      return _error(request, 422, 'INSCRICOES_ENCERRADAS');
+    final user = _user(request)!;
+    if (_hasActiveEnrollment(user.id, activityId))
+      return _error(request, 409, 'JA_INSCRITO');
+    final semVaga = _occupied(activityId) >= activity.slots;
+    final enrollment = Enrollment(
+        id: _id('ins_'),
+        activityId: activityId,
+        participantId: user.id,
+        status: semVaga ? 'em_espera' : 'confirmada',
+        sequenceNumber: ++_enrollmentSequence,
+        createdAt: clock);
+    enrollments.add(enrollment);
+    _json(request, 201, _inscricaoJson(enrollment));
   }
 
   Future<void> _inscricaoMutation(HttpRequest request, String id) async {
@@ -486,13 +503,40 @@ class ApiServer {
     return null;
   }
 
+  bool _hasActiveEnrollment(String participantId, String activityId) {
+    for (final enrollment in enrollments) {
+      if (enrollment.participantId != participantId ||
+          enrollment.activityId != activityId)
+        continue;
+      if (enrollment.status == 'confirmada' ||
+          enrollment.status == 'em_espera' ||
+          enrollment.status == 'convocada')
+        return true;
+    }
+    return false;
+  }
+
+  int _waitingPosition(Enrollment enrollment) {
+    var position = 1;
+    for (final other in enrollments) {
+      if (other.activityId != enrollment.activityId ||
+          other.status != 'em_espera')
+        continue;
+      if (other.id != enrollment.id &&
+          other.sequenceNumber < enrollment.sequenceNumber)
+        position++;
+    }
+    return position;
+  }
+
   Map<String, Object?> _inscricaoJson(Enrollment enrollment) => {
         'id': enrollment.id,
         'atividadeId': enrollment.activityId,
         'participanteId': enrollment.participantId,
         'status': enrollment.status,
-        'posicaoNaEspera':
-            enrollment.status == 'em_espera' ? enrollment.standingPosition : null,
+        'posicaoNaEspera': enrollment.status == 'em_espera'
+            ? _waitingPosition(enrollment)
+            : null,
         'convocadaAte': enrollment.status == 'convocada'
             ? _formatDate(enrollment.convocationDeadline!)
             : null,
