@@ -34,6 +34,7 @@ class Enrollment {
     required this.sequenceNumber,
     required this.createdAt,
     this.convocationDeadline,
+    this.expiryCause,
   });
   final String id;
   final String activityId;
@@ -42,6 +43,7 @@ class Enrollment {
   final int sequenceNumber;
   final DateTime createdAt;
   DateTime? convocationDeadline;
+  String? expiryCause;
 }
 
 class Activity {
@@ -128,6 +130,7 @@ class ApiServer {
     try {
       final path = request.uri.path;
       if (path.startsWith('/_teste/')) return await _testRoute(request);
+      _reconcile();
       if (path == '/salas') return await _roomsRoute(request);
       if (path == '/atividades') return await _activitiesRoute(request);
       if (path.startsWith('/atividades/')) return await _activityRoute(request);
@@ -154,6 +157,7 @@ class ApiServer {
       return _error(request, 422, 'DADOS_INVALIDOS');
     try {
       clock = _parseDate(body['agora']);
+      _reconcile();
       return _json(request, 200, {'agora': _formatDate(clock)});
     } catch (_) {
       return _error(request, 422, 'DADOS_INVALIDOS');
@@ -522,8 +526,10 @@ class ApiServer {
       return _json(request, 200, _inscricaoJson(enrollment));
     }
     if (parts[2] != 'confirmacao') return _finish(request, 405);
-    if (enrollment.status == 'convocada' &&
-        !clock.isBefore(enrollment.convocationDeadline!))
+    if ((enrollment.status == 'convocada' &&
+            !clock.isBefore(enrollment.convocationDeadline!)) ||
+        (enrollment.status == 'expirada' &&
+            enrollment.expiryCause == 'convocacao'))
       return _error(request, 422, 'CONVOCACAO_EXPIRADA');
     if (enrollment.status != 'convocada')
       return _error(request, 422, 'SEM_CONVOCACAO');
@@ -584,9 +590,57 @@ class ApiServer {
     return count;
   }
 
-  void _promote(String activityId) {
+  void _reconcile() {
+    for (final activity in activities.values) {
+      _reconcileActivity(activity);
+    }
+  }
+
+  void _reconcileActivity(Activity activity) {
+    final start = activity.meetings.first.start;
+    while (true) {
+      Enrollment? vencida;
+      for (final enrollment in enrollments) {
+        if (enrollment.activityId != activity.id ||
+            enrollment.status != 'convocada')
+          continue;
+        final deadline = enrollment.convocationDeadline!;
+        if (vencida == null ||
+            deadline.isBefore(vencida.convocationDeadline!))
+          vencida = enrollment;
+      }
+      if (vencida == null) {
+        if (clock.isBefore(start)) return;
+        break;
+      }
+      final vencimento = vencida.convocationDeadline!;
+      if (vencimento.isAfter(clock)) return;
+      if (!vencimento.isBefore(start)) break;
+      _expirarPorVencimento(vencida);
+      _promote(activity.id, at: vencimento);
+    }
+    for (final enrollment in enrollments) {
+      if (enrollment.activityId != activity.id) continue;
+      if (enrollment.status == 'convocada') {
+        _expirarPorVencimento(enrollment);
+      } else if (enrollment.status == 'em_espera') {
+        enrollment.status = 'expirada';
+        enrollment.expiryCause = 'fechamento';
+        enrollment.convocationDeadline = null;
+      }
+    }
+  }
+
+  void _expirarPorVencimento(Enrollment enrollment) {
+    enrollment.status = 'expirada';
+    enrollment.expiryCause = 'convocacao';
+    enrollment.convocationDeadline = null;
+  }
+
+  void _promote(String activityId, {DateTime? at}) {
     final activity = activities[activityId]!;
-    if (!clock.isBefore(activity.meetings.first.start)) return;
+    final instant = at ?? clock;
+    if (!instant.isBefore(activity.meetings.first.start)) return;
     final startLimit = activity.meetings.first.start;
     while (_occupied(activityId) < activity.slots) {
       Enrollment? next;
@@ -599,10 +653,11 @@ class ApiServer {
           next = enrollment;
       }
       if (next == null) return;
-      final deadline = clock.add(const Duration(hours: 24));
+      final deadline = instant.add(const Duration(hours: 24));
       next.status = 'convocada';
       next.convocationDeadline =
           deadline.isBefore(startLimit) ? deadline : startLimit;
+      next.expiryCause = null;
     }
   }
 

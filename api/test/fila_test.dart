@@ -424,7 +424,7 @@ void main() {
         reason: 'registro antigo permanece cancelado');
   });
 
-  test('após o início do primeiro encontro, aumento de vagas não convoca (R26 nesta fatia)',
+  test('após o início do primeiro encontro, aumento de vagas não convoca',
       () async {
     final atividadeId = await criarAtividade(api, vagas: 1, dia: '2026-10-20');
     await inscrever(api, atividadeId, 'p-carla');
@@ -437,12 +437,13 @@ void main() {
     expect(patched.status, 200);
     expect(patched.json['vagas'], 2, reason: 'vagas sobem mesmo assim');
     expect(patched.json['ocupadas'], 1);
-    expect(patched.json['emEspera'], 1);
+    expect(patched.json['emEspera'], 0,
+        reason: 'a fila em_espera encerrou como expirada no início (R26)');
 
     final naEspera =
         await request(api, 'GET', '/inscricoes/$daElisa', user: 'p-elisa');
-    expect(naEspera.json['status'], 'em_espera',
-        reason: 'não há novas convocações após o início');
+    expect(naEspera.json['status'], 'expirada',
+        reason: 'em_espera vira expirada no início; não há novas convocações');
     expect(naEspera.json['convocadaAte'], isNull);
   });
 
