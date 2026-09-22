@@ -543,6 +543,165 @@ void main() {
     expect(find.text('confirmada'), findsOneWidget);
   });
 
+  testWidgets(
+    'detalhe apos cancelar e reinscrever escolhe a inscricao ativa confirmada e nao a cancelada antiga',
+    (tester) async {
+      final inscricoesAtv = [
+        _inscricao(
+          id: 'ins_antiga',
+          atividadeId: 'atv_2',
+          status: 'cancelada',
+          criadaEm: '2026-10-18T10:00:00-03:00',
+        ),
+        _inscricao(
+          id: 'ins_nova',
+          atividadeId: 'atv_2',
+          status: 'confirmada',
+          criadaEm: '2026-10-19T18:00:00-03:00',
+        ),
+      ];
+      final client = ApiClient(
+        client: MockClient((request) async {
+          if (request.url.path == '/salas') {
+            return http.Response(
+              jsonEncode([
+                {
+                  'id': 'lab-3',
+                  'nome': 'Laboratório 3',
+                  'capacidade': 20,
+                }
+              ]),
+              200,
+            );
+          }
+          if (request.url.path == '/atividades') {
+            return http.Response(
+              jsonEncode([_atividade('atv_2', 'Palestra de IA')]),
+              200,
+            );
+          }
+          return http.Response(jsonEncode(inscricoesAtv), 200);
+        }),
+      )..user = 'p-carla';
+      await tester.pumpWidget(GradeApp(client: client));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Palestra de IA'));
+      await tester.pumpAndSettle();
+      expect(find.text('confirmada'), findsOneWidget);
+      expect(find.text('cancelada'), findsNothing);
+      expect(find.text('Cancelar inscrição'), findsOneWidget);
+    },
+  );
+
+  testWidgets(
+    'detalhe com apenas historicas mostra a mais recente (expirada antiga vs cancelada nova)',
+    (tester) async {
+      final inscricoesAtv = [
+        _inscricao(
+          id: 'ins_expirada',
+          atividadeId: 'atv_2',
+          status: 'expirada',
+          criadaEm: '2026-10-18T10:00:00-03:00',
+        ),
+        _inscricao(
+          id: 'ins_cancelada',
+          atividadeId: 'atv_2',
+          status: 'cancelada',
+          criadaEm: '2026-10-19T18:00:00-03:00',
+        ),
+      ];
+      final client = ApiClient(
+        client: MockClient((request) async {
+          if (request.url.path == '/salas') {
+            return http.Response(
+              jsonEncode([
+                {
+                  'id': 'lab-3',
+                  'nome': 'Laboratório 3',
+                  'capacidade': 20,
+                }
+              ]),
+              200,
+            );
+          }
+          if (request.url.path == '/atividades') {
+            return http.Response(
+              jsonEncode([_atividade('atv_2', 'Palestra de IA')]),
+              200,
+            );
+          }
+          return http.Response(jsonEncode(inscricoesAtv), 200);
+        }),
+      )..user = 'p-carla';
+      await tester.pumpWidget(GradeApp(client: client));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Palestra de IA'));
+      await tester.pumpAndSettle();
+      expect(find.text('expirada'), findsNothing);
+      expect(find.text('cancelada'), findsOneWidget);
+    },
+  );
+
+  testWidgets(
+    'detalhe de convocada permite cancelar inscricao via POST com X-Usuario',
+    (tester) async {
+      final deadline = DateTime.now().add(const Duration(hours: 1));
+      final conversa = [
+        _inscricao(
+          id: 'ins_10',
+          atividadeId: 'atv_2',
+          status: 'convocada',
+          convocadaAte: deadline.toIso8601String(),
+        ),
+      ];
+      var cancelCalls = 0;
+      final client = ApiClient(
+        client: MockClient((request) async {
+          if (request.url.path == '/salas') {
+            return http.Response(
+              jsonEncode([
+                {
+                  'id': 'lab-3',
+                  'nome': 'Laboratório 3',
+                  'capacidade': 20,
+                }
+              ]),
+              200,
+            );
+          }
+          if (request.url.path == '/atividades') {
+            return http.Response(
+              jsonEncode([_atividade('atv_2', 'Palestra de IA')]),
+              200,
+            );
+          }
+          if (request.url.path == '/inscricoes/ins_10/cancelamento') {
+            cancelCalls++;
+            expect(request.method, 'POST');
+            expect(request.headers['X-Usuario'], 'p-carla');
+            conversa[0]['status'] = 'cancelada';
+            conversa[0]['convocadaAte'] = null;
+            return http.Response(jsonEncode(conversa.single), 200);
+          }
+          return http.Response(jsonEncode(conversa), 200);
+        }),
+      )..user = 'p-carla';
+      await tester.pumpWidget(GradeApp(client: client));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Palestra de IA'));
+      await tester.pumpAndSettle();
+      expect(find.textContaining('Convocado até'), findsOneWidget);
+      await tester.tap(find.text('Cancelar inscrição'));
+      await tester.pump();
+      expect(cancelCalls, 1);
+      await tester.pump();
+      await tester.pump();
+      expect(find.text('Cancelar inscrição'), findsNothing);
+      expect(find.text('Confirmar convocação'), findsNothing);
+      expect(find.text('cancelada'), findsOneWidget);
+    },
+  );
+
   testWidgets('detalhe M1 preserva sala, capacidade e encontros quando a consulta de inscricao falha', (
     tester,
   ) async {
@@ -619,6 +778,7 @@ Map<String, dynamic> _inscricao({
   required String status,
   int? posicaoNaEspera,
   String? convocadaAte,
+  String criadaEm = '2026-10-19T18:00:00-03:00',
 }) =>
     {
       'id': id,
@@ -627,5 +787,5 @@ Map<String, dynamic> _inscricao({
       'status': status,
       'posicaoNaEspera': posicaoNaEspera,
       'convocadaAte': convocadaAte,
-      'criadaEm': '2026-10-19T18:00:00-03:00',
+      'criadaEm': criadaEm,
     };

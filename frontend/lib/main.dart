@@ -515,12 +515,20 @@ class _ActivityInscricaoSectionState extends State<_ActivityInscricaoSection> {
       final todas = await widget.client.listarInscricoes(
         atividadeId: widget.activity.id,
       );
+      final ativas = todas
+          .where((ins) =>
+              ins.atividadeId == widget.activity.id &&
+              const {'confirmada', 'em_espera', 'convocada'}.contains(ins.status))
+          .toList();
       Inscricao? minha;
-      for (final ins in todas) {
-        if (ins.atividadeId == widget.activity.id) {
-          minha = ins;
-          break;
-        }
+      if (ativas.isNotEmpty) {
+        minha = ativas.first;
+      } else {
+        final historicas = todas
+            .where((ins) => ins.atividadeId == widget.activity.id)
+            .toList()
+          ..sort((a, b) => b.criadaEm.compareTo(a.criadaEm));
+        if (historicas.isNotEmpty) minha = historicas.first;
       }
       if (!mounted) return;
       setState(() => inscricao = minha);
@@ -608,6 +616,12 @@ class _ActivityInscricaoSectionState extends State<_ActivityInscricaoSection> {
             primary: true,
             label: 'Confirmar convocação',
             onPressed: _confirmar,
+            chave: ins.id,
+          ),
+          const SizedBox(height: 8),
+          _acao(
+            label: 'Cancelar inscrição',
+            onPressed: _cancelar,
             chave: ins.id,
           ),
         ],
