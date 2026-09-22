@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'api_client.dart';
+import 'inscricoes_page.dart';
 
 void main() => runApp(GradeApp(client: ApiClient()));
 
@@ -68,6 +69,15 @@ class _GradePageState extends State<GradePage> {
     appBar: AppBar(
       title: const Text('Semana Acadêmica 2026'),
       actions: [
+        IconButton(
+          onPressed: () => Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (_) => InscricoesPage(client: widget.client),
+            ),
+          ),
+          icon: const Icon(Icons.event_note),
+          tooltip: 'Inscrições',
+        ),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16),
           child: DropdownButton<String>(
@@ -202,13 +212,26 @@ class _GradePageState extends State<GradePage> {
     builder: (_) => AlertDialog(
       title: Text(item.title),
       content: SingleChildScrollView(
-        child: Text(
-          'Tipo: ${item.type}\n'
-          'Sala: ${_roomDescription(item.roomId)}\n'
-          'Carga: ${item.duration} minutos\n'
-          'Situação: ${item.situation}\n'
-          'Vagas restantes: ${item.json['vagasRestantes']}\n\n'
-          'Encontros:\n${item.meetings.map(_meetingDescription).join('\n')}',
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Tipo: ${item.type}\n'
+              'Sala: ${_roomDescription(item.roomId)}\n'
+              'Carga: ${item.duration} minutos\n'
+              'Situação: ${item.situation}\n'
+              'Vagas restantes: ${item.json['vagasRestantes']}\n\n'
+              'Encontros:\n${item.meetings.map(_meetingDescription).join('\n')}',
+            ),
+            if (!organization) ...[
+              const Divider(height: 24),
+              _ActivityInscricaoSection(
+                client: widget.client,
+                activity: item,
+              ),
+            ],
+          ],
         ),
       ),
       actions: [
@@ -449,4 +472,178 @@ class _Message extends StatelessWidget {
       ),
     ),
   );
+}
+
+class _ActivityInscricaoSection extends StatefulWidget {
+  const _ActivityInscricaoSection({
+    required this.client,
+    required this.activity,
+  });
+  final ApiClient client;
+  final Activity activity;
+  @override
+  State<_ActivityInscricaoSection> createState() =>
+      _ActivityInscricaoSectionState();
+}
+
+class _ActivityInscricaoSectionState extends State<_ActivityInscricaoSection> {
+  Inscricao? inscricao;
+  bool loading = true;
+  String? error;
+  String? mutatingId;
+
+  @override
+  void initState() {
+    super.initState();
+    _load();
+  }
+
+  Future<void> _load() async {
+    setState(() {
+      loading = true;
+      error = null;
+    });
+    try {
+      final todas = await widget.client.listarInscricoes(
+        atividadeId: widget.activity.id,
+      );
+      Inscricao? minha;
+      for (final ins in todas) {
+        if (ins.atividadeId == widget.activity.id) {
+          minha = ins;
+          break;
+        }
+      }
+      if (!mounted) return;
+      setState(() => inscricao = minha);
+    } on ApiFailure catch (e) {
+      if (mounted) setState(() => error = e.code);
+    } catch (_) {
+      if (mounted) {
+        setState(() => error = 'Não foi possível consultar sua inscrição.');
+      }
+    } finally {
+      if (mounted) setState(() => loading = false);
+    }
+  }
+
+  Future<void> _inscrever() => _mutar(
+    () => widget.client.inscrever(widget.activity.id),
+    'Inscrição realizada.',
+    'inscrever-${widget.activity.id}',
+  );
+
+  Future<void> _cancelar() => _mutar(
+    () => widget.client.cancelarInscricao(inscricao!.id),
+    'Inscrição cancelada.',
+    inscricao!.id,
+  );
+
+  Future<void> _confirmar() => _mutar(
+    () => widget.client.confirmarConvocacao(inscricao!.id),
+    'Inscrição confirmada.',
+    inscricao!.id,
+  );
+
+  Future<void> _mutar(
+    Future<Inscricao> Function() operacao,
+    String feedback,
+    String chave,
+  ) async {
+    setState(() => mutatingId = chave);
+    try {
+      await operacao();
+      if (!mounted) return;
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(feedback)));
+      await _load();
+    } on ApiFailure catch (e) {
+      if (mounted) setState(() => error = e.code);
+    } catch (_) {
+      if (mounted) {
+        setState(() => error = 'Não foi possível conectar à API');
+      }
+    } finally {
+      if (mounted) setState(() => mutatingId = null);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (loading) {
+      return const Padding(
+        padding: EdgeInsets.all(8),
+        child: Center(child: CircularProgressIndicator()),
+      );
+    }
+    if (error != null) {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(error!),
+          TextButton(onPressed: _load, child: const Text('Tentar novamente')),
+        ],
+      );
+    }
+    if (inscricao == null) {
+      return _acao(primary: true, label: 'Inscrever', onPressed: _inscrever);
+    }
+    final ins = inscricao!;
+    if (ins.status == 'convocada' && ins.convocadaAte != null) {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text('Convocado até ${_prazo(DateTime.parse(ins.convocadaAte!))}'),
+          const SizedBox(height: 8),
+          _acao(
+            primary: true,
+            label: 'Confirmar convocação',
+            onPressed: _confirmar,
+            chave: ins.id,
+          ),
+        ],
+      );
+    }
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(ins.status),
+        if (ins.status == 'em_espera' && ins.posicaoNaEspera != null)
+          Text('Posição na espera: ${ins.posicaoNaEspera}'),
+        const SizedBox(height: 8),
+        if (ins.status == 'confirmada' || ins.status == 'em_espera')
+          _acao(label: 'Cancelar inscrição', onPressed: _cancelar, chave: ins.id)
+        else
+          _acao(primary: true, label: 'Inscrever', onPressed: _inscrever),
+      ],
+    );
+  }
+
+  String _prazo(DateTime dt) {
+    final dia = dt.day.toString().padLeft(2, '0');
+    final mes = dt.month.toString().padLeft(2, '0');
+    final hora = dt.hour.toString().padLeft(2, '0');
+    final minuto = dt.minute.toString().padLeft(2, '0');
+    return '$dia/$mes $hora:$minuto';
+  }
+
+  Widget _acao({
+    required String label,
+    required VoidCallback onPressed,
+    String? chave,
+    bool primary = false,
+  }) {
+    final disabled = mutatingId != null;
+    final child = Text(label);
+    return primary
+        ? FilledButton(
+            onPressed: disabled ? null : onPressed,
+            child: child,
+          )
+        : OutlinedButton(
+            onPressed: disabled ? null : onPressed,
+            child: child,
+          );
+  }
 }
