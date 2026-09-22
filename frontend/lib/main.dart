@@ -70,11 +70,16 @@ class _GradePageState extends State<GradePage> {
       title: const Text('Semana Acadêmica 2026'),
       actions: [
         IconButton(
-          onPressed: () => Navigator.of(context).push(
-            MaterialPageRoute(
-              builder: (_) => InscricoesPage(client: widget.client),
-            ),
-          ),
+          onPressed: () async {
+            await Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (_) => InscricoesPage(client: widget.client),
+              ),
+            );
+            if (!mounted) return;
+            setState(() => selectedUser = widget.client.user ?? selectedUser);
+            _load();
+          },
           icon: const Icon(Icons.event_note),
           tooltip: 'Inscrições',
         ),
@@ -206,50 +211,53 @@ class _GradePageState extends State<GradePage> {
     );
   }
 
-  void _showDetail(Activity item) => showDialog(
-    context: context,
-    barrierDismissible: true,
-    builder: (_) => AlertDialog(
-      title: Text(item.title),
-      content: SingleChildScrollView(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Tipo: ${item.type}\n'
-              'Sala: ${_roomDescription(item.roomId)}\n'
-              'Carga: ${item.duration} minutos\n'
-              'Situação: ${item.situation}\n'
-              'Vagas restantes: ${item.json['vagasRestantes']}\n\n'
-              'Encontros:\n${item.meetings.map(_meetingDescription).join('\n')}',
-            ),
-            if (!organization) ...[
-              const Divider(height: 24),
-              _ActivityInscricaoSection(
-                client: widget.client,
-                activity: item,
+  Future<void> _showDetail(Activity item) async {
+    await showDialog(
+      context: context,
+      barrierDismissible: true,
+      builder: (_) => AlertDialog(
+        title: Text(item.title),
+        content: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Tipo: ${item.type}\n'
+                'Sala: ${_roomDescription(item.roomId)}\n'
+                'Carga: ${item.duration} minutos\n'
+                'Situação: ${item.situation}\n'
+                'Vagas restantes: ${item.json['vagasRestantes']}\n\n'
+                'Encontros:\n${item.meetings.map(_meetingDescription).join('\n')}',
               ),
+              if (!organization) ...[
+                const Divider(height: 24),
+                _ActivityInscricaoSection(
+                  client: widget.client,
+                  activity: item,
+                ),
+              ],
             ],
-          ],
-        ),
-      ),
-      actions: [
-        TextButton(
-          onPressed: () => Navigator.pop(context),
-          child: const Text('Fechar'),
-        ),
-        if (organization)
-          TextButton(
-            onPressed: () {
-              Navigator.pop(context);
-              _cancel(item);
-            },
-            child: const Text('Cancelar atividade'),
           ),
-      ],
-    ),
-  );
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Fechar'),
+          ),
+          if (organization)
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context);
+                _cancel(item);
+              },
+              child: const Text('Cancelar atividade'),
+            ),
+        ],
+      ),
+    );
+    if (mounted) _load();
+  }
 
   String _roomDescription(String id) {
     final room = _findRoom(id);

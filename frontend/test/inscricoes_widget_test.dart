@@ -107,7 +107,8 @@ void main() {
   testWidgets('contagem regressiva da convocacao muda com o tempo', (
     tester,
   ) async {
-    final deadline = DateTime.now().add(const Duration(minutes: 2));
+    var fakeNow = DateTime(2026, 10, 19, 12, 0, 0);
+    final deadline = fakeNow.add(const Duration(minutes: 2));
     final activities = [_atividade('atv_3', 'Oficina de Design')];
     final inscricoes = [
       _inscricao(
@@ -125,12 +126,17 @@ void main() {
         return http.Response(jsonEncode(inscricoes), 200);
       }),
     )..user = 'p-carla';
-    await tester.pumpWidget(MaterialApp(home: InscricoesPage(client: client)));
+    await tester.pumpWidget(
+      MaterialApp(
+        home: InscricoesPage(client: client, clock: () => fakeNow),
+      ),
+    );
     await tester.pump();
     await tester.pump();
     final antes = tester
         .widget<Text>(find.textContaining('Restam'))
         .data;
+    fakeNow = fakeNow.add(const Duration(seconds: 2));
     await tester.pump(const Duration(seconds: 2));
     final depois = tester
         .widget<Text>(find.textContaining('Restam'))

@@ -5,8 +5,9 @@ import 'package:flutter/material.dart';
 import 'api_client.dart';
 
 class InscricoesPage extends StatefulWidget {
-  const InscricoesPage({super.key, required this.client});
+  const InscricoesPage({super.key, required this.client, this.clock});
   final ApiClient client;
+  final DateTime Function()? clock;
   @override
   State<InscricoesPage> createState() => _InscricoesPageState();
 }
@@ -18,9 +19,12 @@ class _InscricoesPageState extends State<InscricoesPage> {
   List<Map<String, dynamic>> atividades = const [];
   String? error;
   bool loading = false;
+  int _generation = 0;
   Timer? _countdown;
   DateTime _clock = DateTime.now();
   String? _mutatingId;
+
+  DateTime _now() => (widget.clock ?? DateTime.now)();
 
   @override
   void initState() {
@@ -40,24 +44,41 @@ class _InscricoesPageState extends State<InscricoesPage> {
   bool get organization => currentUser.role == 'organizacao';
 
   Future<void> _load() async {
+    final generation = ++_generation;
+    final user = selectedUser;
+    final organizacao = organization;
+    final filtro = selectedAtividadeId;
     setState(() {
       loading = true;
       error = null;
     });
-    widget.client.user = selectedUser;
+    widget.client.user = user;
     try {
-      atividades = await widget.client.activities();
-      inscricoes = await widget.client.listarInscricoes(
-        atividadeId: organization ? selectedAtividadeId : null,
+      final atvs = await widget.client.activities();
+      if (!mounted || generation != _generation) return;
+      final listadas = await widget.client.listarInscricoes(
+        atividadeId: organizacao ? filtro : null,
       );
-    } on ApiFailure catch (e) {
-      error = e.code;
-    } catch (_) {
-      error = 'Não foi possível conectar à API';
-    }
-    if (mounted) {
-      setState(() => loading = false);
+      if (!mounted || generation != _generation) return;
+      setState(() {
+        atividades = atvs;
+        inscricoes = listadas;
+        error = null;
+        loading = false;
+      });
       _restartCountdown();
+    } on ApiFailure catch (e) {
+      if (!mounted || generation != _generation) return;
+      setState(() {
+        error = e.code;
+        loading = false;
+      });
+    } catch (_) {
+      if (!mounted || generation != _generation) return;
+      setState(() {
+        error = 'Não foi possível conectar à API';
+        loading = false;
+      });
     }
   }
 
@@ -67,10 +88,10 @@ class _InscricoesPageState extends State<InscricoesPage> {
       (ins) => ins.status == 'convocada' && ins.convocadaAte != null,
     );
     if (!hasConvocada) return;
-    _clock = DateTime.now();
+    _clock = _now();
     _countdown = Timer.periodic(const Duration(seconds: 1), (_) {
       if (!mounted) return;
-      setState(() => _clock = _clock.add(const Duration(seconds: 1)));
+      setState(() => _clock = _now());
     });
   }
 
@@ -213,7 +234,8 @@ class _InscricoesPageState extends State<InscricoesPage> {
               _convocacaoPrazo(inscricao),
             if (!organization &&
                 (inscricao.status == 'confirmada' ||
-                    inscricao.status == 'em_espera'))
+                    inscricao.status == 'em_espera' ||
+                    inscricao.status == 'convocada'))
               Align(
                 alignment: Alignment.centerRight,
                 child: TextButton(
