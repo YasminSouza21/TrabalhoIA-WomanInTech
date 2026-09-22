@@ -79,10 +79,22 @@ String _id(String prefix) =>
     '$prefix${Random().nextInt(0x100000000).toRadixString(16).padLeft(8, '0')}';
 
 class ApiServer {
-  ApiServer({this.modoTeste = false}) {
-    reset();
+  ApiServer(
+      {this.modoTeste = false,
+      String? stateFile,
+      DateTime Function()? clockProvider})
+      : _stateFilePath = stateFile ?? 'data/estado.json' {
+    _clockProvider = clockProvider ?? DateTime.now;
+    if (modoTeste) {
+      reset();
+    } else {
+      _load();
+    }
   }
   final bool modoTeste;
+  final String _stateFilePath;
+  late final DateTime Function() _clockProvider;
+  bool _dirty = false;
   final users = <String, User>{};
   final rooms = <String, Room>{};
   final activities = <String, Activity>{};
@@ -91,7 +103,9 @@ class ApiServer {
   int _enrollmentSequence = 0;
 
   void reset() {
-    clock = modoTeste ? DateTime.utc(2026, 10, 13, 12) : DateTime.now().toUtc();
+    _dirty = false;
+    clock =
+        modoTeste ? DateTime.utc(2026, 10, 13, 12) : _clockProvider().toUtc();
     _enrollmentSequence = 0;
     users
       ..clear()
@@ -121,6 +135,166 @@ class ApiServer {
     enrollments.clear();
   }
 
+  void _load() {
+    reset();
+    final file = File(_stateFilePath);
+    if (!file.existsSync()) return;
+    Object? decoded;
+    try {
+      decoded = jsonDecode(file.readAsStringSync());
+    } catch (_) {
+      throw StateError(
+          'Arquivo de estado corrompido ($_stateFilePath): falha ao decodificar JSON.');
+    }
+    if (decoded is! Map ||
+        decoded['atividades'] is! List ||
+        decoded['inscricoes'] is! List ||
+        decoded['sequencia'] is! int) {
+      throw StateError(
+          'Arquivo de estado invalido ($_stateFilePath): campos esperados ausentes.');
+    }
+    final sequencia = decoded['sequencia'] as int;
+    if (sequencia < 0) {
+      throw StateError(
+          'Arquivo de estado invalido ($_stateFilePath): sequencia negativa.');
+    }
+    try {
+      for (final raw in decoded['atividades'] as List) {
+        final atividade = _activityFromJson(raw);
+        activities[atividade.id] = atividade;
+      }
+      var maxSequencia = sequencia;
+      for (final raw in decoded['inscricoes'] as List) {
+        final inscricao = _inscricaoFromJson(raw);
+        if (inscricao.sequenceNumber > maxSequencia) {
+          maxSequencia = inscricao.sequenceNumber;
+        }
+        enrollments.add(inscricao);
+      }
+      _enrollmentSequence = maxSequencia;
+    } catch (error) {
+      throw StateError('Arquivo de estado invalido ($_stateFilePath): $error');
+    }
+  }
+
+  Activity _activityFromJson(Object? raw) {
+    if (raw is! Map ||
+        raw['id'] is! String ||
+        raw['titulo'] is! String ||
+        raw['tipo'] is! String ||
+        raw['salaId'] is! String ||
+        raw['vagas'] is! int ||
+        raw['encontros'] is! List) {
+      throw const FormatException('atividade mal formada');
+    }
+    final encontros = <Meeting>[];
+    for (final found in raw['encontros'] as List) {
+      if (found is! Map ||
+          found['id'] is! String ||
+          found['inicio'] is! String ||
+          found['fim'] is! String) {
+        throw const FormatException('encontro mal formado');
+      }
+      encontros.add(Meeting(found['id'] as String, _parseDate(found['inicio']),
+          _parseDate(found['fim'])));
+    }
+    if (encontros.isEmpty) {
+      throw const FormatException('atividade sem encontros');
+    }
+    return Activity(
+        id: raw['id'] as String,
+        title: raw['titulo'] as String,
+        type: raw['tipo'] as String,
+        roomId: raw['salaId'] as String,
+        slots: raw['vagas'] as int,
+        meetings: encontros)
+      ..cancelled = raw['cancelada'] == true;
+  }
+
+  Enrollment _inscricaoFromJson(Object? raw) {
+    if (raw is! Map ||
+        raw['id'] is! String ||
+        raw['atividadeId'] is! String ||
+        raw['participanteId'] is! String ||
+        raw['status'] is! String ||
+        raw['sequenceNumber'] is! int ||
+        raw['createdAt'] is! String) {
+      throw const FormatException('inscricao mal formada');
+    }
+    final convocadaAte = raw['convocadaAte'];
+    final expiryCause = raw['expiryCause'];
+    if ((convocadaAte != null && convocadaAte is! String) ||
+        (expiryCause != null && expiryCause is! String)) {
+      throw const FormatException('inscricao mal formada');
+    }
+    final atividadeId = raw['atividadeId'] as String;
+    if (activities[atividadeId] == null) {
+      throw FormatException(
+          'inscricao referencia atividade inexistente ($atividadeId)');
+    }
+    return Enrollment(
+        id: raw['id'] as String,
+        activityId: atividadeId,
+        participantId: raw['participanteId'] as String,
+        status: raw['status'] as String,
+        sequenceNumber: raw['sequenceNumber'] as int,
+        createdAt: _parseDate(raw['createdAt'] as String),
+        convocationDeadline:
+            convocadaAte is String ? _parseDate(convocadaAte) : null,
+        expiryCause: expiryCause as String?);
+  }
+
+  Future<void> _persist() async {
+    if (modoTeste) return;
+    final target = File(_stateFilePath);
+    await target.parent.create(recursive: true);
+    final temp = File('$_stateFilePath.tmp');
+    await temp.writeAsString(jsonEncode(_stateToJson()));
+    await temp.rename(_stateFilePath);
+  }
+
+  Future<void> _commit() async {
+    if (!_dirty) return;
+    _dirty = false;
+    if (modoTeste) return;
+    await _persist();
+  }
+
+  Map<String, Object?> _stateToJson() => {
+        'atividades': activities.values
+            .map((atividade) => {
+                  'id': atividade.id,
+                  'titulo': atividade.title,
+                  'tipo': atividade.type,
+                  'salaId': atividade.roomId,
+                  'vagas': atividade.slots,
+                  'cancelada': atividade.cancelled,
+                  'encontros': atividade.meetings
+                      .map((encontro) => {
+                            'id': encontro.id,
+                            'inicio': _formatDate(encontro.start),
+                            'fim': _formatDate(encontro.end)
+                          })
+                      .toList(),
+                })
+            .toList(),
+        'inscricoes': enrollments
+            .map((enrollment) => {
+                  'id': enrollment.id,
+                  'atividadeId': enrollment.activityId,
+                  'participanteId': enrollment.participantId,
+                  'status': enrollment.status,
+                  'sequenceNumber': enrollment.sequenceNumber,
+                  'createdAt': _formatDate(enrollment.createdAt),
+                  'convocadaAte': enrollment.convocationDeadline != null
+                      ? _formatDate(enrollment.convocationDeadline!)
+                      : null,
+                  'expiryCause': enrollment.expiryCause,
+                })
+            .toList(),
+        'sequencia': _enrollmentSequence,
+      };
+
   Future<void> handle(HttpRequest request) async {
     request.response.headers
       ..set('Access-Control-Allow-Origin', '*')
@@ -128,9 +302,11 @@ class ApiServer {
       ..set('Access-Control-Allow-Methods', 'GET, POST, PATCH, PUT, OPTIONS');
     if (request.method == 'OPTIONS') return _finish(request, 204);
     try {
+      if (!modoTeste) clock = _clockProvider().toUtc();
       final path = request.uri.path;
       if (path.startsWith('/_teste/')) return await _testRoute(request);
       _reconcile();
+      if (_dirty) await _commit();
       if (path == '/salas') return await _roomsRoute(request);
       if (path == '/atividades') return await _activitiesRoute(request);
       if (path.startsWith('/atividades/')) return await _activityRoute(request);
@@ -244,6 +420,8 @@ class ApiServer {
       return _error(
           request, validation == 'CONFLITO_DE_SALA' ? 409 : 422, validation);
     activities[activity.id] = activity;
+    _dirty = true;
+    await _commit();
     _json(request, 201, _activityJson(activity));
   }
 
@@ -371,6 +549,8 @@ class ApiServer {
     activity.title = nextTitle;
     activity.slots = nextSlots;
     _promote(id);
+    _dirty = true;
+    await _commit();
     _json(request, 200, _activityJson(activity));
   }
 
@@ -387,6 +567,8 @@ class ApiServer {
       enrollment.status = 'cancelada';
       enrollment.convocationDeadline = null;
     }
+    _dirty = true;
+    await _commit();
     _json(request, 200, _activityJson(activity));
   }
 
@@ -497,6 +679,8 @@ class ApiServer {
         sequenceNumber: ++_enrollmentSequence,
         createdAt: clock);
     enrollments.add(enrollment);
+    _dirty = true;
+    await _commit();
     _json(request, 201, _inscricaoJson(enrollment));
   }
 
@@ -523,6 +707,8 @@ class ApiServer {
       enrollment.status = 'cancelada';
       enrollment.convocationDeadline = null;
       _promote(enrollment.activityId);
+      _dirty = true;
+      await _commit();
       return _json(request, 200, _inscricaoJson(enrollment));
     }
     if (parts[2] != 'confirmacao') return _finish(request, 405);
@@ -541,6 +727,8 @@ class ApiServer {
       return _error(request, 422, 'LIMITE_DE_MINICURSOS');
     enrollment.status = 'confirmada';
     enrollment.convocationDeadline = null;
+    _dirty = true;
+    await _commit();
     _json(request, 200, _inscricaoJson(enrollment));
   }
 
@@ -627,6 +815,7 @@ class ApiServer {
         enrollment.status = 'expirada';
         enrollment.expiryCause = 'fechamento';
         enrollment.convocationDeadline = null;
+        _dirty = true;
       }
     }
   }
@@ -635,6 +824,7 @@ class ApiServer {
     enrollment.status = 'expirada';
     enrollment.expiryCause = 'convocacao';
     enrollment.convocationDeadline = null;
+    _dirty = true;
   }
 
   void _promote(String activityId, {DateTime? at}) {
@@ -658,6 +848,7 @@ class ApiServer {
       next.convocationDeadline =
           deadline.isBefore(startLimit) ? deadline : startLimit;
       next.expiryCause = null;
+      _dirty = true;
     }
   }
 

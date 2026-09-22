@@ -21,3 +21,6 @@ __pycache__/
 
 # SDKs e instaladores baixados para o ambiente local
 .tools/
+
+# estado persistido da API em producao (R40)
+api/data/
