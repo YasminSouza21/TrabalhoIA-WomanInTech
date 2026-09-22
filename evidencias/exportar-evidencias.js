@@ -229,14 +229,18 @@ const TESTE_CONHECIDO = new RegExp(`\\b(${[
   'php\\s+artisan\\s+test',
   'vitest|jest|mocha|pytest|phpunit|rspec',
 ].join('|')})\\b`);
-// Instalar o pacote de teste, ou citá-lo num commit, não é rodar teste.
-const NAO_E_TESTE = /\b(install|add|remove|uninstall|require)\b|\b(npm|pnpm|yarn|bun)\s+i\b|\bpub\s+get\b|\bgit\s/;
+// Executável invocado por caminho (Windows): & "C:/SDK .../bin/dart.exe" test.
+const EXECUTAVEL_DE_TESTE = /(?:^|[;&|])\s*"?[^"'`;|&]*?[\\/]?(?:dart\.exe|flutter\.bat)"?\s+test/;
+// Instalar o pacote de teste, citá-lo num commit ou apenas mostrá-lo num echo não é rodar teste.
+const NAO_E_TESTE =
+  /\b(install|add|remove|uninstall|require)\b|\b(npm|pnpm|yarn|bun)\s+i\b|\bpub\s+get\b|\bgit\s|(?:^|[;&|])\s*echo\b/;
 
 function ehComandoDeTeste(comando) {
   const c = normalizar(comando);
   if (!c) return false;
+  if (NAO_E_TESTE.test(c)) return false;
   if (comandosDeclarados().some((declarado) => c.includes(declarado))) return true;
-  return !NAO_E_TESTE.test(c) && TESTE_CONHECIDO.test(c);
+  return TESTE_CONHECIDO.test(c) || EXECUTAVEL_DE_TESTE.test(c);
 }
 
 function classificar(arquivo) {
@@ -286,6 +290,19 @@ function placar(saida) {
     return { ok: n(m[1]) - n(m[2]) - n(m[3]), falhou: n(m[2]) + n(m[3]) };
   }
   return null;
+}
+
+// Veredito de uma execução: compilação Dart quebrada ("Failed to load"/"Some tests
+// failed") nunca é verde, mesmo quando o pipe devolve exit 0.
+function resultadoDeTeste(saida, codigoDoProcesso, status) {
+  const texto = String(saida ?? '');
+  const p = placar(texto);
+  const vermelho = (p !== null && p.falhou > 0)
+    || (typeof codigoDoProcesso === 'number' && codigoDoProcesso !== 0)
+    || status === 'error'
+    || /Failed to load|Some tests failed/.test(texto);
+  const verde = !vermelho && ((p !== null && p.falhou === 0) || codigoDoProcesso === 0);
+  return { p, vermelho, verde };
 }
 
 function analisar(sessao) {
@@ -384,12 +401,13 @@ function analisar(sessao) {
         if (anterior && anterior.tipo === 'edita' && anterior.arquivo === arquivo) anterior.vezes++;
         else r.eventos.push({ quando, tipo: 'edita', classe, arquivo, vezes: 1 });
       } else if (parte.tool === 'bash' && ehComandoDeTeste(entrada.command)) {
-        const p = placar(String(estado.output ?? estado.metadata?.output ?? ''));
-        const saidaDoProcesso = estado.metadata?.exit;
-        const vermelho = (p !== null && p.falhou > 0)
-          || (typeof saidaDoProcesso === 'number' && saidaDoProcesso !== 0)
-          || estado.status === 'error';
-        const verde = !vermelho && ((p !== null && p.falhou === 0) || saidaDoProcesso === 0);
+        const resultado = resultadoDeTeste(
+          estado.output ?? estado.metadata?.output ?? '',
+          estado.metadata?.exit,
+          estado.status);
+        const vermelho = resultado.vermelho;
+        const verde = resultado.verde;
+        const p = resultado.p;
         if (vermelho) r.vermelhas++;
         if (verde) r.verdes++;
 
@@ -618,5 +636,5 @@ if (require.main === module) {
     exportar();
   }
 } else {
-  module.exports = { placar, classificar, ehComandoDeTeste, maiorTrechoCopiado, analisar };
+  module.exports = { placar, classificar, ehComandoDeTeste, maiorTrechoCopiado, resultadoDeTeste, analisar };
 }
