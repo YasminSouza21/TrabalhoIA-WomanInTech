@@ -18,3 +18,6 @@ __pycache__/
 
 # dependências que o próprio OpenCode instala
 .opencode/node_modules/
+
+# SDKs e instaladores baixados para o ambiente local
+.tools/
