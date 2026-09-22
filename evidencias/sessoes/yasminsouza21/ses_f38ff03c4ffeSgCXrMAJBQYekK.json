@@ -1,0 +1,1740 @@
+{
+ "info": {
+  "id": "ses_f38ff03c4ffeSgCXrMAJBQYekK",
+  "slug": "gentle-mountain",
+  "projectID": "5ec1c46d9cd3888456c10ad574c60d609ed0d0a9",
+  "directory": "/Users/yasmindesouza/TrabalhoIA-WomanInTech",
+  "path": "",
+  "title": "Criar spec formal do M1 grade de atividades",
+  "agent": "build",
+  "model": {
+   "id": "gpt-5.5-fast",
+   "providerID": "openai"
+  },
+  "version": "1.18.31",
+  "summary": {
+   "additions": 0,
+   "deletions": 0,
+   "files": 0
+  },
+  "cost": 0,
+  "tokens": {
+   "input": 53862,
+   "output": 9000,
+   "reasoning": 647,
+   "cache": {
+    "read": 344576,
+    "write": 0
+   }
+  },
+  "time": {
+   "created": 1790045125691,
+   "updated": 1790045265577
+  }
+ },
+ "messages": [
+  {
+   "info": {
+    "role": "user",
+    "time": {
+     "created": 1790045125712
+    },
+    "agent": "build",
+    "model": {
+     "providerID": "openai",
+     "modelID": "gpt-5.5-fast"
+    },
+    "summary": {
+     "diffs": [
+      {
+       "file": "specs/M1-grade-atividades.md",
+       "patch": "Index: specs/M1-grade-atividades.md\n===================================================================\n--- specs/M1-grade-atividades.md\t\n+++ specs/M1-grade-atividades.md\t\n@@ -0,0 +1,295 @@\n+# Spec — M1 Grade de Atividades\n+\n+## 1. Objetivo\n+\n+O M1 permite que a organizacao organize e mantenha a grade de atividades da Semana Academica 2026 e permite que participantes consultem atividades, salas, horarios, vagas exibidas, carga horaria e situacao das atividades.\n+\n+Regras:\n+\n+- R01. O M1 cobre grade de atividades, salas, encontros, vagas exibidas, consulta e cancelamento de atividade. Origem: P-01 / P-02.\n+- R02. O sistema inicia sem atividades cadastradas; os dados iniciais relevantes ao M1 sao os usuarios e salas definidos no contrato da API. Origem: P-04.\n+\n+## 2. Escopo\n+\n+O M1 inclui as rotas HTTP do contrato para salas e atividades:\n+\n+- `GET /salas`, para consulta das salas iniciais.\n+- `GET /atividades`, para listagem de atividades.\n+- `GET /atividades/:id`, para consulta de atividade por id.\n+- `POST /atividades`, para criacao de atividade pela organizacao.\n+- `PATCH /atividades/:id`, para edicao parcial de atividade pela organizacao.\n+- `POST /atividades/:id/cancelamento`, para cancelamento de atividade pela organizacao.\n+\n+Regras:\n+\n+- R03. `GET /salas`, `GET /atividades` e `GET /atividades/:id` podem ser usados por todos os usuarios identificados. Origem: contrato-api.md, rotas M1.\n+- R04. `POST /atividades`, `PATCH /atividades/:id` e `POST /atividades/:id/cancelamento` sao operacoes da organizacao. Origem: contrato-api.md, rotas M1.\n+\n+## 3. Fora de escopo\n+\n+- Inscricoes, lista de espera, presenca, certificados, painel da organizacao e bloqueios nao sao implementados pelo M1, exceto pelos pontos em que suas informacoes afetam regras do M1.\n+- O fluxo completo de convocacao automatica da lista de espera ao aumentar vagas pertence ao M2.\n+- A emissao ou bloqueio de certificados de atividade cancelada pertence ao M4.\n+- A obtencao de codigo de presenca de atividade cancelada pertence ao modulo de presenca.\n+- A atualizacao de inscricoes ativas ao cancelar atividade pertence ao M2, embora o M1 exponha a atividade como `cancelada` e impeça nova edicao/cancelamento dela.\n+\n+Regras:\n+\n+- R05. O M1 nao define o fluxo completo de inscricao, presenca, certificado ou painel; esses modulos devem consumir a atividade e sua situacao conforme contrato. Origem: P-02 / R2-P24.\n+\n+## 4. Atores e permissoes\n+\n+Regras:\n+\n+- R06. Toda rota identificada do M1 exige `X-Usuario`; sem cabecalho ou com id inexistente, a API responde `401 USUARIO_DESCONHECIDO` antes das regras do recurso. Origem: contrato-api.md, convencoes.\n+- R07. Operacoes de organizacao do M1 recusam usuario participante com `403 SOMENTE_ORGANIZACAO` antes das regras do recurso. Origem: contrato-api.md, convencoes e rotas M1.\n+- R08. Recurso inexistente em `GET /atividades/:id`, `PATCH /atividades/:id` ou `POST /atividades/:id/cancelamento` gera `404 NAO_ENCONTRADO` antes das regras do recurso. Origem: contrato-api.md, convencoes.\n+- R09. Corpo que nao e JSON, campo obrigatorio ausente ou campo de tipo errado gera `422 DADOS_INVALIDOS` antes das regras do recurso. Origem: contrato-api.md, convencoes.\n+\n+## 5. Modelo da atividade\n+\n+Campos da entidade `Atividade`:\n+\n+- `id`: gerado pela API, prefixo `atv_` seguido de 8 hexadecimais minusculos.\n+- `titulo`: informado pela organizacao.\n+- `tipo`: informado pela organizacao; valores validos no M1 sao `palestra` e `minicurso`.\n+- `salaId`: informado pela organizacao, referencia uma sala existente.\n+- `vagas`: informado pela organizacao e editavel conforme regras de vagas.\n+- `encontros`: informado pela organizacao na criacao, retornado em ordem de inicio; cada encontro recebe `id` gerado com prefixo `enc_` seguido de 8 hexadecimais minusculos.\n+- `cargaHorariaMinutos`: calculado pela API.\n+- `situacao`: calculado pela API, exceto pela persistencia do cancelamento.\n+- `ocupadas`: calculado a partir de inscricoes que ocupam vaga.\n+- `vagasRestantes`: calculado a partir de `vagas` e `ocupadas`.\n+- `emEspera`: calculado a partir da lista de espera.\n+\n+Regras:\n+\n+- R10. Os tipos de atividade do M1 sao somente `palestra` e `minicurso`. Origem: P-03 / R2-P01.\n+- R11. A diferenca de regra entre `palestra` e `minicurso` no M1 e apenas a quantidade de encontros; duracao, vagas e sala seguem regras comuns. Origem: R2-P01.\n+- R12. `Atividade.encontros` deve ser retornado em ordem de inicio. Origem: contrato-api.md, modelo de Atividade.\n+\n+## 6. Regras de criacao\n+\n+Regras:\n+\n+- R13. `POST /atividades` com dados validos cria atividade e retorna `201 Atividade`. Origem: contrato-api.md, rotas M1.\n+- R14. `palestra` deve ter exatamente 1 encontro; caso contrario, a criacao retorna `422 QUANTIDADE_DE_ENCONTROS`. Origem: P-05 / R2-P02 / R2-P38.\n+- R15. `minicurso` deve ter de 2 a 5 encontros; caso contrario, a criacao retorna `422 QUANTIDADE_DE_ENCONTROS`. Origem: P-05 / R2-P02 / R2-P38.\n+- R16. Uma atividade deve ocorrer dentro do periodo do evento, de 19/10/2026 a 23/10/2026, considerando horario de Brasilia; encontro fora desse periodo gera `422 ENCONTRO_INVALIDO`. Origem: P-07 / R2-P05 / R2-P37.\n+- R17. A ordem interna de precedencia entre erros especificos de criacao do M1 nao esta especificada; a spec nao exige prioridade entre `QUANTIDADE_DE_ENCONTROS`, `ENCONTRO_INVALIDO`, `VAGAS_ACIMA_DA_CAPACIDADE` e `CONFLITO_DE_SALA`. Origem: P-31 / R2-P35.\n+\n+## 7. Regras dos encontros\n+\n+Regras:\n+\n+- R18. Cada encontro deve durar no minimo 1 hora e no maximo 4 horas; duracao fora desse intervalo gera `422 ENCONTRO_INVALIDO`. Origem: P-06 / R2-P03 / R2-P37.\n+- R19. Cada encontro deve comecar e terminar no mesmo dia; encontro que atravessa meia-noite ou muda de dia gera `422 ENCONTRO_INVALIDO`. Origem: R2-P37 / R2-P40.\n+- R20. Encontros da mesma atividade nao podem se sobrepor; sobreposicao interna gera `422 ENCONTRO_INVALIDO`. Origem: R2-P37.\n+\n+## 8. Regras de sala/conflito\n+\n+Regras:\n+\n+- R21. Existe conflito quando dois encontros de atividades nao canceladas usam a mesma sala em horarios sobrepostos; a criacao retorna `409 CONFLITO_DE_SALA`. Origem: P-10 / R2-P09.\n+- R22. Alem de nao haver sobreposicao, deve existir intervalo minimo de 15 minutos entre o fim de um encontro e o inicio do proximo encontro na mesma sala; se o intervalo for menor, a criacao retorna `409 CONFLITO_DE_SALA`. Origem: P-11 / R2-P09 / R2-P10.\n+- R23. Na mesma sala, intervalo de 14 minutos entre encontros ainda conflita e intervalo de 15 minutos e permitido. Origem: R2-P12 / R2-P40.\n+- R24. Na mesma sala, `fim == inicio` entre encontros de atividades diferentes e conflito, pois nao cumpre intervalo minimo de 15 minutos. Origem: R2-P12.\n+- R25. Encontros de atividades canceladas nao contam para conflito de sala. Origem: P-12 / R2-P11.\n+\n+## 9. Regras de vagas\n+\n+Regras:\n+\n+- R26. `vagas` deve ser no minimo 1 e no maximo igual a capacidade da sala da atividade. Origem: P-13 / P-14 / R2-P08 / R2-P13.\n+- R27. `vagas` acima da capacidade da sala gera `422 VAGAS_ACIMA_DA_CAPACIDADE` na criacao ou edicao. Origem: R2-P08 / contrato-api.md, codigos de retorno.\n+- R28. Reduzir `vagas` para valor menor que a quantidade de inscricoes que ocupam vaga gera `409 VAGAS_ABAIXO_DOS_INSCRITOS`. Origem: P-15 / R2-P14.\n+- R29. Inscricoes `confirmadas` e `convocadas` contam como ocupando vaga para impedir reducao de vagas. Origem: R2-P16.\n+- R30. Inscricoes `em_espera`, `canceladas` e `expiradas` nao contam como ocupando vaga para impedir reducao de vagas. Origem: R2-P16.\n+- R31. Aumentar `vagas` e permitido quando respeita as demais regras do M1; eventual convocacao automatica da lista de espera e dependencia do M2. Origem: R2-P15.\n+\n+## 10. Carga horaria\n+\n+Regras:\n+\n+- R32. `cargaHorariaMinutos` e calculada pela soma das duracoes de todos os encontros, em minutos. Origem: P-06 / R2-P04.\n+- R33. Se `cargaHorariaMinutos` for enviado na criacao ou edicao, o valor enviado e ignorado; a resposta deve retornar o valor calculado. Origem: R2-P04.\n+\n+## 11. Regras de edicao\n+\n+Regras:\n+\n+- R34. `PATCH /atividades/:id` com alteracao valida retorna `200 Atividade`. Origem: contrato-api.md, rotas M1.\n+- R35. Apenas `titulo` e `vagas` podem ser alterados depois da criacao. Origem: P-16 / R2-P17.\n+- R36. `salaId`, `tipo` e `encontros` sao imutaveis depois da criacao; tentativa de alteracao retorna `422 CAMPO_NAO_EDITAVEL`. Origem: P-17 / R2-P18.\n+- R37. Atividade cancelada nao pode ser editada; tentativa de edicao retorna `422 ATIVIDADE_CANCELADA`. Origem: R2-P20.\n+- R38. A ordem interna de precedencia entre erros especificos de edicao do M1 nao esta especificada; a spec nao exige prioridade entre `ATIVIDADE_CANCELADA`, `CAMPO_NAO_EDITAVEL`, `VAGAS_ACIMA_DA_CAPACIDADE` e `VAGAS_ABAIXO_DOS_INSCRITOS`. Origem: P-31 / R2-P36.\n+\n+## 12. Cancelamento\n+\n+Regras:\n+\n+- R39. `POST /atividades/:id/cancelamento` antes do inicio da atividade cancela a atividade e retorna `200 Atividade` com `situacao` igual a `cancelada`. Origem: P-18 / R2-P21 / contrato-api.md, rotas M1.\n+- R40. O cancelamento so pode acontecer antes de a atividade comecar; se a atividade ja comecou, retorna `422 ATIVIDADE_JA_INICIADA`. Origem: P-18 / R2-P21.\n+- R41. O cancelamento e definitivo; atividade cancelada nao pode ser reativada. Origem: P-19 / R2-P22.\n+- R42. Cancelar uma atividade ja cancelada retorna `422 ATIVIDADE_CANCELADA`. Origem: P-20 / R2-P23.\n+- R43. A ordem interna de precedencia entre erros especificos de cancelamento do M1 nao esta especificada; a spec nao exige prioridade entre `ATIVIDADE_CANCELADA` e `ATIVIDADE_JA_INICIADA`. Origem: P-31 / R2-P36.\n+\n+## 13. Situacao calculada pelo relogio\n+\n+Regras:\n+\n+- R44. Os estados oficiais de `situacao` sao `prevista`, `em_andamento`, `encerrada` e `cancelada`. Origem: P-22 / R2-P25.\n+- R45. Uma atividade nao cancelada fica `prevista` antes do inicio do primeiro encontro. Origem: P-23 / R2-P26.\n+- R46. Uma atividade nao cancelada fica `em_andamento` a partir do inicio do primeiro encontro. Origem: P-23 / R2-P26.\n+- R47. Uma atividade nao cancelada fica `encerrada` a partir do fim do ultimo encontro. Origem: P-23 / R2-P26.\n+- R48. `cancelada` prevalece sobre todos os estados calculados pelo relogio. Origem: P-22 / P-23 / P-19 / R2-P28.\n+\n+## 14. Consulta e listagem\n+\n+Regras:\n+\n+- R49. `GET /atividades` retorna `200 [Atividade]` ordenado pelo inicio do primeiro encontro. Origem: P-25 / R2-P29.\n+- R50. Em caso de empate no inicio do primeiro encontro, `GET /atividades` ordena pelo `titulo`. Origem: P-25 / R2-P29.\n+- R51. Atividades canceladas aparecem normalmente em `GET /atividades`; nao ha ordenacao especial para canceladas. Origem: P-26 / R2-P30.\n+- R52. `GET /atividades/:id` retorna `200 Atividade` para atividade existente, sem regra especial especificada para atividade cancelada. Origem: contrato-api.md, rotas M1 / R2-P31.\n+\n+## 15. Filtros\n+\n+Regras:\n+\n+- R53. `GET /atividades?dia=AAAA-MM-DD` inclui a atividade quando ela tem pelo menos um encontro naquele dia de Brasilia. Origem: P-27 / R2-P32.\n+- R54. `GET /atividades?tipo=palestra|minicurso` filtra atividades pelo tipo informado. Origem: P-28 / contrato-api.md, rotas M1.\n+- R55. Quando `dia` e `tipo` forem enviados juntos em `GET /atividades`, os dois filtros devem ser aplicados ao mesmo tempo. Origem: P-29 / R2-P32.\n+\n+## 16. Regras temporais e bordas\n+\n+Regras:\n+\n+- R56. Todas as regras temporais do M1 usam o relogio controlado quando `MODO_TESTE=1`. Origem: P-30 / contrato-api.md, modo de teste.\n+- R57. Quando `agora == inicio do primeiro encontro`, a atividade ja esta `em_andamento`. Origem: P-24 / R2-P27 / R2-P40.\n+- R58. Quando `agora == fim do ultimo encontro`, a atividade ja esta `encerrada`. Origem: P-24 / R2-P27 / R2-P40.\n+- R59. As bordas do periodo do evento sao inclusivas para os dias de 19/10/2026 a 23/10/2026, sem faixa diaria especifica definida. Origem: P-07 / R2-P05.\n+\n+## 17. Dependencias com outros modulos\n+\n+- M2 Inscricoes e lista de espera: `ocupadas`, `vagasRestantes`, `emEspera`, a restricao de reducao de vagas por inscricoes que ocupam vaga e a possivel convocacao automatica no aumento de vagas dependem dos estados e regras de inscricao do M2.\n+- M2 Inscricoes e lista de espera: o cancelamento de atividade deve impedir novas inscricoes e cancelar inscricoes ativas conforme regra do M2; o M1 registra a atividade como cancelada.\n+- M3 Presenca: atividade cancelada nao permite obter codigo de presenca, mas o fluxo pertence ao modulo de presenca.\n+- M4 Certificados: atividade cancelada nao permite emitir certificado, mas o fluxo pertence ao M4.\n+\n+Regras:\n+\n+- R60. O M1 deve expor `situacao`, `vagas`, `ocupadas`, `vagasRestantes`, `emEspera` e `cargaHorariaMinutos` de forma consistente para consumo por M2, M3 e M4, sem implementar dentro do M1 os fluxos completos desses modulos. Origem: R2-P15 / R2-P24 / contrato-api.md, modelos M1-M4.\n+\n+## 18. Pontos nao especificados\n+\n+Estes pontos foram explicitamente preservados como ausencia de regra adicional. Nao devem gerar comportamento inventado na implementacao do M1:\n+\n+- N01. Faixa diaria especifica de horario permitida dentro dos dias do evento. Origem: R2-P05.\n+- N02. Subconjunto de salas permitidas ou salas excluidas do M1. Origem: R2-P06.\n+- N03. Restricao de sala por tipo de atividade. Origem: R2-P07.\n+- N04. Proibicao geral de editar uma atividade apenas por ela ja ter iniciado ou encerrado. Origem: R2-P19.\n+- N05. Comportamento especial do detalhe de uma atividade cancelada. Origem: R2-P31.\n+- N06. Comportamento de `GET /atividades?tipo=<valor invalido>`. Origem: R2-P33.\n+- N07. Comportamento de `GET /atividades?dia=<formato invalido>` ou dia fora do periodo do evento. Origem: R2-P34.\n+- N08. Precedencia interna dos erros de criacao. Origem: R2-P35.\n+- N09. Precedencia interna dos erros de edicao/cancelamento. Origem: R2-P36.\n+- N10. Codigo especifico para `vagas < 1` ou valor de vagas nao inteiro. Origem: R2-P39.\n+\n+## 19. Criterios de aceitacao\n+\n+1. (R01, R02, R03) Depois de `POST /_teste/reset`, `GET /atividades` com usuario valido retorna `200 []`.\n+2. (R02, R03) Depois de `POST /_teste/reset`, `GET /salas` com usuario valido retorna as salas iniciais do contrato: `auditorio`, `sala-101`, `sala-102` e `lab-3`.\n+3. (R04, R06, R07) `POST /atividades` sem usuario retorna `401 USUARIO_DESCONHECIDO`; com participante retorna `403 SOMENTE_ORGANIZACAO`.\n+4. (R10, R13, R14, R18, R26, R32, R33, R44, R45) `POST /atividades` de `palestra` valida com 1 encontro, vagas dentro da capacidade e `cargaHorariaMinutos` enviado incorreto retorna `201 Atividade` com carga calculada e situacao conforme relogio.\n+5. (R10, R13, R15, R18, R26, R32) `POST /atividades` de `minicurso` valido com 2 encontros retorna `201 Atividade` com carga igual a soma dos encontros.\n+6. (R14) `POST /atividades` de `palestra` com 0 ou 2 encontros retorna `422 QUANTIDADE_DE_ENCONTROS` quando essa for a regra do recurso aplicada.\n+7. (R15) `POST /atividades` de `minicurso` com 1 ou 6 encontros retorna `422 QUANTIDADE_DE_ENCONTROS` quando essa for a regra do recurso aplicada.\n+8. (R16, R18, R19, R20) `POST /atividades` com encontro fora do periodo, menor que 1h, maior que 4h, atravessando meia-noite ou sobreposto a outro encontro da mesma atividade retorna `422 ENCONTRO_INVALIDO` quando essa for a regra do recurso aplicada.\n+9. (R21, R22, R24) Criar atividade em sala ocupada por outra atividade nao cancelada com sobreposicao ou sem intervalo minimo retorna `409 CONFLITO_DE_SALA` quando essa for a regra do recurso aplicada.\n+10. (R23) Se uma atividade termina as 10:00 na mesma sala, outra iniciando as 10:14 retorna `409 CONFLITO_DE_SALA`; iniciando as 10:15 e aceita, mantendo as demais regras validas.\n+11. (R25, R39) Depois de cancelar uma atividade antes do inicio, seus encontros nao bloqueiam a criacao de nova atividade na mesma sala e horario.\n+12. (R26, R27) Criar ou editar atividade com `vagas` acima da capacidade da sala retorna `422 VAGAS_ACIMA_DA_CAPACIDADE` quando essa for a regra do recurso aplicada.\n+13. (R28, R29, R30) Reduzir vagas abaixo de inscricoes `confirmadas` e `convocadas` retorna `409 VAGAS_ABAIXO_DOS_INSCRITOS`; inscricoes `em_espera`, `canceladas` e `expiradas` nao aumentam esse limite.\n+14. (R31) Aumentar vagas em atividade nao cancelada e permitido quando respeita capacidade e demais regras do M1; a spec do M1 nao exige validar o fluxo completo de convocacao.\n+15. (R34, R35) `PATCH /atividades/:id` alterando apenas `titulo` ou `vagas` validos retorna `200 Atividade` com os campos alterados.\n+16. (R36) `PATCH /atividades/:id` tentando alterar `salaId`, `tipo` ou `encontros` retorna `422 CAMPO_NAO_EDITAVEL` quando essa for a regra do recurso aplicada.\n+17. (R37) `PATCH /atividades/:id` de atividade cancelada retorna `422 ATIVIDADE_CANCELADA` quando essa for a regra do recurso aplicada.\n+18. (R39, R40, R41, R42) Cancelar antes do inicio retorna `200` e `situacao=cancelada`; cancelar depois de iniciada retorna `422 ATIVIDADE_JA_INICIADA`; cancelar novamente retorna `422 ATIVIDADE_CANCELADA` quando essa for a regra do recurso aplicada.\n+19. (R44, R45, R46, R47, R48, R56, R57, R58) Alterando `/_teste/relogio`, a mesma atividade aparece como `prevista` antes do inicio, `em_andamento` exatamente no inicio do primeiro encontro, `encerrada` exatamente no fim do ultimo encontro, e permanece `cancelada` se tiver sido cancelada.\n+20. (R49, R50, R51) `GET /atividades` retorna atividades ordenadas pelo inicio do primeiro encontro, desempata por titulo e inclui canceladas.\n+21. (R52) `GET /atividades/:id` de atividade existente retorna `200 Atividade`; a spec nao exige comportamento especial para cancelada alem das regras gerais.\n+22. (R53, R54, R55) `GET /atividades?dia=AAAA-MM-DD`, `GET /atividades?tipo=palestra` e a combinacao `dia` + `tipo` filtram conforme dia de Brasilia e tipo.\n+23. (R17, R38, R43, N08, N09) Testes nao devem exigir ordem interna de precedencia entre erros especificos do recurso quando mais de uma regra do M1 e violada simultaneamente.\n+\n+## 20. Cenarios de teste derivados da entrevista\n+\n+1. Criacao valida de palestra com exatamente 1 encontro dentro do periodo, duracao entre 1h e 4h, vagas dentro da capacidade, carga calculada e `cargaHorariaMinutos` enviado ignorado. Regras: R13, R14, R16, R18, R26, R32, R33.\n+2. Criacao valida de minicurso com 2 encontros e carga horaria igual a soma das duracoes. Regras: R13, R15, R32.\n+3. Recusa de palestra com quantidade diferente de 1 encontro. Regras: R14.\n+4. Recusa de minicurso com menos de 2 ou mais de 5 encontros. Regras: R15.\n+5. Recusa de encontro menor que 1h, maior que 4h, fora do periodo, cruzando meia-noite ou sobreposto internamente. Regras: R16, R18, R19, R20.\n+6. Recusa de conflito de sala por sobreposicao com atividade nao cancelada. Regras: R21.\n+7. Recusa de conflito de sala por intervalo de 14 minutos e aceite com intervalo de 15 minutos. Regras: R22, R23.\n+8. Criacao em horario de atividade cancelada nao gera conflito de sala. Regras: R25, R39.\n+9. Recusa de vagas acima da capacidade da sala na criacao e na edicao. Regras: R26, R27.\n+10. Recusa de reducao de vagas abaixo de inscricoes que ocupam vaga, contando `confirmadas` e `convocadas`, sem contar `em_espera`, `canceladas` e `expiradas`. Regras: R28, R29, R30.\n+11. Edicao permite somente `titulo` e `vagas`; tentativa de alterar sala, tipo ou encontros e recusada. Regras: R35, R36.\n+12. Atividade cancelada nao pode ser editada nem cancelada novamente. Regras: R37, R42.\n+13. Cancelamento antes do inicio e aceito; cancelamento depois do inicio e recusado. Regras: R39, R40.\n+14. Situacao muda por relogio controlado: prevista antes do primeiro inicio, em andamento no instante inicial, encerrada no instante final, cancelada prevalece. Regras: R44, R45, R46, R47, R48, R56, R57, R58.\n+15. Listagem ordena pelo inicio do primeiro encontro, desempata por titulo e inclui canceladas. Regras: R49, R50, R51.\n+16. Filtro por dia usa dia de Brasilia; filtro por tipo usa `palestra` ou `minicurso`; filtros combinados aplicam ambos. Regras: R53, R54, R55.\n+17. Consulta por id retorna a atividade existente conforme contrato, sem inventar comportamento especial para cancelada. Regras: R52, N05.\n+\n+## 21. Rastreabilidade entrevista -> regra\n+\n+| Origem | Regras |\n+|---|---|\n+| P-01 | R01 |\n+| P-02 | R01, R05 |\n+| P-03 / R2-P01 | R10, R11 |\n+| P-04 | R02 |\n+| P-05 / R2-P02 / R2-P38 | R14, R15 |\n+| P-06 / R2-P03 / R2-P04 / R2-P37 | R18, R32, R33 |\n+| P-07 / R2-P05 / R2-P37 | R16, R59, N01 |\n+| P-08 / R2-P06 | N02 |\n+| P-09 / R2-P07 | N03 |\n+| P-10 / R2-P09 / R2-P12 | R21, R24 |\n+| P-11 / R2-P09 / R2-P10 / R2-P12 | R22, R23 |\n+| P-12 / R2-P11 | R25 |\n+| P-13 / P-14 / R2-P08 / R2-P13 / R2-P39 | R26, R27, N10 |\n+| P-15 / R2-P14 / R2-P15 / R2-P16 | R28, R29, R30, R31 |\n+| P-16 / R2-P17 / R2-P20 | R35, R37 |\n+| P-17 / R2-P18 | R36 |\n+| P-18 / R2-P21 | R39, R40 |\n+| P-19 / R2-P22 / R2-P28 | R41, R48 |\n+| P-20 / R2-P23 | R42 |\n+| P-21 / R2-P24 | R05, R60 |\n+| P-22 / R2-P25 / R2-P28 | R44, R48 |\n+| P-23 / R2-P26 / R2-P28 | R45, R46, R47, R48 |\n+| P-24 / R2-P27 / R2-P40 | R57, R58 |\n+| P-25 / R2-P29 | R49, R50 |\n+| P-26 / R2-P30 / R2-P31 | R51, R52, N05 |\n+| P-27 / R2-P32 / R2-P34 | R53, N07 |\n+| P-28 / R2-P33 | R54, N06 |\n+| P-29 / R2-P32 | R55 |\n+| P-30 | R56 |\n+| P-31 / R2-P35 / R2-P36 | R17, R38, R43, N08, N09 |\n+| P-32 / R2-P37 / R2-P38 / R2-P40 | R14, R15, R16, R18, R19, R22, R23, R40, R49, R50, R51, R53, R55, R57, R58 |\n+| contrato-api.md | R03, R04, R06, R07, R08, R09, R12, R13, R27, R34, R39, R52, R54, R56, R60 |\n+\n+## Como isto sera verificado\n+\n+As regras do M1 devem ser verificadas pela interface HTTP definida em `contrato-api.md`, usando o servidor da API e o modo de teste (`MODO_TESTE=1`) para resetar estado e controlar o relogio. Essa e a costura mais externa e cobre permissao, contrato de JSON, status HTTP, codigos de erro, persistencia em memoria e regras temporais observaveis pelo cliente.\n+\n+## Fatias de entrega sugeridas para TDD\n+\n+1. Dados iniciais, autenticacao/autorizacao e consulta vazia de salas/atividades.\n+2. Criacao valida de atividade, tipos, encontros, periodo, duracao, carga horaria e ordenacao de encontros.\n+3. Conflito de sala, intervalo minimo e canceladas fora do conflito.\n+4. Vagas, capacidade e campos calculados ligados a ocupacao.\n+5. Edicao de `titulo` e `vagas`, campos imutaveis e atividade cancelada nao editavel.\n+6. Cancelamento antes do inicio, definitivo e recusas temporais.\n+7. Situacao calculada por relogio controlado e bordas inclusivas.\n+8. Listagem, detalhe e filtros por dia/tipo.\n",
+       "additions": 295,
+       "deletions": 0,
+       "status": "added"
+      }
+     ]
+    },
+    "id": "msg_0c700fc50001zBchIzRDxpTrVx",
+    "sessionID": "ses_f38ff03c4ffeSgCXrMAJBQYekK"
+   },
+   "parts": [
+    {
+     "type": "text",
+     "text": "O M1 passou pela verificação final de rastreabilidade e está liberado para `to-spec`.\n\nAgora execute a skill:\n\n`to-spec`\n\npara transformar a entrevista do M1 em uma especificação formal.\n\nUse como fontes:\n\n* `entrevistas/M1-grade-atividades.md`;\n* `contrato-api.md`;\n* `AGENTS.md`;\n* `api/AGENTS.md`;\n* `.opencode/skills/to-spec/SKILL.md`.\n\nCrie:\n\n`specs/M1-grade-atividades.md`\n\n## Regras importantes\n\nA spec deve conter SOMENTE requisitos que tenham rastreabilidade suficiente entre Rodada 1 e Rodada 2.\n\nNão invente regras para pontos classificados como `NÃO ESPECIFICADO`.\n\n### Requisitos liberados\n\nInclua todas as regras confirmadas da entrevista, incluindo:\n\n* objetivo e escopo do M1;\n* tipos `palestra` e `minicurso`;\n* palestra com exatamente 1 encontro;\n* minicurso com 2 a 5 encontros;\n* cada encontro com duração entre 1h e 4h;\n* período de 19/10/2026 a 23/10/2026;\n* encontro deve começar e terminar no mesmo dia;\n* encontro atravessando meia-noite é inválido;\n* encontros da mesma atividade não podem se sobrepor;\n* vagas de 1 até a capacidade da sala;\n* carga horária calculada pela soma das durações dos encontros;\n* `cargaHorariaMinutos` enviado manualmente é ignorado;\n* conflito de sala;\n* intervalo mínimo de 15 minutos entre encontros na mesma sala;\n* 14 minutos ainda conflita;\n* 15 minutos é permitido;\n* atividades canceladas não causam conflito de sala;\n* apenas `titulo` e `vagas` são editáveis;\n* sala, tipo e encontros não são editáveis;\n* atividade cancelada não pode ser editada;\n* vagas não podem ficar abaixo da quantidade de inscrições que ocupam vaga;\n* `confirmadas` e `convocadas` contam como ocupando vaga;\n* `em_espera`, `canceladas` e `expiradas` não contam;\n* cancelamento somente antes do início;\n* cancelamento definitivo;\n* estados `prevista`, `em_andamento`, `encerrada` e `cancelada`;\n* bordas temporais inclusivas;\n* `cancelada` prevalece sobre os demais estados;\n* listagem ordenada pelo início do primeiro encontro;\n* desempate por título;\n* canceladas aparecem na listagem;\n* filtro `dia`;\n* filtro `tipo`;\n* combinação de `dia` e `tipo`;\n* filtro `dia` usa o dia de Brasília;\n* regras temporais usam o relógio controlado quando `MODO_TESTE=1`.\n\n## Dependência com M2\n\nA regra:\n\n“aumento de vagas pode gerar convocação automática da lista de espera”\n\npertence principalmente ao M2.\n\nNa spec do M1:\n\n* registre apenas que aumentar vagas é permitido quando respeitar as demais regras;\n* sinalize a integração com M2 como dependência;\n* não especifique o fluxo completo de convocação dentro do M1.\n\n## Pontos NÃO ESPECIFICADOS\n\nPreserve explicitamente como ausência de regra adicional:\n\n* faixa diária específica de horário;\n* subconjunto de salas permitidas;\n* restrição de sala por tipo;\n* proibição geral de editar uma atividade apenas por já ter iniciado ou encerrado;\n* comportamento especial do detalhe de uma atividade cancelada;\n* comportamento de `?tipo=` inválido;\n* comportamento de `?dia=` inválido ou fora do período;\n* precedência interna dos erros de criação;\n* precedência interna dos erros de edição/cancelamento;\n* código específico para vagas menores que 1 ou não inteiras.\n\nNão invente comportamento para preencher essas lacunas.\n\n## Estrutura da spec\n\nOrganize a spec com:\n\n1. Objetivo\n2. Escopo\n3. Fora de escopo\n4. Atores e permissões\n5. Modelo da atividade\n6. Regras de criação\n7. Regras dos encontros\n8. Regras de sala/conflito\n9. Regras de vagas\n10. Carga horária\n11. Regras de edição\n12. Cancelamento\n13. Situação calculada pelo relógio\n14. Consulta e listagem\n15. Filtros\n16. Regras temporais e bordas\n17. Dependências com outros módulos\n18. Pontos não especificados\n19. Critérios de aceitação\n20. Cenários de teste derivados da entrevista\n21. Rastreabilidade entrevista → regra\n\nPara cada regra relevante, informe sua origem na entrevista, por exemplo:\n\n`Origem: P-10 / R2-P09`\n\n## Depois de criar\n\nRevise a spec contra:\n\n* `entrevistas/M1-grade-atividades.md`;\n* `contrato-api.md`.\n\nInforme:\n\n1. caminho criado;\n2. quantidade de regras;\n3. pontos não especificados preservados;\n4. dependências com M2/M4;\n5. qualquer divergência com o contrato;\n6. se a spec está pronta para iniciar TDD.\n\nNão implemente código.\nNão crie testes ainda.\nNão altere o backend.\n\nPare depois da criação e revisão da spec. ",
+     "id": "prt_0c700fc53001JrKJO1sjdJbmWq",
+     "sessionID": "ses_f38ff03c4ffeSgCXrMAJBQYekK",
+     "messageID": "msg_0c700fc50001zBchIzRDxpTrVx"
+    }
+   ]
+  },
+  {
+   "info": {
+    "parentID": "msg_0c700fc50001zBchIzRDxpTrVx",
+    "role": "assistant",
+    "mode": "build",
+    "agent": "build",
+    "path": {
+     "cwd": "/Users/yasmindesouza/TrabalhoIA-WomanInTech",
+     "root": "/Users/yasmindesouza/TrabalhoIA-WomanInTech"
+    },
+    "cost": 0,
+    "tokens": {
+     "total": 9941,
+     "input": 9886,
+     "output": 55,
+     "reasoning": 0,
+     "cache": {
+      "write": 0,
+      "read": 0
+     }
+    },
+    "modelID": "gpt-5.5-fast",
+    "providerID": "openai",
+    "time": {
+     "created": 1790045125730,
+     "completed": 1790045128846
+    },
+    "finish": "tool-calls",
+    "id": "msg_0c700fc62001sWDa96iBPYbzDX",
+    "sessionID": "ses_f38ff03c4ffeSgCXrMAJBQYekK"
+   },
+   "parts": [
+    {
+     "snapshot": "f77b6fd5ba66c23f5be5f248324d55111f4da7df",
+     "type": "step-start",
+     "id": "prt_0c70105030010cHHTKo7n17aey",
+     "sessionID": "ses_f38ff03c4ffeSgCXrMAJBQYekK",
+     "messageID": "msg_0c700fc62001sWDa96iBPYbzDX"
+    },
+    {
+     "type": "text",
+     "text": "Vou carregar a skill `to-spec` e revisar as fontes indicadas antes de escrever a especificação. Não vou tocar no backend nem criar testes.",
+     "time": {
+      "start": 1790045127944,
+      "end": 1790045128470
+     },
+     "metadata": {
+      "openai": {
+       "itemId": "msg_0e3674eb884fb5b4016ab1ebc8024487d2be2db026576947ae",
+       "phase": "commentary"
+      }
+     },
+     "id": "prt_0c7010508001LsDMp7nQvtqVWq",
+     "sessionID": "ses_f38ff03c4ffeSgCXrMAJBQYekK",
+     "messageID": "msg_0c700fc62001sWDa96iBPYbzDX"
+    },
+    {
+     "type": "tool",
+     "tool": "skill",
+     "callID": "call_C9IFAsIaJ1ekbTmC9ynzblG8",
+     "state": {
+      "status": "completed",
+      "input": {
+       "name": "to-spec"
+      },
+      "output": "<skill_content name=\"to-spec\">\n# Skill: to-spec\n\n# A conversa vira contrato\n\nVocê já tem tudo o que precisa: está na conversa. **Não entreviste de novo.** Sua\ntarefa é escrever, num arquivo, o que já foi decidido — e nada além.\n\nRegra que ninguém decidiu **não entra**. Se faltar alguma coisa para a spec ficar de pé,\npare e pergunte só aquilo. Não preencha buraco com \"geralmente é assim\".\n\n## Onde escrever\n\n`spec-<recurso>.md`, na raiz do projeto. Um arquivo por recurso.\n\n## Antes de escrever\n\nLeia o repositório: convenções, vocabulário, nomes que já existem. A spec fala a língua\ndo projeto — se o código chama de `leitor`, a spec não inventa `usuário`.\n\nDecida também **onde isto vai ser verificado**. Prefira a costura mais externa que já\nexistir (aqui: HTTP, pelo `criarServidor()`). Quanto menos pontos de teste novos, melhor.\n\n## Modelo\n\n```markdown\n# Spec — <recurso>\n\n## 1. Objetivo\nUm parágrafo: que problema isto resolve, na visão de quem usa.\n\n## 2. Fora de escopo\nLista do que este recurso NÃO faz. Isto é tão contrato quanto o resto — é aqui que\nse recusa código que ninguém pediu.\n\n## 3. Modelo\nOs campos da entidade, com tipo e origem (informado pelo cliente / calculado / derivado).\nCampo derivado nunca é guardado.\n\n## 4. Endpoints\nMétodo, caminho, corpo esperado, status de sucesso.\n\n## 5. Regras\nNumeradas: R1, R2, R3… Uma regra por linha de decisão, cada uma com o número, o limite\nou o valor exato que foi decidido, e o status HTTP de recusa quando houver.\n\nToda regra precisa ser observável de fora. \"O sistema deve ser rápido\" não é regra.\n\"Devolver depois da data prevista cobra 1,50 por dia inteiro de atraso, teto de 30\" é.\n\nQuando duas regras podem recusar a mesma operação, diga qual vale primeiro.\n\n## 6. Critérios de aceite\nLista numerada de cenários concretos, cada um apontando a regra que ele prova:\n\n1. (R1, R3) POST /x com dados válidos → 201, campo `y` igual a Z.\n\nRegra sem pelo menos um critério é regra sem prova. Volte e escreva o critério.\n\n## 7. Como isto será verificado\nA costura (interface) usada nos testes e por quê.\n\n## 8. Fatias de entrega\nA ordem de implementação, em fatias verticais. Cada fatia é um conjunto pequeno de\nregras que já dá para rodar e verificar sozinho.\n```\n\n## Depois de escrever\n\nMostre ao usuário a lista das regras numeradas — só os números e uma linha cada — e\npergunte se falta alguma. É a última chance de corrigir barato.\n\nBase directory for this skill: /Users/yasmindesouza/TrabalhoIA-WomanInTech/.opencode/skills/to-spec\nRelative paths in this skill (e.g., scripts/, reference/) are relative to this base directory.\nNote: file list is sampled.\n\n<skill_files>\n\n</skill_files>\n</skill_content>",
+      "metadata": {
+       "name": "to-spec",
+       "dir": "/Users/yasmindesouza/TrabalhoIA-WomanInTech/.opencode/skills/to-spec",
+       "truncated": false
+      },
+      "title": "Loaded skill: to-spec",
+      "time": {
+       "start": 1790045128690,
+       "end": 1790045128720
+      }
+     },
+     "metadata": {
+      "openai": {
+       "itemId": "fc_0e3674eb884fb5b4016ab1ebc88a2087d2bc76dabddcb583e8"
+      }
+     },
+     "id": "prt_0c7010723001JGZ8OM5GQyMlaI",
+     "sessionID": "ses_f38ff03c4ffeSgCXrMAJBQYekK",
+     "messageID": "msg_0c700fc62001sWDa96iBPYbzDX"
+    },
+    {
+     "reason": "tool-calls",
+     "snapshot": "f77b6fd5ba66c23f5be5f248324d55111f4da7df",
+     "type": "step-finish",
+     "tokens": {
+      "total": 9941,
+      "input": 9886,
+      "output": 55,
+      "reasoning": 0,
+      "cache": {
+       "write": 0,
+       "read": 0
+      }
+     },
+     "cost": 0,
+     "id": "prt_0c701085a001HqWef4SWhsXm8c",
+     "sessionID": "ses_f38ff03c4ffeSgCXrMAJBQYekK",
+     "messageID": "msg_0c700fc62001sWDa96iBPYbzDX"
+    }
+   ]
+  },
+  {
+   "info": {
+    "parentID": "msg_0c700fc50001zBchIzRDxpTrVx",
+    "role": "assistant",
+    "mode": "build",
+    "agent": "build",
+    "path": {
+     "cwd": "/Users/yasmindesouza/TrabalhoIA-WomanInTech",
+     "root": "/Users/yasmindesouza/TrabalhoIA-WomanInTech"
+    },
+    "cost": 0,
+    "tokens": {
+     "total": 10785,
+     "input": 939,
+     "output": 118,
+     "reasoning": 0,
+     "cache": {
+      "write": 0,
+      "read": 9728
+     }
+    },
+    "modelID": "gpt-5.5-fast",
+    "providerID": "openai",
+    "time": {
+     "created": 1790045128850,
+     "completed": 1790045131641
+    },
+    "finish": "tool-calls",
+    "id": "msg_0c7010892001AyUL5mhzjvWE34",
+    "sessionID": "ses_f38ff03c4ffeSgCXrMAJBQYekK"
+   },
+   "parts": [
+    {
+     "snapshot": "f77b6fd5ba66c23f5be5f248324d55111f4da7df",
+     "type": "step-start",
+     "id": "prt_0c7010dcf0016C3liaqHJLJf50",
+     "sessionID": "ses_f38ff03c4ffeSgCXrMAJBQYekK",
+     "messageID": "msg_0c7010892001AyUL5mhzjvWE34"
+    },
+    {
+     "type": "tool",
+     "tool": "todowrite",
+     "callID": "call_oaUVgabbmOZWJemoz85bD5zO",
+     "state": {
+      "status": "completed",
+      "input": {
+       "todos": [
+        {
+         "content": "Ler fontes do M1 e convenções relevantes",
+         "status": "in_progress",
+         "priority": "high"
+        },
+        {
+         "content": "Criar specs/M1-grade-atividades.md com regras rastreáveis",
+         "status": "pending",
+         "priority": "high"
+        },
+        {
+         "content": "Revisar spec contra entrevista e contrato-api.md",
+         "status": "pending",
+         "priority": "high"
+        },
+        {
+         "content": "Reportar caminho, contagens, dependências, divergências e prontidão para TDD",
+         "status": "pending",
+         "priority": "medium"
+        }
+       ]
+      },
+      "output": "[\n  {\n    \"content\": \"Ler fontes do M1 e convenções relevantes\",\n    \"status\": \"in_progress\",\n    \"priority\": \"high\"\n  },\n  {\n    \"content\": \"Criar specs/M1-grade-atividades.md com regras rastreáveis\",\n    \"status\": \"pending\",\n    \"priority\": \"high\"\n  },\n  {\n    \"content\": \"Revisar spec contra entrevista e contrato-api.md\",\n    \"status\": \"pending\",\n    \"priority\": \"high\"\n  },\n  {\n    \"content\": \"Reportar caminho, contagens, dependências, divergências e prontidão para TDD\",\n    \"status\": \"pending\",\n    \"priority\": \"medium\"\n  }\n]",
+      "metadata": {
+       "todos": [
+        {
+         "content": "Ler fontes do M1 e convenções relevantes",
+         "status": "in_progress",
+         "priority": "high"
+        },
+        {
+         "content": "Criar specs/M1-grade-atividades.md com regras rastreáveis",
+         "status": "pending",
+         "priority": "high"
+        },
+        {
+         "content": "Revisar spec contra entrevista e contrato-api.md",
+         "status": "pending",
+         "priority": "high"
+        },
+        {
+         "content": "Reportar caminho, contagens, dependências, divergências e prontidão para TDD",
+         "status": "pending",
+         "priority": "medium"
+        }
+       ],
+       "truncated": false
+      },
+      "title": "4 todos",
+      "time": {
+       "start": 1790045131481,
+       "end": 1790045131483
+      }
+     },
+     "metadata": {
+      "openai": {
+       "itemId": "fc_0f679e5bdd19bb00016ab1ebca318c87d293a8b09c83c11ad1"
+      }
+     },
+     "id": "prt_0c7010dd1001nQK7qWel9wSkyR",
+     "sessionID": "ses_f38ff03c4ffeSgCXrMAJBQYekK",
+     "messageID": "msg_0c7010892001AyUL5mhzjvWE34"
+    },
+    {
+     "reason": "tool-calls",
+     "snapshot": "f77b6fd5ba66c23f5be5f248324d55111f4da7df",
+     "type": "step-finish",
+     "tokens": {
+      "total": 10785,
+      "input": 939,
+      "output": 118,
+      "reasoning": 0,
+      "cache": {
+       "write": 0,
+       "read": 9728
+      }
+     },
+     "cost": 0,
+     "id": "prt_0c7011343001IcOBfxR6eENr00",
+     "sessionID": "ses_f38ff03c4ffeSgCXrMAJBQYekK",
+     "messageID": "msg_0c7010892001AyUL5mhzjvWE34"
+    }
+   ]
+  },
+  {
+   "info": {
+    "parentID": "msg_0c700fc50001zBchIzRDxpTrVx",
+    "role": "assistant",
+    "mode": "build",
+    "agent": "build",
+    "path": {
+     "cwd": "/Users/yasmindesouza/TrabalhoIA-WomanInTech",
+     "root": "/Users/yasmindesouza/TrabalhoIA-WomanInTech"
+    },
+    "cost": 0,
+    "tokens": {
+     "total": 11176,
+     "input": 1222,
+     "output": 226,
+     "reasoning": 0,
+     "cache": {
+      "write": 0,
+      "read": 9728
+     }
+    },
+    "modelID": "gpt-5.5-fast",
+    "providerID": "openai",
+    "time": {
+     "created": 1790045131644,
+     "completed": 1790045136087
+    },
+    "finish": "tool-calls",
+    "id": "msg_0c701137c001TL3rymYOyVgw1U",
+    "sessionID": "ses_f38ff03c4ffeSgCXrMAJBQYekK"
+   },
+   "parts": [
+    {
+     "snapshot": "f77b6fd5ba66c23f5be5f248324d55111f4da7df",
+     "type": "step-start",
+     "id": "prt_0c701240a001Yn3KNXAo8D3ilt",
+     "sessionID": "ses_f38ff03c4ffeSgCXrMAJBQYekK",
+     "messageID": "msg_0c701137c001TL3rymYOyVgw1U"
+    },
+    {
+     "type": "tool",
+     "tool": "read",
+     "callID": "call_5J7PACmKEbYNBR58oTAumQbx",
+     "state": {
+      "status": "completed",
+      "input": {
+       "filePath": "/Users/yasmindesouza/TrabalhoIA-WomanInTech/entrevistas/M1-grade-atividades.md",
+       "limit": 2000
+      },
+      "output": "[37472 caracteres omitidos]",
+      "title": "entrevistas/M1-grade-atividades.md",
+      "time": {
+       "start": 1790045135925,
+       "end": 1790045135961
+      }
+     },
+     "metadata": {
+      "openai": {
+       "itemId": "fc_0c9d07b997b9332a016ab1ebcfee0087d29fac4739f11a139f"
+      }
+     },
+     "id": "prt_0c7012410001n0DAxQUBXPvG3g",
+     "sessionID": "ses_f38ff03c4ffeSgCXrMAJBQYekK",
+     "messageID": "msg_0c701137c001TL3rymYOyVgw1U"
+    },
+    {
+     "type": "tool",
+     "tool": "read",
+     "callID": "call_eDSMjwA1Ueo4iIydBBadUeg0",
+     "state": {
+      "status": "completed",
+      "input": {
+       "filePath": "/Users/yasmindesouza/TrabalhoIA-WomanInTech/contrato-api.md",
+       "limit": 2000
+      },
+      "output": "[13890 caracteres omitidos]",
+      "title": "contrato-api.md",
+      "time": {
+       "start": 1790045135930,
+       "end": 1790045135951
+      }
+     },
+     "metadata": {
+      "openai": {
+       "itemId": "fc_0c9d07b997b9332a016ab1ebcfee1087d2ba7e82d16137e2e4"
+      }
+     },
+     "id": "prt_0c7012437001ISeHq3szCgK6Md",
+     "sessionID": "ses_f38ff03c4ffeSgCXrMAJBQYekK",
+     "messageID": "msg_0c701137c001TL3rymYOyVgw1U"
+    },
+    {
+     "type": "tool",
+     "tool": "read",
+     "callID": "call_nCkIkbrx8Dp5MAOzyd7Q0WEn",
+     "state": {
+      "status": "completed",
+      "input": {
+       "filePath": "/Users/yasmindesouza/TrabalhoIA-WomanInTech/AGENTS.md",
+       "limit": 1000
+      },
+      "output": "[820 caracteres omitidos]",
+      "title": "AGENTS.md",
+      "time": {
+       "start": 1790045135934,
+       "end": 1790045135949
+      }
+     },
+     "metadata": {
+      "openai": {
+       "itemId": "fc_0c9d07b997b9332a016ab1ebcfee1487d2b00c364a423bf93c"
+      }
+     },
+     "id": "prt_0c701243c001QH13WC4yGsNsCg",
+     "sessionID": "ses_f38ff03c4ffeSgCXrMAJBQYekK",
+     "messageID": "msg_0c701137c001TL3rymYOyVgw1U"
+    },
+    {
+     "type": "tool",
+     "tool": "read",
+     "callID": "call_7mm1cYeFfd5kBuNntihR6oc0",
+     "state": {
+      "status": "completed",
+      "input": {
+       "filePath": "/Users/yasmindesouza/TrabalhoIA-WomanInTech/api/AGENTS.md",
+       "limit": 1000
+      },
+      "output": "[823 caracteres omitidos]",
+      "title": "api/AGENTS.md",
+      "time": {
+       "start": 1790045135937,
+       "end": 1790045135953
+      }
+     },
+     "metadata": {
+      "openai": {
+       "itemId": "fc_0c9d07b997b9332a016ab1ebcfee1c87d283235608a2193d2a"
+      }
+     },
+     "id": "prt_0c701243f0016AZQSJfld2s721",
+     "sessionID": "ses_f38ff03c4ffeSgCXrMAJBQYekK",
+     "messageID": "msg_0c701137c001TL3rymYOyVgw1U"
+    },
+    {
+     "type": "tool",
+     "tool": "read",
+     "callID": "call_sqhBjHYt6oxbn6S6UV2EJyEb",
+     "state": {
+      "status": "completed",
+      "input": {
+       "filePath": "/Users/yasmindesouza/TrabalhoIA-WomanInTech/.opencode/skills/to-spec/SKILL.md",
+       "limit": 1000
+      },
+      "output": "[3041 caracteres omitidos]",
+      "title": ".opencode/skills/to-spec/SKILL.md",
+      "time": {
+       "start": 1790045135940,
+       "end": 1790045135966
+      }
+     },
+     "metadata": {
+      "openai": {
+       "itemId": "fc_0c9d07b997b9332a016ab1ebcfee2087d2983dade02709e7a8"
+      }
+     },
+     "id": "prt_0c7012442001qtbnS5ISN9T3wo",
+     "sessionID": "ses_f38ff03c4ffeSgCXrMAJBQYekK",
+     "messageID": "msg_0c701137c001TL3rymYOyVgw1U"
+    },
+    {
+     "reason": "tool-calls",
+     "snapshot": "f77b6fd5ba66c23f5be5f248324d55111f4da7df",
+     "type": "step-finish",
+     "tokens": {
+      "total": 11176,
+      "input": 1222,
+      "output": 226,
+      "reasoning": 0,
+      "cache": {
+       "write": 0,
+       "read": 9728
+      }
+     },
+     "cost": 0,
+     "id": "prt_0c70124a6001kEstTOH95ddSgv",
+     "sessionID": "ses_f38ff03c4ffeSgCXrMAJBQYekK",
+     "messageID": "msg_0c701137c001TL3rymYOyVgw1U"
+    }
+   ]
+  },
+  {
+   "info": {
+    "parentID": "msg_0c700fc50001zBchIzRDxpTrVx",
+    "role": "assistant",
+    "mode": "build",
+    "agent": "build",
+    "path": {
+     "cwd": "/Users/yasmindesouza/TrabalhoIA-WomanInTech",
+     "root": "/Users/yasmindesouza/TrabalhoIA-WomanInTech"
+    },
+    "cost": 0,
+    "tokens": {
+     "total": 27655,
+     "input": 16735,
+     "output": 153,
+     "reasoning": 15,
+     "cache": {
+      "write": 0,
+      "read": 10752
+     }
+    },
+    "modelID": "gpt-5.5-fast",
+    "providerID": "openai",
+    "time": {
+     "created": 1790045136090,
+     "completed": 1790045139776
+    },
+    "finish": "tool-calls",
+    "id": "msg_0c70124da001rsNPUffK3U2xap",
+    "sessionID": "ses_f38ff03c4ffeSgCXrMAJBQYekK"
+   },
+   "parts": [
+    {
+     "snapshot": "f77b6fd5ba66c23f5be5f248324d55111f4da7df",
+     "type": "step-start",
+     "id": "prt_0c7012a9c001ZsfjraOcP05PXy",
+     "sessionID": "ses_f38ff03c4ffeSgCXrMAJBQYekK",
+     "messageID": "msg_0c70124da001rsNPUffK3U2xap"
+    },
+    {
+     "type": "reasoning",
+     "text": "**Planning to inspect specs directory**",
+     "time": {
+      "start": 1790045137571,
+      "end": 1790045138055
+     },
+     "metadata": {
+      "openai": {
+       "itemId": "rs_02bd706d0723c5ee016ab1ebd18e2087d2afeb19392190f9bc",
+       "reasoningEncryptedContent": "gAAAAABqsevSqd2a7WBZvT7WRpXUy58Ym4G8uAggaJkOtmFYEO7r1cD_W-mmvmbneT8oUlrVpziw3-fUz6VTzlKGNIlJvv9xZXjqWFLt6sFbrFLwJPfALSlxsiHNfK4ZIorBxN-JetSV9e4vOfsExDKRelscd2pOssmWGANoBKCaLMn4oStJKLLqfk66kP7bnxtQPeHnThgexmT04atKfOaOVW163WJZgk_7SO6XGF1dMo0erbw69Yfd_ERqyMqpi1ne9OOQsK9MwM2xaJme22lhxFrDLs_nPM5xmkgji4_y11ooVRxwvNcu9u8NXnodKmlkC2Q7EAyVLRH3r__x1JJdbC7lSWPQ_mIBpF9Iwo81c-SlL5NwcVrTL5WtXh7GpK3BTd7_kFnXebbHYHdJTKzHNOlNnpxCM08hF5uv5qgplgBuwJ3GKXjM9EeLNz_lTXsRx5h7oTVaRMmwNMfZ4AL5lAo2PcRsVd4EN7xoVH39vWWsUsE6vh6hBRy6kSagH7IPnJZzSmHjdmn1iD9eITZF_fcDFjX95B4HyFtZGEOAPga5tosqtaZIVdUvqaUdbnJQE0b035NP2tHzpn073liPwC8PqnNlj95qzMPyi_5J5i8It8YugcYJJqX2YvPLOeBJAYtOVjzu4XKYmx8LVcveFJEqZ6JgPE9hmRQnxnQknWZuqdCdwXgDGxrLzEarQyMQcwLcvNbXRk6dFV2M5PnuzbCuHA5yh2YfOOf-BOvjeCx5Mm8nkuWlaNV7CM0_OPkLgPIMp1GEj2xxdjltB_8KUqgYuAePM7LRwPd9A7TvCgIVfE9brgzxWFs9zFbr0qqfgliwYHiBh-n_NTp3yzxn_BA4IhxGNAcEt6gpn0hmmhXZOs1QCPwT_8Uuut-bXHePjTC6tFjYeYSm1o8SjPvqHCusyX7kAsOHhnPvoQFEyzrZfSvxwuQEfZGQ8tn3BuUHRtrCyWh3Ai-2u8G6FvFfCoh5iwViNWgFDDpexcJa_hNVTa6t2WAwZjMu0YegS2gFXjmDHfLmyL46IQCP6RN00QJjbR8kQgVFBBqLLdzj8YFqQFfP9CUwzsKoQPHw_vqMFEvNpGt8lTTfZxJunaYScGxk-FNFVXNPNGOq9k2UWnzAKc8_qmO9rVdbsJZCtFigwQDkQjfVUA1m10cRf1BY3-m-mU53cFMNSf_HunTwvTGPmO5ODjW9bkyJuP2-JJsLC0aN-jwvLkFpFuNckzRmWMqnm0Alk8IWiBU6bhNqlUtYb_aYx7dtNJ1VxJoWbA1tdcbB6HuD4KKWo75mnfor3jNpo249qn_aL-bkzMFynHHSjZMB8ULBlGiDz7D3r_FAZs69DtoK"
+      }
+     },
+     "id": "prt_0c7012aa3001rRP4Sku3MAIOyN",
+     "sessionID": "ses_f38ff03c4ffeSgCXrMAJBQYekK",
+     "messageID": "msg_0c70124da001rsNPUffK3U2xap"
+    },
+    {
+     "type": "text",
+     "text": "As fontes confirmam que a spec deve restringir o M1 ao contrato HTTP e preservar várias lacunas como “não especificadas”, sem inferir comportamento. Vou criar o arquivo em `specs/` com regras numeradas e rastreabilidade por pergunta.",
+     "time": {
+      "start": 1790045138057,
+      "end": 1790045139602
+     },
+     "metadata": {
+      "openai": {
+       "itemId": "msg_02bd706d0723c5ee016ab1ebd20fa887d2ab7825a81952d4ae",
+       "phase": "commentary"
+      }
+     },
+     "id": "prt_0c7012c89001WRx2eHh8BBptwX",
+     "sessionID": "ses_f38ff03c4ffeSgCXrMAJBQYekK",
+     "messageID": "msg_0c70124da001rsNPUffK3U2xap"
+    },
+    {
+     "type": "tool",
+     "tool": "read",
+     "callID": "call_VuttSGmwzn8UuMjYD9lOJE2y",
+     "state": {
+      "status": "completed",
+      "input": {
+       "filePath": "/Users/yasmindesouza/TrabalhoIA-WomanInTech/specs",
+       "limit": 1000
+      },
+      "output": "[128 caracteres omitidos]",
+      "title": "specs",
+      "time": {
+       "start": 1790045139617,
+       "end": 1790045139629
+      }
+     },
+     "metadata": {
+      "openai": {
+       "itemId": "fc_02bd706d0723c5ee016ab1ebd394b087d2a02835f1b11decb0"
+      }
+     },
+     "id": "prt_0c7013295001FdrTByYpl0lYqM",
+     "sessionID": "ses_f38ff03c4ffeSgCXrMAJBQYekK",
+     "messageID": "msg_0c70124da001rsNPUffK3U2xap"
+    },
+    {
+     "type": "tool",
+     "tool": "glob",
+     "callID": "call_PjuNVXz2cIbNltdpto4QDyAE",
+     "state": {
+      "status": "completed",
+      "input": {
+       "pattern": "specs/*.md",
+       "path": "/Users/yasmindesouza/TrabalhoIA-WomanInTech"
+      },
+      "output": "[14 caracteres omitidos]",
+      "title": "",
+      "time": {
+       "start": 1790045139623,
+       "end": 1790045139643
+      }
+     },
+     "metadata": {
+      "openai": {
+       "itemId": "fc_02bd706d0723c5ee016ab1ebd394c487d29c527d213834a62e"
+      }
+     },
+     "id": "prt_0c70132a3001JjhW3KVQ9H5SM6",
+     "sessionID": "ses_f38ff03c4ffeSgCXrMAJBQYekK",
+     "messageID": "msg_0c70124da001rsNPUffK3U2xap"
+    },
+    {
+     "reason": "tool-calls",
+     "snapshot": "f77b6fd5ba66c23f5be5f248324d55111f4da7df",
+     "type": "step-finish",
+     "tokens": {
+      "total": 27655,
+      "input": 16735,
+      "output": 153,
+      "reasoning": 15,
+      "cache": {
+       "write": 0,
+       "read": 10752
+      }
+     },
+     "cost": 0,
+     "id": "prt_0c7013310001QvaPxEMOhHPWK4",
+     "sessionID": "ses_f38ff03c4ffeSgCXrMAJBQYekK",
+     "messageID": "msg_0c70124da001rsNPUffK3U2xap"
+    }
+   ]
+  },
+  {
+   "info": {
+    "parentID": "msg_0c700fc50001zBchIzRDxpTrVx",
+    "role": "assistant",
+    "mode": "build",
+    "agent": "build",
+    "path": {
+     "cwd": "/Users/yasmindesouza/TrabalhoIA-WomanInTech",
+     "root": "/Users/yasmindesouza/TrabalhoIA-WomanInTech"
+    },
+    "cost": 0,
+    "tokens": {
+     "total": 35169,
+     "input": 583,
+     "output": 7397,
+     "reasoning": 53,
+     "cache": {
+      "write": 0,
+      "read": 27136
+     }
+    },
+    "modelID": "gpt-5.5-fast",
+    "providerID": "openai",
+    "time": {
+     "created": 1790045139779,
+     "completed": 1790045231824
+    },
+    "finish": "tool-calls",
+    "id": "msg_0c7013343001fl35iAUU1eeRCQ",
+    "sessionID": "ses_f38ff03c4ffeSgCXrMAJBQYekK"
+   },
+   "parts": [
+    {
+     "snapshot": "f77b6fd5ba66c23f5be5f248324d55111f4da7df",
+     "type": "step-start",
+     "id": "prt_0c7013bd80015WmMze2wIu7Am8",
+     "sessionID": "ses_f38ff03c4ffeSgCXrMAJBQYekK",
+     "messageID": "msg_0c7013343001fl35iAUU1eeRCQ"
+    },
+    {
+     "type": "reasoning",
+     "text": "**Planning rule count and criteria inclusion**",
+     "time": {
+      "start": 1790045141979,
+      "end": 1790045143012
+     },
+     "metadata": {
+      "openai": {
+       "itemId": "rs_006eb890efe1cb9a016ab1ebd6107087d28bbb230272c9af3f",
+       "reasoningEncryptedContent": "gAAAAABqsevWN3cWejItHg5tta8sry8GAMKrIsrRkC8JO5oFptTYE2ZFgRduICsobcb_Mlia8-TXBn__TG5ehkTo_9qM806B3ydTcHJyEm11luGbfncnM8SspwTRAdxE7QZFJ0FxAyQ4shyMuCMsNh3YLFNVfMgs33ccA84ggj9N9WS_fVi-Q_CHWFQ0hX3j3egYlu8Nx2hjPSPTY3kiCuxus2bWQCALKRP7cFTpCZ71OjXFVlBJJfCF1jUWRtTqkH3xliUUlSgD1s0aKlXhMpQ17lOzV-dGqDz5wy2qT6o8vVtWszBWBSh0cegnF9ik1Za0z7HmQ6DW0bj4dkLSYuYiEaeRATGYlScmJ_pmWWdVXm_TKqtGw61ofh3zb_-yAqXdyKtwjcLXFbnPP-1VwEHDA2Vn8Xo8nh1M7Q4OH01jhDDrHG_NVPStiiaE-XX1QRBUzhCvszGazFASnXdrHI9ALvvqA_Ghd8g80tqjWsYMRHICX4e8Q8YXiO2G0dZjEjXHLJ6KTVz5GE9IXrLW9xHLv1pcW6CS8NNWgFEdpUkcrJY2FRAhd5CeYDyN0L4rtsS5NDD4iJ_wGFrUYCoUn8aw5RIFKVcmCmohezq3I4Db2tQe5dU5_Cn8GNx0FKY8Rq49CngUlX6iynKdj5YW_5cRpZVzzW8JHZjfWaQzSY3qIMRcBpEu60YjwUXC2UkfHMKyf0qAifwPWOexkuVVSdw4zPHS5cZiPNwfMihTwc9NEY5HZdaD02jhgew7Nmxd2Kr3BlX-F08L0KzMFvQeuau_xxUD3Ci_TvzW2sTMk5l1sTn1G6kefmamkv2k9SYaiHQytwyKSLx81izDj9QQWPAn7KMk4F_SI8BBlrrOF1FvqzfBI4T-5dR4ex7-KJYaJoxSNiH3aPpjzvxAazTobfI8LT57diKMlN1ahh77GMX5_0aG4NOJR1uurOcnOU5YZKenmlrAeaxxuUQTfePB2Qkg9PfkgJC4xASkSg2gtbonguHtak_2n9WMZ97ddV6zv7GiDUeGpeP8aGuW3ksQVkyI_zgLepDFQVMR2DDJsrwxcz32kpUcnWoUiX9xtizdJFMuDQJ9n4Vz58xogc_3H6YmoxqKZeb4w5DqX1STDGGDrDCsyNPUb0wUDrfxM_LblxVQmwzLKEp9PNFEFZZM6AWIfHtIBvsNKMLDBjL16QSTQDoVpxdYyZS9Zo4_3V-iFflX7KDx3s6DSySrOD1u3GXZgx3_jQFaZbetUXjogmb7fst-kDvpeh3WKhtGAhFF2SyY3xRqahghw9ggbb4Mlw32-aes9uGWzyHGTVnQOYi_MOtFz8rWKxrV1SVkmLafLN0PbtQGptlhX4i_kWN4EYSridWhgu4eCZsJFZN4GQIkvkNwuDECHdEDBxwYMi6nBkIc9eD2SAqyh85iwWOgmcJnyndrEqtu7fPWu4cTR5GeSIYo03D3QB4Ldo3JKo-w3xZhAOdNJJrmh5Ptgh8jxF0DaIjHMEYOPpHww7ANg62gy6J-D8agriQvsmhLSIRclBmOSfo3xL5x0G6-fiYPbAoB_SSA3ZqpEbZO8Zg4Ubrlx1wwF4PkB0JiF9QxoiIXWtcIHf6NuJBG"
+      }
+     },
+     "id": "prt_0c7013bdb001NZRSPoQy73K5AE",
+     "sessionID": "ses_f38ff03c4ffeSgCXrMAJBQYekK",
+     "messageID": "msg_0c7013343001fl35iAUU1eeRCQ"
+    },
+    {
+     "type": "text",
+     "text": "Vou escrever a spec agora. Para manter a rastreabilidade auditável, cada regra terá `Origem` explícita e os pontos sem decisão ficarão concentrados em seção própria, sem virar comportamento obrigatório.",
+     "time": {
+      "start": 1790045143039,
+      "end": 1790045143372
+     },
+     "metadata": {
+      "openai": {
+       "itemId": "msg_006eb890efe1cb9a016ab1ebd6fe3087d2bbbd900a076f29d1",
+       "phase": "commentary"
+      }
+     },
+     "id": "prt_0c7013fff0013nU7qeF6RZCRQ2",
+     "sessionID": "ses_f38ff03c4ffeSgCXrMAJBQYekK",
+     "messageID": "msg_0c7013343001fl35iAUU1eeRCQ"
+    },
+    {
+     "type": "tool",
+     "tool": "apply_patch",
+     "callID": "call_iLP5dELFVHISRaBV9R2eIoqq",
+     "state": {
+      "status": "completed",
+      "input": {
+       "patchText": "*** Begin Patch\n*** Add File: specs/M1-grade-atividades.md\n+# Spec — M1 Grade de Atividades\n+\n+## 1. Objetivo\n+\n+O M1 permite que a organizacao organize e mantenha a grade de atividades da Semana Academica 2026 e permite que participantes consultem atividades, salas, horarios, vagas exibidas, carga horaria e situacao das atividades.\n+\n+Regras:\n+\n+- R01. O M1 cobre grade de atividades, salas, encontros, vagas exibidas, consulta e cancelamento de atividade. Origem: P-01 / P-02.\n+- R02. O sistema inicia sem atividades cadastradas; os dados iniciais relevantes ao M1 sao os usuarios e salas definidos no contrato da API. Origem: P-04.\n+\n+## 2. Escopo\n+\n+O M1 inclui as rotas HTTP do contrato para salas e atividades:\n+\n+- `GET /salas`, para consulta das salas iniciais.\n+- `GET /atividades`, para listagem de atividades.\n+- `GET /atividades/:id`, para consulta de atividade por id.\n+- `POST /atividades`, para criacao de atividade pela organizacao.\n+- `PATCH /atividades/:id`, para edicao parcial de atividade pela organizacao.\n+- `POST /atividades/:id/cancelamento`, para cancelamento de atividade pela organizacao.\n+\n+Regras:\n+\n+- R03. `GET /salas`, `GET /atividades` e `GET /atividades/:id` podem ser usados por todos os usuarios identificados. Origem: contrato-api.md, rotas M1.\n+- R04. `POST /atividades`, `PATCH /atividades/:id` e `POST /atividades/:id/cancelamento` sao operacoes da organizacao. Origem: contrato-api.md, rotas M1.\n+\n+## 3. Fora de escopo\n+\n+- Inscricoes, lista de espera, presenca, certificados, painel da organizacao e bloqueios nao sao implementados pelo M1, exceto pelos pontos em que suas informacoes afetam regras do M1.\n+- O fluxo completo de convocacao automatica da lista de espera ao aumentar vagas pertence ao M2.\n+- A emissao ou bloqueio de certificados de atividade cancelada pertence ao M4.\n+- A obtencao de codigo de presenca de atividade cancelada pertence ao modulo de presenca.\n+- A atualizacao de inscricoes ativas ao cancelar atividade pertence ao M2, embora o M1 exponha a atividade como `cancelada` e impeça nova edicao/cancelamento dela.\n+\n+Regras:\n+\n+- R05. O M1 nao define o fluxo completo de inscricao, presenca, certificado ou painel; esses modulos devem consumir a atividade e sua situacao conforme contrato. Origem: P-02 / R2-P24.\n+\n+## 4. Atores e permissoes\n+\n+Regras:\n+\n+- R06. Toda rota identificada do M1 exige `X-Usuario`; sem cabecalho ou com id inexistente, a API responde `401 USUARIO_DESCONHECIDO` antes das regras do recurso. Origem: contrato-api.md, convencoes.\n+- R07. Operacoes de organizacao do M1 recusam usuario participante com `403 SOMENTE_ORGANIZACAO` antes das regras do recurso. Origem: contrato-api.md, convencoes e rotas M1.\n+- R08. Recurso inexistente em `GET /atividades/:id`, `PATCH /atividades/:id` ou `POST /atividades/:id/cancelamento` gera `404 NAO_ENCONTRADO` antes das regras do recurso. Origem: contrato-api.md, convencoes.\n+- R09. Corpo que nao e JSON, campo obrigatorio ausente ou campo de tipo errado gera `422 DADOS_INVALIDOS` antes das regras do recurso. Origem: contrato-api.md, convencoes.\n+\n+## 5. Modelo da atividade\n+\n+Campos da entidade `Atividade`:\n+\n+- `id`: gerado pela API, prefixo `atv_` seguido de 8 hexadecimais minusculos.\n+- `titulo`: informado pela organizacao.\n+- `tipo`: informado pela organizacao; valores validos no M1 sao `palestra` e `minicurso`.\n+- `salaId`: informado pela organizacao, referencia uma sala existente.\n+- `vagas`: informado pela organizacao e editavel conforme regras de vagas.\n+- `encontros`: informado pela organizacao na criacao, retornado em ordem de inicio; cada encontro recebe `id` gerado com prefixo `enc_` seguido de 8 hexadecimais minusculos.\n+- `cargaHorariaMinutos`: calculado pela API.\n+- `situacao`: calculado pela API, exceto pela persistencia do cancelamento.\n+- `ocupadas`: calculado a partir de inscricoes que ocupam vaga.\n+- `vagasRestantes`: calculado a partir de `vagas` e `ocupadas`.\n+- `emEspera`: calculado a partir da lista de espera.\n+\n+Regras:\n+\n+- R10. Os tipos de atividade do M1 sao somente `palestra` e `minicurso`. Origem: P-03 / R2-P01.\n+- R11. A diferenca de regra entre `palestra` e `minicurso` no M1 e apenas a quantidade de encontros; duracao, vagas e sala seguem regras comuns. Origem: R2-P01.\n+- R12. `Atividade.encontros` deve ser retornado em ordem de inicio. Origem: contrato-api.md, modelo de Atividade.\n+\n+## 6. Regras de criacao\n+\n+Regras:\n+\n+- R13. `POST /atividades` com dados validos cria atividade e retorna `201 Atividade`. Origem: contrato-api.md, rotas M1.\n+- R14. `palestra` deve ter exatamente 1 encontro; caso contrario, a criacao retorna `422 QUANTIDADE_DE_ENCONTROS`. Origem: P-05 / R2-P02 / R2-P38.\n+- R15. `minicurso` deve ter de 2 a 5 encontros; caso contrario, a criacao retorna `422 QUANTIDADE_DE_ENCONTROS`. Origem: P-05 / R2-P02 / R2-P38.\n+- R16. Uma atividade deve ocorrer dentro do periodo do evento, de 19/10/2026 a 23/10/2026, considerando horario de Brasilia; encontro fora desse periodo gera `422 ENCONTRO_INVALIDO`. Origem: P-07 / R2-P05 / R2-P37.\n+- R17. A ordem interna de precedencia entre erros especificos de criacao do M1 nao esta especificada; a spec nao exige prioridade entre `QUANTIDADE_DE_ENCONTROS`, `ENCONTRO_INVALIDO`, `VAGAS_ACIMA_DA_CAPACIDADE` e `CONFLITO_DE_SALA`. Origem: P-31 / R2-P35.\n+\n+## 7. Regras dos encontros\n+\n+Regras:\n+\n+- R18. Cada encontro deve durar no minimo 1 hora e no maximo 4 horas; duracao fora desse intervalo gera `422 ENCONTRO_INVALIDO`. Origem: P-06 / R2-P03 / R2-P37.\n+- R19. Cada encontro deve comecar e terminar no mesmo dia; encontro que atravessa meia-noite ou muda de dia gera `422 ENCONTRO_INVALIDO`. Origem: R2-P37 / R2-P40.\n+- R20. Encontros da mesma atividade nao podem se sobrepor; sobreposicao interna gera `422 ENCONTRO_INVALIDO`. Origem: R2-P37.\n+\n+## 8. Regras de sala/conflito\n+\n+Regras:\n+\n+- R21. Existe conflito quando dois encontros de atividades nao canceladas usam a mesma sala em horarios sobrepostos; a criacao retorna `409 CONFLITO_DE_SALA`. Origem: P-10 / R2-P09.\n+- R22. Alem de nao haver sobreposicao, deve existir intervalo minimo de 15 minutos entre o fim de um encontro e o inicio do proximo encontro na mesma sala; se o intervalo for menor, a criacao retorna `409 CONFLITO_DE_SALA`. Origem: P-11 / R2-P09 / R2-P10.\n+- R23. Na mesma sala, intervalo de 14 minutos entre encontros ainda conflita e intervalo de 15 minutos e permitido. Origem: R2-P12 / R2-P40.\n+- R24. Na mesma sala, `fim == inicio` entre encontros de atividades diferentes e conflito, pois nao cumpre intervalo minimo de 15 minutos. Origem: R2-P12.\n+- R25. Encontros de atividades canceladas nao contam para conflito de sala. Origem: P-12 / R2-P11.\n+\n+## 9. Regras de vagas\n+\n+Regras:\n+\n+- R26. `vagas` deve ser no minimo 1 e no maximo igual a capacidade da sala da atividade. Origem: P-13 / P-14 / R2-P08 / R2-P13.\n+- R27. `vagas` acima da capacidade da sala gera `422 VAGAS_ACIMA_DA_CAPACIDADE` na criacao ou edicao. Origem: R2-P08 / contrato-api.md, codigos de retorno.\n+- R28. Reduzir `vagas` para valor menor que a quantidade de inscricoes que ocupam vaga gera `409 VAGAS_ABAIXO_DOS_INSCRITOS`. Origem: P-15 / R2-P14.\n+- R29. Inscricoes `confirmadas` e `convocadas` contam como ocupando vaga para impedir reducao de vagas. Origem: R2-P16.\n+- R30. Inscricoes `em_espera`, `canceladas` e `expiradas` nao contam como ocupando vaga para impedir reducao de vagas. Origem: R2-P16.\n+- R31. Aumentar `vagas` e permitido quando respeita as demais regras do M1; eventual convocacao automatica da lista de espera e dependencia do M2. Origem: R2-P15.\n+\n+## 10. Carga horaria\n+\n+Regras:\n+\n+- R32. `cargaHorariaMinutos` e calculada pela soma das duracoes de todos os encontros, em minutos. Origem: P-06 / R2-P04.\n+- R33. Se `cargaHorariaMinutos` for enviado na criacao ou edicao, o valor enviado e ignorado; a resposta deve retornar o valor calculado. Origem: R2-P04.\n+\n+## 11. Regras de edicao\n+\n+Regras:\n+\n+- R34. `PATCH /atividades/:id` com alteracao valida retorna `200 Atividade`. Origem: contrato-api.md, rotas M1.\n+- R35. Apenas `titulo` e `vagas` podem ser alterados depois da criacao. Origem: P-16 / R2-P17.\n+- R36. `salaId`, `tipo` e `encontros` sao imutaveis depois da criacao; tentativa de alteracao retorna `422 CAMPO_NAO_EDITAVEL`. Origem: P-17 / R2-P18.\n+- R37. Atividade cancelada nao pode ser editada; tentativa de edicao retorna `422 ATIVIDADE_CANCELADA`. Origem: R2-P20.\n+- R38. A ordem interna de precedencia entre erros especificos de edicao do M1 nao esta especificada; a spec nao exige prioridade entre `ATIVIDADE_CANCELADA`, `CAMPO_NAO_EDITAVEL`, `VAGAS_ACIMA_DA_CAPACIDADE` e `VAGAS_ABAIXO_DOS_INSCRITOS`. Origem: P-31 / R2-P36.\n+\n+## 12. Cancelamento\n+\n+Regras:\n+\n+- R39. `POST /atividades/:id/cancelamento` antes do inicio da atividade cancela a atividade e retorna `200 Atividade` com `situacao` igual a `cancelada`. Origem: P-18 / R2-P21 / contrato-api.md, rotas M1.\n+- R40. O cancelamento so pode acontecer antes de a atividade comecar; se a atividade ja comecou, retorna `422 ATIVIDADE_JA_INICIADA`. Origem: P-18 / R2-P21.\n+- R41. O cancelamento e definitivo; atividade cancelada nao pode ser reativada. Origem: P-19 / R2-P22.\n+- R42. Cancelar uma atividade ja cancelada retorna `422 ATIVIDADE_CANCELADA`. Origem: P-20 / R2-P23.\n+- R43. A ordem interna de precedencia entre erros especificos de cancelamento do M1 nao esta especificada; a spec nao exige prioridade entre `ATIVIDADE_CANCELADA` e `ATIVIDADE_JA_INICIADA`. Origem: P-31 / R2-P36.\n+\n+## 13. Situacao calculada pelo relogio\n+\n+Regras:\n+\n+- R44. Os estados oficiais de `situacao` sao `prevista`, `em_andamento`, `encerrada` e `cancelada`. Origem: P-22 / R2-P25.\n+- R45. Uma atividade nao cancelada fica `prevista` antes do inicio do primeiro encontro. Origem: P-23 / R2-P26.\n+- R46. Uma atividade nao cancelada fica `em_andamento` a partir do inicio do primeiro encontro. Origem: P-23 / R2-P26.\n+- R47. Uma atividade nao cancelada fica `encerrada` a partir do fim do ultimo encontro. Origem: P-23 / R2-P26.\n+- R48. `cancelada` prevalece sobre todos os estados calculados pelo relogio. Origem: P-22 / P-23 / P-19 / R2-P28.\n+\n+## 14. Consulta e listagem\n+\n+Regras:\n+\n+- R49. `GET /atividades` retorna `200 [Atividade]` ordenado pelo inicio do primeiro encontro. Origem: P-25 / R2-P29.\n+- R50. Em caso de empate no inicio do primeiro encontro, `GET /atividades` ordena pelo `titulo`. Origem: P-25 / R2-P29.\n+- R51. Atividades canceladas aparecem normalmente em `GET /atividades`; nao ha ordenacao especial para canceladas. Origem: P-26 / R2-P30.\n+- R52. `GET /atividades/:id` retorna `200 Atividade` para atividade existente, sem regra especial especificada para atividade cancelada. Origem: contrato-api.md, rotas M1 / R2-P31.\n+\n+## 15. Filtros\n+\n+Regras:\n+\n+- R53. `GET /atividades?dia=AAAA-MM-DD` inclui a atividade quando ela tem pelo menos um encontro naquele dia de Brasilia. Origem: P-27 / R2-P32.\n+- R54. `GET /atividades?tipo=palestra|minicurso` filtra atividades pelo tipo informado. Origem: P-28 / contrato-api.md, rotas M1.\n+- R55. Quando `dia` e `tipo` forem enviados juntos em `GET /atividades`, os dois filtros devem ser aplicados ao mesmo tempo. Origem: P-29 / R2-P32.\n+\n+## 16. Regras temporais e bordas\n+\n+Regras:\n+\n+- R56. Todas as regras temporais do M1 usam o relogio controlado quando `MODO_TESTE=1`. Origem: P-30 / contrato-api.md, modo de teste.\n+- R57. Quando `agora == inicio do primeiro encontro`, a atividade ja esta `em_andamento`. Origem: P-24 / R2-P27 / R2-P40.\n+- R58. Quando `agora == fim do ultimo encontro`, a atividade ja esta `encerrada`. Origem: P-24 / R2-P27 / R2-P40.\n+- R59. As bordas do periodo do evento sao inclusivas para os dias de 19/10/2026 a 23/10/2026, sem faixa diaria especifica definida. Origem: P-07 / R2-P05.\n+\n+## 17. Dependencias com outros modulos\n+\n+- M2 Inscricoes e lista de espera: `ocupadas`, `vagasRestantes`, `emEspera`, a restricao de reducao de vagas por inscricoes que ocupam vaga e a possivel convocacao automatica no aumento de vagas dependem dos estados e regras de inscricao do M2.\n+- M2 Inscricoes e lista de espera: o cancelamento de atividade deve impedir novas inscricoes e cancelar inscricoes ativas conforme regra do M2; o M1 registra a atividade como cancelada.\n+- M3 Presenca: atividade cancelada nao permite obter codigo de presenca, mas o fluxo pertence ao modulo de presenca.\n+- M4 Certificados: atividade cancelada nao permite emitir certificado, mas o fluxo pertence ao M4.\n+\n+Regras:\n+\n+- R60. O M1 deve expor `situacao`, `vagas`, `ocupadas`, `vagasRestantes`, `emEspera` e `cargaHorariaMinutos` de forma consistente para consumo por M2, M3 e M4, sem implementar dentro do M1 os fluxos completos desses modulos. Origem: R2-P15 / R2-P24 / contrato-api.md, modelos M1-M4.\n+\n+## 18. Pontos nao especificados\n+\n+Estes pontos foram explicitamente preservados como ausencia de regra adicional. Nao devem gerar comportamento inventado na implementacao do M1:\n+\n+- N01. Faixa diaria especifica de horario permitida dentro dos dias do evento. Origem: R2-P05.\n+- N02. Subconjunto de salas permitidas ou salas excluidas do M1. Origem: R2-P06.\n+- N03. Restricao de sala por tipo de atividade. Origem: R2-P07.\n+- N04. Proibicao geral de editar uma atividade apenas por ela ja ter iniciado ou encerrado. Origem: R2-P19.\n+- N05. Comportamento especial do detalhe de uma atividade cancelada. Origem: R2-P31.\n+- N06. Comportamento de `GET /atividades?tipo=<valor invalido>`. Origem: R2-P33.\n+- N07. Comportamento de `GET /atividades?dia=<formato invalido>` ou dia fora do periodo do evento. Origem: R2-P34.\n+- N08. Precedencia interna dos erros de criacao. Origem: R2-P35.\n+- N09. Precedencia interna dos erros de edicao/cancelamento. Origem: R2-P36.\n+- N10. Codigo especifico para `vagas < 1` ou valor de vagas nao inteiro. Origem: R2-P39.\n+\n+## 19. Criterios de aceitacao\n+\n+1. (R01, R02, R03) Depois de `POST /_teste/reset`, `GET /atividades` com usuario valido retorna `200 []`.\n+2. (R02, R03) Depois de `POST /_teste/reset`, `GET /salas` com usuario valido retorna as salas iniciais do contrato: `auditorio`, `sala-101`, `sala-102` e `lab-3`.\n+3. (R04, R06, R07) `POST /atividades` sem usuario retorna `401 USUARIO_DESCONHECIDO`; com participante retorna `403 SOMENTE_ORGANIZACAO`.\n+4. (R10, R13, R14, R18, R26, R32, R33, R44, R45) `POST /atividades` de `palestra` valida com 1 encontro, vagas dentro da capacidade e `cargaHorariaMinutos` enviado incorreto retorna `201 Atividade` com carga calculada e situacao conforme relogio.\n+5. (R10, R13, R15, R18, R26, R32) `POST /atividades` de `minicurso` valido com 2 encontros retorna `201 Atividade` com carga igual a soma dos encontros.\n+6. (R14) `POST /atividades` de `palestra` com 0 ou 2 encontros retorna `422 QUANTIDADE_DE_ENCONTROS` quando essa for a regra do recurso aplicada.\n+7. (R15) `POST /atividades` de `minicurso` com 1 ou 6 encontros retorna `422 QUANTIDADE_DE_ENCONTROS` quando essa for a regra do recurso aplicada.\n+8. (R16, R18, R19, R20) `POST /atividades` com encontro fora do periodo, menor que 1h, maior que 4h, atravessando meia-noite ou sobreposto a outro encontro da mesma atividade retorna `422 ENCONTRO_INVALIDO` quando essa for a regra do recurso aplicada.\n+9. (R21, R22, R24) Criar atividade em sala ocupada por outra atividade nao cancelada com sobreposicao ou sem intervalo minimo retorna `409 CONFLITO_DE_SALA` quando essa for a regra do recurso aplicada.\n+10. (R23) Se uma atividade termina as 10:00 na mesma sala, outra iniciando as 10:14 retorna `409 CONFLITO_DE_SALA`; iniciando as 10:15 e aceita, mantendo as demais regras validas.\n+11. (R25, R39) Depois de cancelar uma atividade antes do inicio, seus encontros nao bloqueiam a criacao de nova atividade na mesma sala e horario.\n+12. (R26, R27) Criar ou editar atividade com `vagas` acima da capacidade da sala retorna `422 VAGAS_ACIMA_DA_CAPACIDADE` quando essa for a regra do recurso aplicada.\n+13. (R28, R29, R30) Reduzir vagas abaixo de inscricoes `confirmadas` e `convocadas` retorna `409 VAGAS_ABAIXO_DOS_INSCRITOS`; inscricoes `em_espera`, `canceladas` e `expiradas` nao aumentam esse limite.\n+14. (R31) Aumentar vagas em atividade nao cancelada e permitido quando respeita capacidade e demais regras do M1; a spec do M1 nao exige validar o fluxo completo de convocacao.\n+15. (R34, R35) `PATCH /atividades/:id` alterando apenas `titulo` ou `vagas` validos retorna `200 Atividade` com os campos alterados.\n+16. (R36) `PATCH /atividades/:id` tentando alterar `salaId`, `tipo` ou `encontros` retorna `422 CAMPO_NAO_EDITAVEL` quando essa for a regra do recurso aplicada.\n+17. (R37) `PATCH /atividades/:id` de atividade cancelada retorna `422 ATIVIDADE_CANCELADA` quando essa for a regra do recurso aplicada.\n+18. (R39, R40, R41, R42) Cancelar antes do inicio retorna `200` e `situacao=cancelada`; cancelar depois de iniciada retorna `422 ATIVIDADE_JA_INICIADA`; cancelar novamente retorna `422 ATIVIDADE_CANCELADA` quando essa for a regra do recurso aplicada.\n+19. (R44, R45, R46, R47, R48, R56, R57, R58) Alterando `/_teste/relogio`, a mesma atividade aparece como `prevista` antes do inicio, `em_andamento` exatamente no inicio do primeiro encontro, `encerrada` exatamente no fim do ultimo encontro, e permanece `cancelada` se tiver sido cancelada.\n+20. (R49, R50, R51) `GET /atividades` retorna atividades ordenadas pelo inicio do primeiro encontro, desempata por titulo e inclui canceladas.\n+21. (R52) `GET /atividades/:id` de atividade existente retorna `200 Atividade`; a spec nao exige comportamento especial para cancelada alem das regras gerais.\n+22. (R53, R54, R55) `GET /atividades?dia=AAAA-MM-DD`, `GET /atividades?tipo=palestra` e a combinacao `dia` + `tipo` filtram conforme dia de Brasilia e tipo.\n+23. (R17, R38, R43, N08, N09) Testes nao devem exigir ordem interna de precedencia entre erros especificos do recurso quando mais de uma regra do M1 e violada simultaneamente.\n+\n+## 20. Cenarios de teste derivados da entrevista\n+\n+1. Criacao valida de palestra com exatamente 1 encontro dentro do periodo, duracao entre 1h e 4h, vagas dentro da capacidade, carga calculada e `cargaHorariaMinutos` enviado ignorado. Regras: R13, R14, R16, R18, R26, R32, R33.\n+2. Criacao valida de minicurso com 2 encontros e carga horaria igual a soma das duracoes. Regras: R13, R15, R32.\n+3. Recusa de palestra com quantidade diferente de 1 encontro. Regras: R14.\n+4. Recusa de minicurso com menos de 2 ou mais de 5 encontros. Regras: R15.\n+5. Recusa de encontro menor que 1h, maior que 4h, fora do periodo, cruzando meia-noite ou sobreposto internamente. Regras: R16, R18, R19, R20.\n+6. Recusa de conflito de sala por sobreposicao com atividade nao cancelada. Regras: R21.\n+7. Recusa de conflito de sala por intervalo de 14 minutos e aceite com intervalo de 15 minutos. Regras: R22, R23.\n+8. Criacao em horario de atividade cancelada nao gera conflito de sala. Regras: R25, R39.\n+9. Recusa de vagas acima da capacidade da sala na criacao e na edicao. Regras: R26, R27.\n+10. Recusa de reducao de vagas abaixo de inscricoes que ocupam vaga, contando `confirmadas` e `convocadas`, sem contar `em_espera`, `canceladas` e `expiradas`. Regras: R28, R29, R30.\n+11. Edicao permite somente `titulo` e `vagas`; tentativa de alterar sala, tipo ou encontros e recusada. Regras: R35, R36.\n+12. Atividade cancelada nao pode ser editada nem cancelada novamente. Regras: R37, R42.\n+13. Cancelamento antes do inicio e aceito; cancelamento depois do inicio e recusado. Regras: R39, R40.\n+14. Situacao muda por relogio controlado: prevista antes do primeiro inicio, em andamento no instante inicial, encerrada no instante final, cancelada prevalece. Regras: R44, R45, R46, R47, R48, R56, R57, R58.\n+15. Listagem ordena pelo inicio do primeiro encontro, desempata por titulo e inclui canceladas. Regras: R49, R50, R51.\n+16. Filtro por dia usa dia de Brasilia; filtro por tipo usa `palestra` ou `minicurso`; filtros combinados aplicam ambos. Regras: R53, R54, R55.\n+17. Consulta por id retorna a atividade existente conforme contrato, sem inventar comportamento especial para cancelada. Regras: R52, N05.\n+\n+## 21. Rastreabilidade entrevista -> regra\n+\n+| Origem | Regras |\n+|---|---|\n+| P-01 | R01 |\n+| P-02 | R01, R05 |\n+| P-03 / R2-P01 | R10, R11 |\n+| P-04 | R02 |\n+| P-05 / R2-P02 / R2-P38 | R14, R15 |\n+| P-06 / R2-P03 / R2-P04 / R2-P37 | R18, R32, R33 |\n+| P-07 / R2-P05 / R2-P37 | R16, R59, N01 |\n+| P-08 / R2-P06 | N02 |\n+| P-09 / R2-P07 | N03 |\n+| P-10 / R2-P09 / R2-P12 | R21, R24 |\n+| P-11 / R2-P09 / R2-P10 / R2-P12 | R22, R23 |\n+| P-12 / R2-P11 | R25 |\n+| P-13 / P-14 / R2-P08 / R2-P13 / R2-P39 | R26, R27, N10 |\n+| P-15 / R2-P14 / R2-P15 / R2-P16 | R28, R29, R30, R31 |\n+| P-16 / R2-P17 / R2-P20 | R35, R37 |\n+| P-17 / R2-P18 | R36 |\n+| P-18 / R2-P21 | R39, R40 |\n+| P-19 / R2-P22 / R2-P28 | R41, R48 |\n+| P-20 / R2-P23 | R42 |\n+| P-21 / R2-P24 | R05, R60 |\n+| P-22 / R2-P25 / R2-P28 | R44, R48 |\n+| P-23 / R2-P26 / R2-P28 | R45, R46, R47, R48 |\n+| P-24 / R2-P27 / R2-P40 | R57, R58 |\n+| P-25 / R2-P29 | R49, R50 |\n+| P-26 / R2-P30 / R2-P31 | R51, R52, N05 |\n+| P-27 / R2-P32 / R2-P34 | R53, N07 |\n+| P-28 / R2-P33 | R54, N06 |\n+| P-29 / R2-P32 | R55 |\n+| P-30 | R56 |\n+| P-31 / R2-P35 / R2-P36 | R17, R38, R43, N08, N09 |\n+| P-32 / R2-P37 / R2-P38 / R2-P40 | R14, R15, R16, R18, R19, R22, R23, R40, R49, R50, R51, R53, R55, R57, R58 |\n+| contrato-api.md | R03, R04, R06, R07, R08, R09, R12, R13, R27, R34, R39, R52, R54, R56, R60 |\n+\n+## Como isto sera verificado\n+\n+As regras do M1 devem ser verificadas pela interface HTTP definida em `contrato-api.md`, usando o servidor da API e o modo de teste (`MODO_TESTE=1`) para resetar estado e controlar o relogio. Essa e a costura mais externa e cobre permissao, contrato de JSON, status HTTP, codigos de erro, persistencia em memoria e regras temporais observaveis pelo cliente.\n+\n+## Fatias de entrega sugeridas para TDD\n+\n+1. Dados iniciais, autenticacao/autorizacao e consulta vazia de salas/atividades.\n+2. Criacao valida de atividade, tipos, encontros, periodo, duracao, carga horaria e ordenacao de encontros.\n+3. Conflito de sala, intervalo minimo e canceladas fora do conflito.\n+4. Vagas, capacidade e campos calculados ligados a ocupacao.\n+5. Edicao de `titulo` e `vagas`, campos imutaveis e atividade cancelada nao editavel.\n+6. Cancelamento antes do inicio, definitivo e recusas temporais.\n+7. Situacao calculada por relogio controlado e bordas inclusivas.\n+8. Listagem, detalhe e filtros por dia/tipo.\n*** End Patch"
+      },
+      "output": "Success. Updated the following files:\nA specs/M1-grade-atividades.md",
+      "metadata": {
+       "diff": "Index: /Users/yasmindesouza/TrabalhoIA-WomanInTech/specs/M1-grade-atividades.md\n===================================================================\n--- /Users/yasmindesouza/TrabalhoIA-WomanInTech/specs/M1-grade-atividades.md\n+++ /Users/yasmindesouza/TrabalhoIA-WomanInTech/specs/M1-grade-atividades.md\n@@ -0,0 +1,295 @@\n+# Spec — M1 Grade de Atividades\n+\n+## 1. Objetivo\n+\n+O M1 permite que a organizacao organize e mantenha a grade de atividades da Semana Academica 2026 e permite que participantes consultem atividades, salas, horarios, vagas exibidas, carga horaria e situacao das atividades.\n+\n+Regras:\n+\n+- R01. O M1 cobre grade de atividades, salas, encontros, vagas exibidas, consulta e cancelamento de atividade. Origem: P-01 / P-02.\n+- R02. O sistema inicia sem atividades cadastradas; os dados iniciais relevantes ao M1 sao os usuarios e salas definidos no contrato da API. Origem: P-04.\n+\n+## 2. Escopo\n+\n+O M1 inclui as rotas HTTP do contrato para salas e atividades:\n+\n+- `GET /salas`, para consulta das salas iniciais.\n+- `GET /atividades`, para listagem de atividades.\n+- `GET /atividades/:id`, para consulta de atividade por id.\n+- `POST /atividades`, para criacao de atividade pela organizacao.\n+- `PATCH /atividades/:id`, para edicao parcial de atividade pela organizacao.\n+- `POST /atividades/:id/cancelamento`, para cancelamento de atividade pela organizacao.\n+\n+Regras:\n+\n+- R03. `GET /salas`, `GET /atividades` e `GET /atividades/:id` podem ser usados por todos os usuarios identificados. Origem: contrato-api.md, rotas M1.\n+- R04. `POST /atividades`, `PATCH /atividades/:id` e `POST /atividades/:id/cancelamento` sao operacoes da organizacao. Origem: contrato-api.md, rotas M1.\n+\n+## 3. Fora de escopo\n+\n+- Inscricoes, lista de espera, presenca, certificados, painel da organizacao e bloqueios nao sao implementados pelo M1, exceto pelos pontos em que suas informacoes afetam regras do M1.\n+- O fluxo completo de convocacao automatica da lista de espera ao aumentar vagas pertence ao M2.\n+- A emissao ou bloqueio de certificados de atividade cancelada pertence ao M4.\n+- A obtencao de codigo de presenca de atividade cancelada pertence ao modulo de presenca.\n+- A atualizacao de inscricoes ativas ao cancelar atividade pertence ao M2, embora o M1 exponha a atividade como `cancelada` e impeça nova edicao/cancelamento dela.\n+\n+Regras:\n+\n+- R05. O M1 nao define o fluxo completo de inscricao, presenca, certificado ou painel; esses modulos devem consumir a atividade e sua situacao conforme contrato. Origem: P-02 / R2-P24.\n+\n+## 4. Atores e permissoes\n+\n+Regras:\n+\n+- R06. Toda rota identificada do M1 exige `X-Usuario`; sem cabecalho ou com id inexistente, a API responde `401 USUARIO_DESCONHECIDO` antes das regras do recurso. Origem: contrato-api.md, convencoes.\n+- R07. Operacoes de organizacao do M1 recusam usuario participante com `403 SOMENTE_ORGANIZACAO` antes das regras do recurso. Origem: contrato-api.md, convencoes e rotas M1.\n+- R08. Recurso inexistente em `GET /atividades/:id`, `PATCH /atividades/:id` ou `POST /atividades/:id/cancelamento` gera `404 NAO_ENCONTRADO` antes das regras do recurso. Origem: contrato-api.md, convencoes.\n+- R09. Corpo que nao e JSON, campo obrigatorio ausente ou campo de tipo errado gera `422 DADOS_INVALIDOS` antes das regras do recurso. Origem: contrato-api.md, convencoes.\n+\n+## 5. Modelo da atividade\n+\n+Campos da entidade `Atividade`:\n+\n+- `id`: gerado pela API, prefixo `atv_` seguido de 8 hexadecimais minusculos.\n+- `titulo`: informado pela organizacao.\n+- `tipo`: informado pela organizacao; valores validos no M1 sao `palestra` e `minicurso`.\n+- `salaId`: informado pela organizacao, referencia uma sala existente.\n+- `vagas`: informado pela organizacao e editavel conforme regras de vagas.\n+- `encontros`: informado pela organizacao na criacao, retornado em ordem de inicio; cada encontro recebe `id` gerado com prefixo `enc_` seguido de 8 hexadecimais minusculos.\n+- `cargaHorariaMinutos`: calculado pela API.\n+- `situacao`: calculado pela API, exceto pela persistencia do cancelamento.\n+- `ocupadas`: calculado a partir de inscricoes que ocupam vaga.\n+- `vagasRestantes`: calculado a partir de `vagas` e `ocupadas`.\n+- `emEspera`: calculado a partir da lista de espera.\n+\n+Regras:\n+\n+- R10. Os tipos de atividade do M1 sao somente `palestra` e `minicurso`. Origem: P-03 / R2-P01.\n+- R11. A diferenca de regra entre `palestra` e `minicurso` no M1 e apenas a quantidade de encontros; duracao, vagas e sala seguem regras comuns. Origem: R2-P01.\n+- R12. `Atividade.encontros` deve ser retornado em ordem de inicio. Origem: contrato-api.md, modelo de Atividade.\n+\n+## 6. Regras de criacao\n+\n+Regras:\n+\n+- R13. `POST /atividades` com dados validos cria atividade e retorna `201 Atividade`. Origem: contrato-api.md, rotas M1.\n+- R14. `palestra` deve ter exatamente 1 encontro; caso contrario, a criacao retorna `422 QUANTIDADE_DE_ENCONTROS`. Origem: P-05 / R2-P02 / R2-P38.\n+- R15. `minicurso` deve ter de 2 a 5 encontros; caso contrario, a criacao retorna `422 QUANTIDADE_DE_ENCONTROS`. Origem: P-05 / R2-P02 / R2-P38.\n+- R16. Uma atividade deve ocorrer dentro do periodo do evento, de 19/10/2026 a 23/10/2026, considerando horario de Brasilia; encontro fora desse periodo gera `422 ENCONTRO_INVALIDO`. Origem: P-07 / R2-P05 / R2-P37.\n+- R17. A ordem interna de precedencia entre erros especificos de criacao do M1 nao esta especificada; a spec nao exige prioridade entre `QUANTIDADE_DE_ENCONTROS`, `ENCONTRO_INVALIDO`, `VAGAS_ACIMA_DA_CAPACIDADE` e `CONFLITO_DE_SALA`. Origem: P-31 / R2-P35.\n+\n+## 7. Regras dos encontros\n+\n+Regras:\n+\n+- R18. Cada encontro deve durar no minimo 1 hora e no maximo 4 horas; duracao fora desse intervalo gera `422 ENCONTRO_INVALIDO`. Origem: P-06 / R2-P03 / R2-P37.\n+- R19. Cada encontro deve comecar e terminar no mesmo dia; encontro que atravessa meia-noite ou muda de dia gera `422 ENCONTRO_INVALIDO`. Origem: R2-P37 / R2-P40.\n+- R20. Encontros da mesma atividade nao podem se sobrepor; sobreposicao interna gera `422 ENCONTRO_INVALIDO`. Origem: R2-P37.\n+\n+## 8. Regras de sala/conflito\n+\n+Regras:\n+\n+- R21. Existe conflito quando dois encontros de atividades nao canceladas usam a mesma sala em horarios sobrepostos; a criacao retorna `409 CONFLITO_DE_SALA`. Origem: P-10 / R2-P09.\n+- R22. Alem de nao haver sobreposicao, deve existir intervalo minimo de 15 minutos entre o fim de um encontro e o inicio do proximo encontro na mesma sala; se o intervalo for menor, a criacao retorna `409 CONFLITO_DE_SALA`. Origem: P-11 / R2-P09 / R2-P10.\n+- R23. Na mesma sala, intervalo de 14 minutos entre encontros ainda conflita e intervalo de 15 minutos e permitido. Origem: R2-P12 / R2-P40.\n+- R24. Na mesma sala, `fim == inicio` entre encontros de atividades diferentes e conflito, pois nao cumpre intervalo minimo de 15 minutos. Origem: R2-P12.\n+- R25. Encontros de atividades canceladas nao contam para conflito de sala. Origem: P-12 / R2-P11.\n+\n+## 9. Regras de vagas\n+\n+Regras:\n+\n+- R26. `vagas` deve ser no minimo 1 e no maximo igual a capacidade da sala da atividade. Origem: P-13 / P-14 / R2-P08 / R2-P13.\n+- R27. `vagas` acima da capacidade da sala gera `422 VAGAS_ACIMA_DA_CAPACIDADE` na criacao ou edicao. Origem: R2-P08 / contrato-api.md, codigos de retorno.\n+- R28. Reduzir `vagas` para valor menor que a quantidade de inscricoes que ocupam vaga gera `409 VAGAS_ABAIXO_DOS_INSCRITOS`. Origem: P-15 / R2-P14.\n+- R29. Inscricoes `confirmadas` e `convocadas` contam como ocupando vaga para impedir reducao de vagas. Origem: R2-P16.\n+- R30. Inscricoes `em_espera`, `canceladas` e `expiradas` nao contam como ocupando vaga para impedir reducao de vagas. Origem: R2-P16.\n+- R31. Aumentar `vagas` e permitido quando respeita as demais regras do M1; eventual convocacao automatica da lista de espera e dependencia do M2. Origem: R2-P15.\n+\n+## 10. Carga horaria\n+\n+Regras:\n+\n+- R32. `cargaHorariaMinutos` e calculada pela soma das duracoes de todos os encontros, em minutos. Origem: P-06 / R2-P04.\n+- R33. Se `cargaHorariaMinutos` for enviado na criacao ou edicao, o valor enviado e ignorado; a resposta deve retornar o valor calculado. Origem: R2-P04.\n+\n+## 11. Regras de edicao\n+\n+Regras:\n+\n+- R34. `PATCH /atividades/:id` com alteracao valida retorna `200 Atividade`. Origem: contrato-api.md, rotas M1.\n+- R35. Apenas `titulo` e `vagas` podem ser alterados depois da criacao. Origem: P-16 / R2-P17.\n+- R36. `salaId`, `tipo` e `encontros` sao imutaveis depois da criacao; tentativa de alteracao retorna `422 CAMPO_NAO_EDITAVEL`. Origem: P-17 / R2-P18.\n+- R37. Atividade cancelada nao pode ser editada; tentativa de edicao retorna `422 ATIVIDADE_CANCELADA`. Origem: R2-P20.\n+- R38. A ordem interna de precedencia entre erros especificos de edicao do M1 nao esta especificada; a spec nao exige prioridade entre `ATIVIDADE_CANCELADA`, `CAMPO_NAO_EDITAVEL`, `VAGAS_ACIMA_DA_CAPACIDADE` e `VAGAS_ABAIXO_DOS_INSCRITOS`. Origem: P-31 / R2-P36.\n+\n+## 12. Cancelamento\n+\n+Regras:\n+\n+- R39. `POST /atividades/:id/cancelamento` antes do inicio da atividade cancela a atividade e retorna `200 Atividade` com `situacao` igual a `cancelada`. Origem: P-18 / R2-P21 / contrato-api.md, rotas M1.\n+- R40. O cancelamento so pode acontecer antes de a atividade comecar; se a atividade ja comecou, retorna `422 ATIVIDADE_JA_INICIADA`. Origem: P-18 / R2-P21.\n+- R41. O cancelamento e definitivo; atividade cancelada nao pode ser reativada. Origem: P-19 / R2-P22.\n+- R42. Cancelar uma atividade ja cancelada retorna `422 ATIVIDADE_CANCELADA`. Origem: P-20 / R2-P23.\n+- R43. A ordem interna de precedencia entre erros especificos de cancelamento do M1 nao esta especificada; a spec nao exige prioridade entre `ATIVIDADE_CANCELADA` e `ATIVIDADE_JA_INICIADA`. Origem: P-31 / R2-P36.\n+\n+## 13. Situacao calculada pelo relogio\n+\n+Regras:\n+\n+- R44. Os estados oficiais de `situacao` sao `prevista`, `em_andamento`, `encerrada` e `cancelada`. Origem: P-22 / R2-P25.\n+- R45. Uma atividade nao cancelada fica `prevista` antes do inicio do primeiro encontro. Origem: P-23 / R2-P26.\n+- R46. Uma atividade nao cancelada fica `em_andamento` a partir do inicio do primeiro encontro. Origem: P-23 / R2-P26.\n+- R47. Uma atividade nao cancelada fica `encerrada` a partir do fim do ultimo encontro. Origem: P-23 / R2-P26.\n+- R48. `cancelada` prevalece sobre todos os estados calculados pelo relogio. Origem: P-22 / P-23 / P-19 / R2-P28.\n+\n+## 14. Consulta e listagem\n+\n+Regras:\n+\n+- R49. `GET /atividades` retorna `200 [Atividade]` ordenado pelo inicio do primeiro encontro. Origem: P-25 / R2-P29.\n+- R50. Em caso de empate no inicio do primeiro encontro, `GET /atividades` ordena pelo `titulo`. Origem: P-25 / R2-P29.\n+- R51. Atividades canceladas aparecem normalmente em `GET /atividades`; nao ha ordenacao especial para canceladas. Origem: P-26 / R2-P30.\n+- R52. `GET /atividades/:id` retorna `200 Atividade` para atividade existente, sem regra especial especificada para atividade cancelada. Origem: contrato-api.md, rotas M1 / R2-P31.\n+\n+## 15. Filtros\n+\n+Regras:\n+\n+- R53. `GET /atividades?dia=AAAA-MM-DD` inclui a atividade quando ela tem pelo menos um encontro naquele dia de Brasilia. Origem: P-27 / R2-P32.\n+- R54. `GET /atividades?tipo=palestra|minicurso` filtra atividades pelo tipo informado. Origem: P-28 / contrato-api.md, rotas M1.\n+- R55. Quando `dia` e `tipo` forem enviados juntos em `GET /atividades`, os dois filtros devem ser aplicados ao mesmo tempo. Origem: P-29 / R2-P32.\n+\n+## 16. Regras temporais e bordas\n+\n+Regras:\n+\n+- R56. Todas as regras temporais do M1 usam o relogio controlado quando `MODO_TESTE=1`. Origem: P-30 / contrato-api.md, modo de teste.\n+- R57. Quando `agora == inicio do primeiro encontro`, a atividade ja esta `em_andamento`. Origem: P-24 / R2-P27 / R2-P40.\n+- R58. Quando `agora == fim do ultimo encontro`, a atividade ja esta `encerrada`. Origem: P-24 / R2-P27 / R2-P40.\n+- R59. As bordas do periodo do evento sao inclusivas para os dias de 19/10/2026 a 23/10/2026, sem faixa diaria especifica definida. Origem: P-07 / R2-P05.\n+\n+## 17. Dependencias com outros modulos\n+\n+- M2 Inscricoes e lista de espera: `ocupadas`, `vagasRestantes`, `emEspera`, a restricao de reducao de vagas por inscricoes que ocupam vaga e a possivel convocacao automatica no aumento de vagas dependem dos estados e regras de inscricao do M2.\n+- M2 Inscricoes e lista de espera: o cancelamento de atividade deve impedir novas inscricoes e cancelar inscricoes ativas conforme regra do M2; o M1 registra a atividade como cancelada.\n+- M3 Presenca: atividade cancelada nao permite obter codigo de presenca, mas o fluxo pertence ao modulo de presenca.\n+- M4 Certificados: atividade cancelada nao permite emitir certificado, mas o fluxo pertence ao M4.\n+\n+Regras:\n+\n+- R60. O M1 deve expor `situacao`, `vagas`, `ocupadas`, `vagasRestantes`, `emEspera` e `cargaHorariaMinutos` de forma consistente para consumo por M2, M3 e M4, sem implementar dentro do M1 os fluxos completos desses modulos. Origem: R2-P15 / R2-P24 / contrato-api.md, modelos M1-M4.\n+\n+## 18. Pontos nao especificados\n+\n+Estes pontos foram explicitamente preservados como ausencia de regra adicional. Nao devem gerar comportamento inventado na implementacao do M1:\n+\n+- N01. Faixa diaria especifica de horario permitida dentro dos dias do evento. Origem: R2-P05.\n+- N02. Subconjunto de salas permitidas ou salas excluidas do M1. Origem: R2-P06.\n+- N03. Restricao de sala por tipo de atividade. Origem: R2-P07.\n+- N04. Proibicao geral de editar uma atividade apenas por ela ja ter iniciado ou encerrado. Origem: R2-P19.\n+- N05. Comportamento especial do detalhe de uma atividade cancelada. Origem: R2-P31.\n+- N06. Comportamento de `GET /atividades?tipo=<valor invalido>`. Origem: R2-P33.\n+- N07. Comportamento de `GET /atividades?dia=<formato invalido>` ou dia fora do periodo do evento. Origem: R2-P34.\n+- N08. Precedencia interna dos erros de criacao. Origem: R2-P35.\n+- N09. Precedencia interna dos erros de edicao/cancelamento. Origem: R2-P36.\n+- N10. Codigo especifico para `vagas < 1` ou valor de vagas nao inteiro. Origem: R2-P39.\n+\n+## 19. Criterios de aceitacao\n+\n+1. (R01, R02, R03) Depois de `POST /_teste/reset`, `GET /atividades` com usuario valido retorna `200 []`.\n+2. (R02, R03) Depois de `POST /_teste/reset`, `GET /salas` com usuario valido retorna as salas iniciais do contrato: `auditorio`, `sala-101`, `sala-102` e `lab-3`.\n+3. (R04, R06, R07) `POST /atividades` sem usuario retorna `401 USUARIO_DESCONHECIDO`; com participante retorna `403 SOMENTE_ORGANIZACAO`.\n+4. (R10, R13, R14, R18, R26, R32, R33, R44, R45) `POST /atividades` de `palestra` valida com 1 encontro, vagas dentro da capacidade e `cargaHorariaMinutos` enviado incorreto retorna `201 Atividade` com carga calculada e situacao conforme relogio.\n+5. (R10, R13, R15, R18, R26, R32) `POST /atividades` de `minicurso` valido com 2 encontros retorna `201 Atividade` com carga igual a soma dos encontros.\n+6. (R14) `POST /atividades` de `palestra` com 0 ou 2 encontros retorna `422 QUANTIDADE_DE_ENCONTROS` quando essa for a regra do recurso aplicada.\n+7. (R15) `POST /atividades` de `minicurso` com 1 ou 6 encontros retorna `422 QUANTIDADE_DE_ENCONTROS` quando essa for a regra do recurso aplicada.\n+8. (R16, R18, R19, R20) `POST /atividades` com encontro fora do periodo, menor que 1h, maior que 4h, atravessando meia-noite ou sobreposto a outro encontro da mesma atividade retorna `422 ENCONTRO_INVALIDO` quando essa for a regra do recurso aplicada.\n+9. (R21, R22, R24) Criar atividade em sala ocupada por outra atividade nao cancelada com sobreposicao ou sem intervalo minimo retorna `409 CONFLITO_DE_SALA` quando essa for a regra do recurso aplicada.\n+10. (R23) Se uma atividade termina as 10:00 na mesma sala, outra iniciando as 10:14 retorna `409 CONFLITO_DE_SALA`; iniciando as 10:15 e aceita, mantendo as demais regras validas.\n+11. (R25, R39) Depois de cancelar uma atividade antes do inicio, seus encontros nao bloqueiam a criacao de nova atividade na mesma sala e horario.\n+12. (R26, R27) Criar ou editar atividade com `vagas` acima da capacidade da sala retorna `422 VAGAS_ACIMA_DA_CAPACIDADE` quando essa for a regra do recurso aplicada.\n+13. (R28, R29, R30) Reduzir vagas abaixo de inscricoes `confirmadas` e `convocadas` retorna `409 VAGAS_ABAIXO_DOS_INSCRITOS`; inscricoes `em_espera`, `canceladas` e `expiradas` nao aumentam esse limite.\n+14. (R31) Aumentar vagas em atividade nao cancelada e permitido quando respeita capacidade e demais regras do M1; a spec do M1 nao exige validar o fluxo completo de convocacao.\n+15. (R34, R35) `PATCH /atividades/:id` alterando apenas `titulo` ou `vagas` validos retorna `200 Atividade` com os campos alterados.\n+16. (R36) `PATCH /atividades/:id` tentando alterar `salaId`, `tipo` ou `encontros` retorna `422 CAMPO_NAO_EDITAVEL` quando essa for a regra do recurso aplicada.\n+17. (R37) `PATCH /atividades/:id` de atividade cancelada retorna `422 ATIVIDADE_CANCELADA` quando essa for a regra do recurso aplicada.\n+18. (R39, R40, R41, R42) Cancelar antes do inicio retorna `200` e `situacao=cancelada`; cancelar depois de iniciada retorna `422 ATIVIDADE_JA_INICIADA`; cancelar novamente retorna `422 ATIVIDADE_CANCELADA` quando essa for a regra do recurso aplicada.\n+19. (R44, R45, R46, R47, R48, R56, R57, R58) Alterando `/_teste/relogio`, a mesma atividade aparece como `prevista` antes do inicio, `em_andamento` exatamente no inicio do primeiro encontro, `encerrada` exatamente no fim do ultimo encontro, e permanece `cancelada` se tiver sido cancelada.\n+20. (R49, R50, R51) `GET /atividades` retorna atividades ordenadas pelo inicio do primeiro encontro, desempata por titulo e inclui canceladas.\n+21. (R52) `GET /atividades/:id` de atividade existente retorna `200 Atividade`; a spec nao exige comportamento especial para cancelada alem das regras gerais.\n+22. (R53, R54, R55) `GET /atividades?dia=AAAA-MM-DD`, `GET /atividades?tipo=palestra` e a combinacao `dia` + `tipo` filtram conforme dia de Brasilia e tipo.\n+23. (R17, R38, R43, N08, N09) Testes nao devem exigir ordem interna de precedencia entre erros especificos do recurso quando mais de uma regra do M1 e violada simultaneamente.\n+\n+## 20. Cenarios de teste derivados da entrevista\n+\n+1. Criacao valida de palestra com exatamente 1 encontro dentro do periodo, duracao entre 1h e 4h, vagas dentro da capacidade, carga calculada e `cargaHorariaMinutos` enviado ignorado. Regras: R13, R14, R16, R18, R26, R32, R33.\n+2. Criacao valida de minicurso com 2 encontros e carga horaria igual a soma das duracoes. Regras: R13, R15, R32.\n+3. Recusa de palestra com quantidade diferente de 1 encontro. Regras: R14.\n+4. Recusa de minicurso com menos de 2 ou mais de 5 encontros. Regras: R15.\n+5. Recusa de encontro menor que 1h, maior que 4h, fora do periodo, cruzando meia-noite ou sobreposto internamente. Regras: R16, R18, R19, R20.\n+6. Recusa de conflito de sala por sobreposicao com atividade nao cancelada. Regras: R21.\n+7. Recusa de conflito de sala por intervalo de 14 minutos e aceite com intervalo de 15 minutos. Regras: R22, R23.\n+8. Criacao em horario de atividade cancelada nao gera conflito de sala. Regras: R25, R39.\n+9. Recusa de vagas acima da capacidade da sala na criacao e na edicao. Regras: R26, R27.\n+10. Recusa de reducao de vagas abaixo de inscricoes que ocupam vaga, contando `confirmadas` e `convocadas`, sem contar `em_espera`, `canceladas` e `expiradas`. Regras: R28, R29, R30.\n+11. Edicao permite somente `titulo` e `vagas`; tentativa de alterar sala, tipo ou encontros e recusada. Regras: R35, R36.\n+12. Atividade cancelada nao pode ser editada nem cancelada novamente. Regras: R37, R42.\n+13. Cancelamento antes do inicio e aceito; cancelamento depois do inicio e recusado. Regras: R39, R40.\n+14. Situacao muda por relogio controlado: prevista antes do primeiro inicio, em andamento no instante inicial, encerrada no instante final, cancelada prevalece. Regras: R44, R45, R46, R47, R48, R56, R57, R58.\n+15. Listagem ordena pelo inicio do primeiro encontro, desempata por titulo e inclui canceladas. Regras: R49, R50, R51.\n+16. Filtro por dia usa dia de Brasilia; filtro por tipo usa `palestra` ou `minicurso`; filtros combinados aplicam ambos. Regras: R53, R54, R55.\n+17. Consulta por id retorna a atividade existente conforme contrato, sem inventar comportamento especial para cancelada. Regras: R52, N05.\n+\n+## 21. Rastreabilidade entrevista -> regra\n+\n+| Origem | Regras |\n+|---|---|\n+| P-01 | R01 |\n+| P-02 | R01, R05 |\n+| P-03 / R2-P01 | R10, R11 |\n+| P-04 | R02 |\n+| P-05 / R2-P02 / R2-P38 | R14, R15 |\n+| P-06 / R2-P03 / R2-P04 / R2-P37 | R18, R32, R33 |\n+| P-07 / R2-P05 / R2-P37 | R16, R59, N01 |\n+| P-08 / R2-P06 | N02 |\n+| P-09 / R2-P07 | N03 |\n+| P-10 / R2-P09 / R2-P12 | R21, R24 |\n+| P-11 / R2-P09 / R2-P10 / R2-P12 | R22, R23 |\n+| P-12 / R2-P11 | R25 |\n+| P-13 / P-14 / R2-P08 / R2-P13 / R2-P39 | R26, R27, N10 |\n+| P-15 / R2-P14 / R2-P15 / R2-P16 | R28, R29, R30, R31 |\n+| P-16 / R2-P17 / R2-P20 | R35, R37 |\n+| P-17 / R2-P18 | R36 |\n+| P-18 / R2-P21 | R39, R40 |\n+| P-19 / R2-P22 / R2-P28 | R41, R48 |\n+| P-20 / R2-P23 | R42 |\n+| P-21 / R2-P24 | R05, R60 |\n+| P-22 / R2-P25 / R2-P28 | R44, R48 |\n+| P-23 / R2-P26 / R2-P28 | R45, R46, R47, R48 |\n+| P-24 / R2-P27 / R2-P40 | R57, R58 |\n+| P-25 / R2-P29 | R49, R50 |\n+| P-26 / R2-P30 / R2-P31 | R51, R52, N05 |\n+| P-27 / R2-P32 / R2-P34 | R53, N07 |\n+| P-28 / R2-P33 | R54, N06 |\n+| P-29 / R2-P32 | R55 |\n+| P-30 | R56 |\n+| P-31 / R2-P35 / R2-P36 | R17, R38, R43, N08, N09 |\n+| P-32 / R2-P37 / R2-P38 / R2-P40 | R14, R15, R16, R18, R19, R22, R23, R40, R49, R50, R51, R53, R55, R57, R58 |\n+| contrato-api.md | R03, R04, R06, R07, R08, R09, R12, R13, R27, R34, R39, R52, R54, R56, R60 |\n+\n+## Como isto sera verificado\n+\n+As regras do M1 devem ser verificadas pela interface HTTP definida em `contrato-api.md`, usando o servidor da API e o modo de teste (`MODO_TESTE=1`) para resetar estado e controlar o relogio. Essa e a costura mais externa e cobre permissao, contrato de JSON, status HTTP, codigos de erro, persistencia em memoria e regras temporais observaveis pelo cliente.\n+\n+## Fatias de entrega sugeridas para TDD\n+\n+1. Dados iniciais, autenticacao/autorizacao e consulta vazia de salas/atividades.\n+2. Criacao valida de atividade, tipos, encontros, periodo, duracao, carga horaria e ordenacao de encontros.\n+3. Conflito de sala, intervalo minimo e canceladas fora do conflito.\n+4. Vagas, capacidade e campos calculados ligados a ocupacao.\n+5. Edicao de `titulo` e `vagas`, campos imutaveis e atividade cancelada nao editavel.\n+6. Cancelamento antes do inicio, definitivo e recusas temporais.\n+7. Situacao calculada por relogio controlado e bordas inclusivas.\n+8. Listagem, detalhe e filtros por dia/tipo.\n\n",
+       "files": [
+        {
+         "filePath": "/Users/yasmindesouza/TrabalhoIA-WomanInTech/specs/M1-grade-atividades.md",
+         "relativePath": "specs/M1-grade-atividades.md",
+         "type": "add",
+         "patch": "Index: /Users/yasmindesouza/TrabalhoIA-WomanInTech/specs/M1-grade-atividades.md\n===================================================================\n--- /Users/yasmindesouza/TrabalhoIA-WomanInTech/specs/M1-grade-atividades.md\n+++ /Users/yasmindesouza/TrabalhoIA-WomanInTech/specs/M1-grade-atividades.md\n@@ -0,0 +1,295 @@\n+# Spec — M1 Grade de Atividades\n+\n+## 1. Objetivo\n+\n+O M1 permite que a organizacao organize e mantenha a grade de atividades da Semana Academica 2026 e permite que participantes consultem atividades, salas, horarios, vagas exibidas, carga horaria e situacao das atividades.\n+\n+Regras:\n+\n+- R01. O M1 cobre grade de atividades, salas, encontros, vagas exibidas, consulta e cancelamento de atividade. Origem: P-01 / P-02.\n+- R02. O sistema inicia sem atividades cadastradas; os dados iniciais relevantes ao M1 sao os usuarios e salas definidos no contrato da API. Origem: P-04.\n+\n+## 2. Escopo\n+\n+O M1 inclui as rotas HTTP do contrato para salas e atividades:\n+\n+- `GET /salas`, para consulta das salas iniciais.\n+- `GET /atividades`, para listagem de atividades.\n+- `GET /atividades/:id`, para consulta de atividade por id.\n+- `POST /atividades`, para criacao de atividade pela organizacao.\n+- `PATCH /atividades/:id`, para edicao parcial de atividade pela organizacao.\n+- `POST /atividades/:id/cancelamento`, para cancelamento de atividade pela organizacao.\n+\n+Regras:\n+\n+- R03. `GET /salas`, `GET /atividades` e `GET /atividades/:id` podem ser usados por todos os usuarios identificados. Origem: contrato-api.md, rotas M1.\n+- R04. `POST /atividades`, `PATCH /atividades/:id` e `POST /atividades/:id/cancelamento` sao operacoes da organizacao. Origem: contrato-api.md, rotas M1.\n+\n+## 3. Fora de escopo\n+\n+- Inscricoes, lista de espera, presenca, certificados, painel da organizacao e bloqueios nao sao implementados pelo M1, exceto pelos pontos em que suas informacoes afetam regras do M1.\n+- O fluxo completo de convocacao automatica da lista de espera ao aumentar vagas pertence ao M2.\n+- A emissao ou bloqueio de certificados de atividade cancelada pertence ao M4.\n+- A obtencao de codigo de presenca de atividade cancelada pertence ao modulo de presenca.\n+- A atualizacao de inscricoes ativas ao cancelar atividade pertence ao M2, embora o M1 exponha a atividade como `cancelada` e impeça nova edicao/cancelamento dela.\n+\n+Regras:\n+\n+- R05. O M1 nao define o fluxo completo de inscricao, presenca, certificado ou painel; esses modulos devem consumir a atividade e sua situacao conforme contrato. Origem: P-02 / R2-P24.\n+\n+## 4. Atores e permissoes\n+\n+Regras:\n+\n+- R06. Toda rota identificada do M1 exige `X-Usuario`; sem cabecalho ou com id inexistente, a API responde `401 USUARIO_DESCONHECIDO` antes das regras do recurso. Origem: contrato-api.md, convencoes.\n+- R07. Operacoes de organizacao do M1 recusam usuario participante com `403 SOMENTE_ORGANIZACAO` antes das regras do recurso. Origem: contrato-api.md, convencoes e rotas M1.\n+- R08. Recurso inexistente em `GET /atividades/:id`, `PATCH /atividades/:id` ou `POST /atividades/:id/cancelamento` gera `404 NAO_ENCONTRADO` antes das regras do recurso. Origem: contrato-api.md, convencoes.\n+- R09. Corpo que nao e JSON, campo obrigatorio ausente ou campo de tipo errado gera `422 DADOS_INVALIDOS` antes das regras do recurso. Origem: contrato-api.md, convencoes.\n+\n+## 5. Modelo da atividade\n+\n+Campos da entidade `Atividade`:\n+\n+- `id`: gerado pela API, prefixo `atv_` seguido de 8 hexadecimais minusculos.\n+- `titulo`: informado pela organizacao.\n+- `tipo`: informado pela organizacao; valores validos no M1 sao `palestra` e `minicurso`.\n+- `salaId`: informado pela organizacao, referencia uma sala existente.\n+- `vagas`: informado pela organizacao e editavel conforme regras de vagas.\n+- `encontros`: informado pela organizacao na criacao, retornado em ordem de inicio; cada encontro recebe `id` gerado com prefixo `enc_` seguido de 8 hexadecimais minusculos.\n+- `cargaHorariaMinutos`: calculado pela API.\n+- `situacao`: calculado pela API, exceto pela persistencia do cancelamento.\n+- `ocupadas`: calculado a partir de inscricoes que ocupam vaga.\n+- `vagasRestantes`: calculado a partir de `vagas` e `ocupadas`.\n+- `emEspera`: calculado a partir da lista de espera.\n+\n+Regras:\n+\n+- R10. Os tipos de atividade do M1 sao somente `palestra` e `minicurso`. Origem: P-03 / R2-P01.\n+- R11. A diferenca de regra entre `palestra` e `minicurso` no M1 e apenas a quantidade de encontros; duracao, vagas e sala seguem regras comuns. Origem: R2-P01.\n+- R12. `Atividade.encontros` deve ser retornado em ordem de inicio. Origem: contrato-api.md, modelo de Atividade.\n+\n+## 6. Regras de criacao\n+\n+Regras:\n+\n+- R13. `POST /atividades` com dados validos cria atividade e retorna `201 Atividade`. Origem: contrato-api.md, rotas M1.\n+- R14. `palestra` deve ter exatamente 1 encontro; caso contrario, a criacao retorna `422 QUANTIDADE_DE_ENCONTROS`. Origem: P-05 / R2-P02 / R2-P38.\n+- R15. `minicurso` deve ter de 2 a 5 encontros; caso contrario, a criacao retorna `422 QUANTIDADE_DE_ENCONTROS`. Origem: P-05 / R2-P02 / R2-P38.\n+- R16. Uma atividade deve ocorrer dentro do periodo do evento, de 19/10/2026 a 23/10/2026, considerando horario de Brasilia; encontro fora desse periodo gera `422 ENCONTRO_INVALIDO`. Origem: P-07 / R2-P05 / R2-P37.\n+- R17. A ordem interna de precedencia entre erros especificos de criacao do M1 nao esta especificada; a spec nao exige prioridade entre `QUANTIDADE_DE_ENCONTROS`, `ENCONTRO_INVALIDO`, `VAGAS_ACIMA_DA_CAPACIDADE` e `CONFLITO_DE_SALA`. Origem: P-31 / R2-P35.\n+\n+## 7. Regras dos encontros\n+\n+Regras:\n+\n+- R18. Cada encontro deve durar no minimo 1 hora e no maximo 4 horas; duracao fora desse intervalo gera `422 ENCONTRO_INVALIDO`. Origem: P-06 / R2-P03 / R2-P37.\n+- R19. Cada encontro deve comecar e terminar no mesmo dia; encontro que atravessa meia-noite ou muda de dia gera `422 ENCONTRO_INVALIDO`. Origem: R2-P37 / R2-P40.\n+- R20. Encontros da mesma atividade nao podem se sobrepor; sobreposicao interna gera `422 ENCONTRO_INVALIDO`. Origem: R2-P37.\n+\n+## 8. Regras de sala/conflito\n+\n+Regras:\n+\n+- R21. Existe conflito quando dois encontros de atividades nao canceladas usam a mesma sala em horarios sobrepostos; a criacao retorna `409 CONFLITO_DE_SALA`. Origem: P-10 / R2-P09.\n+- R22. Alem de nao haver sobreposicao, deve existir intervalo minimo de 15 minutos entre o fim de um encontro e o inicio do proximo encontro na mesma sala; se o intervalo for menor, a criacao retorna `409 CONFLITO_DE_SALA`. Origem: P-11 / R2-P09 / R2-P10.\n+- R23. Na mesma sala, intervalo de 14 minutos entre encontros ainda conflita e intervalo de 15 minutos e permitido. Origem: R2-P12 / R2-P40.\n+- R24. Na mesma sala, `fim == inicio` entre encontros de atividades diferentes e conflito, pois nao cumpre intervalo minimo de 15 minutos. Origem: R2-P12.\n+- R25. Encontros de atividades canceladas nao contam para conflito de sala. Origem: P-12 / R2-P11.\n+\n+## 9. Regras de vagas\n+\n+Regras:\n+\n+- R26. `vagas` deve ser no minimo 1 e no maximo igual a capacidade da sala da atividade. Origem: P-13 / P-14 / R2-P08 / R2-P13.\n+- R27. `vagas` acima da capacidade da sala gera `422 VAGAS_ACIMA_DA_CAPACIDADE` na criacao ou edicao. Origem: R2-P08 / contrato-api.md, codigos de retorno.\n+- R28. Reduzir `vagas` para valor menor que a quantidade de inscricoes que ocupam vaga gera `409 VAGAS_ABAIXO_DOS_INSCRITOS`. Origem: P-15 / R2-P14.\n+- R29. Inscricoes `confirmadas` e `convocadas` contam como ocupando vaga para impedir reducao de vagas. Origem: R2-P16.\n+- R30. Inscricoes `em_espera`, `canceladas` e `expiradas` nao contam como ocupando vaga para impedir reducao de vagas. Origem: R2-P16.\n+- R31. Aumentar `vagas` e permitido quando respeita as demais regras do M1; eventual convocacao automatica da lista de espera e dependencia do M2. Origem: R2-P15.\n+\n+## 10. Carga horaria\n+\n+Regras:\n+\n+- R32. `cargaHorariaMinutos` e calculada pela soma das duracoes de todos os encontros, em minutos. Origem: P-06 / R2-P04.\n+- R33. Se `cargaHorariaMinutos` for enviado na criacao ou edicao, o valor enviado e ignorado; a resposta deve retornar o valor calculado. Origem: R2-P04.\n+\n+## 11. Regras de edicao\n+\n+Regras:\n+\n+- R34. `PATCH /atividades/:id` com alteracao valida retorna `200 Atividade`. Origem: contrato-api.md, rotas M1.\n+- R35. Apenas `titulo` e `vagas` podem ser alterados depois da criacao. Origem: P-16 / R2-P17.\n+- R36. `salaId`, `tipo` e `encontros` sao imutaveis depois da criacao; tentativa de alteracao retorna `422 CAMPO_NAO_EDITAVEL`. Origem: P-17 / R2-P18.\n+- R37. Atividade cancelada nao pode ser editada; tentativa de edicao retorna `422 ATIVIDADE_CANCELADA`. Origem: R2-P20.\n+- R38. A ordem interna de precedencia entre erros especificos de edicao do M1 nao esta especificada; a spec nao exige prioridade entre `ATIVIDADE_CANCELADA`, `CAMPO_NAO_EDITAVEL`, `VAGAS_ACIMA_DA_CAPACIDADE` e `VAGAS_ABAIXO_DOS_INSCRITOS`. Origem: P-31 / R2-P36.\n+\n+## 12. Cancelamento\n+\n+Regras:\n+\n+- R39. `POST /atividades/:id/cancelamento` antes do inicio da atividade cancela a atividade e retorna `200 Atividade` com `situacao` igual a `cancelada`. Origem: P-18 / R2-P21 / contrato-api.md, rotas M1.\n+- R40. O cancelamento so pode acontecer antes de a atividade comecar; se a atividade ja comecou, retorna `422 ATIVIDADE_JA_INICIADA`. Origem: P-18 / R2-P21.\n+- R41. O cancelamento e definitivo; atividade cancelada nao pode ser reativada. Origem: P-19 / R2-P22.\n+- R42. Cancelar uma atividade ja cancelada retorna `422 ATIVIDADE_CANCELADA`. Origem: P-20 / R2-P23.\n+- R43. A ordem interna de precedencia entre erros especificos de cancelamento do M1 nao esta especificada; a spec nao exige prioridade entre `ATIVIDADE_CANCELADA` e `ATIVIDADE_JA_INICIADA`. Origem: P-31 / R2-P36.\n+\n+## 13. Situacao calculada pelo relogio\n+\n+Regras:\n+\n+- R44. Os estados oficiais de `situacao` sao `prevista`, `em_andamento`, `encerrada` e `cancelada`. Origem: P-22 / R2-P25.\n+- R45. Uma atividade nao cancelada fica `prevista` antes do inicio do primeiro encontro. Origem: P-23 / R2-P26.\n+- R46. Uma atividade nao cancelada fica `em_andamento` a partir do inicio do primeiro encontro. Origem: P-23 / R2-P26.\n+- R47. Uma atividade nao cancelada fica `encerrada` a partir do fim do ultimo encontro. Origem: P-23 / R2-P26.\n+- R48. `cancelada` prevalece sobre todos os estados calculados pelo relogio. Origem: P-22 / P-23 / P-19 / R2-P28.\n+\n+## 14. Consulta e listagem\n+\n+Regras:\n+\n+- R49. `GET /atividades` retorna `200 [Atividade]` ordenado pelo inicio do primeiro encontro. Origem: P-25 / R2-P29.\n+- R50. Em caso de empate no inicio do primeiro encontro, `GET /atividades` ordena pelo `titulo`. Origem: P-25 / R2-P29.\n+- R51. Atividades canceladas aparecem normalmente em `GET /atividades`; nao ha ordenacao especial para canceladas. Origem: P-26 / R2-P30.\n+- R52. `GET /atividades/:id` retorna `200 Atividade` para atividade existente, sem regra especial especificada para atividade cancelada. Origem: contrato-api.md, rotas M1 / R2-P31.\n+\n+## 15. Filtros\n+\n+Regras:\n+\n+- R53. `GET /atividades?dia=AAAA-MM-DD` inclui a atividade quando ela tem pelo menos um encontro naquele dia de Brasilia. Origem: P-27 / R2-P32.\n+- R54. `GET /atividades?tipo=palestra|minicurso` filtra atividades pelo tipo informado. Origem: P-28 / contrato-api.md, rotas M1.\n+- R55. Quando `dia` e `tipo` forem enviados juntos em `GET /atividades`, os dois filtros devem ser aplicados ao mesmo tempo. Origem: P-29 / R2-P32.\n+\n+## 16. Regras temporais e bordas\n+\n+Regras:\n+\n+- R56. Todas as regras temporais do M1 usam o relogio controlado quando `MODO_TESTE=1`. Origem: P-30 / contrato-api.md, modo de teste.\n+- R57. Quando `agora == inicio do primeiro encontro`, a atividade ja esta `em_andamento`. Origem: P-24 / R2-P27 / R2-P40.\n+- R58. Quando `agora == fim do ultimo encontro`, a atividade ja esta `encerrada`. Origem: P-24 / R2-P27 / R2-P40.\n+- R59. As bordas do periodo do evento sao inclusivas para os dias de 19/10/2026 a 23/10/2026, sem faixa diaria especifica definida. Origem: P-07 / R2-P05.\n+\n+## 17. Dependencias com outros modulos\n+\n+- M2 Inscricoes e lista de espera: `ocupadas`, `vagasRestantes`, `emEspera`, a restricao de reducao de vagas por inscricoes que ocupam vaga e a possivel convocacao automatica no aumento de vagas dependem dos estados e regras de inscricao do M2.\n+- M2 Inscricoes e lista de espera: o cancelamento de atividade deve impedir novas inscricoes e cancelar inscricoes ativas conforme regra do M2; o M1 registra a atividade como cancelada.\n+- M3 Presenca: atividade cancelada nao permite obter codigo de presenca, mas o fluxo pertence ao modulo de presenca.\n+- M4 Certificados: atividade cancelada nao permite emitir certificado, mas o fluxo pertence ao M4.\n+\n+Regras:\n+\n+- R60. O M1 deve expor `situacao`, `vagas`, `ocupadas`, `vagasRestantes`, `emEspera` e `cargaHorariaMinutos` de forma consistente para consumo por M2, M3 e M4, sem implementar dentro do M1 os fluxos completos desses modulos. Origem: R2-P15 / R2-P24 / contrato-api.md, modelos M1-M4.\n+\n+## 18. Pontos nao especificados\n+\n+Estes pontos foram explicitamente preservados como ausencia de regra adicional. Nao devem gerar comportamento inventado na implementacao do M1:\n+\n+- N01. Faixa diaria especifica de horario permitida dentro dos dias do evento. Origem: R2-P05.\n+- N02. Subconjunto de salas permitidas ou salas excluidas do M1. Origem: R2-P06.\n+- N03. Restricao de sala por tipo de atividade. Origem: R2-P07.\n+- N04. Proibicao geral de editar uma atividade apenas por ela ja ter iniciado ou encerrado. Origem: R2-P19.\n+- N05. Comportamento especial do detalhe de uma atividade cancelada. Origem: R2-P31.\n+- N06. Comportamento de `GET /atividades?tipo=<valor invalido>`. Origem: R2-P33.\n+- N07. Comportamento de `GET /atividades?dia=<formato invalido>` ou dia fora do periodo do evento. Origem: R2-P34.\n+- N08. Precedencia interna dos erros de criacao. Origem: R2-P35.\n+- N09. Precedencia interna dos erros de edicao/cancelamento. Origem: R2-P36.\n+- N10. Codigo especifico para `vagas < 1` ou valor de vagas nao inteiro. Origem: R2-P39.\n+\n+## 19. Criterios de aceitacao\n+\n+1. (R01, R02, R03) Depois de `POST /_teste/reset`, `GET /atividades` com usuario valido retorna `200 []`.\n+2. (R02, R03) Depois de `POST /_teste/reset`, `GET /salas` com usuario valido retorna as salas iniciais do contrato: `auditorio`, `sala-101`, `sala-102` e `lab-3`.\n+3. (R04, R06, R07) `POST /atividades` sem usuario retorna `401 USUARIO_DESCONHECIDO`; com participante retorna `403 SOMENTE_ORGANIZACAO`.\n+4. (R10, R13, R14, R18, R26, R32, R33, R44, R45) `POST /atividades` de `palestra` valida com 1 encontro, vagas dentro da capacidade e `cargaHorariaMinutos` enviado incorreto retorna `201 Atividade` com carga calculada e situacao conforme relogio.\n+5. (R10, R13, R15, R18, R26, R32) `POST /atividades` de `minicurso` valido com 2 encontros retorna `201 Atividade` com carga igual a soma dos encontros.\n+6. (R14) `POST /atividades` de `palestra` com 0 ou 2 encontros retorna `422 QUANTIDADE_DE_ENCONTROS` quando essa for a regra do recurso aplicada.\n+7. (R15) `POST /atividades` de `minicurso` com 1 ou 6 encontros retorna `422 QUANTIDADE_DE_ENCONTROS` quando essa for a regra do recurso aplicada.\n+8. (R16, R18, R19, R20) `POST /atividades` com encontro fora do periodo, menor que 1h, maior que 4h, atravessando meia-noite ou sobreposto a outro encontro da mesma atividade retorna `422 ENCONTRO_INVALIDO` quando essa for a regra do recurso aplicada.\n+9. (R21, R22, R24) Criar atividade em sala ocupada por outra atividade nao cancelada com sobreposicao ou sem intervalo minimo retorna `409 CONFLITO_DE_SALA` quando essa for a regra do recurso aplicada.\n+10. (R23) Se uma atividade termina as 10:00 na mesma sala, outra iniciando as 10:14 retorna `409 CONFLITO_DE_SALA`; iniciando as 10:15 e aceita, mantendo as demais regras validas.\n+11. (R25, R39) Depois de cancelar uma atividade antes do inicio, seus encontros nao bloqueiam a criacao de nova atividade na mesma sala e horario.\n+12. (R26, R27) Criar ou editar atividade com `vagas` acima da capacidade da sala retorna `422 VAGAS_ACIMA_DA_CAPACIDADE` quando essa for a regra do recurso aplicada.\n+13. (R28, R29, R30) Reduzir vagas abaixo de inscricoes `confirmadas` e `convocadas` retorna `409 VAGAS_ABAIXO_DOS_INSCRITOS`; inscricoes `em_espera`, `canceladas` e `expiradas` nao aumentam esse limite.\n+14. (R31) Aumentar vagas em atividade nao cancelada e permitido quando respeita capacidade e demais regras do M1; a spec do M1 nao exige validar o fluxo completo de convocacao.\n+15. (R34, R35) `PATCH /atividades/:id` alterando apenas `titulo` ou `vagas` validos retorna `200 Atividade` com os campos alterados.\n+16. (R36) `PATCH /atividades/:id` tentando alterar `salaId`, `tipo` ou `encontros` retorna `422 CAMPO_NAO_EDITAVEL` quando essa for a regra do recurso aplicada.\n+17. (R37) `PATCH /atividades/:id` de atividade cancelada retorna `422 ATIVIDADE_CANCELADA` quando essa for a regra do recurso aplicada.\n+18. (R39, R40, R41, R42) Cancelar antes do inicio retorna `200` e `situacao=cancelada`; cancelar depois de iniciada retorna `422 ATIVIDADE_JA_INICIADA`; cancelar novamente retorna `422 ATIVIDADE_CANCELADA` quando essa for a regra do recurso aplicada.\n+19. (R44, R45, R46, R47, R48, R56, R57, R58) Alterando `/_teste/relogio`, a mesma atividade aparece como `prevista` antes do inicio, `em_andamento` exatamente no inicio do primeiro encontro, `encerrada` exatamente no fim do ultimo encontro, e permanece `cancelada` se tiver sido cancelada.\n+20. (R49, R50, R51) `GET /atividades` retorna atividades ordenadas pelo inicio do primeiro encontro, desempata por titulo e inclui canceladas.\n+21. (R52) `GET /atividades/:id` de atividade existente retorna `200 Atividade`; a spec nao exige comportamento especial para cancelada alem das regras gerais.\n+22. (R53, R54, R55) `GET /atividades?dia=AAAA-MM-DD`, `GET /atividades?tipo=palestra` e a combinacao `dia` + `tipo` filtram conforme dia de Brasilia e tipo.\n+23. (R17, R38, R43, N08, N09) Testes nao devem exigir ordem interna de precedencia entre erros especificos do recurso quando mais de uma regra do M1 e violada simultaneamente.\n+\n+## 20. Cenarios de teste derivados da entrevista\n+\n+1. Criacao valida de palestra com exatamente 1 encontro dentro do periodo, duracao entre 1h e 4h, vagas dentro da capacidade, carga calculada e `cargaHorariaMinutos` enviado ignorado. Regras: R13, R14, R16, R18, R26, R32, R33.\n+2. Criacao valida de minicurso com 2 encontros e carga horaria igual a soma das duracoes. Regras: R13, R15, R32.\n+3. Recusa de palestra com quantidade diferente de 1 encontro. Regras: R14.\n+4. Recusa de minicurso com menos de 2 ou mais de 5 encontros. Regras: R15.\n+5. Recusa de encontro menor que 1h, maior que 4h, fora do periodo, cruzando meia-noite ou sobreposto internamente. Regras: R16, R18, R19, R20.\n+6. Recusa de conflito de sala por sobreposicao com atividade nao cancelada. Regras: R21.\n+7. Recusa de conflito de sala por intervalo de 14 minutos e aceite com intervalo de 15 minutos. Regras: R22, R23.\n+8. Criacao em horario de atividade cancelada nao gera conflito de sala. Regras: R25, R39.\n+9. Recusa de vagas acima da capacidade da sala na criacao e na edicao. Regras: R26, R27.\n+10. Recusa de reducao de vagas abaixo de inscricoes que ocupam vaga, contando `confirmadas` e `convocadas`, sem contar `em_espera`, `canceladas` e `expiradas`. Regras: R28, R29, R30.\n+11. Edicao permite somente `titulo` e `vagas`; tentativa de alterar sala, tipo ou encontros e recusada. Regras: R35, R36.\n+12. Atividade cancelada nao pode ser editada nem cancelada novamente. Regras: R37, R42.\n+13. Cancelamento antes do inicio e aceito; cancelamento depois do inicio e recusado. Regras: R39, R40.\n+14. Situacao muda por relogio controlado: prevista antes do primeiro inicio, em andamento no instante inicial, encerrada no instante final, cancelada prevalece. Regras: R44, R45, R46, R47, R48, R56, R57, R58.\n+15. Listagem ordena pelo inicio do primeiro encontro, desempata por titulo e inclui canceladas. Regras: R49, R50, R51.\n+16. Filtro por dia usa dia de Brasilia; filtro por tipo usa `palestra` ou `minicurso`; filtros combinados aplicam ambos. Regras: R53, R54, R55.\n+17. Consulta por id retorna a atividade existente conforme contrato, sem inventar comportamento especial para cancelada. Regras: R52, N05.\n+\n+## 21. Rastreabilidade entrevista -> regra\n+\n+| Origem | Regras |\n+|---|---|\n+| P-01 | R01 |\n+| P-02 | R01, R05 |\n+| P-03 / R2-P01 | R10, R11 |\n+| P-04 | R02 |\n+| P-05 / R2-P02 / R2-P38 | R14, R15 |\n+| P-06 / R2-P03 / R2-P04 / R2-P37 | R18, R32, R33 |\n+| P-07 / R2-P05 / R2-P37 | R16, R59, N01 |\n+| P-08 / R2-P06 | N02 |\n+| P-09 / R2-P07 | N03 |\n+| P-10 / R2-P09 / R2-P12 | R21, R24 |\n+| P-11 / R2-P09 / R2-P10 / R2-P12 | R22, R23 |\n+| P-12 / R2-P11 | R25 |\n+| P-13 / P-14 / R2-P08 / R2-P13 / R2-P39 | R26, R27, N10 |\n+| P-15 / R2-P14 / R2-P15 / R2-P16 | R28, R29, R30, R31 |\n+| P-16 / R2-P17 / R2-P20 | R35, R37 |\n+| P-17 / R2-P18 | R36 |\n+| P-18 / R2-P21 | R39, R40 |\n+| P-19 / R2-P22 / R2-P28 | R41, R48 |\n+| P-20 / R2-P23 | R42 |\n+| P-21 / R2-P24 | R05, R60 |\n+| P-22 / R2-P25 / R2-P28 | R44, R48 |\n+| P-23 / R2-P26 / R2-P28 | R45, R46, R47, R48 |\n+| P-24 / R2-P27 / R2-P40 | R57, R58 |\n+| P-25 / R2-P29 | R49, R50 |\n+| P-26 / R2-P30 / R2-P31 | R51, R52, N05 |\n+| P-27 / R2-P32 / R2-P34 | R53, N07 |\n+| P-28 / R2-P33 | R54, N06 |\n+| P-29 / R2-P32 | R55 |\n+| P-30 | R56 |\n+| P-31 / R2-P35 / R2-P36 | R17, R38, R43, N08, N09 |\n+| P-32 / R2-P37 / R2-P38 / R2-P40 | R14, R15, R16, R18, R19, R22, R23, R40, R49, R50, R51, R53, R55, R57, R58 |\n+| contrato-api.md | R03, R04, R06, R07, R08, R09, R12, R13, R27, R34, R39, R52, R54, R56, R60 |\n+\n+## Como isto sera verificado\n+\n+As regras do M1 devem ser verificadas pela interface HTTP definida em `contrato-api.md`, usando o servidor da API e o modo de teste (`MODO_TESTE=1`) para resetar estado e controlar o relogio. Essa e a costura mais externa e cobre permissao, contrato de JSON, status HTTP, codigos de erro, persistencia em memoria e regras temporais observaveis pelo cliente.\n+\n+## Fatias de entrega sugeridas para TDD\n+\n+1. Dados iniciais, autenticacao/autorizacao e consulta vazia de salas/atividades.\n+2. Criacao valida de atividade, tipos, encontros, periodo, duracao, carga horaria e ordenacao de encontros.\n+3. Conflito de sala, intervalo minimo e canceladas fora do conflito.\n+4. Vagas, capacidade e campos calculados ligados a ocupacao.\n+5. Edicao de `titulo` e `vagas`, campos imutaveis e atividade cancelada nao editavel.\n+6. Cancelamento antes do inicio, definitivo e recusas temporais.\n+7. Situacao calculada por relogio controlado e bordas inclusivas.\n+8. Listagem, detalhe e filtros por dia/tipo.\n",
+         "additions": 295,
+         "deletions": 0
+        }
+       ],
+       "diagnostics": {},
+       "truncated": false
+      },
+      "title": "Success. Updated the following files:\nA specs/M1-grade-atividades.md",
+      "time": {
+       "start": 1790045231634,
+       "end": 1790045231643
+      }
+     },
+     "metadata": {
+      "openai": {
+       "itemId": "fc_006eb890efe1cb9a016ab1ebd7694887d285283e68d0272a79"
+      }
+     },
+     "id": "prt_0c701414f001yTBbMDSpqbl93f",
+     "sessionID": "ses_f38ff03c4ffeSgCXrMAJBQYekK",
+     "messageID": "msg_0c7013343001fl35iAUU1eeRCQ"
+    },
+    {
+     "reason": "tool-calls",
+     "snapshot": "043790b7b301affded397e1c8d2fc967af8a1ac3",
+     "type": "step-finish",
+     "tokens": {
+      "total": 35169,
+      "input": 583,
+      "output": 7397,
+      "reasoning": 53,
+      "cache": {
+       "write": 0,
+       "read": 27136
+      }
+     },
+     "cost": 0,
+     "id": "prt_0c7029a95001Rn2vjnzodPgaOX",
+     "sessionID": "ses_f38ff03c4ffeSgCXrMAJBQYekK",
+     "messageID": "msg_0c7013343001fl35iAUU1eeRCQ"
+    },
+    {
+     "type": "patch",
+     "hash": "f77b6fd5ba66c23f5be5f248324d55111f4da7df",
+     "files": [
+      "/Users/yasmindesouza/TrabalhoIA-WomanInTech/specs/M1-grade-atividades.md"
+     ],
+     "id": "prt_0c7029ace0016AZA1JQDVxBCWk",
+     "sessionID": "ses_f38ff03c4ffeSgCXrMAJBQYekK",
+     "messageID": "msg_0c7013343001fl35iAUU1eeRCQ"
+    }
+   ]
+  },
+  {
+   "info": {
+    "parentID": "msg_0c700fc50001zBchIzRDxpTrVx",
+    "role": "assistant",
+    "mode": "build",
+    "agent": "build",
+    "path": {
+     "cwd": "/Users/yasmindesouza/TrabalhoIA-WomanInTech",
+     "root": "/Users/yasmindesouza/TrabalhoIA-WomanInTech"
+    },
+    "cost": 0,
+    "tokens": {
+     "total": 35361,
+     "input": 8060,
+     "output": 165,
+     "reasoning": 0,
+     "cache": {
+      "write": 0,
+      "read": 27136
+     }
+    },
+    "modelID": "gpt-5.5-fast",
+    "providerID": "openai",
+    "time": {
+     "created": 1790045231829,
+     "completed": 1790045235521
+    },
+    "finish": "tool-calls",
+    "id": "msg_0c7029ad5001hOGTrE2ZR79zOf",
+    "sessionID": "ses_f38ff03c4ffeSgCXrMAJBQYekK"
+   },
+   "parts": [
+    {
+     "snapshot": "043790b7b301affded397e1c8d2fc967af8a1ac3",
+     "type": "step-start",
+     "id": "prt_0c702a06a001BCl6xvrFhOAfiY",
+     "sessionID": "ses_f38ff03c4ffeSgCXrMAJBQYekK",
+     "messageID": "msg_0c7029ad5001hOGTrE2ZR79zOf"
+    },
+    {
+     "type": "text",
+     "text": "A spec foi criada. Agora vou revisar conteúdo e rastreabilidade contra a entrevista e o contrato, procurando principalmente regra inventada, lacuna não preservada e divergência de rota/código/status.",
+     "time": {
+      "start": 1790045233261,
+      "end": 1790045234023
+     },
+     "metadata": {
+      "openai": {
+       "itemId": "msg_0da4db0c19e86710016ab1ec3158fc87d281f243d75c4068a4",
+       "phase": "commentary"
+      }
+     },
+     "id": "prt_0c702a06d001KdpwECYLd3CGAy",
+     "sessionID": "ses_f38ff03c4ffeSgCXrMAJBQYekK",
+     "messageID": "msg_0c7029ad5001hOGTrE2ZR79zOf"
+    },
+    {
+     "type": "tool",
+     "tool": "todowrite",
+     "callID": "call_PPh5Hz9hoMSu0mW5164IPL35",
+     "state": {
+      "status": "completed",
+      "input": {
+       "todos": [
+        {
+         "content": "Ler fontes do M1 e convenções relevantes",
+         "status": "completed",
+         "priority": "high"
+        },
+        {
+         "content": "Criar specs/M1-grade-atividades.md com regras rastreáveis",
+         "status": "completed",
+         "priority": "high"
+        },
+        {
+         "content": "Revisar spec contra entrevista e contrato-api.md",
+         "status": "in_progress",
+         "priority": "high"
+        },
+        {
+         "content": "Reportar caminho, contagens, dependências, divergências e prontidão para TDD",
+         "status": "pending",
+         "priority": "medium"
+        }
+       ]
+      },
+      "output": "[\n  {\n    \"content\": \"Ler fontes do M1 e convenções relevantes\",\n    \"status\": \"completed\",\n    \"priority\": \"high\"\n  },\n  {\n    \"content\": \"Criar specs/M1-grade-atividades.md com regras rastreáveis\",\n    \"status\": \"completed\",\n    \"priority\": \"high\"\n  },\n  {\n    \"content\": \"Revisar spec contra entrevista e contrato-api.md\",\n    \"status\": \"in_progress\",\n    \"priority\": \"high\"\n  },\n  {\n    \"content\": \"Reportar caminho, contagens, dependências, divergências e prontidão para TDD\",\n    \"status\": \"pending\",\n    \"priority\": \"medium\"\n  }\n]",
+      "metadata": {
+       "todos": [
+        {
+         "content": "Ler fontes do M1 e convenções relevantes",
+         "status": "completed",
+         "priority": "high"
+        },
+        {
+         "content": "Criar specs/M1-grade-atividades.md com regras rastreáveis",
+         "status": "completed",
+         "priority": "high"
+        },
+        {
+         "content": "Revisar spec contra entrevista e contrato-api.md",
+         "status": "in_progress",
+         "priority": "high"
+        },
+        {
+         "content": "Reportar caminho, contagens, dependências, divergências e prontidão para TDD",
+         "status": "pending",
+         "priority": "medium"
+        }
+       ],
+       "truncated": false
+      },
+      "title": "2 todos",
+      "time": {
+       "start": 1790045235361,
+       "end": 1790045235363
+      }
+     },
+     "metadata": {
+      "openai": {
+       "itemId": "fc_0da4db0c19e86710016ab1ec32091887d2b3a7161f03d48c33"
+      }
+     },
+     "id": "prt_0c702a369001bOHeYoTEJ5kO2Z",
+     "sessionID": "ses_f38ff03c4ffeSgCXrMAJBQYekK",
+     "messageID": "msg_0c7029ad5001hOGTrE2ZR79zOf"
+    },
+    {
+     "reason": "tool-calls",
+     "snapshot": "043790b7b301affded397e1c8d2fc967af8a1ac3",
+     "type": "step-finish",
+     "tokens": {
+      "total": 35361,
+      "input": 8060,
+      "output": 165,
+      "reasoning": 0,
+      "cache": {
+       "write": 0,
+       "read": 27136
+      }
+     },
+     "cost": 0,
+     "id": "prt_0c702a915001bPGRLyY1er6CTx",
+     "sessionID": "ses_f38ff03c4ffeSgCXrMAJBQYekK",
+     "messageID": "msg_0c7029ad5001hOGTrE2ZR79zOf"
+    }
+   ]
+  },
+  {
+   "info": {
+    "parentID": "msg_0c700fc50001zBchIzRDxpTrVx",
+    "role": "assistant",
+    "mode": "build",
+    "agent": "build",
+    "path": {
+     "cwd": "/Users/yasmindesouza/TrabalhoIA-WomanInTech",
+     "root": "/Users/yasmindesouza/TrabalhoIA-WomanInTech"
+    },
+    "cost": 0,
+    "tokens": {
+     "total": 35697,
+     "input": 1222,
+     "output": 171,
+     "reasoning": 0,
+     "cache": {
+      "write": 0,
+      "read": 34304
+     }
+    },
+    "modelID": "gpt-5.5-fast",
+    "providerID": "openai",
+    "time": {
+     "created": 1790045235525,
+     "completed": 1790045241704
+    },
+    "finish": "tool-calls",
+    "id": "msg_0c702a9440011ElRrghfGhBUJt",
+    "sessionID": "ses_f38ff03c4ffeSgCXrMAJBQYekK"
+   },
+   "parts": [
+    {
+     "snapshot": "043790b7b301affded397e1c8d2fc967af8a1ac3",
+     "type": "step-start",
+     "id": "prt_0c702c09a001PuMXNI0QbY5YHW",
+     "sessionID": "ses_f38ff03c4ffeSgCXrMAJBQYekK",
+     "messageID": "msg_0c702a9440011ElRrghfGhBUJt"
+    },
+    {
+     "type": "tool",
+     "tool": "read",
+     "callID": "call_xhBwIQmR30KNCbrcVcZoAAR2",
+     "state": {
+      "status": "completed",
+      "input": {
+       "filePath": "/Users/yasmindesouza/TrabalhoIA-WomanInTech/specs/M1-grade-atividades.md",
+       "limit": 2000
+      },
+      "output": "[23654 caracteres omitidos]",
+      "title": "specs/M1-grade-atividades.md",
+      "time": {
+       "start": 1790045241536,
+       "end": 1790045241541
+      }
+     },
+     "metadata": {
+      "openai": {
+       "itemId": "fc_0138d36e47587d7a016ab1ec397a4087d2809433f2af3bbc51"
+      }
+     },
+     "id": "prt_0c702c0a1001taHxH0FmkIfBpp",
+     "sessionID": "ses_f38ff03c4ffeSgCXrMAJBQYekK",
+     "messageID": "msg_0c702a9440011ElRrghfGhBUJt"
+    },
+    {
+     "type": "tool",
+     "tool": "grep",
+     "callID": "call_LI7mprL9NfdSChB2ruyvW99T",
+     "state": {
+      "status": "completed",
+      "input": {
+       "path": "/Users/yasmindesouza/TrabalhoIA-WomanInTech/specs/M1-grade-atividades.md",
+       "pattern": "^- R[0-9]+\\.",
+       "include": "*.md"
+      },
+      "output": "[9929 caracteres omitidos]",
+      "title": "^- R[0-9]+\\.",
+      "time": {
+       "start": 1790045241547,
+       "end": 1790045241570
+      }
+     },
+     "metadata": {
+      "openai": {
+       "itemId": "fc_0138d36e47587d7a016ab1ec397a5487d2a80ade131e0d3114"
+      }
+     },
+     "id": "prt_0c702c0c80011AN05vtthUSAg6",
+     "sessionID": "ses_f38ff03c4ffeSgCXrMAJBQYekK",
+     "messageID": "msg_0c702a9440011ElRrghfGhBUJt"
+    },
+    {
+     "type": "tool",
+     "tool": "grep",
+     "callID": "call_3CF1blbnbdAaRYcMLwPDhx4s",
+     "state": {
+      "status": "completed",
+      "input": {
+       "path": "/Users/yasmindesouza/TrabalhoIA-WomanInTech/specs/M1-grade-atividades.md",
+       "pattern": "^- N[0-9]+\\.",
+       "include": "*.md"
+      },
+      "output": "[1080 caracteres omitidos]",
+      "title": "^- N[0-9]+\\.",
+      "time": {
+       "start": 1790045241550,
+       "end": 1790045241572
+      }
+     },
+     "metadata": {
+      "openai": {
+       "itemId": "fc_0138d36e47587d7a016ab1ec397a5c87d282bca0bcbb3974cb"
+      }
+     },
+     "id": "prt_0c702c0cc001hbud3KBGq3vixG",
+     "sessionID": "ses_f38ff03c4ffeSgCXrMAJBQYekK",
+     "messageID": "msg_0c702a9440011ElRrghfGhBUJt"
+    },
+    {
+     "reason": "tool-calls",
+     "snapshot": "043790b7b301affded397e1c8d2fc967af8a1ac3",
+     "type": "step-finish",
+     "tokens": {
+      "total": 35697,
+      "input": 1222,
+      "output": 171,
+      "reasoning": 0,
+      "cache": {
+       "write": 0,
+       "read": 34304
+      }
+     },
+     "cost": 0,
+     "id": "prt_0c702c13e0012ango1XIYuPO1c",
+     "sessionID": "ses_f38ff03c4ffeSgCXrMAJBQYekK",
+     "messageID": "msg_0c702a9440011ElRrghfGhBUJt"
+    }
+   ]
+  },
+  {
+   "info": {
+    "parentID": "msg_0c700fc50001zBchIzRDxpTrVx",
+    "role": "assistant",
+    "mode": "build",
+    "agent": "build",
+    "path": {
+     "cwd": "/Users/yasmindesouza/TrabalhoIA-WomanInTech",
+     "root": "/Users/yasmindesouza/TrabalhoIA-WomanInTech"
+    },
+    "cost": 0,
+    "tokens": {
+     "total": 47493,
+     "input": 11473,
+     "output": 184,
+     "reasoning": 508,
+     "cache": {
+      "write": 0,
+      "read": 35328
+     }
+    },
+    "modelID": "gpt-5.5-fast",
+    "providerID": "openai",
+    "time": {
+     "created": 1790045241708,
+     "completed": 1790045252065
+    },
+    "finish": "tool-calls",
+    "id": "msg_0c702c16c001aJ8dyD9Tk4J4R2",
+    "sessionID": "ses_f38ff03c4ffeSgCXrMAJBQYekK"
+   },
+   "parts": [
+    {
+     "snapshot": "043790b7b301affded397e1c8d2fc967af8a1ac3",
+     "type": "step-start",
+     "id": "prt_0c702c6bd001ghkE2nZ8aadOjh",
+     "sessionID": "ses_f38ff03c4ffeSgCXrMAJBQYekK",
+     "messageID": "msg_0c702c16c001aJ8dyD9Tk4J4R2"
+    },
+    {
+     "type": "reasoning",
+     "text": "**Assessing API response behavior divergence**",
+     "time": {
+      "start": 1790045243074,
+      "end": 1790045249178
+     },
+     "metadata": {
+      "openai": {
+       "itemId": "rs_0a27f82d465cf7b3016ab1ec3b28bc87d29a92c889bb9d6eaf"
+      }
+     },
+     "id": "prt_0c702c6c2001ofqYz13PTgNaog",
+     "sessionID": "ses_f38ff03c4ffeSgCXrMAJBQYekK",
+     "messageID": "msg_0c702c16c001aJ8dyD9Tk4J4R2"
+    },
+    {
+     "type": "reasoning",
+     "text": "**Verifying spec section organization and rule sources**",
+     "time": {
+      "start": 1790045249182,
+      "end": 1790045250391
+     },
+     "metadata": {
+      "openai": {
+       "itemId": "rs_0a27f82d465cf7b3016ab1ec3b28bc87d29a92c889bb9d6eaf"
+      }
+     },
+     "id": "prt_0c702de9e001AKp5E7I0OE6SOR",
+     "sessionID": "ses_f38ff03c4ffeSgCXrMAJBQYekK",
+     "messageID": "msg_0c702c16c001aJ8dyD9Tk4J4R2"
+    },
+    {
+     "type": "reasoning",
+     "text": "**Clarifying rule source scope and counting methods**",
+     "time": {
+      "start": 1790045250392,
+      "end": 1790045250505
+     },
+     "metadata": {
+      "openai": {
+       "itemId": "rs_0a27f82d465cf7b3016ab1ec3b28bc87d29a92c889bb9d6eaf",
+       "reasoningEncryptedContent": "gAAAAABqsexCtXD1faUjcc0axYpJ_ZDi2idz64LTJZeciLBAtWYigQmTYYk-tSyLoypUtaKuiz2-bATV53ma3Q-azm9ftc77a188_twnTwd8suYbhOnoCTUl7bqtZpX0IBAzep20fawIfVwM6_ZLfyQy0FWQPhUdZh1QJYxjBNilKFadG2pMP5aEygv0GBLGNNjCl1y3nQYHzpIhuGuys7dzj5uM1odosNo6NKj_SH97gEZjkJergviu4jToQ0qC_uSfwLgF574PK6-PePFG_o8S8tHbwfzZGF_g3Wi8yT4_CTAf-XOaXOG3z5BRA-Pj-0Xls7gfmyhzWR43xhFuwINOftGqwFe2rjGaar7cMMBhxF79R_RzxwdsgCijmETvnQUExxsbjF-VgYj6zbwwHTcJ5bQM5qt8MraA8LtlCNsRDbofzoQJfDY7aDqHnLF5X6MMv-NnnOnhnZKJNxbU5idBaNMBy1BV78XzqpjaRHMYHXhQvJQJlKR1WJRiJKZ84p6Jqx7w5YoFLBDP_tpujoeOXaZGNE8q1pnxGfhpQ2cDAG4CVFO96c1L6Ko6U2znf4H1lmE-6LraFvPVDaWhmaD2u4mIsdYffqLWiVykDXEU96ydUOL3-kGBOt6v0Xw4_gBLD1AaxRAb_IYBNDosW_Db_JFMvvxRbd9yhNnEdb2g0UGUxrok9Suvx-wzmKyLfp2erzNK4uPLidvF_ix9nBg1u-0KJcvAecguIpUc5W792E4qV0g7V7-JcfqioP6Juhye2YvXfmuvk08lEABZ14nHCPKOyqOJvM2W2I-iUDYzCixJUyRiyoQ6Mfb6RBzEv641LD5nbw5r2O_c3iyzmFvPKKzT6ygNz4M3VDNe5Z7BI1G26Uw4TDwTou2uLvG2Ps4EEDvXpQNgibhcLmHLoerJQgUYYn7NBtzI_McK-h1VKcrwqLPFq6-z3iZp3x2774kAUiqtEAeXAcu21vbpttBP41x-jC8hMpaMwK98vOWolNCv7pRD7V7Us5rHpcBUMllosPlz4GzvH4iQVY8H698j-2vkicF0yjQWJ6lVHOlKyzSOm7wVfdKgDINIIewv6tOIX22VJwW53KH8VU58PbICKNvqArEHTqUxXi3tcWlIiRfJTcW2XWtBOau_rm7j-UMmJ0kuMYISdcym3WyqqoiLzKdvd68nmDK9YpLNPZMnQ-XVtpHHJA6hCaTRjzp5J7SeH9RjdpUb8VGi7vJAUiuHalZTnMi5uaD4W7TQVc9K8bCpzx-7NNyxBSyN3VSCNxcms1hqpkDvw3sBatcOnleyMD4sX_vkbk77SsfL93ZmmHryIL3ajvkr98R_uRXaUgJNhszlHLxrtT9Yh2XMn5bQPwg-aCLEK3Ephgrt_QD4-t07sOzja1QwKUSnDpxN9BCWiANtstiYJiaop5DaabzhSZRYVa-Q6bIFo6ceDvt2F04tmsxz2d67caHdc46ZdseSBaQTMsDb9en1eaYIa18EAmLH3KaF47rztxW16VEAxBFYGy07_KwjUbWiP2lRMhLW2vNB5H4UQYwb2oDqFcUg3ov5Cs8QaSgYYXSTOKUWbradeUEWC_PF312i0DBVBlOO5ueFgpzt2bOQplxd7In1aUxt0hLsgcVpa9MFLGt7YnAz0Ax0DW1EAvsXgaaYkbt2T22LQnRtSkXpoRsPiO_J_9KXTWuyjpZBmLa8q9DTuivsClbqNmDc7zad1XyDLFTZ96DrIklXYSXh2goyXf9svQaLKv407dzWvSZm8UKDzl1mFgkAPYpa9aA-JGLVfuJcAtB92nVrhLC0AR8-0ci9cnJqC4eO3Hxzzj9diTM6Dwg27sBlbwrIO5P_Lkr0I4FDp6qd2gdtRCn0KJdbOjaLBccGd4XGLW1NNFqnOjLt1_BDaXkzcLZt8XBNBIUea72-JSEsIus0XaXGwhLOI96c6GNpMj-29NrNm5rwn4zgAThaT3UQqiuQELGNHgIZjBRLlh0WfBBUX_gdVO8kUcEieqpZQ2HeKF7zE2pAPW486VrRly79h2rrw4BHWBAHxRSjhy9m9lzwBm5xYTXCdKNC18Bc5q1Wo_QUtqTqYAP8aMtzbQGCb8o46o2zq4zO6C3o2qYU5sGhCqeGdQxGDAxyIWC3sGunaVD1Uo4y4kmO77pU3sBgICofH6diztNXCryKT61Mgf7_X0Epvt_0Ku2qmkImMOAHjesbQg5G-dWDTb7xIFb8KxM5LPuRP1C8MRxMxHo7ZQAHLxzMGbFCB-7A4kW1khlMHF9UvjTAr-VoN0s_L1-IdamWKRIvzTuASqf7Yw6WOFkOpA6ZcV6ZBuOYug-vItgnG-na1m3Kj7f0d5RC7da-bpoXDzBxw8UdvfBMakSOlNbhektegZ4Uw4v_U8zxK5cICPsz9gXHzENKUD2HhWEr87aZPxpg6gGfaLXbMyVFbkRkzdf9cgx24heqGAVYPU8lmKVmWJZGeSwlsvNnDj_4IDj6OT8rx0W6ibmBGqaYntRlykYANsC0oC3qSo21BbJAx0hWXTpH1inLCPlww1v0pW8lqXLRCfRmwLQ2yBF8LIx4ABuemV3E9tBpz4UxcFA-_IGHf-K8Ejlku36HN-SJ62Qku2Ngt-tscnEAPZzxSK1iGWQVv6C2Fv2_t7VojRq1OP1SsBbBIuVulnGIMOqgSTfsodN8NYKmAIdDU6gyZYWR1VnL-KjiOQK01mW2Ea3eQIADviymSOf-iH2k9ML7AbewNmEhbVQQPaiOipITzUhNVkdpXR8D2fB0yusZSTDtr3-yiuQU6XKhyzMXQ-IrTeB5wSlSaIzNVc-5y5EoDZeD8OUQmsDyrljd01IDj2TqkvHqo51MbwQslyhaf2c2PHIwvC-iPzHWLyOPnku2q4NYUS1x-asA6fV7KR5WoDQGJ_WSMMczYeZhqMHc--bvvk-1v2hzxoHV06ENZ9ANAIxygjxHsiGAxJZyCeZySrP18GqBip-Ru44_7KpIZP4IyqitJTDoFnEVEppBS8tbZZt8d9OKbuBlLlotCseOho_0buqkBjryEKJUyhXxAgE8nLTsnNUg_6NYV2fH828HVbyXF3I6ELrtAz3gWXR3QdmFzN_D4lnNHwvWVI9ymo9BWXnHkct9AZI0KXh6jnPkljhayqbqu5tYPefmyKO7TCKkkhTK96Oevfd4__H_jGah7OGk4wuJX6B7UHBGhiAVJZN6x62HGzH-RsfAltGxEwTFaFPxDA5FWtUahS4WeahRLjek1oVGvHFQr6XIszOjecKR5g1i9c5bMis7GPLRPEAsCWW_FO5_Khx_B99nM_NwqelffFd9g_CAOQstOuCun1dufAx1yKfzACcTZPQ8ZzA_YCJvv1FS00ZzbRS_JPRctmS9UGK_WdF5nwPLfU-A_lrdeQvYZvkgNRq2Df3jKfdUDPzRQsCNFYLiop0EbRdS0iBb-76UO8f3sW5DNNohmx8-N6EO8oLF2adaT7qK5KDLUsbmPepN8362mesVFcaI2AmY07Prve-Z0tuzA2IH6bQRiy0_vDFrgI6ODJ21oeNdNf06ExqQxcZUce9p5qI57KKJdzpe74atY8XyVa5iUxYVtFMVRR4MrzwmzexB-vvcnSksOJ5UyrY0Om0ZGr1Tm7rwFr_0Qu9iDjD-_5MMucu72Q-jp0Gq1JQQFyyV54fCkVrIkV-nJC6X-vl0yWrCO55uhYi0UrAsRl3WKMorm3Fugi3-qCw9vXdFGj9ZuSlMyZn0jZlstJxNIXgLNDc-MwlBUDUUXHn1aispsPE54lJKzNuSJTLtB9in1SKNhRi9QBqPEvIBrx74WP2DQydw_zGkJsigNmBVDiIatyH7obRI0AFbGeRIOLSu4Hk53QzqUhpydIsBcdmDVszfjfjDUsaq0NwH-qvqAkOgwvatyIpew5HZ38GaqAgn3SsAvm1GFOINAXebYUxxskaPNUXJuPhyQjTckdaGw7ud6NTBGKTMzQDtWlhWywDOe5pHi7bHZl5GCvnmX7PsOTYul3Y0nTXIpPGFzaOkM6qO4KcCzWiZrWk-bxxJOtmASjr1BdHHbRrA2h0MbzW4tg94D-5Abw9Ai6gpx01n8OYH0JtrxgJi14Zd5IJYHjyhizQ0kJkSfKjF_ENXpxuP9n8AYZY3A3GQWKxW9lOdTnicLfqWcZUqeSnBcspaFnLNqMDGSGah_V4Ta85-uUwtaSQDVG0fUw8lFzU7ieGBOXQKFTXc_9f_BKu7Pf2V07rKFqocOZpO1hbpBTV0qaiaDZHqA4SJZVYYlhfirfv3r78zSeccxyCDt_NbRYRELwxqKgoUBH7dPuKDirYYwyZISM5gM1Vq52Y="
+      }
+     },
+     "id": "prt_0c702e3580014xnFxlCErBL8Cq",
+     "sessionID": "ses_f38ff03c4ffeSgCXrMAJBQYekK",
+     "messageID": "msg_0c702c16c001aJ8dyD9Tk4J4R2"
+    },
+    {
+     "type": "text",
+     "text": "A revisão encontrou 60 regras numeradas e 10 lacunas preservadas. Estou fazendo uma checagem final de diff para confirmar que só o arquivo de spec foi criado.",
+     "time": {
+      "start": 1790045250527,
+      "end": 1790045251865
+     },
+     "metadata": {
+      "openai": {
+       "itemId": "msg_0a27f82d465cf7b3016ab1ec42800487d2a87f0d539a466a27",
+       "phase": "commentary"
+      }
+     },
+     "id": "prt_0c702e3df001Hwjd1mDYKjTDZE",
+     "sessionID": "ses_f38ff03c4ffeSgCXrMAJBQYekK",
+     "messageID": "msg_0c702c16c001aJ8dyD9Tk4J4R2"
+    },
+    {
+     "type": "tool",
+     "tool": "grep",
+     "callID": "call_Gb81YWUXws8b5Lhr9DAH0edO",
+     "state": {
+      "status": "completed",
+      "input": {
+       "path": "/Users/yasmindesouza/TrabalhoIA-WomanInTech/specs/M1-grade-atividades.md",
+       "pattern": "M2|M4|convocacao|certificado",
+       "include": "*.md"
+      },
+      "output": "[2091 caracteres omitidos]",
+      "title": "M2|M4|convocacao|certificado",
+      "time": {
+       "start": 1790045251927,
+       "end": 1790045251959
+      }
+     },
+     "metadata": {
+      "openai": {
+       "itemId": "fc_0a27f82d465cf7b3016ab1ec43cf0c87d2a16311065c2636b4"
+      }
+     },
+     "id": "prt_0c702e93c001gBrQyKgQEpvN3P",
+     "sessionID": "ses_f38ff03c4ffeSgCXrMAJBQYekK",
+     "messageID": "msg_0c702c16c001aJ8dyD9Tk4J4R2"
+    },
+    {
+     "type": "tool",
+     "tool": "grep",
+     "callID": "call_CX0dxfjt8kgdN5usyCCTrCv8",
+     "state": {
+      "status": "completed",
+      "input": {
+       "path": "/Users/yasmindesouza/TrabalhoIA-WomanInTech/specs/M1-grade-atividades.md",
+       "pattern": "NAO ESPECIFICADO|nao especificad|Nao devem gerar",
+       "include": "*.md"
+      },
+      "output": "[291 caracteres omitidos]",
+      "title": "NAO ESPECIFICADO|nao especificad|Nao devem gerar",
+      "time": {
+       "start": 1790045251931,
+       "end": 1790045251962
+      }
+     },
+     "metadata": {
+      "openai": {
+       "itemId": "fc_0a27f82d465cf7b3016ab1ec43cf2087d2816807abb90c6186"
+      }
+     },
+     "id": "prt_0c702e959001lRNQx8eTACVTJe",
+     "sessionID": "ses_f38ff03c4ffeSgCXrMAJBQYekK",
+     "messageID": "msg_0c702c16c001aJ8dyD9Tk4J4R2"
+    },
+    {
+     "reason": "tool-calls",
+     "snapshot": "043790b7b301affded397e1c8d2fc967af8a1ac3",
+     "type": "step-finish",
+     "tokens": {
+      "total": 47493,
+      "input": 11473,
+      "output": 184,
+      "reasoning": 508,
+      "cache": {
+       "write": 0,
+       "read": 35328
+      }
+     },
+     "cost": 0,
+     "id": "prt_0c702e9ab00193EN1eCk2x0EjA",
+     "sessionID": "ses_f38ff03c4ffeSgCXrMAJBQYekK",
+     "messageID": "msg_0c702c16c001aJ8dyD9Tk4J4R2"
+    }
+   ]
+  },
+  {
+   "info": {
+    "parentID": "msg_0c700fc50001zBchIzRDxpTrVx",
+    "role": "assistant",
+    "mode": "build",
+    "agent": "build",
+    "path": {
+     "cwd": "/Users/yasmindesouza/TrabalhoIA-WomanInTech",
+     "root": "/Users/yasmindesouza/TrabalhoIA-WomanInTech"
+    },
+    "cost": 0,
+    "tokens": {
+     "total": 48224,
+     "input": 1574,
+     "output": 58,
+     "reasoning": 0,
+     "cache": {
+      "write": 0,
+      "read": 46592
+     }
+    },
+    "modelID": "gpt-5.5-fast",
+    "providerID": "openai",
+    "time": {
+     "created": 1790045252070,
+     "completed": 1790045254259
+    },
+    "finish": "tool-calls",
+    "id": "msg_0c702e9e60012RlkIEx0KV7Qje",
+    "sessionID": "ses_f38ff03c4ffeSgCXrMAJBQYekK"
+   },
+   "parts": [
+    {
+     "snapshot": "043790b7b301affded397e1c8d2fc967af8a1ac3",
+     "type": "step-start",
+     "id": "prt_0c702ef66001ZYHUBImQbAaCyS",
+     "sessionID": "ses_f38ff03c4ffeSgCXrMAJBQYekK",
+     "messageID": "msg_0c702e9e60012RlkIEx0KV7Qje"
+    },
+    {
+     "type": "tool",
+     "tool": "bash",
+     "callID": "call_hyGGMm0x9kLDYQ5sTGpVoy05",
+     "state": {
+      "status": "completed",
+      "input": {
+       "command": "git status --short && git diff -- specs/M1-grade-atividades.md",
+       "workdir": "/Users/yasmindesouza/TrabalhoIA-WomanInTech",
+       "timeout": 120000
+      },
+      "output": " M evidencias/sessoes/yasminsouza21/INDICE.md\n?? evidencias/sessoes/yasminsouza21/ses_f39009e72ffePa1iCYmX6DP4p4.json\n?? evidencias/sessoes/yasminsouza21/ses_f39009e72ffePa1iCYmX6DP4p4.md\n?? specs/M1-grade-atividades.md\n",
+      "metadata": {
+       "output": " M evidencias/sessoes/yasminsouza21/INDICE.md\n?? evidencias/sessoes/yasminsouza21/ses_f39009e72ffePa1iCYmX6DP4p4.json\n?? evidencias/sessoes/yasminsouza21/ses_f39009e72ffePa1iCYmX6DP4p4.md\n?? specs/M1-grade-atividades.md\n",
+       "exit": 0,
+       "truncated": false
+      },
+      "title": "git status --short && git diff -- specs/M1-grade-atividades.md",
+      "time": {
+       "start": 1790045254061,
+       "end": 1790045254140
+      }
+     },
+     "metadata": {
+      "openai": {
+       "itemId": "fc_016d060e1b6711dd016ab1ec45730087d2810e4d1a2e5b3599"
+      }
+     },
+     "id": "prt_0c702ef680018EsTU5aJYyhsbp",
+     "sessionID": "ses_f38ff03c4ffeSgCXrMAJBQYekK",
+     "messageID": "msg_0c702e9e60012RlkIEx0KV7Qje"
+    },
+    {
+     "reason": "tool-calls",
+     "snapshot": "043790b7b301affded397e1c8d2fc967af8a1ac3",
+     "type": "step-finish",
+     "tokens": {
+      "total": 48224,
+      "input": 1574,
+      "output": 58,
+      "reasoning": 0,
+      "cache": {
+       "write": 0,
+       "read": 46592
+      }
+     },
+     "cost": 0,
+     "id": "prt_0c702f23c001BELdWq39g26iAg",
+     "sessionID": "ses_f38ff03c4ffeSgCXrMAJBQYekK",
+     "messageID": "msg_0c702e9e60012RlkIEx0KV7Qje"
+    }
+   ]
+  },
+  {
+   "info": {
+    "parentID": "msg_0c700fc50001zBchIzRDxpTrVx",
+    "role": "assistant",
+    "mode": "build",
+    "agent": "build",
+    "path": {
+     "cwd": "/Users/yasmindesouza/TrabalhoIA-WomanInTech",
+     "root": "/Users/yasmindesouza/TrabalhoIA-WomanInTech"
+    },
+    "cost": 0,
+    "tokens": {
+     "total": 48538,
+     "input": 712,
+     "output": 162,
+     "reasoning": 48,
+     "cache": {
+      "write": 0,
+      "read": 47616
+     }
+    },
+    "modelID": "gpt-5.5-fast",
+    "providerID": "openai",
+    "time": {
+     "created": 1790045254262,
+     "completed": 1790045258135
+    },
+    "finish": "tool-calls",
+    "id": "msg_0c702f276001ZDm37rqJIUA3q0",
+    "sessionID": "ses_f38ff03c4ffeSgCXrMAJBQYekK"
+   },
+   "parts": [
+    {
+     "snapshot": "043790b7b301affded397e1c8d2fc967af8a1ac3",
+     "type": "step-start",
+     "id": "prt_0c702f6b2001sapJbnaayyhCT8",
+     "sessionID": "ses_f38ff03c4ffeSgCXrMAJBQYekK",
+     "messageID": "msg_0c702f276001ZDm37rqJIUA3q0"
+    },
+    {
+     "type": "reasoning",
+     "text": "**Assessing git diff limitations with untracked files**",
+     "time": {
+      "start": 1790045255347,
+      "end": 1790045256391
+     },
+     "metadata": {
+      "openai": {
+       "itemId": "rs_0489fd976a2cc2dc016ab1ec476ccc87d2bd6dc71f6ee5a87e",
+       "reasoningEncryptedContent": "gAAAAABqsexI4zsAz6fCeHukAunCl5R_EqVn5ZvQdfBI23DDNF0BqUpyi2jlVw74ppOVEjkEecB84Ua_ETESLKCPxS4ncl-Op2i4cJTapsNN8I3tnJhVN7HRGWXpO9aYtEhsVybT0W_beZJq7OUJK9uljgeu58juoxb4p8ESqsHK8ozs9FAXF_-omEqf1kZtIVNDRga41pjIhAWHSHBSMkBdZjfcKTUls4i1Y3xuuB8hvLpjj6xPEb6IIrkLB7OQXhLq60nG6J_m-uc0AzbjtRA4VaoZ-Go-4dW2EE5SnSgHHmM3MuWwe6cteg2bSjfg2CYgBeFaPTk0wzg7UkaVROp1fQ1QlXd-_PXb5SzQ3YXQ2qDi7w-njYb01UC3V6ci8-QIzXsw-V4uU3wgZIS5sUBzpepmyfp-hNsi4u8Q2uNwxXkSn7WkcTfHoWQsVJerYfIcpUKOApbKB6gtSRMtbix7joPOvdiB_d85IO9RVqsEJx92-EHrvLQVLuV8P1mmaOWLvR8CkyDJ_hbndDqzlgmSxMZIfsqPKPhhT_V4l0-TzfTjsRpIMVzzjSMehO33yPr6nUDDuLZ0N-Ep6RdczI-gqQddhb7CHtauwI_DixNh7uiHWntt6UROEjTMN9nf6Y9LN3p5bI0DmgNhwBBdLRie6YCaExRb0YDA5Ru4LJTeG92hMtTQjvwe-tSGULbSS9Gl9AjFSng9n8SOzaKYgmvbMyDtHpv55-GBKdc5V8LWAJzsdrH-hiXlOOy5fQoZbjLGETZds48XUPA_Xpy-M8Hkohkn-MpWLabLV10MFVXsCQBNT5Xl3gEm_pLuG2WhzLAqxaFfHDCXfal4vYTOYbv_iW4Vn0UZeu6d993eeic2k28MvDeLn_3PjrCvMGLI5bmZFMeIi5AO0IlX7G1_4qDW3yaiyFEou4PGLzMezI2rJgx4zxinxj8rTuKApDFML7FSTAeB_U3n1YJIWVjFQb9bMkcMXiNXFE3SWwt_-HQidl_iZqhjBGB-NG2EOmtg3z0k6NDAFCjz5Fi9LEXDZ9Ogu6cFCuBjUVR9dxZftbldxjRRZSbi5P44lV2dNy3UwYnKnoLjQJOE8naKLlpNRkDTf-IwWDVLFLKIVJTMxbGu9VWE-0_LtIIFV1Ee5yBT26kVSHs_MoLByCuGazfqVjs7JhbWMCn8redTTEg1zB4raPJu37V19uOT8otOC_6QYOqCk1OwuvAC2GFBnZbki9UKELJR41KEuNGqxp_FRoMq5kqp7llNnSq4oEUSDhdqWq-wc2_z4hXkN7PLa0qCwULCKi6NpvlRjNbDKHAMxS_zAgO45MNbKGHfVjgpxoYg3iyIAG_zOD_Ytpy9qOwFlaQ01L8Kc5Sg69WBJuNz2o7V0P-WJUr5hLJhXrSq_sPo7CqTrbujykmt1kj9fgyKxoy6tX8ciAYgndE8EF-5l8RJSM8t5Yjg0TplxgOxX0b5i6xwwRrkC8he70YFd_vfpi40-3_hdY9n9BJ_5BYXGZ7eZkr_nc7va2Nr17kZeKBkZcQj38g9qzyumK2mzeSwhuUK_d15zaOOEA=="
+      }
+     },
+     "id": "prt_0c702f6b3001zNCVpn0T3WrTzv",
+     "sessionID": "ses_f38ff03c4ffeSgCXrMAJBQYekK",
+     "messageID": "msg_0c702f276001ZDm37rqJIUA3q0"
+    },
+    {
+     "type": "text",
+     "text": "`git status` mostra apenas a spec nova como alteração minha; há arquivos de evidência já não rastreados/modificados fora do escopo e não foram alterados.",
+     "time": {
+      "start": 1790045256392,
+      "end": 1790045256575
+     },
+     "metadata": {
+      "openai": {
+       "itemId": "msg_0489fd976a2cc2dc016ab1ec486a0487d28d9f2546e6b022f1",
+       "phase": "commentary"
+      }
+     },
+     "id": "prt_0c702fac80014YLsdPs5cHix6U",
+     "sessionID": "ses_f38ff03c4ffeSgCXrMAJBQYekK",
+     "messageID": "msg_0c702f276001ZDm37rqJIUA3q0"
+    },
+    {
+     "type": "tool",
+     "tool": "todowrite",
+     "callID": "call_wkaSwcCOHaEVwOWIacv78XTF",
+     "state": {
+      "status": "completed",
+      "input": {
+       "todos": [
+        {
+         "content": "Ler fontes do M1 e convenções relevantes",
+         "status": "completed",
+         "priority": "high"
+        },
+        {
+         "content": "Criar specs/M1-grade-atividades.md com regras rastreáveis",
+         "status": "completed",
+         "priority": "high"
+        },
+        {
+         "content": "Revisar spec contra entrevista e contrato-api.md",
+         "status": "completed",
+         "priority": "high"
+        },
+        {
+         "content": "Reportar caminho, contagens, dependências, divergências e prontidão para TDD",
+         "status": "in_progress",
+         "priority": "medium"
+        }
+       ]
+      },
+      "output": "[\n  {\n    \"content\": \"Ler fontes do M1 e convenções relevantes\",\n    \"status\": \"completed\",\n    \"priority\": \"high\"\n  },\n  {\n    \"content\": \"Criar specs/M1-grade-atividades.md com regras rastreáveis\",\n    \"status\": \"completed\",\n    \"priority\": \"high\"\n  },\n  {\n    \"content\": \"Revisar spec contra entrevista e contrato-api.md\",\n    \"status\": \"completed\",\n    \"priority\": \"high\"\n  },\n  {\n    \"content\": \"Reportar caminho, contagens, dependências, divergências e prontidão para TDD\",\n    \"status\": \"in_progress\",\n    \"priority\": \"medium\"\n  }\n]",
+      "metadata": {
+       "todos": [
+        {
+         "content": "Ler fontes do M1 e convenções relevantes",
+         "status": "completed",
+         "priority": "high"
+        },
+        {
+         "content": "Criar specs/M1-grade-atividades.md com regras rastreáveis",
+         "status": "completed",
+         "priority": "high"
+        },
+        {
+         "content": "Revisar spec contra entrevista e contrato-api.md",
+         "status": "completed",
+         "priority": "high"
+        },
+        {
+         "content": "Reportar caminho, contagens, dependências, divergências e prontidão para TDD",
+         "status": "in_progress",
+         "priority": "medium"
+        }
+       ],
+       "truncated": false
+      },
+      "title": "1 todos",
+      "time": {
+       "start": 1790045257967,
+       "end": 1790045257969
+      }
+     },
+     "metadata": {
+      "openai": {
+       "itemId": "fc_0489fd976a2cc2dc016ab1ec48a71c87d2b402f2bf94821c38"
+      }
+     },
+     "id": "prt_0c702fb80001ZLewgFT5Kud4Kv",
+     "sessionID": "ses_f38ff03c4ffeSgCXrMAJBQYekK",
+     "messageID": "msg_0c702f276001ZDm37rqJIUA3q0"
+    },
+    {
+     "reason": "tool-calls",
+     "snapshot": "043790b7b301affded397e1c8d2fc967af8a1ac3",
+     "type": "step-finish",
+     "tokens": {
+      "total": 48538,
+      "input": 712,
+      "output": 162,
+      "reasoning": 48,
+      "cache": {
+       "write": 0,
+       "read": 47616
+      }
+     },
+     "cost": 0,
+     "id": "prt_0c7030164001rBVupX5waov2Bm",
+     "sessionID": "ses_f38ff03c4ffeSgCXrMAJBQYekK",
+     "messageID": "msg_0c702f276001ZDm37rqJIUA3q0"
+    }
+   ]
+  },
+  {
+   "info": {
+    "parentID": "msg_0c700fc50001zBchIzRDxpTrVx",
+    "role": "assistant",
+    "mode": "build",
+    "agent": "build",
+    "path": {
+     "cwd": "/Users/yasmindesouza/TrabalhoIA-WomanInTech",
+     "root": "/Users/yasmindesouza/TrabalhoIA-WomanInTech"
+    },
+    "cost": 0,
+    "tokens": {
+     "total": 48845,
+     "input": 1087,
+     "output": 119,
+     "reasoning": 23,
+     "cache": {
+      "write": 0,
+      "read": 47616
+     }
+    },
+    "modelID": "gpt-5.5-fast",
+    "providerID": "openai",
+    "time": {
+     "created": 1790045258138,
+     "completed": 1790045261465
+    },
+    "finish": "tool-calls",
+    "id": "msg_0c703019a001MFzmYBxJXPlkU3",
+    "sessionID": "ses_f38ff03c4ffeSgCXrMAJBQYekK"
+   },
+   "parts": [
+    {
+     "snapshot": "043790b7b301affded397e1c8d2fc967af8a1ac3",
+     "type": "step-start",
+     "id": "prt_0c70306e1001zVOMgFyHs2Ptb6",
+     "sessionID": "ses_f38ff03c4ffeSgCXrMAJBQYekK",
+     "messageID": "msg_0c703019a001MFzmYBxJXPlkU3"
+    },
+    {
+     "type": "reasoning",
+     "text": "",
+     "time": {
+      "start": 1790045259492,
+      "end": 1790045260236
+     },
+     "metadata": {
+      "openai": {
+       "itemId": "rs_0076015ea8fb5c6f016ab1ec4b8cec87d28511520e84fced32",
+       "reasoningEncryptedContent": "gAAAAABqsexMleM5svVr_WwmYRtRNr_nlJT7eRotCf_i8VrZPxZWFo-VfDqojBUd9qfJp7Eoir4RmjVeFJB1WyPJ51P7TF_wd5up0Oa87-FiA-yjKGOqFG4KQpn6FF_PIxJ1C7LUwdV3kOfw1DMvuMIUMN10L-IX3GDzPJGlEiAnqoVXqA6_YJFk9XpuvmOW7jnFtmVq8l8fpxCrFhNy3aDd6lzrCqP7Qasije86oZUddACq4uYEuMeei8XYlS0alr0l8H6Hq3fHaok0KXDg89UkwvE53UkbgPLJ38iugdCdfCIXKFneRgY3zxfST3O9pHTaVK378smxQGorzzeGGaEIWhUooJ2xx7K-8vgD7HEloagXK06mDxRpSP8tqwB6qRPsSSubWj44IgbfAkOb95Ppl-WZgOfROEpkjrkmxHxsa052AANiuhjGKAMxWCvtRN7oYRXdsnT1LbXfip0Wc3BgIrMPMgaLwHLX7NuDXSkvilS6jZF1MhDeAak94JXDZPtoEFDDrutlVq2stiuk3dtfaqwZL_97O0YaQnJ-i2NRZdrHcaoj8JiA8-IyplcBv_4aQ_aDpR0sAMcSkotXzJ1OgCMQvibGI4UmDb9m4gYYO0nnBDQCqtEnhO2t6TOkkXf88TMsAhFYLvpDDd-qiMLmdbYuml0C78fSnebgg__zYaHaO_mY32XXGvBe-dIirubAP3DTYqW8Cxn_NetNRznP9YOv56ImXg7QkaYipbfKcSoxXzkePUEtCG816IdYXdJmAHUEmz4yBq5aY8qwwwXBExcrc4a2e4x_db3TmWPx3WVvcm4Qhsx1SKdIYXBuIGyGQg7O2Y9bkTLeW2cEuU4phWMIKqPBhcshVAbImkZ5RWK0W_F4lxZt5ULc8rqO6vN8ziqvafEomjT7B3E4_LuhUGtmD0jyHLXVElMJSJnW_4IltHg0n-CNhOE3PtIsqk5zwRdxRf8gsUb44mritLUGphjLADTpNQoI8RmqXZh3c5zrmR-Wtr_pTYxir-S2UHywdQGJ7COHzEpwjNqWFAPOFD7atgPNWidoYoZilBO_w51V4wVcnhU_1CUQs7SFW50LSrjJKcuCvlO6X65o1W5THUjDWxN6uhlWn8emlu29qsUCSzQU6voneJ5zx0Mj9K9yQ9MOvVp68Q2vsfJEJt_10xPf_E2pYrMXALkQLJa8MlMADvUvcysG-4uQGO-8QczFrVQgcjYdrh6a7a09up0M0DxkQqfsVFTqmqbNPIK_u11x2PKcOWoOG3T5i0YmJkGGoeHK-LTJ9Rm4JlzUBkOPBjS_RlwSk5nTMGPZDwFz2Udbi1ZmuStKstAlc-NfVvwCHAzaKFd2bUM4sO5anXHk2g5ltDxqvlkScJ-NkxaJt7x8CK7La3JvoB15LQG4Hin2I_4-d0gv"
+      }
+     },
+     "id": "prt_0c70306e4001xqT7MgBG9ROaY7",
+     "sessionID": "ses_f38ff03c4ffeSgCXrMAJBQYekK",
+     "messageID": "msg_0c703019a001MFzmYBxJXPlkU3"
+    },
+    {
+     "type": "tool",
+     "tool": "todowrite",
+     "callID": "call_iGJmsWmBRVvsbLYMvE9CJkPA",
+     "state": {
+      "status": "completed",
+      "input": {
+       "todos": [
+        {
+         "content": "Ler fontes do M1 e convenções relevantes",
+         "status": "completed",
+         "priority": "high"
+        },
+        {
+         "content": "Criar specs/M1-grade-atividades.md com regras rastreáveis",
+         "status": "completed",
+         "priority": "high"
+        },
+        {
+         "content": "Revisar spec contra entrevista e contrato-api.md",
+         "status": "completed",
+         "priority": "high"
+        },
+        {
+         "content": "Reportar caminho, contagens, dependências, divergências e prontidão para TDD",
+         "status": "completed",
+         "priority": "medium"
+        }
+       ]
+      },
+      "output": "[\n  {\n    \"content\": \"Ler fontes do M1 e convenções relevantes\",\n    \"status\": \"completed\",\n    \"priority\": \"high\"\n  },\n  {\n    \"content\": \"Criar specs/M1-grade-atividades.md com regras rastreáveis\",\n    \"status\": \"completed\",\n    \"priority\": \"high\"\n  },\n  {\n    \"content\": \"Revisar spec contra entrevista e contrato-api.md\",\n    \"status\": \"completed\",\n    \"priority\": \"high\"\n  },\n  {\n    \"content\": \"Reportar caminho, contagens, dependências, divergências e prontidão para TDD\",\n    \"status\": \"completed\",\n    \"priority\": \"medium\"\n  }\n]",
+      "metadata": {
+       "todos": [
+        {
+         "content": "Ler fontes do M1 e convenções relevantes",
+         "status": "completed",
+         "priority": "high"
+        },
+        {
+         "content": "Criar specs/M1-grade-atividades.md com regras rastreáveis",
+         "status": "completed",
+         "priority": "high"
+        },
+        {
+         "content": "Revisar spec contra entrevista e contrato-api.md",
+         "status": "completed",
+         "priority": "high"
+        },
+        {
+         "content": "Reportar caminho, contagens, dependências, divergências e prontidão para TDD",
+         "status": "completed",
+         "priority": "medium"
+        }
+       ],
+       "truncated": false
+      },
+      "title": "0 todos",
+      "time": {
+       "start": 1790045261293,
+       "end": 1790045261295
+      }
+     },
+     "metadata": {
+      "openai": {
+       "itemId": "fc_0076015ea8fb5c6f016ab1ec4c377887d292e099b310e92d17"
+      }
+     },
+     "id": "prt_0c70309ce001OZM6O8tIAmzu9J",
+     "sessionID": "ses_f38ff03c4ffeSgCXrMAJBQYekK",
+     "messageID": "msg_0c703019a001MFzmYBxJXPlkU3"
+    },
+    {
+     "reason": "tool-calls",
+     "snapshot": "043790b7b301affded397e1c8d2fc967af8a1ac3",
+     "type": "step-finish",
+     "tokens": {
+      "total": 48845,
+      "input": 1087,
+      "output": 119,
+      "reasoning": 23,
+      "cache": {
+       "write": 0,
+       "read": 47616
+      }
+     },
+     "cost": 0,
+     "id": "prt_0c7030e6f001bew0x06WsEWvH6",
+     "sessionID": "ses_f38ff03c4ffeSgCXrMAJBQYekK",
+     "messageID": "msg_0c703019a001MFzmYBxJXPlkU3"
+    }
+   ]
+  },
+  {
+   "info": {
+    "parentID": "msg_0c700fc50001zBchIzRDxpTrVx",
+    "role": "assistant",
+    "mode": "build",
+    "agent": "build",
+    "path": {
+     "cwd": "/Users/yasmindesouza/TrabalhoIA-WomanInTech",
+     "root": "/Users/yasmindesouza/TrabalhoIA-WomanInTech"
+    },
+    "cost": 0,
+    "tokens": {
+     "total": 49201,
+     "input": 369,
+     "output": 192,
+     "reasoning": 0,
+     "cache": {
+      "write": 0,
+      "read": 48640
+     }
+    },
+    "modelID": "gpt-5.5-fast",
+    "providerID": "openai",
+    "time": {
+     "created": 1790045261469,
+     "completed": 1790045265569
+    },
+    "finish": "stop",
+    "id": "msg_0c7030e9d001jSEnZC5M7tGtrx",
+    "sessionID": "ses_f38ff03c4ffeSgCXrMAJBQYekK"
+   },
+   "parts": [
+    {
+     "snapshot": "043790b7b301affded397e1c8d2fc967af8a1ac3",
+     "type": "step-start",
+     "id": "prt_0c703149b0010jyJYoPPCfRnea",
+     "sessionID": "ses_f38ff03c4ffeSgCXrMAJBQYekK",
+     "messageID": "msg_0c7030e9d001jSEnZC5M7tGtrx"
+    },
+    {
+     "type": "text",
+     "text": "Criei e revisei a spec do M1.\n\n1. Caminho criado: `specs/M1-grade-atividades.md`\n2. Quantidade de regras: 60 regras numeradas (`R01` a `R60`)\n3. Pontos não especificados preservados: 10 pontos (`N01` a `N10`)\n4. Dependências registradas: M2 para inscrições/lista de espera/convocação e M4 para certificados; M3 também ficou sinalizado para código de presença\n5. Divergências com o contrato: nenhuma divergência encontrada; a spec respeita rotas, campos, status e códigos do `contrato-api.md`\n6. Pronta para TDD: sim, a spec está pronta para iniciar TDD pelo backend via HTTP em `MODO_TESTE=1`\n\nNão implementei código, não criei testes e não alterei o backend.",
+     "time": {
+      "start": 1790045263020,
+      "end": 1790045265461
+     },
+     "metadata": {
+      "openai": {
+       "itemId": "msg_0f014f206a63febc016ab1ec4f046487d28f523cde3812b283",
+       "phase": "final_answer"
+      }
+     },
+     "id": "prt_0c70314ac001dt3buTzjhGFxtr",
+     "sessionID": "ses_f38ff03c4ffeSgCXrMAJBQYekK",
+     "messageID": "msg_0c7030e9d001jSEnZC5M7tGtrx"
+    },
+    {
+     "reason": "stop",
+     "snapshot": "043790b7b301affded397e1c8d2fc967af8a1ac3",
+     "type": "step-finish",
+     "tokens": {
+      "total": 49201,
+      "input": 369,
+      "output": 192,
+      "reasoning": 0,
+      "cache": {
+       "write": 0,
+       "read": 48640
+      }
+     },
+     "cost": 0,
+     "id": "prt_0c7031e6d001Ih6pJ52ry3H2w3",
+     "sessionID": "ses_f38ff03c4ffeSgCXrMAJBQYekK",
+     "messageID": "msg_0c7030e9d001jSEnZC5M7tGtrx"
+    }
+   ]
+  }
+ ]
+}

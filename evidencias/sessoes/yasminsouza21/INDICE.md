@@ -14,4 +14,6 @@ Requisições são chamadas ao modelo: cada passo do agente é uma. Skills conta
 |---|---|---|---|---|---|---|---|---|---|
 | 19/09 19:12 | [Análise inicial e requisitos do Marco 1 em Go](ses_f44454556ffenD5ir1G15EWtyW.md) | 39 | grilling | — | 0 / 2 | 0 | 0 | 1 | — |
 | 19/09 19:52 | [Rodada 2 do M1: Grade de Atividades](ses_f442087b9ffephBjXWFQ4Sj5hM.md) | 26 | grilling | — | 0 / 0 | 0 | 0 | 0 | — |
-| | **Total: 2 sessões** | 65 | grilling (2) | — | 0 / 2 | 0 | 0 | 1 | — |
+| 21/09 23:43 | [Verificação de rastreabilidade M1 Rodada 2](ses_f39009e72ffePa1iCYmX6DP4p4.md) | 2 | — | — | 0 / 0 | 0 | 0 | 0 | — |
+| 21/09 23:45 | [Criar spec formal do M1 grade de atividades](ses_f38ff03c4ffeSgCXrMAJBQYekK.md) | 12 | to-spec | — | 0 / 0 | 0 | 0 | 0 | — |
+| | **Total: 4 sessões** | 79 | grilling (2), to-spec | — | 0 / 2 | 0 | 0 | 1 | — |
