@@ -41,7 +41,7 @@ class Enrollment {
   String status;
   final int sequenceNumber;
   final DateTime createdAt;
-  final DateTime? convocationDeadline;
+  DateTime? convocationDeadline;
 }
 
 class Activity {
@@ -366,6 +366,7 @@ class ApiServer {
     }
     activity.title = nextTitle;
     activity.slots = nextSlots;
+    _promote(id);
     _json(request, 200, _activityJson(activity));
   }
 
@@ -376,6 +377,12 @@ class ApiServer {
     if (!clock.isBefore(activity.meetings.first.start))
       return _error(request, 422, 'ATIVIDADE_JA_INICIADA');
     activity.cancelled = true;
+    for (final enrollment in enrollments) {
+      if (enrollment.activityId != activity.id) continue;
+      if (enrollment.status == 'expirada') continue;
+      enrollment.status = 'cancelada';
+      enrollment.convocationDeadline = null;
+    }
     _json(request, 200, _activityJson(activity));
   }
 
@@ -489,10 +496,27 @@ class ApiServer {
     if (!_authorized(request, 'participante',
         roleError: 'SOMENTE_PARTICIPANTE'))
       return;
-    if (_findEnrollment(id) == null)
+    final enrollment = _findEnrollment(id);
+    if (enrollment == null)
+      return _error(request, 404, 'NAO_ENCONTRADO');
+    if (_user(request)!.id != enrollment.participantId)
       return _error(request, 404, 'NAO_ENCONTRADO');
     if (await _readMutationBody(request) == _BodyParse.invalid)
       return _error(request, 422, 'DADOS_INVALIDOS');
+    final parts =
+        request.uri.path.split('/').where((part) => part.isNotEmpty).toList();
+    if (parts[2] == 'cancelamento') {
+      final activity = activities[enrollment.activityId]!;
+      if (!clock.isBefore(activity.meetings.first.start))
+        return _error(request, 422, 'ATIVIDADE_JA_INICIADA');
+      if (enrollment.status == 'cancelada' ||
+          enrollment.status == 'expirada')
+        return _error(request, 422, 'INSCRICAO_INATIVA');
+      enrollment.status = 'cancelada';
+      enrollment.convocationDeadline = null;
+      _promote(enrollment.activityId);
+      return _json(request, 200, _inscricaoJson(enrollment));
+    }
     _error(request, 501, 'NAO_IMPLEMENTADO');
   }
 
@@ -514,6 +538,28 @@ class ApiServer {
         return true;
     }
     return false;
+  }
+
+  void _promote(String activityId) {
+    final activity = activities[activityId]!;
+    if (!clock.isBefore(activity.meetings.first.start)) return;
+    final startLimit = activity.meetings.first.start;
+    while (_occupied(activityId) < activity.slots) {
+      Enrollment? next;
+      for (final enrollment in enrollments) {
+        if (enrollment.activityId != activityId ||
+            enrollment.status != 'em_espera')
+          continue;
+        if (next == null ||
+            enrollment.sequenceNumber < next.sequenceNumber)
+          next = enrollment;
+      }
+      if (next == null) return;
+      final deadline = clock.add(const Duration(hours: 24));
+      next.status = 'convocada';
+      next.convocationDeadline =
+          deadline.isBefore(startLimit) ? deadline : startLimit;
+    }
   }
 
   int _waitingPosition(Enrollment enrollment) {
