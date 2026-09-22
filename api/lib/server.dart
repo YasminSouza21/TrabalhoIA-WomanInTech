@@ -244,20 +244,25 @@ class ApiServer {
         expiryCause: expiryCause as String?);
   }
 
-  Future<void> _persist() async {
+  void _persist() {
     if (modoTeste) return;
     final target = File(_stateFilePath);
-    await target.parent.create(recursive: true);
+    target.parent.createSync(recursive: true);
     final temp = File('$_stateFilePath.tmp');
-    await temp.writeAsString(jsonEncode(_stateToJson()));
-    await temp.rename(_stateFilePath);
+    temp.writeAsStringSync(jsonEncode(_stateToJson()), flush: true);
+    temp.renameSync(_stateFilePath);
   }
 
   Future<void> _commit() async {
     if (!_dirty) return;
+    _persist();
     _dirty = false;
-    if (modoTeste) return;
-    await _persist();
+  }
+
+  Future<void> _refreshClockAndReconcile() async {
+    if (!modoTeste) clock = _clockProvider().toUtc();
+    _reconcile();
+    if (_dirty) await _commit();
   }
 
   Map<String, Object?> _stateToJson() => {
@@ -659,6 +664,7 @@ class ApiServer {
       return _error(request, 404, 'NAO_ENCONTRADO');
     if (await _readMutationBody(request) == _BodyParse.invalid)
       return _error(request, 422, 'DADOS_INVALIDOS');
+    await _refreshClockAndReconcile();
     if (activity.cancelled)
       return _error(request, 422, 'ATIVIDADE_CANCELADA');
     if (!clock.isBefore(activity.meetings.first.start))
@@ -695,6 +701,7 @@ class ApiServer {
       return _error(request, 404, 'NAO_ENCONTRADO');
     if (await _readMutationBody(request) == _BodyParse.invalid)
       return _error(request, 422, 'DADOS_INVALIDOS');
+    await _refreshClockAndReconcile();
     final parts =
         request.uri.path.split('/').where((part) => part.isNotEmpty).toList();
     if (parts[2] == 'cancelamento') {

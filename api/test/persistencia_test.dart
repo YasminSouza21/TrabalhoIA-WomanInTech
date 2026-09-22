@@ -243,6 +243,86 @@ void main() {
   });
 
   test(
+      'requisicoes simultaneas na mesma instancia: todos 201, 1 confirmada 7 espera, nada se perde ao reiniciar (R40)',
+      () async {
+    final instancia1 = novaInstancia();
+    final atvId =
+        (await criarAtividade(instancia1, vagas: 1)).json['id'] as String;
+    const participantes = [
+      'p-carla',
+      'p-diego',
+      'p-elisa',
+      'p-fabio',
+      'p-gabriela',
+      'p-heitor',
+      'p-isadora',
+      'p-joao',
+    ];
+    final respostas = await Future.wait(participantes
+        .map((participante) => request(instancia1, 'POST',
+            '/atividades/$atvId/inscricoes',
+            user: participante)));
+    for (final resposta in respostas) {
+      expect(resposta.status, 201,
+          reason: 'concorrencia nao pode devolver 500, obtido ${resposta.status} ${resposta.text}');
+      expect(resposta.json['status'], isIn(['confirmada', 'em_espera']));
+    }
+    final ids = respostas.map((resposta) => resposta.json['id'] as String).toSet();
+    expect(ids, hasLength(8), reason: '8 inscricoes com ids distintos');
+
+    final instancia2 = novaInstancia();
+    final todas =
+        (await request(instancia2, 'GET', '/inscricoes', user: 'org-ana'))
+            .json as List;
+    expect(todas, hasLength(8),
+        reason: 'nenhuma inscricao pode se perder no arquivo com requisicoes simultaneas');
+    expect(todas.map((item) => item['id']).toSet(), ids,
+        reason: 'IDs gravados identicos aos confirmados nas respostas 201');
+    expect(todas.map((item) => item['participanteId']).toSet(),
+        participantes.toSet(),
+        reason: 'nenhum participante duplicado nem omitido');
+    expect(
+        todas.where((item) => item['status'] == 'confirmada'),
+        hasLength(1),
+        reason: 'capacidade 1 garante exatamente uma confirmada');
+    final espera = todas
+        .where((item) => item['status'] == 'em_espera')
+        .toList();
+    expect(espera, hasLength(7));
+    expect(espera.map((item) => item['posicaoNaEspera']).toList(),
+        [1, 2, 3, 4, 5, 6, 7],
+        reason: 'sequencia gravada decide a ordem FIFO apos reiniciar');
+  });
+
+  test(
+      'mutacao cujo corpo demora usa o relogio da chegada do corpo, nao o do inicio da requisicao (R08)',
+      () async {
+    final instancia = novaInstancia();
+    final atvId =
+        (await criarAtividade(instancia, vagas: 1)).json['id'] as String;
+    final server = await HttpServer.bind(InternetAddress.loopbackIPv4, 0);
+    server.listen(instancia.handle);
+    final client = HttpClient();
+    final requisicao = await client.openUrl('POST',
+        Uri.parse('http://127.0.0.1:${server.port}/atividades/$atvId/inscricoes'));
+    requisicao.headers.set('X-Usuario', 'p-carla');
+    requisicao.headers.contentType = ContentType.json;
+    requisicao.write('{');
+    await requisicao.flush();
+    await Future<void>.delayed(const Duration(milliseconds: 150));
+    agora = DateTime.parse('2026-10-19T12:00:00Z');
+    requisicao.write('}');
+    final resposta = await requisicao.close();
+    final texto = await utf8.decoder.bind(resposta).join();
+    await server.close(force: true);
+    client.close(force: true);
+
+    expect(resposta.statusCode, 422,
+        reason: 'atividade ja iniciada enquanto o corpo chegava: nao pode aceitar');
+    expect((jsonDecode(texto) as Map)['erro'], 'INSCRICOES_ENCERRADAS');
+  });
+
+  test(
       'arquivo de estado corrompido falha claramente na carga, sem apagar o arquivo',
       () async {
     final arquivo = File(estadoPath);
