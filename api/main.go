@@ -18,6 +18,9 @@ func newServer(modoTeste bool, store *Store) http.Handler {
 			http.NotFound(w, r)
 		})
 	}
+	mux.HandleFunc("/salas", handleSalas(store))
+	mux.HandleFunc("/atividades", handleAtividades(store))
+	mux.HandleFunc("/atividades/", handleAtividadePorID(store))
 
 	return mux
 }

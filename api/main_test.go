@@ -78,7 +78,7 @@ func TestModoTeste(t *testing.T) {
 		store.SetRelogio(time.Now())
 		store.Usuarios = nil
 		store.Salas = nil
-		store.Atividades = map[string]struct{}{"nao-contratada": {}}
+		store.Atividades = map[string]Atividade{"nao-contratada": {ID: "nao-contratada"}}
 
 		req := httptest.NewRequest("POST", "/_teste/reset", nil)
 		rec := httptest.NewRecorder()

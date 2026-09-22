@@ -17,12 +17,35 @@ type Sala struct {
 	Capacidade int    `json:"capacidade"`
 }
 
+type Encontro struct {
+	ID     string    `json:"id"`
+	Inicio time.Time `json:"inicio"`
+	Fim    time.Time `json:"fim"`
+}
+
+type Atividade struct {
+	ID        string
+	Titulo    string
+	Tipo      string
+	SalaID    string
+	Vagas     int
+	Encontros []Encontro
+	Cancelada bool
+}
+
+type Inscricao struct {
+	ID          string
+	AtividadeID string
+	Status      string
+}
+
 type Store struct {
 	mu         sync.RWMutex
 	Relogio    time.Time
 	Usuarios   map[string]Usuario
 	Salas      map[string]Sala
-	Atividades map[string]struct{}
+	Atividades map[string]Atividade
+	Inscricoes map[string]Inscricao
 }
 
 func NewStore() *Store {
@@ -62,7 +85,8 @@ func (s *Store) Reset() {
 		"lab-3":     {"lab-3", "Laboratório 3", 20},
 	}
 
-	s.Atividades = map[string]struct{}{}
+	s.Atividades = map[string]Atividade{}
+	s.Inscricoes = map[string]Inscricao{}
 }
 
 func (s *Store) GetAgora() time.Time {

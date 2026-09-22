@@ -16,4 +16,5 @@ Requisições são chamadas ao modelo: cada passo do agente é uma. Skills conta
 | 19/09 19:52 | [Rodada 2 do M1: Grade de Atividades](ses_f442087b9ffephBjXWFQ4Sj5hM.md) | 26 | grilling | — | 0 / 0 | 0 | 0 | 0 | — |
 | 21/09 23:43 | [Verificação de rastreabilidade M1 Rodada 2](ses_f39009e72ffePa1iCYmX6DP4p4.md) | 2 | — | — | 0 / 0 | 0 | 0 | 0 | — |
 | 21/09 23:45 | [Criar spec formal do M1 grade de atividades](ses_f38ff03c4ffeSgCXrMAJBQYekK.md) | 12 | to-spec | — | 0 / 0 | 0 | 0 | 0 | — |
-| | **Total: 4 sessões** | 79 | grilling (2), to-spec | — | 0 / 2 | 0 | 0 | 1 | — |
+| 21/09 23:48 | [Implementação TDD do M1 Grade de Atividades](ses_f38fbc23dffe7p1lwmEVGYXe0e.md) | 32 | tdd | — | 4 / 6 | 0 | 0 | 0 | — |
+| | **Total: 5 sessões** | 111 | grilling (2), to-spec, tdd | — | 4 / 8 | 0 | 0 | 1 | — |
