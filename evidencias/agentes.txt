@@ -1,0 +1,46 @@
+# Agentes e skills de review — configuracao registrada
+
+Registro das configuracoes resolvidas dos agentes de revisao e da skill de telas,
+conferidas via `opencode debug agent <nome>` no executavel `.tools/opencode/node_modules/.bin/opencode.cmd`.
+Não contém dados sensíveis. Auditor e revisor rodam em sessão própria, um por vez.
+
+## auditor
+
+- arquivo: `.opencode/agent/auditor.md`
+- mode: `subagent`
+- temperature: 0.1
+- description: audita módulo contra a spec (regra com teste que a comprova + origem na entrevista).
+- tools resolvidos: `write=false`, `edit=false`, `patch=false`, `task=false`, `bash=true`, `read=true`, `grep=true`, `glob=true`.
+- permission bash: deny-all primeiro (`*` deny), allowlist de leitura/analise/teste:
+  - `Get-Content *`, `cat *`, `type *`, `rg *`
+  - `git diff*`, `git status*`, `git log*`, `git show*`
+  - `dart analyze*`, `dart test*`, `flutter analyze*`, `flutter test*`
+- sem shell de escrita, sem mutação de git, sem script arbitrário.
+- prompt: histórico preservado; cita que divergência de contrato é assunto do `revisor-de-contrato`.
+- verificação: `opencode debug agent auditor` → exit 0, tools e permission como acima.
+
+## revisor-de-contrato
+
+- arquivo: `.opencode/agent/revisor-de-contrato.md`
+- mode: `subagent`
+- temperature: 0.1
+- description: revisa a implementação da API contra o `contrato-api.md` (rota, campo, código de erro, envelope) sem consertar.
+- tools resolvidos: `write=false`, `edit=false`, `patch=false`, `task=false`, `bash=true`, `read=true`, `grep=true`, `glob=true`.
+- permission bash: deny-all primeiro (`*` deny), allowlist de leitura/analise/teste:
+  - `Get-Content *`, `cat *`, `type *`, `rg *`
+  - `git diff*`, `git status*`, `git log*`, `git show*`
+  - `dart analyze*`, `dart test*`, `flutter analyze*`, `flutter test*`
+- sem shell de escrita, sem mutação de git, sem script arbitrário; não abre subagente (`task=false`).
+- verificação: `opencode debug agent revisor-de-contrato` → exit 0, tools e permission como acima.
+
+## skill telas-flutter
+
+- arquivo: `.opencode/skills/telas-flutter/SKILL.md`
+- name: `telas-flutter`
+- description: telas Flutter de inscrições (M2) via ApiClient injetável, estados loading/vazio/erro/sucesso, permissões por papel, layout sem overflow em 360px, timers descartados, refresh após mutação, testes de widget com MockClient em TDD.
+- escopo: preserva o M1 (grade), não replica regra de domínio no widget, não altera contrato/spec/entrevista/auditoria.
+
+## Nota
+
+Agentes de review só têm leitura/analise/teste. Qualquer alteração nos arquivos acima
+requer nova rodada de `opencode debug` e reescrita deste registro.

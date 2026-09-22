@@ -11,6 +11,21 @@ tools:
   read: true
   grep: true
   glob: true
+permission:
+  bash:
+    "*": deny
+    "Get-Content *": allow
+    "cat *": allow
+    "type *": allow
+    "rg *": allow
+    "git diff*": allow
+    "git status*": allow
+    "git log*": allow
+    "git show*": allow
+    "dart analyze*": allow
+    "dart test*": allow
+    "flutter analyze*": allow
+    "flutter test*": allow
 ---
 
 # Auditor de módulo
