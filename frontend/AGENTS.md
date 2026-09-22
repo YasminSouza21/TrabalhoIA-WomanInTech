@@ -1,11 +1,16 @@
 # Frontend Flutter Web
 
-O frontend usa Flutter web e `package:http`. O acesso à API deve passar pelo `ApiClient`, que centraliza a URL base configurável, JSON e o cabeçalho `X-Usuario`.
+O frontend usa Flutter web e `package:http`. O acesso à API deve passar pelo `ApiClient`, que centraliza a URL base configurável, JSON, o cabeçalho `X-Usuario` e um transporte HTTP injetável.
 
 ## Estrutura
 
-- `lib/api_client.dart`: cliente HTTP injetável e modelos M1.
-- `lib/main.dart`: tela responsiva da grade, filtros e ações da organização.
-- `test/`: testes comportamentais com `flutter_test` e transporte HTTP injetável.
+- `lib/api_client.dart`: cliente HTTP injetável e modelos M1 e M2.
+- `lib/main.dart`: tela responsiva da grade (M1), "Minhas inscrições" e detalhe/confirmação (M2).
+- `test/`: testes comportamentais com `flutter_test` e transporte HTTP fake (`MockClient` de `package:http/testing`) — nunca HTTP real.
 
-O frontend exibe estados calculados pela API e não replica regras de domínio. Participantes apenas consultam; criação, edição e cancelamento aparecem somente para organização.
+## Escopo Autorizado
+
+- **M1 — grade** (histórico preservado): consulta, filtros e ações da organização.
+- **M2 — inscrições**: "Minhas inscrições" do participante com todos os status, posição na espera, prazo e contagem regressiva de convocação; consulta da organização; inscrever/cancelar no detalhe da atividade; confirmar convocação; estados de carregamento, vazio, erro e sucesso — tudo via `ApiClient`.
+
+O frontend exibe estados calculados pela API e não replica regras de domínio. Verificação por `flutter test` com testes de `ApiClient` e de widget contra HTTP fake.

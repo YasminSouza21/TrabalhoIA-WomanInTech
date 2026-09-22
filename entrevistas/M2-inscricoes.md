@@ -324,7 +324,7 @@ persistente por decisão (cancelamentos).
 | P-17 | `LIMITE_DE_MINICURSOS` | Máximo de 2 minicursos confirmados por participante por evento; `em_espera` e `convocada` não contam; validar em inscrever e em confirmar, excluindo a própria inscrição. | Decisão de projeto — delegação expressa do usuário, 22/09/2026 |
 | P-18 | Precedência ao inscrever | Ordem: `ATIVIDADE_CANCELADA` → `INSCRICOES_ENCERRADAS` → duplicidade ativa (`JA_INSCRITO`) → `CONFLITO_DE_HORARIO` → `LIMITE_DE_MINICURSOS`. `INSCRICAO_BLOQUEADA` (M5) está fora do escopo do M2. | Decisão de projeto — delegação expressa do usuário, 22/09/2026 |
 | P-19 | Precedência ao cancelar inscrição | Estado da atividade primeiro: `ATIVIDADE_JA_INICIADA` antecede `INSCRICAO_INATIVA`. Nesta rota não existe `ATIVIDADE_CANCELADA`: o cancelamento da atividade já converteu as ativas em `cancelada`, então cancelar uma delas retorna `INSCRICAO_INATIVA`. | Decisão de projeto — delegação expressa do usuário, 22/09/2026 |
-| P-20 | Precedência ao confirmar convocação | Ordem: `SEM_CONVOCACAO` → `CONVOCACAO_EXPIRADA` → `CONFLITO_DE_HORARIO` → `LIMITE_DE_MINICURSOS`. Convoca da vencida pelo relógio retorna `CONVOCACAO_EXPIRADA` inclusive depois de uma leitura já ter observado o vencimento. | Decisão de projeto — delegação expressa do usuário, 22/09/2026 |
+| P-20 | Precedência ao confirmar convocação | Ordem: `CONVOCACAO_EXPIRADA` → `SEM_CONVOCACAO` → `CONFLITO_DE_HORARIO` → `LIMITE_DE_MINICURSOS`. A convocação vencida pelo relógio — inclusive a já materializada como `expirada` por vencimento, ver P-29 — retorna `CONVOCACAO_EXPIRADA` antes da checagem de `SEM_CONVOCACAO`; demais estados sem convocação ativa (`confirmada`, `em_espera`, `cancelada` e `expirada` por outro caminho) retornam `SEM_CONVOCACAO`; conflito e limite vêm depois. | Decisão de projeto — delegação expressa do usuário, 22/09/2026 |
 | P-21 | Reinscrição após cancelamento | Sim, com nova `Inscricao`, novo `id`, no fim da fila; nunca reconvocar o registro antigo. | Decisão de projeto — delegação expressa do usuário, 22/09/2026 |
 | P-22 | Reinscrição após expirar | Sim, como participante novo, no fim da fila, sem privilégio nem punição; nunca reconvocar o registro antigo. | Decisão de projeto — delegação expressa do usuário, 22/09/2026 |
 | P-23 | Quando `JA_INSCRITO` vale | Vale para `confirmada`, `em_espera` e `convocada`; `cancelada` e `expirada` liberam nova inscrição. | Decisão de projeto — delegação expressa do usuário, 22/09/2026 |
@@ -351,11 +351,12 @@ final divergiu, ela é a regra a implementar:
 | P-16 | Comparar os intervalos de encontros. | Precisado: `[inicio, fim)`, independe da sala, fim 10h + início 10h permitido, sem o intervalo de 15 min do conflito de sala do M1. | CORRIGIDO |
 | P-17 | Definir o número; contar `confirmada` + `convocada`. | Limite fixado em 2; somente `confirmada` conta. | CORRIGIDO |
 | P-19 | Ordem: `ATIVIDADE_CANCELADA`, `ATIVIDADE_JA_INICIADA`, `INSCRICAO_INATIVA`. | Sem `ATIVIDADE_CANCELADA` na rota de cancelamento; `ATIVIDADE_JA_INICIADA` antes de `INSCRICAO_INATIVA`. | CORRIGIDO |
+| P-20 | Ordem: `SEM_CONVOCACAO` → `CONVOCACAO_EXPIRADA` → conflito → limite. | Ordem: `CONVOCACAO_EXPIRADA` → `SEM_CONVOCACAO` → conflito → limite; convoca da vencida pelo relógio, inclusive já materializada como `expirada` por vencimento (P-29), retorna `CONVOCACAO_EXPIRADA` antes de `SEM_CONVOCACAO`. | PRECISADO (desambigua a tabela; a decisão de fundo está preservada) |
 | P-28 | Ordenar por `criadaEm` ascendente; empate por `id`. | Ordem de inserção persistida. | CORRIGIDO |
 | P-29 | Nada é carimbado, exceto cancelamentos. | Transições observadas ficam materializadas; retrocesso não desfaz. | CORRIGIDO |
 
 As demais sugestões (P-01, P-02, P-03, P-06, P-08, P-09, P-11, P-12, P-13, P-18,
-P-20, P-21, P-22, P-23, P-24, P-25, P-26 e P-27) foram **CONFIRMADAS** pela
+P-21, P-22, P-23, P-24, P-25, P-26 e P-27) foram **CONFIRMADAS** pela
 decisão final e valem como regra sem alteração.
 
 ## Rodada 2 complementar — decisões de arquitetura e escopo (P-30 em diante)
@@ -369,8 +370,9 @@ rastreabilidade. Não dependem de nova pergunta.
 | P-31 | Modo de teste e reset | Com `MODO_TESTE=1`, o estado fica em memória isolada (não toca o arquivo de persistência); `POST /_teste/reset` apaga as inscrições e todo o estado e recarrega os dados iniciais; o relógio é controlado por `PUT/GET /_teste/relogio`. | Decisão de projeto — delegação expressa do usuário, 22/09/2026 |
 | P-32 | Fila no início do primeiro encontro | No início do primeiro encontro, convocadas vencidas expiram e a fila `em_espera` encerra como `expirada`; `confirmada` é preservada; novas convocações cessam (reforço de P-13). | Decisão de projeto — delegação expressa do usuário, 22/09/2026 |
 | P-33 | Status inicial da inscrição | Inscrição válida com vaga disponível → `confirmada`; sem vaga → `em_espera`, posicionada no fim da fila FIFO. | Decisão de projeto — delegação expressa do usuário, 22/09/2026 |
-| P-34 | Interface mínima (não implementar agora) | Interface mínima registrada: Minhas inscrições (participante), consulta da organização, inscrever/cancelar a partir do detalhe, confirmar convocação, exibir status/posição/prazo/contagem regressiva e estados de carregamento/vazio/erro/sucesso via `ApiClient`. **Sem implementação nesta rodada.** | Decisão de projeto — delegação expressa do usuário, 22/09/2026 |
+| P-34 | Interface mínima — parte da entrega | A interface mínima é parte da entrega do M2: "Minhas inscrições" (participante) e consulta da organização via `ApiClient`; inscrever/cancelar a partir do detalhe da atividade; confirmar convocação; exibir status, posição na espera, prazo e contagem regressiva de convocação; estados de carregamento, vazio, erro e sucesso. **A rodada atual foi só de entrevista: a interface foi registrada sem implementação — não é exclusão permanente.** Implementação vem na rodada de código, verificada por testes de `ApiClient` e de widget com HTTP fake. | Decisão de projeto — delegação expressa do usuário, 22/09/2026 |
 | P-35 | Higiene do repositório | Adicionar `.tools/` ao `.gitignore` para não versionar SDKs e instaladores. Não é regra de API. | Decisão de projeto — delegação expressa do usuário, 22/09/2026 |
+| P-36 | Adoção do contrato e do M1 (rastreio por pergunta respondida) | Adotam-se integralmente, como pergunta respondida e sem simular entrevista humana, as convenções do `contrato-api.md` (F-01 a F-19) e as contagens do M1 para rastrear por pergunta as regras que lhes correspondem: `Inscricao` com `id` `ins_` + 8 hexadecimais minúsculos e campos/tipos exatos (`posicaoNaEspera` e `convocadaAte` nulos quando não se aplicam); envelope de erro `{"erro","mensagem"}`; ordem de verificações 401 → 403 → 404 → 422 → regras; `ocupadas` conta `confirmada` + `convocada`, `vagasRestantes` = `vagas` − `ocupadas`, `emEspera` conta `em_espera`. Rastreia R01, R02, R03, R05, R32 e R34, além das novas R42 e R43. | Decisão de projeto — adoção de contrato já lido, 22/09/2026 |
 
 ## Pontos Confirmados
 
@@ -409,12 +411,15 @@ A Rodada 2 fechou a fronteira da entrevista. Todas as perguntas começaram em es
 A fronteira de perguntas da entrevista está vazia; as pendências abaixo são de
 **execução**, não de decisão:
 
-1. Implementação do M2 (rotas, fila, convocação, expiração em cascata) ainda não
-   iniciada — decisão da rodada é "não implementar ainda" (P-34). Próximo passo:
-   skill `tdd` com a spec do M2 a derivar destas decisões.
+1. Implementação do M2 (rotas, fila, convocação, expiração em cascata e interface
+   mínima do P-34) ainda não iniciada — esta rodada foi só de entrevista/registro,
+   não exclusão de escopo. Próximo passo: skill `tdd` com a spec do M2 já derivada
+   destas decisões.
 2. Persistência JSON local (P-30) e modo de teste em memória isolada (P-31) pendentes
    de implementação.
-3. Interface mínima (P-34) não implementada, conforme decisão.
+3. Interface mínima (P-34) registrada, ainda não implementada por ser a fase de
+   entrevista; faz parte da entrega do M2 (R44) e será verificada por testes de
+   `ApiClient`/widget com HTTP fake (R45).
 4. `evidencias/sessoes/clara-l-peretti/` contém sessões ainda não versionadas;
    ficaram fora deste commit (somente entrevista e `.gitignore` foram commitados).
 5. `.tools/` deixou de ser versionado via `.gitignore` (P-35), mas o diretório físico
