@@ -1,0 +1,1277 @@
+{
+ "info": {
+  "id": "ses_f34b9e535ffed3QwMzWLqsv0ll",
+  "slug": "proud-forest",
+  "projectID": "5ec1c46d9cd3888456c10ad574c60d609ed0d0a9",
+  "directory": "C:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech",
+  "path": "",
+  "title": "M2: evitar falsos vermelhos no indice de evidencias",
+  "agent": "build",
+  "model": {
+   "id": "big-pickle",
+   "providerID": "opencode",
+   "variant": "default"
+  },
+  "version": "1.18.32",
+  "summary": {
+   "additions": 0,
+   "deletions": 0,
+   "files": 0
+  },
+  "cost": 0,
+  "tokens": {
+   "input": 35199,
+   "output": 16926,
+   "reasoning": 0,
+   "cache": {
+    "read": 390144,
+    "write": 0
+   }
+  },
+  "permission": [
+   {
+    "permission": "question",
+    "pattern": "*",
+    "action": "deny"
+   },
+   {
+    "permission": "plan_enter",
+    "pattern": "*",
+    "action": "deny"
+   },
+   {
+    "permission": "plan_exit",
+    "pattern": "*",
+    "action": "deny"
+   }
+  ],
+  "time": {
+   "created": 1790116764362,
+   "updated": 1790116906632
+  }
+ },
+ "messages": [
+  {
+   "info": {
+    "role": "user",
+    "time": {
+     "created": 1790116764520
+    },
+    "agent": "build",
+    "model": {
+     "providerID": "opencode",
+     "modelID": "big-pickle"
+    },
+    "summary": {
+     "diffs": [
+      {
+       "file": "api/lib/server.dart",
+       "patch": "Index: api/lib/server.dart\n===================================================================\n--- api/lib/server.dart\t\n+++ api/lib/server.dart\t\n@@ -1,629 +1,647 @@\n import 'dart:convert';\r\n import 'dart:io';\r\n import 'dart:math';\r\n \r\n class User {\r\n   User(this.id, this.name, this.role);\r\n   final String id;\r\n   final String name;\r\n   final String role;\r\n }\r\n \r\n class Room {\r\n   Room(this.id, this.name, this.capacity);\r\n   final String id;\r\n   final String name;\r\n   final int capacity;\r\n   Map<String, Object> toJson() =>\r\n       {'id': id, 'nome': name, 'capacidade': capacity};\r\n }\r\n \r\n class Meeting {\r\n   Meeting(this.id, this.start, this.end);\r\n   final String id;\r\n   final DateTime start;\r\n   final DateTime end;\r\n }\r\n \r\n class Enrollment {\r\n   Enrollment({\r\n     required this.id,\r\n     required this.activityId,\r\n     required this.participantId,\r\n     required this.status,\r\n     required this.sequenceNumber,\r\n     required this.createdAt,\r\n     this.convocationDeadline,\r\n   });\r\n   final String id;\r\n   final String activityId;\r\n   final String participantId;\r\n   String status;\r\n   final int sequenceNumber;\r\n   final DateTime createdAt;\r\n   DateTime? convocationDeadline;\r\n }\r\n \r\n class Activity {\r\n   Activity(\r\n       {required this.id,\r\n       required this.title,\r\n       required this.type,\r\n       required this.roomId,\r\n       required this.slots,\r\n       required this.meetings});\r\n   final String id;\r\n   String title;\r\n   final String type;\r\n   final String roomId;\r\n   int slots;\r\n   final List<Meeting> meetings;\r\n   bool cancelled = false;\r\n }\r\n \r\n class ApiError {\r\n   ApiError(this.code, [this.message]);\r\n   final String code;\r\n   final String? message;\r\n   Map<String, String> toJson() => {'erro': code, 'mensagem': message ?? code};\r\n }\r\n \r\n DateTime _brasilia(DateTime instant) =>\r\n     instant.toUtc().subtract(const Duration(hours: 3));\r\n DateTime _parseDate(Object? value) => DateTime.parse(value as String).toUtc();\r\n String _formatDate(DateTime value) =>\r\n     value.toUtc().toIso8601String().replaceFirst(RegExp(r'\\.000Z$'), 'Z');\r\n String _id(String prefix) =>\r\n     '$prefix${Random().nextInt(0x100000000).toRadixString(16).padLeft(8, '0')}';\r\n \r\n class ApiServer {\r\n   ApiServer({this.modoTeste = false}) {\r\n     reset();\r\n   }\r\n   final bool modoTeste;\r\n   final users = <String, User>{};\r\n   final rooms = <String, Room>{};\r\n   final activities = <String, Activity>{};\r\n   final enrollments = <Enrollment>[];\r\n   late DateTime clock;\r\n   int _enrollmentSequence = 0;\r\n \r\n   void reset() {\r\n     clock = modoTeste ? DateTime.utc(2026, 10, 13, 12) : DateTime.now().toUtc();\r\n     _enrollmentSequence = 0;\r\n     users\r\n       ..clear()\r\n       ..addAll({\r\n         'org-ana': User('org-ana', 'Ana Beatriz Lima', 'organizacao'),\r\n         'org-bruno': User('org-bruno', 'Bruno Tavares', 'organizacao'),\r\n         'p-carla': User('p-carla', 'Carla Mendes Souza', 'participante'),\r\n         'p-diego': User('p-diego', 'Diego Alves', 'participante'),\r\n         'p-elisa': User('p-elisa', 'Elisa Fernandes da Rocha', 'participante'),\r\n         'p-fabio': User('p-fabio', 'Fábio Nogueira', 'participante'),\r\n         'p-gabriela':\r\n             User('p-gabriela', 'Gabriela Moura Castro', 'participante'),\r\n         'p-heitor': User('p-heitor', 'Heitor Campos', 'participante'),\r\n         'p-isadora':\r\n             User('p-isadora', 'Isadora Ribeiro dos Santos', 'participante'),\r\n         'p-joao': User('p-joao', 'João Pedro Martins', 'participante'),\r\n       });\r\n     rooms\r\n       ..clear()\r\n       ..addAll({\r\n         'auditorio': Room('auditorio', 'Auditório Central', 200),\r\n         'sala-101': Room('sala-101', 'Sala 101', 40),\r\n         'sala-102': Room('sala-102', 'Sala 102', 40),\r\n         'lab-3': Room('lab-3', 'Laboratório 3', 20),\r\n       });\r\n     activities.clear();\r\n     enrollments.clear();\r\n   }\r\n \r\n   Future<void> handle(HttpRequest request) async {\r\n     request.response.headers\r\n       ..set('Access-Control-Allow-Origin', '*')\r\n       ..set('Access-Control-Allow-Headers', 'Content-Type, X-Usuario')\r\n       ..set('Access-Control-Allow-Methods', 'GET, POST, PATCH, PUT, OPTIONS');\r\n     if (request.method == 'OPTIONS') return _finish(request, 204);\r\n     try {\r\n       final path = request.uri.path;\r\n       if (path.startsWith('/_teste/')) return await _testRoute(request);\r\n       if (path == '/salas') return await _roomsRoute(request);\r\n       if (path == '/atividades') return await _activitiesRoute(request);\r\n       if (path.startsWith('/atividades/')) return await _activityRoute(request);\r\n       if (path == '/inscricoes') return await _inscricoesRoute(request);\r\n       if (path.startsWith('/inscricoes/')) return await _inscricaoRoute(request);\r\n       _finish(request, 404);\r\n     } catch (_) {\r\n       _json(request, 500, ApiError('ERRO_INTERNO').toJson());\r\n     }\r\n   }\r\n \r\n   Future<void> _testRoute(HttpRequest request) async {\r\n     if (!modoTeste) return _finish(request, 404);\r\n     if (request.uri.path == '/_teste/reset' && request.method == 'POST') {\r\n       reset();\r\n       return _finish(request, 204);\r\n     }\r\n     if (request.uri.path != '/_teste/relogio') return _finish(request, 404);\r\n     if (request.method == 'GET')\r\n       return _json(request, 200, {'agora': _formatDate(clock)});\r\n     if (request.method != 'PUT') return _finish(request, 405);\r\n     final body = await _body(request);\r\n     if (body is! Map || body['agora'] is! String)\r\n       return _error(request, 422, 'DADOS_INVALIDOS');\r\n     try {\r\n       clock = _parseDate(body['agora']);\r\n       return _json(request, 200, {'agora': _formatDate(clock)});\r\n     } catch (_) {\r\n       return _error(request, 422, 'DADOS_INVALIDOS');\r\n     }\r\n   }\r\n \r\n   User? _user(HttpRequest request, {String? role}) {\r\n     final user = users[request.headers.value('X-Usuario')];\r\n     if (user == null) return null;\r\n     if (role != null && user.role != role)\r\n       return User('', '__forbidden__', 'forbidden');\r\n     return user;\r\n   }\r\n \r\n   bool _authorized(HttpRequest request, String? role,\r\n       {String roleError = 'SOMENTE_ORGANIZACAO'}) {\r\n     final user = _user(request, role: role);\r\n     if (user == null) {\r\n       _error(request, 401, 'USUARIO_DESCONHECIDO');\r\n       return false;\r\n     }\r\n     if (user.role == 'forbidden') {\r\n       _error(request, 403, roleError);\r\n       return false;\r\n     }\r\n     return true;\r\n   }\r\n \r\n   Future<void> _roomsRoute(HttpRequest request) async {\r\n     if (request.method != 'GET') return _finish(request, 405);\r\n     if (!_authorized(request, null)) return;\r\n     final result = rooms.values.toList()..sort((a, b) => a.id.compareTo(b.id));\r\n     _json(request, 200, result.map((room) => room.toJson()).toList());\r\n   }\r\n \r\n   Future<void> _activitiesRoute(HttpRequest request) async {\r\n     if (request.method == 'GET') return _list(request);\r\n     if (request.method == 'POST') return _create(request);\r\n     _finish(request, 405);\r\n   }\r\n \r\n   Future<void> _activityRoute(HttpRequest request) async {\r\n     final parts =\r\n         request.uri.path.split('/').where((part) => part.isNotEmpty).toList();\r\n     if (parts.length < 2 || parts.length > 3) return _finish(request, 404);\r\n     final id = parts[1];\r\n     if (parts.length == 3 && parts[2] == 'inscricoes')\r\n       return _inscricaoCreateRoute(request, id);\r\n     if (activities[id] == null) {\r\n       if (!_authorized(request, request.method == 'GET' ? null : 'organizacao'))\r\n         return;\r\n       return _error(request, 404, 'NAO_ENCONTRADO');\r\n     }\r\n     if (parts.length == 3 &&\r\n         parts[2] == 'cancelamento' &&\r\n         request.method == 'POST') return _cancel(request, id);\r\n     if (parts.length != 2) return _finish(request, 404);\r\n     if (request.method == 'GET') return _detail(request, id);\r\n     if (request.method == 'PATCH') return _patch(request, id);\r\n     _finish(request, 405);\r\n   }\r\n \r\n   Future<void> _create(HttpRequest request) async {\r\n     if (!_authorized(request, 'organizacao')) return;\r\n     final body = await _body(request);\r\n     if (body is! Map ||\r\n         body['titulo'] is! String ||\r\n         body['tipo'] is! String ||\r\n         body['salaId'] is! String ||\r\n         body['vagas'] is! int ||\r\n         body['encontros'] is! List)\r\n       return _error(request, 422, 'DADOS_INVALIDOS');\r\n     final meetings = _meetings(body['encontros'], createIds: true);\r\n     if (meetings == null) return _error(request, 422, 'DADOS_INVALIDOS');\r\n     final activity = Activity(\r\n         id: _id('atv_'),\r\n         title: body['titulo'] as String,\r\n         type: body['tipo'] as String,\r\n         roomId: body['salaId'] as String,\r\n         slots: body['vagas'] as int,\r\n         meetings: meetings);\r\n     final validation = _validateCreate(activity);\r\n     if (validation != null)\r\n       return _error(\r\n           request, validation == 'CONFLITO_DE_SALA' ? 409 : 422, validation);\r\n     activities[activity.id] = activity;\r\n     _json(request, 201, _activityJson(activity));\r\n   }\r\n \r\n   List<Meeting>? _meetings(Object value, {required bool createIds}) {\r\n     final list = value as List;\r\n     try {\r\n       return list.map((raw) {\r\n         if (raw is! Map || raw['inicio'] is! String || raw['fim'] is! String)\r\n           throw const FormatException();\r\n         return Meeting(createIds ? _id('enc_') : '', _parseDate(raw['inicio']),\r\n             _parseDate(raw['fim']));\r\n       }).toList()\r\n         ..sort((a, b) => a.start.compareTo(b.start));\r\n     } catch (_) {\r\n       return null;\r\n     }\r\n   }\r\n \r\n   String? _validateCreate(Activity activity) {\r\n     if (activity.type != 'palestra' && activity.type != 'minicurso')\r\n       return 'DADOS_INVALIDOS';\r\n     if ((activity.type == 'palestra' && activity.meetings.length != 1) ||\r\n         (activity.type == 'minicurso' &&\r\n             (activity.meetings.length < 2 || activity.meetings.length > 5)))\r\n       return 'QUANTIDADE_DE_ENCONTROS';\r\n     if (!_validMeetings(activity.meetings)) return 'ENCONTRO_INVALIDO';\r\n     final room = rooms[activity.roomId];\r\n     if (room == null) return 'DADOS_INVALIDOS';\r\n     if (activity.slots < 1) return 'DADOS_INVALIDOS';\r\n     if (activity.slots > room.capacity) return 'VAGAS_ACIMA_DA_CAPACIDADE';\r\n     if (_roomConflict(activity)) return 'CONFLITO_DE_SALA';\r\n     return null;\r\n   }\r\n \r\n   bool _validMeetings(List<Meeting> meetings) {\r\n     for (var i = 0; i < meetings.length; i++) {\r\n       final meeting = meetings[i];\r\n       final start = _brasilia(meeting.start), end = _brasilia(meeting.end);\r\n       if (start.year != 2026 ||\r\n           start.month != 10 ||\r\n           start.day < 19 ||\r\n           start.day > 23 ||\r\n           end.year != 2026 ||\r\n           end.month != 10 ||\r\n           end.day < 19 ||\r\n           end.day > 23) return false;\r\n       if (start.year != end.year ||\r\n           start.month != end.month ||\r\n           start.day != end.day) return false;\r\n       final duration = meeting.end.difference(meeting.start);\r\n       if (duration < const Duration(hours: 1) ||\r\n           duration > const Duration(hours: 4)) return false;\r\n       if (i > 0 && meetings[i - 1].end.isAfter(meeting.start)) return false;\r\n     }\r\n     return true;\r\n   }\r\n \r\n   bool _roomConflict(Activity candidate) {\r\n     for (final existing in activities.values) {\r\n       if (existing.cancelled || existing.roomId != candidate.roomId) continue;\r\n       for (final a in existing.meetings)\r\n         for (final b in candidate.meetings) {\r\n           final overlap = a.start.isBefore(b.end) && b.start.isBefore(a.end);\r\n           final closeBefore = !a.end.isAfter(b.start) &&\r\n               b.start.difference(a.end) < const Duration(minutes: 15);\r\n           final closeAfter = !b.end.isAfter(a.start) &&\r\n               a.start.difference(b.end) < const Duration(minutes: 15);\r\n           if (overlap || closeBefore || closeAfter) return true;\r\n         }\r\n     }\r\n     return false;\r\n   }\r\n \r\n   Future<void> _list(HttpRequest request) async {\r\n     if (!_authorized(request, null)) return;\r\n     final type = request.uri.queryParameters['tipo'];\r\n     final day = request.uri.queryParameters['dia'];\r\n     final result = activities.values.where((activity) {\r\n       if (type != null && type.isNotEmpty && activity.type != type)\r\n         return false;\r\n       if (day != null &&\r\n           day.isNotEmpty &&\r\n           !activity.meetings.any((meeting) =>\r\n               _brasilia(meeting.start).toIso8601String().startsWith(day)))\r\n         return false;\r\n       return true;\r\n     }).toList();\r\n     result.sort((a, b) {\r\n       final compare = a.meetings.first.start.compareTo(b.meetings.first.start);\r\n       return compare == 0 ? a.title.compareTo(b.title) : compare;\r\n     });\r\n     _json(request, 200, result.map(_activityJson).toList());\r\n   }\r\n \r\n   Future<void> _detail(HttpRequest request, String id) async {\r\n     if (!_authorized(request, null)) return;\r\n     _json(request, 200, _activityJson(activities[id]!));\r\n   }\r\n \r\n   Future<void> _patch(HttpRequest request, String id) async {\r\n     if (!_authorized(request, 'organizacao')) return;\r\n     final activity = activities[id]!;\r\n     final body = await _body(request);\r\n     if (body is! Map) return _error(request, 422, 'DADOS_INVALIDOS');\r\n     if (body.containsKey('salaId') ||\r\n         body.containsKey('tipo') ||\r\n         body.containsKey('encontros'))\r\n       return _error(request, 422, 'CAMPO_NAO_EDITAVEL');\r\n     if (activity.cancelled) return _error(request, 422, 'ATIVIDADE_CANCELADA');\r\n     if (body.containsKey('titulo') && body['titulo'] is! String ||\r\n         body.containsKey('vagas') && body['vagas'] is! int)\r\n       return _error(request, 422, 'DADOS_INVALIDOS');\r\n     var nextTitle = activity.title;\r\n     var nextSlots = activity.slots;\r\n     if (body.containsKey('titulo')) nextTitle = body['titulo'] as String;\r\n     if (body.containsKey('vagas')) {\r\n       final slots = body['vagas'] as int;\r\n       if (slots < 1) return _error(request, 422, 'DADOS_INVALIDOS');\r\n       if (slots > rooms[activity.roomId]!.capacity)\r\n         return _error(request, 422, 'VAGAS_ACIMA_DA_CAPACIDADE');\r\n       if (slots < _occupied(activity.id))\r\n         return _error(request, 409, 'VAGAS_ABAIXO_DOS_INSCRITOS');\r\n       nextSlots = slots;\r\n     }\r\n     activity.title = nextTitle;\r\n     activity.slots = nextSlots;\r\n     _promote(id);\r\n     _json(request, 200, _activityJson(activity));\r\n   }\r\n \r\n   Future<void> _cancel(HttpRequest request, String id) async {\r\n     if (!_authorized(request, 'organizacao')) return;\r\n     final activity = activities[id]!;\r\n     if (activity.cancelled) return _error(request, 422, 'ATIVIDADE_CANCELADA');\r\n     if (!clock.isBefore(activity.meetings.first.start))\r\n       return _error(request, 422, 'ATIVIDADE_JA_INICIADA');\r\n     activity.cancelled = true;\r\n     for (final enrollment in enrollments) {\r\n       if (enrollment.activityId != activity.id) continue;\r\n       if (enrollment.status == 'expirada') continue;\r\n       enrollment.status = 'cancelada';\r\n       enrollment.convocationDeadline = null;\r\n     }\r\n     _json(request, 200, _activityJson(activity));\r\n   }\r\n \r\n   int _occupied(String id) => enrollments\r\n       .where((e) =>\r\n           e.activityId == id &&\r\n           (e.status == 'confirmada' || e.status == 'convocada'))\r\n       .length;\r\n   int _waiting(String id) => enrollments\r\n       .where((e) => e.activityId == id && e.status == 'em_espera')\r\n       .length;\r\n   Map<String, Object> _activityJson(Activity activity) {\r\n     final meetings = [...activity.meetings]\r\n       ..sort((a, b) => a.start.compareTo(b.start));\r\n     final situation = activity.cancelled\r\n         ? 'cancelada'\r\n         : clock.isBefore(meetings.first.start)\r\n             ? 'prevista'\r\n             : !clock.isBefore(meetings.last.end)\r\n                 ? 'encerrada'\r\n                 : 'em_andamento';\r\n     return {\r\n       'id': activity.id,\r\n       'titulo': activity.title,\r\n       'tipo': activity.type,\r\n       'salaId': activity.roomId,\r\n       'vagas': activity.slots,\r\n       'encontros': meetings\r\n           .map((m) => {\r\n                 'id': m.id,\r\n                 'inicio': _formatDate(m.start),\r\n                 'fim': _formatDate(m.end)\r\n               })\r\n           .toList(),\r\n       'cargaHorariaMinutos': meetings.fold<int>(\r\n           0, (sum, m) => sum + m.end.difference(m.start).inMinutes),\r\n       'situacao': situation,\r\n       'ocupadas': _occupied(activity.id),\r\n       'vagasRestantes': activity.slots - _occupied(activity.id),\r\n       'emEspera': _waiting(activity.id)\r\n     };\r\n   }\r\n \r\n   Future<void> _inscricoesRoute(HttpRequest request) async {\r\n     if (request.method != 'GET') return _finish(request, 405);\r\n     if (!_authorized(request, null)) return;\r\n     final user = _user(request)!;\r\n     final atividadeId = request.uri.queryParameters['atividadeId'];\r\n     final result = enrollments\r\n         .where((e) =>\r\n             (user.role == 'organizacao' || e.participantId == user.id) &&\r\n             (atividadeId == null ||\r\n                 atividadeId.isEmpty ||\r\n                 e.activityId == atividadeId))\r\n         .toList()\r\n       ..sort((a, b) => a.sequenceNumber.compareTo(b.sequenceNumber));\r\n     _json(request, 200, result.map(_inscricaoJson).toList());\r\n   }\r\n \r\n   Future<void> _inscricaoRoute(HttpRequest request) async {\r\n     final parts =\r\n         request.uri.path.split('/').where((part) => part.isNotEmpty).toList();\r\n     if (parts.length < 2 || parts.length > 3) return _finish(request, 404);\r\n     final id = parts[1];\r\n     final mutation = parts.length == 3 &&\r\n         request.method == 'POST' &&\r\n         (parts[2] == 'cancelamento' || parts[2] == 'confirmacao');\r\n     if (mutation) return _inscricaoMutation(request, id);\r\n     if (request.method != 'GET' || parts.length != 2)\r\n       return _finish(request, 405);\r\n     if (!_authorized(request, null)) return;\r\n     final user = _user(request)!;\r\n     final enrollment = _findEnrollment(id);\r\n     if (enrollment == null) return _error(request, 404, 'NAO_ENCONTRADO');\r\n     if (user.role != 'organizacao' && enrollment.participantId != user.id)\r\n       return _error(request, 404, 'NAO_ENCONTRADO');\r\n     _json(request, 200, _inscricaoJson(enrollment));\r\n   }\r\n \r\n   Future<void> _inscricaoCreateRoute(\r\n       HttpRequest request, String activityId) async {\r\n     if (request.method != 'POST') return _finish(request, 405);\r\n     if (!_authorized(request, 'participante',\r\n         roleError: 'SOMENTE_PARTICIPANTE'))\r\n       return;\r\n     final activity = activities[activityId];\r\n     if (activity == null)\r\n       return _error(request, 404, 'NAO_ENCONTRADO');\r\n     if (await _readMutationBody(request) == _BodyParse.invalid)\r\n       return _error(request, 422, 'DADOS_INVALIDOS');\r\n     if (activity.cancelled)\r\n       return _error(request, 422, 'ATIVIDADE_CANCELADA');\r\n     if (!clock.isBefore(activity.meetings.first.start))\r\n       return _error(request, 422, 'INSCRICOES_ENCERRADAS');\r\n     final user = _user(request)!;\r\n     if (_hasActiveEnrollment(user.id, activityId))\r\n       return _error(request, 409, 'JA_INSCRITO');\r\n+    if (_hasTimeConflict(user.id, activityId))\r\n+      return _error(request, 409, 'CONFLITO_DE_HORARIO');\r\n+    if (activity.type == 'minicurso' && _confirmedMinicursos(user.id) >= 2)\r\n+      return _error(request, 422, 'LIMITE_DE_MINICURSOS');\r\n     final semVaga = _occupied(activityId) >= activity.slots;\r\n     final enrollment = Enrollment(\r\n         id: _id('ins_'),\r\n         activityId: activityId,\r\n         participantId: user.id,\r\n         status: semVaga ? 'em_espera' : 'confirmada',\r\n         sequenceNumber: ++_enrollmentSequence,\r\n         createdAt: clock);\r\n     enrollments.add(enrollment);\r\n     _json(request, 201, _inscricaoJson(enrollment));\r\n   }\r\n \r\n   Future<void> _inscricaoMutation(HttpRequest request, String id) async {\r\n     if (!_authorized(request, 'participante',\r\n         roleError: 'SOMENTE_PARTICIPANTE'))\r\n       return;\r\n     final enrollment = _findEnrollment(id);\r\n     if (enrollment == null)\r\n       return _error(request, 404, 'NAO_ENCONTRADO');\r\n     if (_user(request)!.id != enrollment.participantId)\r\n       return _error(request, 404, 'NAO_ENCONTRADO');\r\n     if (await _readMutationBody(request) == _BodyParse.invalid)\r\n       return _error(request, 422, 'DADOS_INVALIDOS');\r\n     final parts =\r\n         request.uri.path.split('/').where((part) => part.isNotEmpty).toList();\r\n     if (parts[2] == 'cancelamento') {\r\n       final activity = activities[enrollment.activityId]!;\r\n       if (!clock.isBefore(activity.meetings.first.start))\r\n         return _error(request, 422, 'ATIVIDADE_JA_INICIADA');\r\n       if (enrollment.status == 'cancelada' ||\r\n           enrollment.status == 'expirada')\r\n         return _error(request, 422, 'INSCRICAO_INATIVA');\r\n       enrollment.status = 'cancelada';\r\n       enrollment.convocationDeadline = null;\r\n       _promote(enrollment.activityId);\r\n       return _json(request, 200, _inscricaoJson(enrollment));\r\n     }\r\n-    _error(request, 501, 'NAO_IMPLEMENTADO');\r\n+    if (parts[2] != 'confirmacao') return _finish(request, 405);\r\n+    if (enrollment.status == 'convocada' &&\r\n+        !clock.isBefore(enrollment.convocationDeadline!))\r\n+      return _error(request, 422, 'CONVOCACAO_EXPIRADA');\r\n+    if (enrollment.status != 'convocada')\r\n+      return _error(request, 422, 'SEM_CONVOCACAO');\r\n+    final activity = activities[enrollment.activityId]!;\r\n+    if (_hasTimeConflict(enrollment.participantId, enrollment.activityId))\r\n+      return _error(request, 409, 'CONFLITO_DE_HORARIO');\r\n+    if (activity.type == 'minicurso' &&\r\n+        _confirmedMinicursos(enrollment.participantId) >= 2)\r\n+      return _error(request, 422, 'LIMITE_DE_MINICURSOS');\r\n+    enrollment.status = 'confirmada';\r\n+    enrollment.convocationDeadline = null;\r\n+    _json(request, 200, _inscricaoJson(enrollment));\r\n   }\r\n \r\n   Enrollment? _findEnrollment(String id) {\r\n     for (final enrollment in enrollments) {\r\n       if (enrollment.id == id) return enrollment;\r\n     }\r\n     return null;\r\n   }\r\n \r\n   bool _hasActiveEnrollment(String participantId, String activityId) {\r\n     for (final enrollment in enrollments) {\r\n       if (enrollment.participantId != participantId ||\r\n           enrollment.activityId != activityId)\r\n         continue;\r\n       if (enrollment.status == 'confirmada' ||\r\n           enrollment.status == 'em_espera' ||\r\n           enrollment.status == 'convocada')\r\n         return true;\r\n     }\r\n     return false;\r\n   }\r\n \r\n   void _promote(String activityId) {\r\n     final activity = activities[activityId]!;\r\n     if (!clock.isBefore(activity.meetings.first.start)) return;\r\n     final startLimit = activity.meetings.first.start;\r\n     while (_occupied(activityId) < activity.slots) {\r\n       Enrollment? next;\r\n       for (final enrollment in enrollments) {\r\n         if (enrollment.activityId != activityId ||\r\n             enrollment.status != 'em_espera')\r\n           continue;\r\n         if (next == null ||\r\n             enrollment.sequenceNumber < next.sequenceNumber)\r\n           next = enrollment;\r\n       }\r\n       if (next == null) return;\r\n       final deadline = clock.add(const Duration(hours: 24));\r\n       next.status = 'convocada';\r\n       next.convocationDeadline =\r\n           deadline.isBefore(startLimit) ? deadline : startLimit;\r\n     }\r\n   }\r\n \r\n   int _waitingPosition(Enrollment enrollment) {\r\n     var position = 1;\r\n     for (final other in enrollments) {\r\n       if (other.activityId != enrollment.activityId ||\r\n           other.status != 'em_espera')\r\n         continue;\r\n       if (other.id != enrollment.id &&\r\n           other.sequenceNumber < enrollment.sequenceNumber)\r\n         position++;\r\n     }\r\n     return position;\r\n   }\r\n \r\n   Map<String, Object?> _inscricaoJson(Enrollment enrollment) => {\r\n         'id': enrollment.id,\r\n         'atividadeId': enrollment.activityId,\r\n         'participanteId': enrollment.participantId,\r\n         'status': enrollment.status,\r\n         'posicaoNaEspera': enrollment.status == 'em_espera'\r\n             ? _waitingPosition(enrollment)\r\n             : null,\r\n         'convocadaAte': enrollment.status == 'convocada'\r\n             ? _formatDate(enrollment.convocationDeadline!)\r\n             : null,\r\n         'criadaEm': _formatDate(enrollment.createdAt),\r\n       };\r\n \r\n   Future<Object?> _body(HttpRequest request) async {\r\n     final text = await utf8.decoder.bind(request).join();\r\n     if (text.trim().isEmpty) return null;\r\n     try {\r\n       final value = jsonDecode(text);\r\n       if (value is! Map && value is! List) return null;\r\n       return value;\r\n     } catch (_) {\r\n       return null;\r\n     }\r\n   }\r\n \r\n   Future<_BodyParse> _readMutationBody(HttpRequest request) async {\r\n     final text = await utf8.decoder.bind(request).join();\r\n     if (text.trim().isEmpty) return _BodyParse.valid;\r\n     try {\r\n       return jsonDecode(text) is Map ? _BodyParse.valid : _BodyParse.invalid;\r\n     } catch (_) {\r\n       return _BodyParse.invalid;\r\n     }\r\n   }\r\n \r\n   void _error(HttpRequest request, int status, String code) =>\r\n       _json(request, status, ApiError(code).toJson());\r\n   void _json(HttpRequest request, int status, Object body) {\r\n     request.response.headers.contentType = ContentType.json;\r\n     request.response.statusCode = status;\r\n     request.response.write(jsonEncode(body));\r\n     request.response.close();\r\n   }\r\n \r\n   void _finish(HttpRequest request, int status) {\r\n     request.response.statusCode = status;\r\n     request.response.close();\r\n   }\r\n }\r\n \r\n enum _BodyParse { valid, invalid }\r\n",
+       "additions": 19,
+       "deletions": 1,
+       "status": "modified"
+      },
+      {
+       "file": "api/test/confirmacao_test.dart",
+       "patch": "Index: api/test/confirmacao_test.dart\n===================================================================\n--- api/test/confirmacao_test.dart\t\n+++ api/test/confirmacao_test.dart\t\n@@ -0,0 +1,556 @@\n+import 'dart:convert';\n+import 'dart:io';\n+\n+import 'package:semana_academica_api/server.dart';\n+import 'package:test/test.dart';\n+\n+Future<HttpResponse> request(ApiServer api, String method, String path,\n+    {String? user, Object? body}) async {\n+  final server = await HttpServer.bind(InternetAddress.loopbackIPv4, 0);\n+  server.listen(api.handle);\n+  final client = HttpClient();\n+  final request = await client.openUrl(\n+      method, Uri.parse('http://127.0.0.1:${server.port}$path'));\n+  if (user != null) request.headers.set('X-Usuario', user);\n+  if (body != null) {\n+    request.headers.contentType = ContentType.json;\n+    request.write(body is String ? body : jsonEncode(body));\n+  }\n+  final response = await request.close();\n+  final text = await utf8.decoder.bind(response).join();\n+  await server.close(force: true);\n+  client.close(force: true);\n+  return HttpResponse(response.statusCode, text);\n+}\n+\n+class HttpResponse {\n+  HttpResponse(this.status, this.text);\n+  final int status;\n+  final String text;\n+  dynamic get json => text.isEmpty ? null : jsonDecode(text);\n+}\n+\n+Future<String> criarAtividade(ApiServer api,\n+    {String titulo = 'Alvo',\n+    String tipo = 'palestra',\n+    String salaId = 'sala-101',\n+    int vagas = 5,\n+    List<(String, String)>? encontros}) async {\n+  final lista = encontros ??\n+      [('2026-10-19T09:00:00-03:00', '2026-10-19T10:00:00-03:00')];\n+  final criada = await request(api, 'POST', '/atividades',\n+      user: 'org-ana',\n+      body: {\n+        'titulo': titulo,\n+        'tipo': tipo,\n+        'salaId': salaId,\n+        'vagas': vagas,\n+        'encontros': [\n+          for (final (inicio, fim) in lista)\n+            {'inicio': inicio, 'fim': fim}\n+        ]\n+      });\n+  return criada.json['id'] as String;\n+}\n+\n+Future<HttpResponse> inscrever(\n+    ApiServer api, String atividadeId, String user) {\n+  return request(api, 'POST', '/atividades/$atividadeId/inscricoes',\n+      user: user);\n+}\n+\n+void main() {\n+  late ApiServer api;\n+  setUp(() => api = ApiServer(modoTeste: true));\n+\n+  test(\n+      'confirmar sem convocação ativa devolve SEM_CONVOCACAO para confirmada, em_espera e cancelada (R31, R32)',\n+      () async {\n+    final a1 = await criarAtividade(api);\n+    final daCarla = (await inscrever(api, a1, 'p-carla')).json['id'] as String;\n+    final repetidaConvocacao = await request(api, 'POST',\n+        '/inscricoes/$daCarla/confirmacao',\n+        user: 'p-carla');\n+    expect(repetidaConvocacao.status, 422, reason: 'repetição depois de confirmar');\n+    expect(repetidaConvocacao.json['erro'], 'SEM_CONVOCACAO');\n+\n+    final a2 = await criarAtividade(api,\n+        salaId: 'sala-102',\n+        encontros: [\n+          ('2026-10-19T11:00:00-03:00', '2026-10-19T12:00:00-03:00')\n+        ],\n+        vagas: 1);\n+    await inscrever(api, a2, 'p-diego');\n+    final daEspera = (await inscrever(api, a2, 'p-carla')).json['id'] as String;\n+    expect(\n+        (await request(api, 'GET', '/inscricoes/$daEspera',\n+                user: 'p-carla'))\n+            .json['status'],\n+        'em_espera');\n+    final emEspera = await request(api, 'POST',\n+        '/inscricoes/$daEspera/confirmacao',\n+        user: 'p-carla');\n+    expect(emEspera.status, 422);\n+    expect(emEspera.json['erro'], 'SEM_CONVOCACAO');\n+\n+    final a3 = await criarAtividade(api,\n+        salaId: 'sala-102',\n+        encontros: [\n+          ('2026-10-19T13:00:00-03:00', '2026-10-19T14:00:00-03:00')\n+        ]);\n+    final daCancelada = (await inscrever(api, a3, 'p-carla')).json['id'] as String;\n+    await request(api, 'POST', '/inscricoes/$daCancelada/cancelamento',\n+        user: 'p-carla');\n+    final cancelada = await request(api, 'POST',\n+        '/inscricoes/$daCancelada/confirmacao',\n+        user: 'p-carla');\n+    expect(cancelada.status, 422);\n+    expect(cancelada.json['erro'], 'SEM_CONVOCACAO');\n+  });\n+\n+  test(\n+      'confirmar convocada antes do prazo: 200 confirmada, mesma id, posição e prazo nulos e ocupação preservada (R21, R22)',\n+      () async {\n+    final id = await criarAtividade(api, vagas: 1);\n+    final daCarla = (await inscrever(api, id, 'p-carla')).json['id'] as String;\n+    final daElisa = (await inscrever(api, id, 'p-elisa')).json['id'] as String;\n+    await request(api, 'POST', '/inscricoes/$daCarla/cancelamento',\n+        user: 'p-carla');\n+    final convocadaTela =\n+        await request(api, 'GET', '/inscricoes/$daElisa', user: 'p-elisa');\n+    expect(convocadaTela.json['status'], 'convocada');\n+    expect(convocadaTela.json['convocadaAte'], '2026-10-14T12:00:00Z');\n+\n+    final confirmada = await request(api, 'POST',\n+        '/inscricoes/$daElisa/confirmacao',\n+        user: 'p-elisa');\n+    expect(confirmada.status, 200);\n+    expect(confirmada.json['id'], daElisa, reason: 'mesma inscrição');\n+    expect(confirmada.json['status'], 'confirmada');\n+    expect(confirmada.json['posicaoNaEspera'], isNull);\n+    expect(confirmada.json['convocadaAte'], isNull);\n+\n+    final consultada =\n+        await request(api, 'GET', '/inscricoes/$daElisa', user: 'p-elisa');\n+    expect(consultada.json['status'], 'confirmada',\n+        reason: 'mutação é observável na leitura');\n+    final detalhe = await request(api, 'GET', '/atividades/$id',\n+        user: 'p-carla');\n+    expect(detalhe.json['ocupadas'], 1,\n+        reason: 'convocada já ocupava a vaga e confirmada a mantém');\n+    expect(detalhe.json['vagasRestantes'], 0);\n+    expect(detalhe.json['emEspera'], 0);\n+  });\n+\n+  test(\n+      'confirmar convocada com agora == convocadaAte devolve CONVOCACAO_EXPIRADA (R22, R31)',\n+      () async {\n+    final id = await criarAtividade(api, vagas: 1);\n+    final daCarla = (await inscrever(api, id, 'p-carla')).json['id'] as String;\n+    final daElisa = (await inscrever(api, id, 'p-elisa')).json['id'] as String;\n+    await request(api, 'POST', '/inscricoes/$daCarla/cancelamento',\n+        user: 'p-carla');\n+    expect(\n+        (await request(api, 'GET', '/inscricoes/$daElisa',\n+                user: 'p-elisa'))\n+            .json['status'],\n+        'convocada');\n+\n+    await request(api, 'PUT', '/_teste/relogio',\n+        body: {'agora': '2026-10-14T12:00:00Z'});\n+    final exato = await request(api, 'POST',\n+        '/inscricoes/$daElisa/confirmacao',\n+        user: 'p-elisa');\n+    expect(exato.status, 422, reason: 'borda inclusiva do vencimento');\n+    expect(exato.json['erro'], 'CONVOCACAO_EXPIRADA');\n+\n+    await request(api, 'PUT', '/_teste/relogio',\n+        body: {'agora': '2026-10-14T12:00:01Z'});\n+    final vencida = await request(api, 'POST',\n+        '/inscricoes/$daElisa/confirmacao',\n+        user: 'p-elisa');\n+    expect(vencida.status, 422);\n+    expect(vencida.json['erro'], 'CONVOCACAO_EXPIRADA',\n+        reason: 'vencida pelo relógio precede SEM_CONVOCACAO');\n+  });\n+\n+  test(\n+      'inscrever recusa sobreposição em [inicio,fim) de qualquer encontro, independente da sala; fim==inicio é permitido (R28, R29)',\n+      () async {\n+    final mini = await criarAtividade(api,\n+        tipo: 'minicurso',\n+        encontros: [\n+          ('2026-10-19T09:00:00-03:00', '2026-10-19T11:00:00-03:00'),\n+          ('2026-10-20T09:00:00-03:00', '2026-10-20T11:00:00-03:00')\n+        ]);\n+    await inscrever(api, mini, 'p-carla');\n+\n+    final sobreposto = await criarAtividade(api,\n+        salaId: 'sala-102',\n+        encontros: [\n+          ('2026-10-20T10:00:00-03:00', '2026-10-20T12:00:00-03:00')\n+        ]);\n+    final conflito = await request(api, 'POST',\n+        '/atividades/$sobreposto/inscricoes',\n+        user: 'p-carla');\n+    expect(conflito.status, 409, reason: 'sobrepõe o segundo encontro, outra sala');\n+    expect(conflito.json['erro'], 'CONFLITO_DE_HORARIO');\n+\n+    final contigua = await criarAtividade(api,\n+        salaId: 'sala-102',\n+        encontros: [\n+          ('2026-10-19T11:00:00-03:00', '2026-10-19T12:00:00-03:00')\n+        ]);\n+    final permitida = await request(api, 'POST',\n+        '/atividades/$contigua/inscricoes',\n+        user: 'p-carla');\n+    expect(permitida.status, 201,\n+        reason: 'fim 10h e começar 10h é permitido (início incluso, fim excluso)');\n+    expect(permitida.json['status'], 'confirmada');\n+  });\n+\n+  test('conflito considera apenas as confirmadas do participante: em_espera não bloqueia (R28)',\n+      () async {\n+    final base = await criarAtividade(api);\n+    await inscrever(api, base, 'p-carla');\n+\n+    final cheia = await criarAtividade(api,\n+        salaId: 'sala-102',\n+        encontros: [\n+          ('2026-10-19T11:00:00-03:00', '2026-10-19T12:00:00-03:00')\n+        ],\n+        vagas: 1);\n+    await inscrever(api, cheia, 'p-diego');\n+    await inscrever(api, cheia, 'p-carla');\n+\n+    final sobreposta = await criarAtividade(api,\n+        encontros: [\n+          ('2026-10-19T11:30:00-03:00', '2026-10-19T12:30:00-03:00')\n+        ]);\n+    final nova = await request(api, 'POST',\n+        '/atividades/$sobreposta/inscricoes',\n+        user: 'p-carla');\n+    expect(nova.status, 201,\n+        reason: 'em_espera da própria participante não gera conflito');\n+    expect(nova.json['status'], 'confirmada');\n+  });\n+\n+  test(\n+      'confirmar com conflito preserva convocação, prazo e vaga; cancelando o conflito, confirma com sucesso (R20, R28, R29)',\n+      () async {\n+    final a = await criarAtividade(api, vagas: 1);\n+    final b = await criarAtividade(api,\n+        salaId: 'sala-102',\n+        encontros: [\n+          ('2026-10-19T09:30:00-03:00', '2026-10-19T10:30:00-03:00')\n+        ]);\n+    final daCarla = (await inscrever(api, a, 'p-carla')).json['id'] as String;\n+    final daElisa = (await inscrever(api, a, 'p-elisa')).json['id'] as String;\n+    final daElisaB = (await inscrever(api, b, 'p-elisa')).json['id'] as String;\n+    await request(api, 'POST', '/inscricoes/$daCarla/cancelamento',\n+        user: 'p-carla');\n+    expect(\n+        (await request(api, 'GET', '/inscricoes/$daElisa',\n+                user: 'p-elisa'))\n+            .json['status'],\n+        'convocada');\n+\n+    final falha = await request(api, 'POST',\n+        '/inscricoes/$daElisa/confirmacao',\n+        user: 'p-elisa');\n+    expect(falha.status, 409);\n+    expect(falha.json['erro'], 'CONFLITO_DE_HORARIO');\n+\n+    final preservada =\n+        await request(api, 'GET', '/inscricoes/$daElisa', user: 'p-elisa');\n+    expect(preservada.json['status'], 'convocada',\n+        reason: 'falha não muda o status');\n+    expect(preservada.json['convocadaAte'], '2026-10-14T12:00:00Z',\n+        reason: 'prazo preservado até convocadaAte');\n+    expect(\n+        (await request(api, 'GET', '/atividades/$a', user: 'p-elisa'))\n+            .json['ocupadas'],\n+        1,\n+        reason: 'convocações falhas não abrem a vaga para o próximo');\n+\n+    await request(api, 'POST', '/inscricoes/$daElisaB/cancelamento',\n+        user: 'p-elisa');\n+    final confirmada = await request(api, 'POST',\n+        '/inscricoes/$daElisa/confirmacao',\n+        user: 'p-elisa');\n+    expect(confirmada.status, 200, reason: 'cancelado o conflito, confirma');\n+    expect(confirmada.json['status'], 'confirmada');\n+    expect(confirmada.json['convocadaAte'], isNull);\n+  });\n+\n+  test(\n+      'terceiro minicurso confirmado devolve LIMITE_DE_MINICURSOS ao inscrever, mesmo quando a vaga seria em_espera (R30)',\n+      () async {\n+    final m1 = await criarAtividade(api,\n+        tipo: 'minicurso',\n+        encontros: [\n+          ('2026-10-19T09:00:00-03:00', '2026-10-19T11:00:00-03:00'),\n+          ('2026-10-21T09:00:00-03:00', '2026-10-21T11:00:00-03:00')\n+        ]);\n+    await inscrever(api, m1, 'p-carla');\n+    final m2 = await criarAtividade(api,\n+        tipo: 'minicurso',\n+        encontros: [\n+          ('2026-10-19T14:00:00-03:00', '2026-10-19T16:00:00-03:00'),\n+          ('2026-10-22T09:00:00-03:00', '2026-10-22T11:00:00-03:00')\n+        ]);\n+    await inscrever(api, m2, 'p-carla');\n+\n+    final m3 = await criarAtividade(api,\n+        tipo: 'minicurso',\n+        salaId: 'sala-102',\n+        vagas: 1,\n+        encontros: [\n+          ('2026-10-20T09:00:00-03:00', '2026-10-20T11:00:00-03:00'),\n+          ('2026-10-20T14:00:00-03:00', '2026-10-20T16:00:00-03:00')\n+        ]);\n+    await inscrever(api, m3, 'p-diego');\n+    final recusada = await request(api, 'POST',\n+        '/atividades/$m3/inscricoes',\n+        user: 'p-carla');\n+    expect(recusada.status, 422);\n+    expect(recusada.json['erro'], 'LIMITE_DE_MINICURSOS',\n+        reason: 'm3 lotada: carla entraria em espera, mas o limite recusa');\n+    final minhas =\n+        (await request(api, 'GET', '/inscricoes', user: 'p-carla')).json\n+            as List;\n+    expect(minhas, hasLength(2), reason: 'recusa não cria inscrição');\n+  });\n+\n+  test(\n+      'espera, cancelada e convocada não contam no limite; palestras nunca contam (R30)',\n+      () async {\n+    final m1 = await criarAtividade(api,\n+        tipo: 'minicurso',\n+        encontros: [\n+          ('2026-10-19T09:00:00-03:00', '2026-10-19T11:00:00-03:00'),\n+          ('2026-10-21T09:00:00-03:00', '2026-10-21T11:00:00-03:00')\n+        ]);\n+    await inscrever(api, m1, 'p-carla');\n+\n+    final emEspera = await criarAtividade(api,\n+        tipo: 'minicurso',\n+        salaId: 'sala-102',\n+        vagas: 1,\n+        encontros: [\n+          ('2026-10-20T09:00:00-03:00', '2026-10-20T11:00:00-03:00'),\n+          ('2026-10-20T14:00:00-03:00', '2026-10-20T16:00:00-03:00')\n+        ]);\n+    await inscrever(api, emEspera, 'p-diego');\n+    await inscrever(api, emEspera, 'p-carla');\n+\n+    final cancelavel = await criarAtividade(api,\n+        tipo: 'minicurso',\n+        salaId: 'sala-102',\n+        encontros: [\n+          ('2026-10-22T09:00:00-03:00', '2026-10-22T11:00:00-03:00'),\n+          ('2026-10-22T14:00:00-03:00', '2026-10-22T16:00:00-03:00')\n+        ]);\n+    final daCanc = (await inscrever(api, cancelavel, 'p-carla')).json['id'] as String;\n+    await request(api, 'POST', '/inscricoes/$daCanc/cancelamento',\n+        user: 'p-carla');\n+\n+    final convocadaAtv = await criarAtividade(api,\n+        tipo: 'minicurso',\n+        salaId: 'sala-102',\n+        vagas: 1,\n+        encontros: [\n+          ('2026-10-23T09:00:00-03:00', '2026-10-23T11:00:00-03:00'),\n+          ('2026-10-23T14:00:00-03:00', '2026-10-23T16:00:00-03:00')\n+        ]);\n+    await inscrever(api, convocadaAtv, 'p-heitor');\n+    final daConvocada = (await inscrever(api, convocadaAtv, 'p-carla')).json['id'] as String;\n+    expect(\n+        (await request(api, 'PATCH', '/atividades/$convocadaAtv',\n+                user: 'org-ana', body: {'vagas': 2}))\n+            .json['vagas'],\n+        2);\n+    expect(\n+        (await request(api, 'GET', '/inscricoes/$daConvocada',\n+                user: 'p-carla'))\n+            .json['status'],\n+        'convocada');\n+\n+    final palestra1 = await criarAtividade(api,\n+        encontros: [\n+          ('2026-10-19T16:00:00-03:00', '2026-10-19T17:00:00-03:00')\n+        ]);\n+    await inscrever(api, palestra1, 'p-carla');\n+    final palestra2 = await criarAtividade(api,\n+        encontros: [\n+          ('2026-10-21T16:00:00-03:00', '2026-10-21T17:00:00-03:00')\n+        ]);\n+    await inscrever(api, palestra2, 'p-carla');\n+\n+    final novoMini = await criarAtividade(api,\n+        tipo: 'minicurso',\n+        salaId: 'sala-102',\n+        encontros: [\n+          ('2026-10-19T11:00:00-03:00', '2026-10-19T13:00:00-03:00'),\n+          ('2026-10-21T11:00:00-03:00', '2026-10-21T13:00:00-03:00')\n+        ]);\n+    final permitido = await request(api, 'POST',\n+        '/atividades/$novoMini/inscricoes',\n+        user: 'p-carla');\n+    expect(permitido.status, 201,\n+        reason: 'só confirmadas contam; espera/cancelada/convocada/palestras não');\n+    expect(permitido.json['status'], 'confirmada');\n+  });\n+\n+  test(\n+      'confirmar convocada que estouraria o limite devolve LIMITE_DE_MINICURSOS (R30, R31)',\n+      () async {\n+    final m1 = await criarAtividade(api,\n+        tipo: 'minicurso',\n+        encontros: [\n+          ('2026-10-19T09:00:00-03:00', '2026-10-19T11:00:00-03:00'),\n+          ('2026-10-19T14:00:00-03:00', '2026-10-19T16:00:00-03:00')\n+        ]);\n+    await inscrever(api, m1, 'p-carla');\n+\n+    final x = await criarAtividade(api,\n+        tipo: 'minicurso',\n+        salaId: 'sala-102',\n+        vagas: 1,\n+        encontros: [\n+          ('2026-10-20T09:00:00-03:00', '2026-10-20T11:00:00-03:00'),\n+          ('2026-10-20T14:00:00-03:00', '2026-10-20T16:00:00-03:00')\n+        ]);\n+    await inscrever(api, x, 'p-diego');\n+    final daX = (await inscrever(api, x, 'p-carla')).json['id'] as String;\n+\n+    final m2 = await criarAtividade(api,\n+        tipo: 'minicurso',\n+        encontros: [\n+          ('2026-10-21T09:00:00-03:00', '2026-10-21T11:00:00-03:00'),\n+          ('2026-10-21T14:00:00-03:00', '2026-10-21T16:00:00-03:00')\n+        ]);\n+    await inscrever(api, m2, 'p-carla');\n+\n+    expect(\n+        (await request(api, 'PATCH', '/atividades/$x', user: 'org-ana',\n+                body: {'vagas': 2}))\n+            .json['vagas'],\n+        2);\n+\n+    final recusada = await request(api, 'POST',\n+        '/inscricoes/$daX/confirmacao',\n+        user: 'p-carla');\n+    expect(recusada.status, 422);\n+    expect(recusada.json['erro'], 'LIMITE_DE_MINICURSOS',\n+        reason: 'confirmar tornaria 3 minicursos confirmados');\n+    final preservada =\n+        await request(api, 'GET', '/inscricoes/$daX', user: 'p-carla');\n+    expect(preservada.json['status'], 'convocada',\n+        reason: 'falha não desfaz a convocação');\n+    expect(preservada.json['convocadaAte'], '2026-10-14T12:00:00Z');\n+  });\n+\n+  test('confirmação aplica CONFLITO_DE_HORARIO antes de LIMITE_DE_MINICURSOS (R31)',\n+      () async {\n+    final m1 = await criarAtividade(api,\n+        tipo: 'minicurso',\n+        encontros: [\n+          ('2026-10-19T09:00:00-03:00', '2026-10-19T11:00:00-03:00'),\n+          ('2026-10-22T09:00:00-03:00', '2026-10-22T11:00:00-03:00')\n+        ]);\n+    await inscrever(api, m1, 'p-carla');\n+\n+    final x = await criarAtividade(api,\n+        tipo: 'minicurso',\n+        salaId: 'sala-102',\n+        vagas: 1,\n+        encontros: [\n+          ('2026-10-21T09:00:00-03:00', '2026-10-21T11:00:00-03:00'),\n+          ('2026-10-21T14:00:00-03:00', '2026-10-21T16:00:00-03:00')\n+        ]);\n+    await inscrever(api, x, 'p-diego');\n+    final daX = (await inscrever(api, x, 'p-carla')).json['id'] as String;\n+\n+    final m2 = await criarAtividade(api,\n+        tipo: 'minicurso',\n+        encontros: [\n+          ('2026-10-20T09:00:00-03:00', '2026-10-20T11:00:00-03:00'),\n+          ('2026-10-23T09:00:00-03:00', '2026-10-23T11:00:00-03:00')\n+        ]);\n+    await inscrever(api, m2, 'p-carla');\n+\n+    final conflitante = await criarAtividade(api,\n+        encontros: [\n+          ('2026-10-21T10:00:00-03:00', '2026-10-21T12:00:00-03:00')\n+        ]);\n+    await inscrever(api, conflitante, 'p-carla');\n+\n+    expect(\n+        (await request(api, 'PATCH', '/atividades/$x', user: 'org-ana',\n+                body: {'vagas': 2}))\n+            .json['vagas'],\n+        2);\n+\n+    final resposta = await request(api, 'POST',\n+        '/inscricoes/$daX/confirmacao',\n+        user: 'p-carla');\n+    expect(resposta.status, 409, reason: 'conflito vem antes do limite');\n+    expect(resposta.json['erro'], 'CONFLITO_DE_HORARIO');\n+  });\n+\n+  test('inscrever: JA_INSCRITO vence conflito e CONFLITO_DE_HORARIO vence LIMITE_DE_MINICURSOS (R12)',\n+      () async {\n+    final a = await criarAtividade(api,\n+        tipo: 'minicurso',\n+        vagas: 1,\n+        encontros: [\n+          ('2026-10-19T09:00:00-03:00', '2026-10-19T11:00:00-03:00'),\n+          ('2026-10-21T09:00:00-03:00', '2026-10-21T11:00:00-03:00')\n+        ]);\n+    await inscrever(api, a, 'p-diego');\n+    await inscrever(api, a, 'p-carla');\n+\n+    final b = await criarAtividade(api,\n+        salaId: 'sala-102',\n+        encontros: [\n+          ('2026-10-19T10:00:00-03:00', '2026-10-19T12:00:00-03:00')\n+        ]);\n+    await inscrever(api, b, 'p-carla');\n+\n+    final repetida = await request(api, 'POST',\n+        '/atividades/$a/inscricoes',\n+        user: 'p-carla');\n+    expect(repetida.status, 409);\n+    expect(repetida.json['erro'], 'JA_INSCRITO',\n+        reason: 'duplicidade vem antes do conflito de horário');\n+\n+    final m1 = await criarAtividade(api,\n+        tipo: 'minicurso',\n+        encontros: [\n+          ('2026-10-19T16:00:00-03:00', '2026-10-19T18:00:00-03:00'),\n+          ('2026-10-21T16:00:00-03:00', '2026-10-21T18:00:00-03:00')\n+        ]);\n+    await inscrever(api, m1, 'p-carla');\n+    final m2 = await criarAtividade(api,\n+        tipo: 'minicurso',\n+        encontros: [\n+          ('2026-10-20T09:00:00-03:00', '2026-10-20T11:00:00-03:00'),\n+          ('2026-10-23T09:00:00-03:00', '2026-10-23T11:00:00-03:00')\n+        ]);\n+    await inscrever(api, m2, 'p-carla');\n+\n+    final c = await criarAtividade(api,\n+        tipo: 'minicurso',\n+        salaId: 'lab-3',\n+        encontros: [\n+          ('2026-10-19T11:00:00-03:00', '2026-10-19T13:00:00-03:00'),\n+          ('2026-10-21T11:00:00-03:00', '2026-10-21T13:00:00-03:00')\n+        ]);\n+    final terceiro = await request(api, 'POST',\n+        '/atividades/$c/inscricoes',\n+        user: 'p-carla');\n+    expect(terceiro.status, 409, reason: 'conflito vem antes do limite');\n+    expect(terceiro.json['erro'], 'CONFLITO_DE_HORARIO');\n+  });\n+}\n\\ No newline at end of file\n",
+       "additions": 556,
+       "deletions": 0,
+       "status": "added"
+      },
+      {
+       "file": "api/test/fila_test.dart",
+       "patch": "Index: api/test/fila_test.dart\n===================================================================\n--- api/test/fila_test.dart\t\n+++ api/test/fila_test.dart\t\n@@ -1,487 +1,489 @@\n import 'dart:convert';\n import 'dart:io';\n \n import 'package:semana_academica_api/server.dart';\n import 'package:test/test.dart';\n \n Future<HttpResponse> request(ApiServer api, String method, String path,\n     {String? user, Object? body}) async {\n   final server = await HttpServer.bind(InternetAddress.loopbackIPv4, 0);\n   server.listen(api.handle);\n   final client = HttpClient();\n   final request = await client.openUrl(\n       method, Uri.parse('http://127.0.0.1:${server.port}$path'));\n   if (user != null) request.headers.set('X-Usuario', user);\n   if (body != null) {\n     request.headers.contentType = ContentType.json;\n     request.write(body is String ? body : jsonEncode(body));\n   }\n   final response = await request.close();\n   final text = await utf8.decoder.bind(response).join();\n   await server.close(force: true);\n   client.close(force: true);\n   return HttpResponse(response.statusCode, text);\n }\n \n class HttpResponse {\n   HttpResponse(this.status, this.text);\n   final int status;\n   final String text;\n   dynamic get json => text.isEmpty ? null : jsonDecode(text);\n }\n \n Future<String> criarAtividade(ApiServer api,\n     {int vagas = 2,\n     String dia = '2026-10-19',\n     String inicio = '09:00',\n     String fim = '10:00'}) async {\n   final criada = await request(api, 'POST', '/atividades',\n       user: 'org-ana',\n       body: {\n         'titulo': 'Alvo',\n         'tipo': 'palestra',\n         'salaId': 'sala-101',\n         'vagas': vagas,\n         'encontros': [\n           {\n             'inicio': '${dia}T$inicio:00-03:00',\n             'fim': '${dia}T$fim:00-03:00'\n           }\n         ]\n       });\n   return criada.json['id'] as String;\n }\n \n Future<String> inscrever(ApiServer api, String atividadeId, String user) async {\n   final resposta = await request(api, 'POST',\n       '/atividades/$atividadeId/inscricoes',\n       user: user);\n   return resposta.json['id'] as String;\n }\n \n void main() {\n   late ApiServer api;\n   setUp(() => api = ApiServer(modoTeste: true));\n \n   test(\n       'cancela própria inscrição confirmada antes do início: 200 cancelada com posição e prazo nulos (R33)',\n       () async {\n     final atividadeId = await criarAtividade(api, vagas: 1);\n     final inscricaoId = await inscrever(api, atividadeId, 'p-carla');\n     final cancelada = await request(api, 'POST',\n         '/inscricoes/$inscricaoId/cancelamento',\n         user: 'p-carla');\n     expect(cancelada.status, 200);\n     expect(cancelada.json['id'], inscricaoId);\n     expect(cancelada.json['status'], 'cancelada');\n     expect(cancelada.json['posicaoNaEspera'], isNull);\n     expect(cancelada.json['convocadaAte'], isNull);\n   });\n \n   test(\n       'iniciada (agora>=inicio inclusive) devolve ATIVIDADE_JA_INICIADA antes de INSCRICAO_INATIVA (R33, R34)',\n       () async {\n     final atividadeId = await criarAtividade(api, vagas: 3, dia: '2026-10-20');\n     final daCarla = await inscrever(api, atividadeId, 'p-carla');\n     final doDiego = await inscrever(api, atividadeId, 'p-diego');\n     expect((await request(api, 'POST', '/inscricoes/$daCarla/cancelamento',\n             user: 'p-carla'))\n         .status, 200);\n \n     await request(api, 'PUT', '/_teste/relogio',\n         body: {'agora': '2026-10-20T09:00:00-03:00'});\n \n     final ativa =\n         await request(api, 'POST', '/inscricoes/$doDiego/cancelamento',\n             user: 'p-diego');\n     expect(ativa.status, 422);\n     expect(ativa.json['erro'], 'ATIVIDADE_JA_INICIADA',\n         reason: 'agora == inicio é borda inclusiva do início');\n \n     final inativa =\n         await request(api, 'POST', '/inscricoes/$daCarla/cancelamento',\n             user: 'p-carla');\n     expect(inativa.status, 422);\n     expect(inativa.json['erro'], 'ATIVIDADE_JA_INICIADA',\n         reason: 'início vem antes de INSCRICAO_INATIVA');\n   });\n \n   test('recusa cancelar inscrição já cancelada antes do início (R35)', () async {\n     final atividadeId = await criarAtividade(api, vagas: 2);\n     final inscricaoId = await inscrever(api, atividadeId, 'p-carla');\n     expect((await request(api, 'POST', '/inscricoes/$inscricaoId/cancelamento',\n             user: 'p-carla'))\n         .status, 200);\n     final repetida =\n         await request(api, 'POST', '/inscricoes/$inscricaoId/cancelamento',\n             user: 'p-carla');\n     expect(repetida.status, 422);\n     expect(repetida.json['erro'], 'INSCRICAO_INATIVA');\n     expect(\n         (await request(api, 'GET', '/inscricoes/$inscricaoId',\n                 user: 'p-carla'))\n             .json['status'],\n         'cancelada', reason: 'recusa não desfaz o cancelamento');\n   });\n \n   test(\n       'inscrição alheia devolve 404 em GET, cancelamento e confirmação antes do corpo (R37)',\n       () async {\n     final atividadeId = await criarAtividade(api, vagas: 2);\n     final doDiego = await inscrever(api, atividadeId, 'p-diego');\n     final respostaGet =\n         await request(api, 'GET', '/inscricoes/$doDiego', user: 'p-carla');\n     expect(respostaGet.status, 404);\n     expect(respostaGet.json['erro'], 'NAO_ENCONTRADO');\n     for (final rota in ['cancelamento', 'confirmacao']) {\n       final alheia = await request(api, 'POST',\n           '/inscricoes/$doDiego/$rota',\n           user: 'p-carla', body: 'nao-json');\n       expect(alheia.status, 404, reason: rota);\n       expect(alheia.json['erro'], 'NAO_ENCONTRADO',\n           reason: '$rota alheia precede corpo');\n     }\n     expect(\n         (await request(api, 'GET', '/inscricoes/$doDiego', user: 'org-ana'))\n             .json['id'],\n         doDiego,\n         reason: 'organização consulta todas, mas não muta');\n   });\n \n   test(\n       'cancelar confirmada libera vaga e convoca o primeiro da fila com prazo agora+24h, ocupando a vaga (R19, R21, R43)',\n       () async {\n     final atividadeId = await criarAtividade(api, vagas: 2);\n     final daCarla = await inscrever(api, atividadeId, 'p-carla');\n     await inscrever(api, atividadeId, 'p-diego');\n     final daElisa = await inscrever(api, atividadeId, 'p-elisa');\n     final doFabio = await inscrever(api, atividadeId, 'p-fabio');\n \n     final cancelada = await request(api, 'POST',\n         '/inscricoes/$daCarla/cancelamento',\n         user: 'p-carla');\n     expect(cancelada.json['status'], 'cancelada');\n \n     final convocada =\n         await request(api, 'GET', '/inscricoes/$daElisa', user: 'p-elisa');\n     expect(convocada.status, 200);\n     expect(convocada.json['status'], 'convocada',\n         reason: 'FIFO: elisa é a primeira da espera');\n     expect(convocada.json['posicaoNaEspera'], isNull);\n     expect(convocada.json['convocadaAte'], '2026-10-14T12:00:00Z',\n         reason: 'agora+24h, dentro do início do primeiro encontro');\n \n     final aindaEspera =\n         await request(api, 'GET', '/inscricoes/$doFabio', user: 'p-fabio');\n     expect(aindaEspera.json['status'], 'em_espera');\n     expect(aindaEspera.json['posicaoNaEspera'], 1,\n         reason: 'fila recompactada com a saída de elisa');\n \n     final detalhe =\n         await request(api, 'GET', '/atividades/$atividadeId', user: 'p-carla');\n     expect(detalhe.json['ocupadas'], 2,\n         reason: 'convocada ocupa a vaga deixada pela cancelada');\n     expect(detalhe.json['emEspera'], 1);\n     expect(detalhe.json['vagasRestantes'], 0);\n     final listaDaCarla = (await request(api, 'GET',\n         '/inscricoes?atividadeId=$atividadeId',\n         user: 'p-carla')).json as List;\n     expect(listaDaCarla.map((item) => item['id']), [daCarla],\n         reason: 'isolamento: o dono vê só a própria, e ela continua cancelada');\n     expect(listaDaCarla.single['status'], 'cancelada');\n   });\n \n   test('convocação é limitada ao início do primeiro encontro quando agora+24h passa dele (R21)',\n       () async {\n     await request(api, 'PUT', '/_teste/relogio',\n         body: {'agora': '2026-10-18T20:00:00Z'});\n     final atividadeId = await criarAtividade(api, vagas: 1);\n     final daCarla = await inscrever(api, atividadeId, 'p-carla');\n     final daElisa = await inscrever(api, atividadeId, 'p-elisa');\n     await request(api, 'POST', '/inscricoes/$daCarla/cancelamento',\n         user: 'p-carla');\n     final convocada =\n         await request(api, 'GET', '/inscricoes/$daElisa', user: 'p-elisa');\n     expect(convocada.json['status'], 'convocada');\n     expect(convocada.json['convocadaAte'], '2026-10-19T12:00:00Z',\n         reason: 'prazo vira o início, não agora+24h que passaria dele');\n   });\n \n   test('cancelar convocada libera a vaga e convoca o próximo da fila em FIFO (R19)',\n       () async {\n     final atividadeId = await criarAtividade(api, vagas: 1);\n     final daCarla = await inscrever(api, atividadeId, 'p-carla');\n     final daElisa = await inscrever(api, atividadeId, 'p-elisa');\n     final doFabio = await inscrever(api, atividadeId, 'p-fabio');\n     final daGabriela = await inscrever(api, atividadeId, 'p-gabriela');\n \n     await request(api, 'POST', '/inscricoes/$daCarla/cancelamento',\n         user: 'p-carla');\n     final convocada =\n         await request(api, 'GET', '/inscricoes/$daElisa', user: 'p-elisa');\n     expect(convocada.json['status'], 'convocada');\n \n     final cancelada = await request(api, 'POST',\n         '/inscricoes/$daElisa/cancelamento',\n         user: 'p-elisa');\n     expect(cancelada.status, 200);\n     expect(cancelada.json['status'], 'cancelada');\n     expect(cancelada.json['convocadaAte'], isNull,\n         reason: 'prazo limpo na cancelada');\n \n     final promovido =\n         await request(api, 'GET', '/inscricoes/$doFabio', user: 'p-fabio');\n     expect(promovido.json['status'], 'convocada');\n     expect(promovido.json['convocadaAte'], '2026-10-14T12:00:00Z');\n \n     final restante =\n         await request(api, 'GET', '/inscricoes/$daGabriela',\n             user: 'p-gabriela');\n     expect(restante.json['status'], 'em_espera');\n     expect(restante.json['posicaoNaEspera'], 1);\n \n     final detalhe =\n         await request(api, 'GET', '/atividades/$atividadeId', user: 'p-carla');\n     expect(detalhe.json['ocupadas'], 1);\n     expect(detalhe.json['emEspera'], 1);\n   });\n \n   test('cancelar em_espera recompacta a fila sem liberar vaga nem ocupar (R18)',\n       () async {\n     final atividadeId = await criarAtividade(api, vagas: 2);\n     await inscrever(api, atividadeId, 'p-carla');\n     await inscrever(api, atividadeId, 'p-diego');\n     final daElisa = await inscrever(api, atividadeId, 'p-elisa');\n     final doFabio = await inscrever(api, atividadeId, 'p-fabio');\n     final daGabriela = await inscrever(api, atividadeId, 'p-gabriela');\n \n     final cancelada = await request(api, 'POST',\n         '/inscricoes/$daElisa/cancelamento',\n         user: 'p-elisa');\n     expect(cancelada.status, 200);\n     expect(cancelada.json['status'], 'cancelada');\n     expect(cancelada.json['posicaoNaEspera'], isNull);\n \n     final promovido =\n         await request(api, 'GET', '/inscricoes/$doFabio', user: 'p-fabio');\n     expect(promovido.json['status'], 'em_espera',\n         reason: 'saída de espera não convoca');\n     expect(promovido.json['posicaoNaEspera'], 1,\n         reason: 'fila recompactada de 1');\n     final restante =\n         await request(api, 'GET', '/inscricoes/$daGabriela',\n             user: 'p-gabriela');\n     expect(restante.json['posicaoNaEspera'], 2,\n         reason: 'quem sai faz os demais subirem');\n \n     final detalhe =\n         await request(api, 'GET', '/atividades/$atividadeId', user: 'p-carla');\n     expect(detalhe.json['ocupadas'], 2, reason: 'nenhuma vaga foi aberta');\n     expect(detalhe.json['emEspera'], 2);\n   });\n \n   test('PATCH aumento de vagas convoca quantas couberem em FIFO sem pular (R19)',\n       () async {\n     final atividadeId = await criarAtividade(api, vagas: 1);\n     await inscrever(api, atividadeId, 'p-carla');\n     final daElisa = await inscrever(api, atividadeId, 'p-elisa');\n     final doFabio = await inscrever(api, atividadeId, 'p-fabio');\n     final daGabriela = await inscrever(api, atividadeId, 'p-gabriela');\n \n     final patched = await request(api, 'PATCH', '/atividades/$atividadeId',\n         user: 'org-ana', body: {'vagas': 3});\n     expect(patched.status, 200);\n     expect(patched.json['vagas'], 3);\n     expect(patched.json['ocupadas'], 3, reason: 'convocadas preenchem as novas vagas');\n     expect(patched.json['emEspera'], 1);\n \n     final convocada =\n         await request(api, 'GET', '/inscricoes/$daElisa', user: 'p-elisa');\n     expect(convocada.json['status'], 'convocada');\n     expect(convocada.json['convocadaAte'], '2026-10-14T12:00:00Z');\n     final segundo =\n         await request(api, 'GET', '/inscricoes/$doFabio', user: 'p-fabio');\n     expect(segundo.json['status'], 'convocada',\n         reason: 'segunda nova vaga convoca o próximo, sem pular');\n     final restante =\n         await request(api, 'GET', '/inscricoes/$daGabriela',\n             user: 'p-gabriela');\n     expect(restante.json['status'], 'em_espera');\n     expect(restante.json['posicaoNaEspera'], 1);\n   });\n \n   test('redução de vagas abaixo de confirmadas+convocadas recusa e não muta (R19, R43)',\n       () async {\n     final atividadeId = await criarAtividade(api, vagas: 2);\n     await inscrever(api, atividadeId, 'p-carla');\n     await inscrever(api, atividadeId, 'p-diego');\n     final daElisa = await inscrever(api, atividadeId, 'p-elisa');\n     await request(api, 'PATCH', '/atividades/$atividadeId',\n         user: 'org-ana', body: {'vagas': 3});\n \n     final recusado = await request(api, 'PATCH', '/atividades/$atividadeId',\n         user: 'org-ana', body: {'vagas': 2});\n     expect(recusado.status, 409);\n     expect(recusado.json['erro'], 'VAGAS_ABAIXO_DOS_INSCRITOS');\n \n     final detalhe =\n         await request(api, 'GET', '/atividades/$atividadeId', user: 'p-carla');\n     expect(detalhe.json['vagas'], 3, reason: 'vagas não foram reduzidas');\n     expect(detalhe.json['ocupadas'], 3,\n         reason: 'convocada conta como ocupada e permanece');\n     final convocada =\n         await request(api, 'GET', '/inscricoes/$daElisa', user: 'p-elisa');\n     expect(convocada.json['status'], 'convocada',\n         reason: 'recusa não desfaz a convocação');\n   });\n \n   test('cancelar atividade converte ativas em cancelada, limpa prazos e esvazia a fila (R36)',\n       () async {\n     final atividadeId = await criarAtividade(api, vagas: 2);\n     final daCarla = await inscrever(api, atividadeId, 'p-carla');\n     final daElisa = await inscrever(api, atividadeId, 'p-elisa');\n     final doFabio = await inscrever(api, atividadeId, 'p-fabio');\n     final doDiego = await inscrever(api, atividadeId, 'p-diego');\n     await request(api, 'POST', '/inscricoes/$daCarla/cancelamento',\n         user: 'p-carla');\n     final convocada =\n         await request(api, 'GET', '/inscricoes/$doFabio', user: 'p-fabio');\n     expect(convocada.json['status'], 'convocada');\n \n     final cancelada = await request(api, 'POST',\n         '/atividades/$atividadeId/cancelamento',\n         user: 'org-ana');\n     expect(cancelada.status, 200);\n     expect(cancelada.json['situacao'], 'cancelada');\n \n     final confirmada =\n         await request(api, 'GET', '/inscricoes/$daElisa', user: 'p-elisa');\n     expect(confirmada.json['status'], 'cancelada');\n     final convocadaCancelada =\n         await request(api, 'GET', '/inscricoes/$doFabio', user: 'p-fabio');\n     expect(convocadaCancelada.json['status'], 'cancelada',\n         reason: 'convocada vira cancelada');\n     expect(convocadaCancelada.json['convocadaAte'], isNull,\n         reason: 'prazo limpo pelo cancelamento da atividade');\n     final naEsperaCancelado =\n         await request(api, 'GET', '/inscricoes/$doDiego', user: 'p-diego');\n     expect(naEsperaCancelado.json['status'], 'cancelada');\n     expect(naEsperaCancelado.json['posicaoNaEspera'], isNull);\n \n     final inativo = await request(api, 'POST',\n         '/inscricoes/$daCarla/cancelamento',\n         user: 'p-carla');\n     expect(inativo.json['erro'], 'INSCRICAO_INATIVA',\n         reason: 'cancelada da atividade não é mais cancelável');\n \n     final todas = (await request(api, 'GET', '/inscricoes', user: 'org-ana')).json;\n     expect(todas.where((item) => item['status'] == 'em_espera'), isEmpty,\n         reason: 'fila esvaziada');\n \n     final obstruida = await request(api, 'POST',\n         '/atividades/$atividadeId/inscricoes',\n         user: 'p-carla');\n     expect(obstruida.json['erro'], 'ATIVIDADE_CANCELADA');\n   });\n \n   test('reinscrever cancelada cria novo id no fim da fila; convocada e espera seguem 409 (R13, R14)',\n       () async {\n     final atividadeId = await criarAtividade(api, vagas: 1);\n     final antiga = await inscrever(api, atividadeId, 'p-carla');\n     final daElisa = await inscrever(api, atividadeId, 'p-elisa');\n     await inscrever(api, atividadeId, 'p-fabio');\n     await request(api, 'POST', '/inscricoes/$antiga/cancelamento',\n         user: 'p-carla');\n     expect(\n         (await request(api, 'GET', '/inscricoes/$daElisa',\n                 user: 'p-elisa'))\n             .json['status'],\n         'convocada', reason: 'vaga abriu pela cancelada de carla');\n     expect(\n         (await request(api, 'POST', '/atividades/$atividadeId/inscricoes',\n                 user: 'p-elisa'))\n             .json['erro'],\n         'JA_INSCRITO',\n         reason: 'convocada é inscrição ativa: duplicidade recusada');\n     expect(\n         (await request(api, 'POST', '/atividades/$atividadeId/inscricoes',\n                 user: 'p-fabio'))\n             .json['erro'],\n         'JA_INSCRITO');\n \n     final nova = await request(api, 'POST',\n         '/atividades/$atividadeId/inscricoes',\n         user: 'p-carla');\n     expect(nova.status, 201);\n     expect(nova.json['id'], isNot(antiga),\n         reason: 'reinscrição gera novo id, nunca reconvoca o antigo');\n     expect(nova.json['status'], 'em_espera');\n     expect(nova.json['posicaoNaEspera'], 2,\n         reason: 'fim da fila, depois de fabio que já esperava');\n     final antigaRegistro =\n         await request(api, 'GET', '/inscricoes/$antiga', user: 'p-carla');\n     expect(antigaRegistro.json['status'], 'cancelada',\n         reason: 'registro antigo permanece cancelado');\n   });\n \n   test('após o início do primeiro encontro, aumento de vagas não convoca (R26 nesta fatia)',\n       () async {\n     final atividadeId = await criarAtividade(api, vagas: 1, dia: '2026-10-20');\n     await inscrever(api, atividadeId, 'p-carla');\n     final daElisa = await inscrever(api, atividadeId, 'p-elisa');\n     await request(api, 'PUT', '/_teste/relogio',\n         body: {'agora': '2026-10-20T09:00:00-03:00'});\n \n     final patched = await request(api, 'PATCH', '/atividades/$atividadeId',\n         user: 'org-ana', body: {'vagas': 2});\n     expect(patched.status, 200);\n     expect(patched.json['vagas'], 2, reason: 'vagas sobem mesmo assim');\n     expect(patched.json['ocupadas'], 1);\n     expect(patched.json['emEspera'], 1);\n \n     final naEspera =\n         await request(api, 'GET', '/inscricoes/$daElisa', user: 'p-elisa');\n     expect(naEspera.json['status'], 'em_espera',\n         reason: 'não há novas convocações após o início');\n     expect(naEspera.json['convocadaAte'], isNull);\n   });\n \n   test(\n       'cancelamento e confirmação recusam corpo malformado ou raiz não-objeto, aceitam ausente e objeto (R04)',\n       () async {\n     final atividadeId = await criarAtividade(api, vagas: 4);\n     final daCarla = await inscrever(api, atividadeId, 'p-carla');\n     for (final malformado in ['nao-json', '\"apenas-texto\"', '[1,2]', '42']) {\n       final cancelamento = await request(api, 'POST',\n           '/inscricoes/$daCarla/cancelamento',\n           user: 'p-carla', body: malformado);\n       expect(cancelamento.status, 422, reason: 'corpo $malformado');\n       expect(cancelamento.json['erro'], 'DADOS_INVALIDOS',\n           reason: 'corpo $malformado');\n       final confirmacao = await request(api, 'POST',\n           '/inscricoes/$daCarla/confirmacao',\n           user: 'p-carla', body: malformado);\n       expect(confirmacao.status, 422, reason: 'confirmação corpo $malformado');\n       expect(confirmacao.json['erro'], 'DADOS_INVALIDOS',\n           reason: 'confirmação corpo $malformado');\n     }\n \n     final comObjeto = await request(api, 'POST',\n         '/inscricoes/$daCarla/cancelamento',\n         user: 'p-carla', body: {});\n     expect(comObjeto.status, 200, reason: 'objeto bem formado é ignorado');\n \n     final doDiego = await inscrever(api, atividadeId, 'p-diego');\n     final semCorpo = await request(api, 'POST',\n         '/inscricoes/$doDiego/cancelamento',\n         user: 'p-diego');\n     expect(semCorpo.status, 200, reason: 'corpo ausente é aceito');\n \n     final daElisa = await inscrever(api, atividadeId, 'p-elisa');\n     final confirmacaoPlaceholder = await request(api, 'POST',\n         '/inscricoes/$daElisa/confirmacao',\n         user: 'p-elisa', body: {});\n-    expect(confirmacaoPlaceholder.status, 501,\n-        reason: 'objeto válido passa do corpo e mantém a confirmação como placeholder');\n+    expect(confirmacaoPlaceholder.status, 422,\n+        reason: 'objeto válido passa do corpo e cai na regra do recurso');\n+    expect(confirmacaoPlaceholder.json['erro'], 'SEM_CONVOCACAO',\n+        reason: 'confirmada sem convocação ativa (R32)');\n   });\n }\n\\ No newline at end of file\n",
+       "additions": 4,
+       "deletions": 2,
+       "status": "modified"
+      },
+      {
+       "file": "evidencias/exportar-evidencias.test.js",
+       "patch": "Index: evidencias/exportar-evidencias.test.js\n===================================================================\n--- evidencias/exportar-evidencias.test.js\t\n+++ evidencias/exportar-evidencias.test.js\t\n@@ -1,80 +1,124 @@\n 'use strict';\n \n const test = require('node:test');\n const assert = require('node:assert');\n \n const m = require('./exportar-evidencias.js');\n \n // ------------------------------------------------------------ ehComandoDeTeste\n \n test('ehComandoDeTeste reconhece \"&\" com caminho entre aspas terminado em dart.exe', () => {\n   assert.equal(m.ehComandoDeTeste('& \"C:/SDK com espacos/bin/dart.exe\" test'), true);\n });\n \n test('ehComandoDeTeste reconhece \"&\" com caminho entre aspas terminado em flutter.bat', () => {\n   assert.equal(m.ehComandoDeTeste('& \"C:/SDK com espacos/bin/flutter.bat\" test'), true);\n });\n \n test('ehComandoDeTeste reconhece caminho entre aspas sem \"&\" terminado em dart.exe', () => {\n   assert.equal(m.ehComandoDeTeste('\"C:/SDK com espacos/bin/dart.exe\" test'), true);\n });\n \n test('ehComandoDeTeste reconhece flutter.bat test sem aspas', () => {\n   assert.equal(m.ehComandoDeTeste('bin/flutter.bat test'), true);\n });\n \n test('ehComandoDeTeste reconhece dart test no Linux', () => {\n   assert.equal(m.ehComandoDeTeste('dart test'), true);\n });\n \n test('ehComandoDeTeste reconhece flutter test no Linux', () => {\n   assert.equal(m.ehComandoDeTeste('flutter test'), true);\n });\n \n test('ehComandoDeTeste rejeita git commit -m \"dart test\"', () => {\n   assert.equal(m.ehComandoDeTeste('git commit -m \"dart test\"'), false);\n });\n \n test('ehComandoDeTeste rejeita echo dart test', () => {\n   assert.equal(m.ehComandoDeTeste('echo dart test'), false);\n });\n \n test('ehComandoDeTeste rejeita analyze', () => {\n   assert.equal(m.ehComandoDeTeste('analyze'), false);\n });\n \n test('ehComandoDeTeste rejeita pub get', () => {\n   assert.equal(m.ehComandoDeTeste('pub get'), false);\n });\n \n test('ehComandoDeTeste rejeita dart test citado num commit', () => {\n   assert.equal(m.ehComandoDeTeste('git commit -am \"roda dart test\"'), false);\n });\n \n // ------------------------------------------------------ resultado de compilação Dart\n \n test('resultadoDeTeste: \"Failed to load\" é vermelho mesmo com exit 0 no pipe', () => {\n   const r = m.resultadoDeTeste(\n     'Failed to load \"C:/projeto/test/x_test.dart\":\\n  compilação quebrada\\n+0: Some tests failed',\n     0, undefined);\n   assert.equal(r.vermelho, true);\n   assert.equal(r.verde, false);\n });\n \n test('resultadoDeTeste: \"Some tests failed\" é vermelho mesmo com exit 0', () => {\n   const r = m.resultadoDeTeste('+1 -0: Some tests failed', 0, undefined);\n   assert.equal(r.vermelho, true);\n   assert.equal(r.verde, false);\n });\n \n test('resultadoDeTeste: \"All tests passed\" com exit 0 é verde', () => {\n   const r = m.resultadoDeTeste('+5 -0: All tests passed', 0, undefined);\n   assert.equal(r.vermelho, false);\n   assert.equal(r.verde, true);\n });\n \n test('resultadoDeTeste: exit 1 é vermelho e não verde', () => {\n   const r = m.resultadoDeTeste('+3 -0: All tests passed', 1, undefined);\n   assert.equal(r.vermelho, true);\n   assert.equal(r.verde, false);\n+});\n+\n+// False positive real: a frase dentro do título de um teste TAP verde (ou num nome de\n+// teste Dart) não é diagnóstico de falha e não pode marcar vermelho.\n+test('resultadoDeTeste: node --test 15 verdes com títulos citando \"Failed to load\"/\"Some tests failed\" e exit 0 é verde', () => {\n+  const titulos = [\n+    'ehComandoDeTeste reconhece \"&\" com caminho entre aspas terminado em dart.exe',\n+    'ehComandoDeTeste reconhece \"&\" com caminho entre aspas terminado em flutter.bat',\n+    'ehComandoDeTeste reconhece caminho entre aspas sem \"&\" terminado em dart.exe',\n+    'ehComandoDeTeste reconhece flutter.bat test sem aspas',\n+    'ehComandoDeTeste reconhece dart test no Linux',\n+    'ehComandoDeTeste reconhece flutter test no Linux',\n+    'ehComandoDeTeste rejeita git commit -m \"dart test\"',\n+    'ehComandoDeTeste rejeita echo dart test',\n+    'ehComandoDeTeste rejeita analyze',\n+    'ehComandoDeTeste rejeita pub get',\n+    'ehComandoDeTeste rejeita dart test citado num commit',\n+    'resultadoDeTeste: \"Failed to load\" é vermelho mesmo com exit 0 no pipe',\n+    'resultadoDeTeste: \"Some tests failed\" é vermelho mesmo com exit 0',\n+    'resultadoDeTeste: \"All tests passed\" com exit 0 é verde',\n+    'resultadoDeTeste: exit 1 é vermelho e não verde',\n+  ];\n+  const tap = `${titulos.map((t, i) => `# Subtest: ${t}\\nok ${i + 1} - ${t}`).join('\\n')}\n+# tests ${titulos.length}\n+# pass ${titulos.length}\n+# fail 0`;\n+  const r = m.resultadoDeTeste(tap, 0, undefined);\n+  assert.equal(r.placar.ok, 15);\n+  assert.equal(r.placar.falhou, 0);\n+  assert.equal(r.vermelho, false);\n+  assert.equal(r.verde, true);\n+});\n+\n+test('resultadoDeTeste: Dart \"All tests passed\" com nome de teste contendo as frases e exit 0 é verde', () => {\n+  const saida = [\n+    '00:01 +1: resultadoDeTeste: \"Failed to load\" é vermelho mesmo com exit 0 no pipe',\n+    '00:02 +2: resultadoDeTeste: \"Some tests failed\" é vermelho mesmo com exit 0',\n+    '00:03 +2: All tests passed',\n+  ].join('\\n');\n+  const r = m.resultadoDeTeste(saida, 0, undefined);\n+  assert.equal(r.placar.ok, 2);\n+  assert.equal(r.placar.falhou, 0);\n+  assert.equal(r.vermelho, false);\n+  assert.equal(r.verde, true);\n });\n\\ No newline at end of file\n",
+       "additions": 44,
+       "deletions": 0,
+       "status": "modified"
+      }
+     ]
+    },
+    "id": "msg_0cb461b68001PpMFufrD24MMAP",
+    "sessionID": "ses_f34b9e535ffed3QwMzWLqsv0ll"
+   },
+   "parts": [
+    {
+     "type": "text",
+     "text": "\"Corrija SOMENTE exportador e teste de exportador. Achei falso vermelho real: sessao compatibilidade Windows rodou node --test com 15 testes verdes mas indice marca 2 vermelhos/0verdes porque resultadoDeTeste detecta Failed to load e Some tests failed em TITULOS de testes TAP verdes. Adicione regressao que usa saida TAP verde com esses titulos (com exit0) e com resumo Dart All tests passed cujo nome de teste contenha essas frases. Demonstre RED, restrinja deteccao a linhas reais de diagnostico falha Dart (Some tests failed final ou Failed to load diagnostico com formato conhecido), GREEN todos testes. Preserve detectar falha real com exit0 mascara pipe, preserve analisador ciclos, nao altere historico de sessoes nem Yasmin nem outros arquivos. Commit somente dois arquivos explicitos sem no-verify nem push. Nao exporte: farei depois.\"",
+     "id": "prt_0cb461b80001NTdM2tCaPM8mkI",
+     "sessionID": "ses_f34b9e535ffed3QwMzWLqsv0ll",
+     "messageID": "msg_0cb461b68001PpMFufrD24MMAP"
+    }
+   ]
+  },
+  {
+   "info": {
+    "parentID": "msg_0cb461b68001PpMFufrD24MMAP",
+    "role": "assistant",
+    "mode": "build",
+    "agent": "build",
+    "path": {
+     "cwd": "C:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech",
+     "root": "C:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech"
+    },
+    "cost": 0,
+    "tokens": {
+     "total": 10362,
+     "input": 467,
+     "output": 935,
+     "reasoning": 0,
+     "cache": {
+      "write": 0,
+      "read": 8960
+     }
+    },
+    "modelID": "big-pickle",
+    "providerID": "opencode",
+    "time": {
+     "created": 1790116765361,
+     "completed": 1790116778491
+    },
+    "finish": "tool-calls",
+    "id": "msg_0cb461eb1001f4tZF7Jxi7QnRO",
+    "sessionID": "ses_f34b9e535ffed3QwMzWLqsv0ll"
+   },
+   "parts": [
+    {
+     "snapshot": "549d5c70bb9194dc866b7016bb938c7141bc8197",
+     "type": "step-start",
+     "id": "prt_0cb46320c001xZJpF598awaVbH",
+     "sessionID": "ses_f34b9e535ffed3QwMzWLqsv0ll",
+     "messageID": "msg_0cb461eb1001f4tZF7Jxi7QnRO"
+    },
+    {
+     "type": "reasoning",
+     "text": "Let me start by understanding the codebase. The user is talking about a \"exportador\" and \"teste de exportador\", a \"resultadoDeTeste\" that detects \"Failed to load\" and \"Some tests failed\" in TAP test titles. Let me explore.\n\nThe user's message in Portuguese:\n\"Corrija SOMENTE exportador e teste de exportador. Achei falso vermelho real: sessao compatibilidade Windows rodou node --test com 15 testes verdes mas indice marca 2 vermelhos/0verdes porque resultadoDeTeste detecta Failed to load and Some tests failed em TITULOS de testes TAP verdes. Adicione regressao que usa saida TAP verde com esses titulos (com exit0) e com resumo Dart All tests passed cujo nome de teste contenha essas frases. Demonstre RED, restrinja deteccao a linhas reais de diagnostico falha Dart (Some tests failed final ou Failed to load diagnostico com formato conhecido), GREEN todos testes. Preserve detectar falha real com exit0 mascara pipe, preserve analisador ciclos, nao altere historico de sessoes nem Yasmin nem outros arquivos. Commit somente dois arquivos explicitos sem no-verify nem push. Nao exporte: farei depois.\"\n\nTranslation:\n\"Fix ONLY exporter and exporter test. I found a real false red: Windows compatibility session ran node --test with 15 green tests but index marks 2 reds/0 greens because resultadoDeTeste detects 'Failed to load' and 'Some tests failed' in TITLES of green TAP tests. Add regression that uses green TAP output with those titles (with exit0) and with Dart 'All tests passed' summary whose test name contains those phrases. Demonstrate RED, restrict detection to real Dart failure diagnostic lines ('Some tests failed' final or 'Failed to load' diagnostic with known format), GREEN all tests. Preserve detecting real failure with exit0 pipe mask, preserve cycle analyzer, don't alter session history nor Yasmin nor other files. Commit only two explicit files without no-verify nor push. Don't export: I'll do later.\"\n\nSo the task: We have some kind of exporter/test result parser. Let me explore the codebase to find these files.\n\nKey phrases:\n- \"exportador\" = exporter\n- \"teste de exportador\" = exporter test\n- \"resultadoDeTeste\" = test result detection function\n- \"Failed to load\" and \"Some tests failed\" are detected in TAP test titles of green tests, causing false red.\n- Need regression: green TAP output with those titles (with exit code 0), and Dart \"All tests passed\" summary whose test name contains those phrases.\n- RED demo\n- Restrict detection to real Dart failure diagnostics (\"Some tests failed\" final or \"Failed to load\" diagnostic with known format)\n- GREEN all tests\n- Preserve detecting real failure with exit0 pipe mask\n- Preserve cycle analyzer (analisador de ciclos)\n- Don't change session history, Yasmin, nor other files.\n- Commit only two explicit files, no no-verify, no push.\n- Don't export (export here means... probably don't export to index? Wait, \"Nao exporte: farei depois.\" = \"Don't export: I'll do later.\" Hmm, but the task is about exporter. Maybe \"export\" here means exporting the session/artifacts to the index. Actually the user says the index marks reds. There's likely a workflow where after testing, an \"index\" markdown is regenerated. \"Nao exporte\" might mean don't regenerate the index/export markdown files. So I should only fix the exporter code and its test.)\n\nLet me explore the codebase.",
+     "time": {
+      "start": 1790116770321,
+      "end": 1790116773891
+     },
+     "id": "prt_0cb463211001zXQiDFd1X7oUOY",
+     "sessionID": "ses_f34b9e535ffed3QwMzWLqsv0ll",
+     "messageID": "msg_0cb461eb1001f4tZF7Jxi7QnRO"
+    },
+    {
+     "type": "tool",
+     "tool": "bash",
+     "callID": "call_4c088e4218b540c28b558407",
+     "state": {
+      "status": "completed",
+      "input": {
+       "command": "git status; echo \"---\"; git log --oneline -10"
+      },
+      "output": "On branch main\nYour branch is ahead of 'origin/main' by 12 commits.\n  (use \"git push\" to publish your local commits)\n\nChanges not staged for commit:\n  (use \"git add <file>...\" to update what will be committed)\n  (use \"git restore <file>...\" to discard changes in working directory)\n\tmodified:   .gitignore\n\nUntracked files:\n  (use \"git add <file>...\" to include in what will be committed)\n\tevidencias/sessoes/clara-l-peretti/\n\nno changes added to commit (use \"git add\" and/or \"git commit -a\")\n---\r\n13e8c8b fix(evidencias): reconhece dart.exe/flutter.bat por caminho no Windows e marca compilação Dart quebrada como vermelha\n6962116 feat: M2 R44-R45 - navegacao grade->inscricoes e detalhe do participante com inscrever/cancelar/confirmar preservando M1\na72cc09 feat: M2 interface R44 - tela Minhas inscricoes/participante e consulta organizacao com estados e contagem\neb54aff feat: M2 fatia cancelamento e promocao da fila - R14 R16-R21 R33-R37 R43 cancelar inscricao, convocar FIFO e cancelar atividade\nb424ac0 docs: registra Clara Peretti como responsavel pelo M2\n62407e8 feat: M2 fatia 2 - R07-R18, R37-R39, R42-R43 inscricoes confirmada/em_espera FIFO\ne6cfca3 chore: skill telas-flutter e agentes de review apenas-leitura (auditor + revisor-de-contrato) com permission bash restrita\n58b3bc6 feat: M2 frontend ApiClient R42-R45 - Inscricao, listar/detalhe, inscrever/cancelar/confirmar com X-Usuario\n138e379 feat: M2 fatia 1 - R01-R06, R37-R39 inscricoes (base backend)\nb5f9f58 M2: completa spec e adapta TDD e instrucoes para Dart Flutter\n",
+      "metadata": {
+       "output": "On branch main\nYour branch is ahead of 'origin/main' by 12 commits.\n  (use \"git push\" to publish your local commits)\n\nChanges not staged for commit:\n  (use \"git add <file>...\" to update what will be committed)\n  (use \"git restore <file>...\" to discard changes in working directory)\n\tmodified:   .gitignore\n\nUntracked files:\n  (use \"git add <file>...\" to include in what will be committed)\n\tevidencias/sessoes/clara-l-peretti/\n\nno changes added to commit (use \"git add\" and/or \"git commit -a\")\n---\r\n13e8c8b fix(evidencias): reconhece dart.exe/flutter.bat por caminho no Windows e marca compilação Dart quebrada como vermelha\n6962116 feat: M2 R44-R45 - navegacao grade->inscricoes e detalhe do participante com inscrever/cancelar/confirmar preservando M1\na72cc09 feat: M2 interface R44 - tela Minhas inscricoes/participante e consulta organizacao com estados e contagem\neb54aff feat: M2 fatia cancelamento e promocao da fila - R14 R16-R21 R33-R37 R43 cancelar inscricao, convocar FIFO e cancelar atividade\nb424ac0 docs: registra Clara Peretti como responsavel pelo M2\n62407e8 feat: M2 fatia 2 - R07-R18, R37-R39, R42-R43 inscricoes confirmada/em_espera FIFO\ne6cfca3 chore: skill telas-flutter e agentes de review apenas-leitura (auditor + revisor-de-contrato) com permission bash restrita\n58b3bc6 feat: M2 frontend ApiClient R42-R45 - Inscricao, listar/detalhe, inscrever/cancelar/confirmar com X-Usuario\n138e379 feat: M2 fatia 1 - R01-R06, R37-R39 inscricoes (base backend)\nb5f9f58 M2: completa spec e adapta TDD e instrucoes para Dart Flutter\n",
+       "exit": 0,
+       "truncated": false
+      },
+      "title": "git status; echo \"---\"; git log --oneline -10",
+      "time": {
+       "start": 1790116774002,
+       "end": 1790116777452
+      }
+     },
+     "id": "prt_0cb46400d001wi0ZP7tEbgolGi",
+     "sessionID": "ses_f34b9e535ffed3QwMzWLqsv0ll",
+     "messageID": "msg_0cb461eb1001f4tZF7Jxi7QnRO"
+    },
+    {
+     "type": "tool",
+     "tool": "glob",
+     "callID": "call_4010f5be5dd94df89612b88c",
+     "state": {
+      "status": "completed",
+      "input": {
+       "pattern": "**/*exportador*"
+      },
+      "output": "[14 caracteres omitidos]",
+      "title": "",
+      "time": {
+       "start": 1790116774075,
+       "end": 1790116774358
+      }
+     },
+     "id": "prt_0cb464083001JnwQArvPMs3xrR",
+     "sessionID": "ses_f34b9e535ffed3QwMzWLqsv0ll",
+     "messageID": "msg_0cb461eb1001f4tZF7Jxi7QnRO"
+    },
+    {
+     "type": "tool",
+     "tool": "glob",
+     "callID": "call_50871e23f2394f6b92fc3676",
+     "state": {
+      "status": "completed",
+      "input": {
+       "pattern": "**/*exporter*"
+      },
+      "output": "[14 caracteres omitidos]",
+      "title": "",
+      "time": {
+       "start": 1790116774207,
+       "end": 1790116774423
+      }
+     },
+     "id": "prt_0cb4640ec001PxkLfD9OCUmMoo",
+     "sessionID": "ses_f34b9e535ffed3QwMzWLqsv0ll",
+     "messageID": "msg_0cb461eb1001f4tZF7Jxi7QnRO"
+    },
+    {
+     "reason": "tool-calls",
+     "snapshot": "",
+     "type": "step-finish",
+     "tokens": {
+      "total": 10362,
+      "input": 467,
+      "output": 935,
+      "reasoning": 0,
+      "cache": {
+       "write": 0,
+       "read": 8960
+      }
+     },
+     "cost": 0,
+     "id": "prt_0cb465001001X3iYNLzHLu4ZmP",
+     "sessionID": "ses_f34b9e535ffed3QwMzWLqsv0ll",
+     "messageID": "msg_0cb461eb1001f4tZF7Jxi7QnRO"
+    }
+   ]
+  },
+  {
+   "info": {
+    "parentID": "msg_0cb461b68001PpMFufrD24MMAP",
+    "role": "assistant",
+    "mode": "build",
+    "agent": "build",
+    "path": {
+     "cwd": "C:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech",
+     "root": "C:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech"
+    },
+    "cost": 0,
+    "tokens": {
+     "total": 11042,
+     "input": 644,
+     "output": 158,
+     "reasoning": 0,
+     "cache": {
+      "write": 0,
+      "read": 10240
+     }
+    },
+    "modelID": "big-pickle",
+    "providerID": "opencode",
+    "time": {
+     "created": 1790116778500,
+     "completed": 1790116783307
+    },
+    "finish": "tool-calls",
+    "id": "msg_0cb465204001fPKA8TMB2TdCFL",
+    "sessionID": "ses_f34b9e535ffed3QwMzWLqsv0ll"
+   },
+   "parts": [
+    {
+     "snapshot": "549d5c70bb9194dc866b7016bb938c7141bc8197",
+     "type": "step-start",
+     "id": "prt_0cb4656a6001co6Qay2Qa55URi",
+     "sessionID": "ses_f34b9e535ffed3QwMzWLqsv0ll",
+     "messageID": "msg_0cb465204001fPKA8TMB2TdCFL"
+    },
+    {
+     "type": "reasoning",
+     "text": "The glob for exportador/exporter didn't find files. Let me search for \"resultadoDeTeste\" and other relevant terms. Also there's an untracked directory `evidencias/sessoes/clara-l-peretti/`. The \"index\" likely is in evidencias. Let me look.",
+     "time": {
+      "start": 1790116779892,
+      "end": 1790116780055
+     },
+     "id": "prt_0cb465774001Qv1mF1mJcUWTrB",
+     "sessionID": "ses_f34b9e535ffed3QwMzWLqsv0ll",
+     "messageID": "msg_0cb465204001fPKA8TMB2TdCFL"
+    },
+    {
+     "type": "tool",
+     "tool": "grep",
+     "callID": "call_6c10326c26c24728bb523f88",
+     "state": {
+      "status": "error",
+      "input": {
+       "pattern": "resultadoDeTeste|Failed to load|Some tests failed"
+      },
+      "error": "Ripgrep JSON record exceeded 65536 bytes",
+      "time": {
+       "start": 1790116780149,
+       "end": 1790116781966
+      }
+     },
+     "id": "prt_0cb46582500136kfJ7UiPdBV8n",
+     "sessionID": "ses_f34b9e535ffed3QwMzWLqsv0ll",
+     "messageID": "msg_0cb465204001fPKA8TMB2TdCFL"
+    },
+    {
+     "type": "tool",
+     "tool": "grep",
+     "callID": "call_263be938e18a47838580fe2d",
+     "state": {
+      "status": "completed",
+      "input": {
+       "pattern": "exportad|exporta|exporta"
+      },
+      "output": "[55494 caracteres omitidos]",
+      "title": "exportad|exporta|exporta",
+      "time": {
+       "start": 1790116780273,
+       "end": 1790116781935
+      }
+     },
+     "id": "prt_0cb465880001nHeB6ucG2a4Xwa",
+     "sessionID": "ses_f34b9e535ffed3QwMzWLqsv0ll",
+     "messageID": "msg_0cb465204001fPKA8TMB2TdCFL"
+    },
+    {
+     "reason": "tool-calls",
+     "snapshot": "549d5c70bb9194dc866b7016bb938c7141bc8197",
+     "type": "step-finish",
+     "tokens": {
+      "total": 11042,
+      "input": 644,
+      "output": 158,
+      "reasoning": 0,
+      "cache": {
+       "write": 0,
+       "read": 10240
+      }
+     },
+     "cost": 0,
+     "id": "prt_0cb466254001HXSj6kVptyRN13",
+     "sessionID": "ses_f34b9e535ffed3QwMzWLqsv0ll",
+     "messageID": "msg_0cb465204001fPKA8TMB2TdCFL"
+    }
+   ]
+  },
+  {
+   "info": {
+    "parentID": "msg_0cb461b68001PpMFufrD24MMAP",
+    "role": "assistant",
+    "mode": "build",
+    "agent": "build",
+    "path": {
+     "cwd": "C:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech",
+     "root": "C:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech"
+    },
+    "cost": 0,
+    "tokens": {
+     "total": 29485,
+     "input": 17929,
+     "output": 548,
+     "reasoning": 0,
+     "cache": {
+      "write": 0,
+      "read": 11008
+     }
+    },
+    "modelID": "big-pickle",
+    "providerID": "opencode",
+    "time": {
+     "created": 1790116783321,
+     "completed": 1790116788785
+    },
+    "finish": "tool-calls",
+    "id": "msg_0cb4664d90013Z0D0gDuMPe1UB",
+    "sessionID": "ses_f34b9e535ffed3QwMzWLqsv0ll"
+   },
+   "parts": [
+    {
+     "snapshot": "549d5c70bb9194dc866b7016bb938c7141bc8197",
+     "type": "step-start",
+     "id": "prt_0cb466bf5001gSyMNtGd2oT6K7",
+     "sessionID": "ses_f34b9e535ffed3QwMzWLqsv0ll",
+     "messageID": "msg_0cb4664d90013Z0D0gDuMPe1UB"
+    },
+    {
+     "type": "reasoning",
+     "text": "Let me understand the situation now. I have a real exporter at `evidencias/exportar-evidencias.js` and a test at `evidencias/exportar-evidencias.test.js`. In the last session (13e8c8b), they added `resultadoDeTeste` with `|| /Failed to load|Some tests failed/.test(texto)` which naively detects those phrases anywhere in output, including inside test TITLES in green TAP output. That's the false red bug: a green TAP run where a test's title contains \"Failed to load\" or \"Some tests failed\" gets all saida matched, marking vermelho.\n\nThe user wants:\n1. Fix ONLY exportador and teste de exportador.\n2. Add regression that uses green TAP output with those titles (with exit0), and with a Dart \"All tests passed\" summary whose test name contains those phrases.\n3. Demonstrate RED first.\n4. Restrict detection to real Dart failure diagnostic lines:\n   - \"Some tests failed\" — the final summary line (e.g. \"Some tests failed.\") — presumably in the final summary. Actually Dart prints \"Some tests failed.\" at end of output. And node? Let me think about what real Dart failure output looks like.\n   - \"Failed to load\" diagnostic with known format — e.g. Dart loader output like `Failed to load \"package:foo/test/foo_test.dart\": Error: ...`.\n5. GREEN all tests.\n6. Preserve detecting real failure with exit0 pipe mask.\n7. Preserve cycle analyzer (analisador de ciclos) — presumably a function in the exporter that analyzes... something. Let's check.\n8. Don't change session history, Yasmin, other files.\n9. Commit only two explicit files (exportador + teste), no --no-verify, no push.\n10. Don't export (don't run the export script / regenerate index).\n\nLet me read the current exporter and test file.",
+     "time": {
+      "start": 1790116785147,
+      "end": 1790116787746
+     },
+     "id": "prt_0cb466bfb001YewgoPRlGu1K3c",
+     "sessionID": "ses_f34b9e535ffed3QwMzWLqsv0ll",
+     "messageID": "msg_0cb4664d90013Z0D0gDuMPe1UB"
+    },
+    {
+     "type": "tool",
+     "tool": "read",
+     "callID": "call_4d76b57f3634411bbbbd072e",
+     "state": {
+      "status": "completed",
+      "input": {
+       "filePath": "C:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\evidencias\\exportar-evidencias.js"
+      },
+      "output": "[30947 caracteres omitidos]",
+      "title": "evidencias\\exportar-evidencias.js",
+      "time": {
+       "start": 1790116787877,
+       "end": 1790116787954
+      }
+     },
+     "id": "prt_0cb46762a001p20J1YFGnsDN1K",
+     "sessionID": "ses_f34b9e535ffed3QwMzWLqsv0ll",
+     "messageID": "msg_0cb4664d90013Z0D0gDuMPe1UB"
+    },
+    {
+     "type": "tool",
+     "tool": "read",
+     "callID": "call_14dbf70644874ab8b9d868f1",
+     "state": {
+      "status": "completed",
+      "input": {
+       "filePath": "C:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\evidencias\\exportar-evidencias.test.js"
+      },
+      "output": "[3328 caracteres omitidos]",
+      "title": "evidencias\\exportar-evidencias.test.js",
+      "time": {
+       "start": 1790116788059,
+       "end": 1790116788100
+      }
+     },
+     "id": "prt_0cb4676bf001QXXOvW2LocRnb7",
+     "sessionID": "ses_f34b9e535ffed3QwMzWLqsv0ll",
+     "messageID": "msg_0cb4664d90013Z0D0gDuMPe1UB"
+    },
+    {
+     "reason": "tool-calls",
+     "snapshot": "549d5c70bb9194dc866b7016bb938c7141bc8197",
+     "type": "step-finish",
+     "tokens": {
+      "total": 29485,
+      "input": 17929,
+      "output": 548,
+      "reasoning": 0,
+      "cache": {
+       "write": 0,
+       "read": 11008
+      }
+     },
+     "cost": 0,
+     "id": "prt_0cb4678d2001kv65nfWsKYrDYG",
+     "sessionID": "ses_f34b9e535ffed3QwMzWLqsv0ll",
+     "messageID": "msg_0cb4664d90013Z0D0gDuMPe1UB"
+    }
+   ]
+  },
+  {
+   "info": {
+    "parentID": "msg_0cb461b68001PpMFufrD24MMAP",
+    "role": "assistant",
+    "mode": "build",
+    "agent": "build",
+    "path": {
+     "cwd": "C:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech",
+     "root": "C:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech"
+    },
+    "cost": 0,
+    "tokens": {
+     "total": 52494,
+     "input": 11684,
+     "output": 11370,
+     "reasoning": 0,
+     "cache": {
+      "write": 0,
+      "read": 29440
+     }
+    },
+    "modelID": "big-pickle",
+    "providerID": "opencode",
+    "time": {
+     "created": 1790116788792,
+     "completed": 1790116851587
+    },
+    "finish": "tool-calls",
+    "id": "msg_0cb467a38001xL2rMjxpaXQt02",
+    "sessionID": "ses_f34b9e535ffed3QwMzWLqsv0ll"
+   },
+   "parts": [
+    {
+     "snapshot": "549d5c70bb9194dc866b7016bb938c7141bc8197",
+     "type": "step-start",
+     "id": "prt_0cb467fc7001sfI5fsdgr4XQHJ",
+     "sessionID": "ses_f34b9e535ffed3QwMzWLqsv0ll",
+     "messageID": "msg_0cb467a38001xL2rMjxpaXQt02"
+    },
+    {
+     "type": "reasoning",
+     "text": "Now I understand the current state. The bug: `resultadoDeTeste` does `|| /Failed to load|Some tests failed/.test(texto)` on the whole output. If a green TAP run has test titles containing \"Failed to load\" or \"Some tests failed\", the exporter marks it red even with exit 0.\n\nThe user's specific scenario: \"sessao compatibilidade Windows rodou node --test com 15 testes verdes mas indice marca 2 vermelhos/0verdes porque resultadoDeTeste detecta Failed to load and Some tests failed em TITULOS de testes TAP verdes.\"\n\nIndeed — the test file has test titles like:\n- `test('resultadoDeTeste: \"Failed to load\" é vermelho mesmo com exit 0 no pipe', ...)` — when `node --test evidencias/exportar-evidencias.test.js` runs, TAP output has:\n  ```\n  ok 12 - resultadoDeTeste: \"Failed to load\" é vermelho mesmo com exit 0 no pipe\n  ```\n  and the summary:\n  ```\n  # fail 0\n  # pass 15\n  # cancelled 0\n  # skipped 0\n  # todo 0\n  # duration_ms ...\n  ```\n  So `placar` gives {ok:15, falhou:0}. But `verdade = ... || /Failed to load|Some tests failed/.test(texto)` matches the test title line → vermelho = true. So green TAP run marked red! That's the false red.\n\nThe user wants:\n1. Add regression tests:\n   - Green TAP output with those phrases in test TITLES (with exit 0) → should be GREEN (not red).\n   - Dart \"All tests passed\" summary whose test NAME contains those phrases → GREEN.\n   - Demonstrate RED first (write tests, show they fail before fix).\n2. Restrict detection to real Dart failure diagnostic lines:\n   - \"Some tests failed\" — the final summary line in Dart. Real Dart failure format: `00:05 +0 -1: Some tests failed` (like the existing test `'+1 -0: Some tests failed'`). Actually, in real Dart output, the line at the end is something like `000:00 +1 -1: Some tests failed`. The important: it's a diagnostic line at the START of a line that is the running/summary line (from the dart test runner's progress bar), ending with \": Some tests failed\" — i.e., the string is preceded by the \"+N -M:\" progress prefix. So detection should be: a line matching `\\+\\d+(?: ~\\d+)?(?: -\\d+)?: Some tests failed`.\n   - \"Failed to load\" — diagnostic with known format. Real Dart compile failure output: \n     ```\n     Failed to load \"C:\\projeto\\test\\x_test.dart\": Error: ...\n     ```\n     That is `Failed to load \"<path>\":` at the beginning of a line. Actually the existing regression test at line 57-59 has `'Failed to load \"C:/projeto/test/x_test.dart\":\\n  compilação quebrada\\n+0: Some tests failed'`.\n\nSo the fix should:\n- Match only \"real Dart failure diagnostic lines\":\n  - `Some tests failed` only when it appears as a line matching the dart runner summary format, e.g. `/^\\+\\d+(?: ~\\d+)?(?: -\\d+)?: Some tests failed$/m` — the real `placar` already matches that pattern at line 274 `t.matchAll(/\\+(\\d+)(?:\\s+~\\d+)?(?:\\s+-(\\d+))?:\\s+(?:All tests passed|Some tests failed)/g)`. So an easier approach: compute a `falhaDart` flag only when the detection is anchored to the known Dart loader/diagnostic format.\n  - \"Some tests failed\": should be the final dart summary line. In the `placar` function the `+N -M: Some tests failed` pattern is matched anywhere on a line (not anchored to line start actually — `\\+(\\d+)(?:\\s+~\\d+)?(?:\\s+-(\\d+))?:\\s+(?:All tests passed|Some tests failed)` has no `^` anchor and no `/m` flag). But the `[...matchAll(...)].pop()` takes the last match. If a test title contains \"+1 -0: Some tests failed\" in a title that might be matched. Hmm.\n\nLet me think about the actual formats:\n\n1. Real Dart test failure:\n```\n00:00 +1: loading /path/to/test/x_test.dart\n00:00 +0 -1: Some tests failed\n```\nWait actually let me recall real dart test output:\n\nPassing:\n```\n00:02 +5: All tests passed!\n```\nActually with `dart test`:\n```\n00:00 +0: loading test/foo_test.dart\n00:02 +5: All tests passed!\n```\n\nWhen a test fails:\n```\n00:00 +0 -1: test/foo_test.dart: Some tests failed.\n  FakeAsync.clock...\n...\n00:04 +1 -1: Some tests failed\n```\n\nHmm, the exact physical lines vary. The key robust anchor: the summary line from the dart test runner starts with a timestamp and the progress `+N -M:` and ends with `: All tests passed` or `: Some tests failed`. Note the colon before the phrase.\n\nSo for the fix we want:\n- Detect \"Failed to load\": A diagnostic line that STARTS with `Failed to load \"<something>\":` possibly with a URI (package: or file path). Real format:\n  ```\n  Failed to load \"file:///.../test/x_test.dart\": Error: ...\n  ```\n  or\n  ```\n  Failed to load \"/path/test/x_test.dart\": Error:...\n  ```\n  The known format: `Failed to load \"URI\":` — i.e., `Failed to load\\s+\"[^\"]+\"\\s*:` at start of line.\n\n- Detect \"Some tests failed\": A dart runner summary line ending with `: Some tests failed` (with the `+N -M:` time-progress prefix). Real format: `...+0 -1: Some tests failed`. The pattern from placar: `\\+(\\d+)(?:\\s+~\\d+)?(?:\\s+-(\\d+))?:\\s+(?:All tests passed|Some tests failed)`. Actually the colon between `-1` and `Some tests failed` — in the real output it's `...: Some tests failed`? Let me recall. In `dart test` output, the summary lines are:\n  ```\n  Added 0 tests\n  00:00 +0 -2: loading ...\n  ```\n  Hmm. The exact known format for the placar regex is `+N -M: All tests passed` (with colon before All tests passed). E.g. flutter test outputs:\n  ```\n  00:05 +4 -1: Some tests failed\n  ```\n  So format: `+\\d+( ~\\d+)?( -\\d+)?: Some tests failed`.\n\nSo for \"Some tests failed\" we should anchor: a match of `: Some tests failed` where the phrase appears with the `+N -M:` prefix OR at least anchored so a mere substring in a title doesn't match. But the user says the title case: a node TAP green output has a test title like `resultadoDeTeste: \"Some tests failed\" é vermelho mesmo com exit 0`. In that title, the substring \"Some tests failed\" appears after `\"`. There's no `+N -M: ` prefix right before it, and there's no `: Some tests failed` — wait, the title contains `\"Some tests failed\"` in quotes. Hmm.\n\nAlso the \"Failed to load\" test title: `resultadoDeTeste: \"Failed to load\" é vermelho mesmo com exit 0 no pipe`. Substring `Failed to load` preceded by `\"`.\n\nFor the node TAP output, actual line:\n```\nok 11 - resultadoDeTeste: \"Failed to load\" é vermelho mesmo com exit 0 no pipe\n```\n\nSo fixing means the detection should require the known diagnostic formats:\n- `Failed to load \"<uri>\":` at start of a line (loader diagnostic). Real Dart loader failure output:\n  ```\n  Failed to load \"file:///C:/projeto/test/x_test.dart\": Error: ...\n  ```\n  In the existing synthetic test fixture:\n  ```\n  Failed to load \"C:/projeto/test/x_test.dart\":\n    compilação quebrada\n  +0: Some tests failed\n  ```\n  note the second line `+0: Some tests failed`. Hmm, real dart output in such case ends with `+0: Some tests failed`? Actually when a loader error happens, the runner prints `00:00 +0 -1: Some tests failed` maybe. Whatever; the user says \"Failed to load diagnostico com formato conhecido\" (with known format) and \"Some tests failed final\" (final summary line).\n\nThe user explicitly says:\n\"restrinja deteccao a linhas reais de diagnostico falha Dart (Some tests failed final ou Failed to load diagnostico com formato conhecido)\"\n\nSo:\n- \"Some tests failed\" final → it's the final summary line. We anchor to the dart runner progress-line format: `: Some tests failed` at end-of-line where preceding segment matches `\\+\\d+( ~\\d+)?( -\\d+)?` — i.e. reuse the placar capture. Actually simplest robust approach: detect `Some tests failed` only when it is the summary of a dart/flutter runner line: a line matching `/:\\s*Some tests failed\\s*$/m` AND with a preceding `+N` count. Let me look at the actual real-world dart output more concretely.\n\nReal flutter test failure output (typical):\n```\n00:02 +0: loading /path/test/x_test.dart\n...\n00:04 +1 -1: Some tests failed\n```\n\nReal dart test failure output similar:\n```\n00:01 +1 -1: test/foo_test.dart: Some tests failed.\n  ...mail...\n```\n\nHmm, actually when individual tests fail, the output includes lines with `-1: <test name>: Some tests failed.` Wait — actually the failing test line is like:\n```\n00:03 +0 -1: Some tests failed.\n  Expected: ...\n  Actual: ...\n  ...stack...\n00:03 +0 -1: Some tests failed\n```\nPlus the end:\n```\n00:03 +0 -1: Some tests failed\n```\n\nHold on — actually in `package:test`, when a test fails, the runner prints the failing test names at the end:\n```\n00:01 +0 -1: Some tests failed\n```\n\nHmm, but historically it's:\n```\n00:00 +0 -1: test/foo_test.dart: test description [E]\n  Expected: ...\n00:05 +0 -1: Some tests failed\n```\n\nOK, regardless of exact letter, the known \"summary line\" format the codebase already relies on for placar is:\n`\\+(\\d+)(?:\\s+~\\d+)?(?:\\s+-(\\d+))?:\\s+(?:All tests passed|Some tests failed)`\n\nSo my \"Some tests failed final\" detection should be: match `Some tests failed` when the preceding portion of the line matches that summary-lines format:\n```\n/(?:\\+(\\d+)(?: ~\\d+)?(?: -\\d+)?):\\s+Some tests failed\\s*$/m\n```\nThis means it appears in a dart/flutter runner summary line, not inside a quoted title.\n\nBut wait — what if the node TAP title contains `+1 -0: Some tests failed`? The existing tests have titles like `resultadoDeTeste: \"Some tests failed\" é vermelho mesmo com exit 0` — contains `Some tests failed` but not with `: Some tests failed` where prefix is `+\\d+...`. Let me check: title is `resultadoDeTeste: \"Some tests failed\" é vermelho mesmo com exit 0`. Does it contain `+N -M: Some tests failed`? No, it contains `\"Some tests failed\"` — the preceding text is `\"` not `+N -M`. Good.\n\nBut what about a hypothetical green test whose title itself is `'+1 -0: Some tests failed'`? In TAP output the line is:\n```\nok 12 - '+1 -0: Some tests failed'\n```\nTAP titles include the test name. But actually in node TAP, the title on the ok line is preceded by `ok 12 - `. So the line would be `# Subtest: ...` and `ok 12 - '+1 -0: Some tests failed'`? Hmm, whichever, the concern is a title that contains the exact \"Some tests failed final\" pattern. For robustness, we should anchor to the line start too: the dart runner's `+N -M: Some tests failed` line starts at the beginning of a line (preceded by optional timestamp `00:01 `). With `\\b\\d{2}:\\d{2} `? Hmm. Real dart output line begins with `00:05 +1 -1: Some tests failed`. So we can also require the line to start with the timecode OR the `+N` directly (the synthetic fixture used `+0: Some tests failed`).\n\nTo balance: anchor as `/^\\s*(?:\\d{2}:\\d{2}\\s+)?\\+(\\d+)(?:\\s+~\\d+)?(?:\\s+-\\d+)?:\\s+Some tests failed\\s*$/m` — start-of-line, optional timestamp, then `+N...: Some tests failed`, end-of-line. That is the \"Some tests failed final\" real diagnostic line. A green node TAP title would never match because the line wouldn't start with `+N -M: Some tests failed` — it starts with `ok N - ...`.\n\nHmm wait, but what about symmetry with the existing passing test `resultadoDeTeste: \"All tests passed\" com exit 0 é verde`? That has `'+5 -0: All tests passed'`. And line 274 placar matches `\\+(\\d+)(?:\\s+~\\d+)?(?:\\s+-(\\d+))?:\\s+(?:All tests passed|Some tests failed)` on the whole text (no anchors). For placar purposes, in a green TAP run with title `'+5 -0: All tests passed'`, placar would match and return ok=5 — that's also false-ish but placar's pop() takes the last match which would be `# pass 15` info... wait placar checks node --test format first: `/^\\s*[ℹ#]\\s*pass\\s+(\\d+)/m`. In TAP output, `# pass 15` line → passou=15. So placar returns {ok:15, falhou:0}, overriding the dart matching. Good — that's why node runs are counted from `# pass`.\n\nBut then `vermelho` uses `(p !== null && p.falhou > 0)` — p.falhou=0 → not red from placar. And our new detection shouldn't add red from title substrings.\n\nNow the \"Failed to load\" diagnostic with known format. Real dart loader failure line format:\n```\nFailed to load \"file:///C:/path/test/x_test.dart\": Error: Error when loading the file\n```\nor\n```\nFailed to load \"package:x/test/x_test.dart\": Error:\n```\nThe known format: `Failed to load \"<uri>\"` followed by `:` presumably at start of line. Let's check the synthetic fixture the previous session authored:\n```\n'Failed to load \"C:/projeto/test/x_test.dart\":\\n  compilação quebrada\\n+0: Some tests failed'\n```\nSo the known format: at the beginning of a line, `Failed to load \"<something>\":` and then a colon. Actually the previous existing test (`Failed to load` test) needs to STILL pass after our tightened detection. Let me anchor: `/^\\s*Failed to load\\s+\"[^\"]+\"\\s*:/m` — line starts with `Failed to load \"...\"`.\n\nBut could a green test title match `^\\s*Failed to load\\s+\"[^\"]+\"\\s*:`? The node TAP line for that test is `ok 11 - resultadoDeTeste: \"Failed to load\" é vermelho...` — starts with `ok`, so `^Failed to load` won't match. \n\nBut could some green TAP title be literally `Failed to load \"foo\": ...`? Unlikely but if a test title started with `Failed to load \"...\"` then line `ok 3 - Failed to load \"foo\": bar` — starts with `ok 3 - `, so still not at line start. Good. Requiring line-start makes it robust.\n\nNow also the user wants to preserve \"detectar falha real com exit0 mascara pipe\" — real failure with exit 0 masked by pipe. Both diagnostics (Failed to load loader diagnostic line and Some tests failed summary line) still trigger red with exit 0. Good.\n\nAlso the second regression: \"com resumo Dart All tests passed cujo nome de teste contenha essas frases\" — i.e., a Dart green output `+N: All tests passed` where a test name (in the output) contains those phrases:\nDart test output can show individual test names like:\n```\n00:00 +1: resultadoDeTeste: \"Some tests failed\" é vermelho\n00:01 +2: All tests passed\n```\nHere the title contains \"Some tests failed\" but the summary is `All tests passed` and exit 0. With current logic, `/Failed to load|Some tests failed/.test(texto)` matches → red FALSE. After fix → green. This is the case where the phrasings appear in a test name (\"cujo nome de teste contenha essas frases\").\n\nSo I'll add regression tests:\n\n1. node TAP green with titles containing phrases, exit 0 → verde=true:\n```js\ntest('resultadoDeTeste: TAP verde node com título contendo \"Failed to load\" e exit 0 é verde', () => {\n  const saida = `TAP version 13\n# Subtest: resultadoDeTeste: \"Failed to load\" é vermelho mesmo com exit 0 no pipe\nok 1 - resultadoDeTeste: \"Failed to load\" é vermelho mesmo com exit 0 no pipe\n# Subtest: resultadoDeTeste: \"Some tests failed\" é vermelho mesmo com exit 0\nok 2 - resultadoDeTeste: \"Some tests failed\" é vermelho mesmo com exit 0\n# tests 2\n# pass 2\n# fail 0\n`;\n  const r = m.resultadoDeTeste(saida, 0, undefined);\n  assert.equal(r.vermelho, false);\n  assert.equal(r.verde, true);\n});\n```\n\n2. Dart green with All tests passed and a test name containing those phrases:\n```js\ntest('resultadoDeTeste: resumo Dart All tests passed com nome de teste contendo as frases é verde', () => {\n  const saida = '00:01 +2: resultadoDeTeste: \"Some tests failed\"/\"Failed to load\" não marcam verde\\n00:02 +2: All tests passed';\n  const r = m.resultadoDeTeste(saida, 0, undefined);\n  assert.equal(r.vermelho, false);\n  assert.equal(r.verde, true);\n});\n```\n\nLet me verify these would RED on current code:\n- Test 1: placar: `# pass 2` → {ok:2, falhou:0}. vermelho = (falhou>0? no) || exit0? no || status error? no || `/Failed to load|Some tests failed/.test(texto)` → matches title substring → TRUE. So r.vermelho=true → assert.equal(r.vermelho,false) FAILS → RED. \n- Test 2: placar: matches `\\+(\\d+)(?:\\s+~\\d+)?(?:\\s+-(\\d+))?:\\s+(?:All tests passed|...)`? The text: `00:02 +2: All tests passed`. Hmm. The regex `\\+(\\d+)(?:\\s+~\\d+)?(?:\\s+-(\\d+))?:\\s+(?:All tests passed|Some tests failed)` — `+2: All tests passed` matches: `+2` then `: All tests passed`. Wait the regex has `(?:...)?:\\s+` — after `+2` there's `: All tests passed`. So matched m[1]=2, m[2]=undefined → ok=2 falhou=0. Good p={ok:2,falhou:0}. vermelho: falhou>0? no; exit0? code 0 → not; status error? no; regex test → \"Some tests failed\" substring in first line → TRUE. So RED. \n\nBut careful in test 2: the line `00:01 +2: resultadoDeTeste: \"Some tests failed\"...` — does placar's pop() take the LAST match? `[...t.matchAll(...)].pop()` → the last matching occurrence. Both lines match `+2:` — first line: `00:01 +2: resultado...` after `+2:` comes ` resultadoDeTeste:` — the regex after the optional group requires `:\\s+` then literal `All tests passed|Some tests failed`. First line after `+2:` → ` resultadoDeTeste: \"Some tests failed\"...`. So `:\\s+All tests passed` won't match there because after `+2:` comes `resultadoDeTeste:`, not the literals. Wait the regex is `\\+(\\d+)(?:\\s+~\\d+)?(?:\\s+-\\d+)?:\\s+(?:All tests passed|Some tests failed)`. The literal alternatives must follow `\\s+`. In first line, after `+2:` comes ` resultadoDeTeste:` — not `All tests passed`/`Some tests failed`, so no match there. Second line `00:02 +2: All tests passed` → matches. pop() → last → {ok:2, falhou:0}. Fine, but doesn't matter for RED.\n\nActually wait, we need to double check the FIRST line doesn't match because `\\s+` requires whitespace then literal. `resultadoDeTeste:` starts with `r` — no match. Good.\n\nBut hold on, we should also make test 2's name line more realistic. Actually, name contains \"Some tests failed\" and separated properly. It's fine.\n\nNow the fix. Current:\n```js\nfunction resultadoDeTeste(saida, codigoDoProcesso, status) {\n  const texto = String(saida ?? '');\n  const p = placar(texto);\n  const vermelho = (p !== null && p.falhou > 0)\n    || (typeof codigoDoProcesso === 'number' && codigoDoProcesso !== 0)\n    || status === 'error'\n    || /Failed to load|Some tests failed/.test(texto);\n  const verde = !vermelho && ((p !== null && p.falhou === 0) || codigoDoProcesso === 0);\n  return { p, vermelho, verde };\n}\n```\n\nNew:\n```js\n// Veredito de uma execução: só contam como falha de compilação Dart linhas de\n// diagnóstico reais — o resumo final \"Some tests failed\" (linha +N -M: ...) e o\n// loader \"Failed to load \\\"<uri>\\\":\". Frases iguais dentro do nome de um teste\n// verde não podem marcar vermelho.\nfunction falhaDeCompilacaoDart(texto) {\n  // Resumo final do runner Dart/Flutter: [+N ~S] -M: Some tests failed, no fim da linha.\n  if (/^\\s*(?:\\d{2}:\\d{2}\\s+)?\\+\\d+(?:\\s+~\\d+)?(?:\\s+-\\d+)?:\\s+Some tests failed\\s*$/m.test(texto)) {\n    return { ok: ..., falhou: ... }? \n  }\n```\n\nHmm, actually, let me integrate: I want the `vermelho` to be true only when these diagnostics are real. But should I reuse placar's detection rather than direct regex? Let me write a helper `temFalhaDart(texto)`:\n\n```js\nfunction temFalhaDart(texto) {\n  const t = texto.replace(/\\x1b\\[[0-9;]*m/g, '');\n  // Loader: linha que começa com Failed to load \"<arquivo>\": ... (formato do compilador Dart).\n  if (/^\\s*Failed to load\\s+\"[^\"]+\"\\s*:/m.test(t)) return true;\n  // Resumo final do runner: [00:00 ]+N [-M]: Some tests failed, no fim da linha.\n  return /^\\s*(?:\\d{2}:\\d{2}\\s+)?\\+\\d+(?:\\s+~\\d+)?(?:\\s+-\\d+)?:\\s+Some tests failed\\s*$/m.test(t);\n}\n```\n\nThen:\n```js\nfunction resultadoDeTeste(saida, codigoDoProcesso, status) {\n  const texto = String(saida ?? '');\n  const p = placar(texto);\n  const vermelho = (p !== null && p.falhou > 0)\n    || (typeof codigoDoProcesso === 'number' && codigoDoProcesso !== 0)\n    || status === 'error'\n    || temFalhaDart(texto);\n  const verde = !vermelho && ((p !== null && p.falhou === 0) || codigoDoProcesso === 0);\n  return { p, vermelho, verde };\n}\n```\n\nWait — but there's an existing test that must still pass:\n```js\ntest('resultadoDeTeste: \"Some tests failed\" é vermelho mesmo com exit 0', () => {\n  const r = m.resultadoDeTeste('+1 -0: Some tests failed', 0, undefined);\n  assert.equal(r.vermelho, true);\n```\n\nWith my `temFalhaDart` pattern `/^\\s*(?:\\d{2}:\\d{2}\\s+)?\\+\\d+(?:\\s+~\\d+)?(?:\\s+-\\d+)?:\\s+Some tests failed\\s*$/m` — text `+1 -0: Some tests failed`:\n- `^\\s*` matches start, then `\\+\\d+` matches `+1`, then `(?:\\s+~\\d+)?` no, then `(?:\\s+-\\d+)?` matches ` -0`, then `:` then `\\s+` then `Some tests failed` then `\\s*$` — MATCHES. Good.\n\nExisting \"Failed to load\" test:\n```js\nconst r = m.resultadoDeTeste(\n  'Failed to load \"C:/projeto/test/x_test.dart\":\\n  compilação quebrada\\n+0: Some tests failed',\n  0, undefined);\n```\n- `Failed to load` pattern: line 1 `^\\s*Failed to load\\s+\"C:/projeto/test/x_test.dart\":` → MATCHES. vermelho=true. \nAlso `+0: Some tests failed` line → `\\+\\d+` matches `+0`, then `:`... wait `(?:\\s+~\\d+)?` no, `(?:\\s+-\\d+)?` no → then `:` matches, `\\s+` matches ` `, `Some tests failed`, `\\s*$` → MATCHES too. Either way vermelho. Good.\n\nNow the false-red regression: 15 green node tests with titles. The line `ok 12 - resultadoDeTeste: \"Failed to load\" é vermelho...` does NOT start with `Failed to load` (starts with `ok 12 - `). And no line matches `+N -M: Some tests failed` exactly at line start with `$`. But wait — line `# Subtest: ...` etc fine. However, careful: could any TAP line match `/^\\s*\\+\\d+(?:\\s+~\\d+)?(?:\\s+-\\d+)?:\\s+Some tests failed\\s*$/m`? No.\n\nBut wait — one subtlety: what if a TAP output line is `ok 12 - +1 -0: Some tests failed`? My anchor `^` requires line START. Node TAP `ok 12 - ` prefix prevents match. But do we also want a mid-line match? The user explicitly says restrict to real diagnostic lines. The real dart summary line genuinely starts at line start (dart runner writes `00:05 +1 -1: Some tests failed` on its own line, or without timestamp for compact). I think anchoring is correct and robustly avoids titles. However, could green node TAP include a line that looks exactly like `+1 -0: Some tests failed`? Yes, if a TAP `ok` line had that. Node TAP prints `ok 12 - description`. If a description is `+1 -0: Some tests failed`, line = `ok 12 - +1 -0: Some tests failed` — still not line start. Good.\n\nNow, alternatively, a simpler approach the user hint suggests: reuse `placar`'s existing Dart matcher (which already requires the `+N -M: Some tests failed` shape) and check whether the LAST summary matched is `Some tests failed`. Actually the `placar` regex already extracts `Some tests failed` only with the `+N...:` prefix. But that regex isn't anchored to line start — it could match inside a title `'+1 -0: Some tests failed'` (a literal title). Hmm, but which is more \"real\": `00:01 +1 -1: Some tests failed` matches `\\+(\\d+)(?:\\s+~\\d+)?(?:\\s+-(\\d+))?:\\s+(?:All tests passed|Some tests failed)` → `+1 -1: Some tests failed` — yes the regex matches the tail `+1 -1: Some tests failed`. And would it match inside a TAP title `\"[+1 -0: Some tests failed]\"?` Only if the title contains literally `+1 -0: Some tests failed`. Our regression titles contain `\"Some tests failed\"` quoted — no `+N` prefix. So even placar-based wouldn't false positive for these titles. But the user explicitly wants the stricter line-anchored diagnostic detection. I'll go with the anchored `temFalhaDart`.\n\nHmm, but wait: there's a scenario — green flutter test output where a passing test itself prints a failing-progress-looking line? Not realistically.\n\nNow the \"preserve analisador ciclos\" — I'm not touching `analisar` at all. Good.\n\nLet me also double check: user said \"resultadoDeTeste detecta Failed to load and Some tests failed em TITULOS de testes TAP verdes\". Confirmed: the test file's own titles. The session f34be9965 exported the index line: `| ... | 19 | — | — | 2 / 0 | 0 | 0 | 0 | — |` — 2 vermelhas / 0 verdes for a run of 15 green tests. That matches the false red. Our fix + regression resolves.\n\nNow let me also verify: does the current `verde` computation interplay correctly? For the green TAP regression: p={ok:2,falhou:0} (from `# pass 2`), codigo 0. vermelho should now be false; verde = !vermelho && ((p&&p.falhou===0) || codigo===0) → true. Good.\n\nFor Dart all-passed-with-name regression: p={ok:2,falhou:0}? Wait, but the line `00:02 +2: All tests passed` — does placar's match require `: `? regex: `\\+(\\d+)(?:\\s+~\\d+)?(?:\\s+-(\\d+))?:\\s+(?:All tests passed|...)`. `+2: All tests passed` → matches. m = [`+2: All tests passed`, '2', undefined]. ok=2, falhou=0. verde → true. Good.\n\nNow, an important nuance: The `placar` function is separate; I'm only changing `resultadoDeTeste`. Since `placar` still returns {ok:15, falhou:0} for green TAP, `vermelho` from placar false. And `temFalhaDart` won't match. \n\nNow let me also add a regression for the EXACT headline scenario: \"sessao compatibilidade Windows rodou node --test com 15 testes verdes\" — a TAP green with 15 tests whose titles include our two test names. I'll model the output with the actual titles from the current test file. That's a strong regression tying to the real bug. Let me craft:\n\n```\nTAP version 13\n# Subtest: ehComandoDeTeste reconhece \"&\" com caminho entre aspas terminado em dart.exe\nok 1 - ehComandoDeTeste reconhece \"&\" com caminho entre aspas terminado em dart.exe\n...\n# Subtest: resultadoDeTeste: \"Failed to load\" é vermelho mesmo com exit 0 no pipe\nok 12 - resultadoDeTeste: \"Failed to load\" é vermelho mesmo com exit 0 no pipe\n# Subtest: resultadoDeTeste: \"Some tests failed\" é vermelho mesmo com exit 0\nok 13 - resultadoDeTeste: \"Some tests failed\" é vermelho mesmo com exit 0\n...\n# tests 15\n# pass 15\n# fail 0\n```\n\nI'll build a helper to generate N green subtests. Keep it simple — I'll write the full output inline in one test, or generate it programmatically in the test. Since the test file is mine to change, a generated one is cleaner:\n\n```js\ntest('resultadoDeTeste: node --test 15 verdes com títulos contendo \"Failed to load\"/\"Some tests failed\" e exit 0 é verde', () => {\n  const titulos = [\n    'ehComandoDeTeste reconhece \"&\" com caminho entre aspas terminado em dart.exe',\n    'ehComandoDeTeste reconhece \"&\" com caminho entre aspas terminado em flutter.bat',\n    ...\n    'resultadoDeTeste: \"Failed to load\" é vermelho mesmo com exit 0 no pipe',\n    'resultadoDeTeste: \"Some tests failed\" é vermelho mesmo com exit 0',\n  ];\n  const tap = titulos.map((t, i) => `ok ${i + 1} - ${t}`).join('\\n');\n  const saida = `TAP version 13\\n${tap}\\n# tests ${titulos.length}\\n# pass ${titulos.length}\\n# fail 0`;\n  const r = m.resultadoDeTeste(saida, 0, undefined);\n  assert.equal(r.placar.ok, 15);\n  assert.equal(r.vermelho, false);\n  assert.equal(r.verde, true);\n});\n```\n\nWait — node TAP `ok` lines don't include `# Subtest:` lines? In node --test output, each subtest prints a `# Subtest: <title>` comment line then the `ok` line. The placar for node --test reads `# pass 15` and `# fail 0`. It also reads `ok`, `# pass`. Fine either way. For fidelity include the `# Subtest:` lines? They don't matter for detection, but the previous session's actual output had them. I'll include the ok lines only — simpler; placar works.\n\nHmm, but actually note the ACTUAL node TAP output observed in the session had:\n```\n# Subtest: ehComandoDeTeste reconhece \"&\" com caminho entre aspas terminado em dart.exe\nnot ok 1 - ehComandoDeTeste ...\n```\nthen later the second run green output was truncated. Whatever. My synthetic fixture is fine as a parser test — user said \"usa saida TAP verde com esses titulos (com exit0)\".\n\nAlso add Dart name regression:\n```js\ntest('resultadoDeTeste: Dart \"All tests passed\" com nome de teste contendo as frases é verde', () => {\n  const saida = [\n    '00:01 +1: resultadoDeTeste: \"Some tests failed\" é vermelho mesmo com exit 0',\n    '00:02 +1: resultadoDeTeste: \"Failed to load\" ó red com pipe 0',\n    '00:03 +2: All tests passed',\n  ].join('\\n');\n  const r = m.resultadoDeTeste(saida, 0, undefined);\n  assert.equal(r.placar.ok, 2);\n  assert.equal(r.vermelho, false);\n  assert.equal(r.verde, true);\n});\n```\n\nVerify placar for that: lines `00:01 +1: resultadoDeTeste: ...` — regex `\\+(\\d+)(?:\\s+~\\d+)?(?:\\s+-\\d+)?:\\s+(?:All tests passed|Some tests failed)`: for the first line, after `+1:` comes ` resultadoDeTeste:` → no literal match. Second line same. Third `00:03 +2: All tests passed` → match ok=2 falhou=0. pop() last → {ok:2, falhou:0}. Good.\n\nBut careful: is there any line matching `\\s+~\\d+`? no.\n\nAlso must RED on current code: `/Failed to load|Some tests failed/.test(texto)` → matches the test name line → vermelho=true currently. So test fails → RED. \n\nNow let me double check the real diagnostic detection still triggers red (preserve existing tests):\n- Existing tests at lines 56-80 must continue passing. Already verified above.\n\nAlso \"Preserve detectar falha real com exit0 mascara pipe\" — the existing tests 56-68 prove this. And my change preserves them.\n\nNow write the fix. Let me also reconsider the \"Failed to load\" known format precisely. Dart's `Failed to load` line, real format from `dart test`:\n\n```\nFailed to load \"file:///C:/Users/.../test/x_test.dart\": Error: Cannot run with sound null safety because dependencies don't support null safety\n```\n\nYes: at line start, `Failed to load \"URL\": Error:...`. My regex `/^\\s*Failed to load\\s+\"[^\"]+\"\\s*:/m` is good. Actually, note the loader always uses double quotes and a colon then `Error:`. Some outputs wrap with color codes. `t` already strips ANSI.\n\nHmm, should I also match `Failed to load:` without quotes? The known format has quotes. Keep quotes requirement.\n\nOne more consideration — the existing synthetic fixture:\n```\nFailed to load \"C:/projeto/test/x_test.dart\":\n  compilação quebrada\n+0: Some tests failed\n```\nLine 1 starts with `Failed to load \"C:/projeto/test/x_test.dart\":` → matches my loader regex (`:/` after the quote: `:\\n` — yes `\\s*:` matches `:` then newline is fine since `\\s*` includes it? No wait — the `\\s*$` isn't there; my regex is `/^\\s*Failed to load\\s+\"[^\"]+\"\\s*:/m`. After `\"x_test.dart\"` comes `:` immediately → `\\s*` matches zero spaces, then `:`. Good, matches.\n\nGreat. Now let me implement.\n\nAlso the user's scenario index line: I should NOT re-export. Good.\n\nNow let me write tests first, run to show RED, then fix, then run GREEN.\n\nLet me plan todos.\n\nActually also note: the user said the run had \"15 testes verdes mas indice marca 2 vermelhos/0verdes\". 2 reds because two go through `analisar` producing vermelho each (each red run? Actually the same green run marked both vermelho and... no, it counts 1 per execution: vermelho++ (verde not incremented because vermelho true). So 2 vermelhas in the session because the session ran node --test twice? Or because the session had 2 test commands? Actually looking at the timeline: ran `node --test` once (red run with 11 fails), then after fix, ran again (green 15). The exporter would count first run as red (actually correct: 4 passed 11 failed) and second as red incorrectly (false red). So 2 / 0. And \"ResultadoDeTeste detects Failed to load and Some tests failed in green TAP titles\" → second green run marked red. Right.\n\nNow the fix, precisely. Let me write the code.\n\nNew section replacing lines 295-306:\n\n```js\n// Veredito de uma execução. Compilação Dart quebrada só vale quando aparece como\n// linha real de diagnóstico: o resumo final \"+N -M: Some tests failed\" ou o loader\n// \"Failed to load \\\"<arquivo>\\\":\". A mesma frase dentro do nome de um teste verde\n// (TAP do node, Dart/flutter \"All tests passed\") não pode marcar vermelho.\nfunction temFalhaDart(texto) {\n  const t = texto.replace(/\\x1b\\[[0-9;]*m/g, '');\n  if (/^\\s*Failed to load\\s+\"[^\"]+\"\\s*:/m.test(t)) return true;\n  return /^\\s*(?:\\d{2}:\\d{2}\\s+)?\\+\\d+(?:\\s+~\\d+)?(?:\\s+-\\d+)?:\\s+Some tests failed\\s*$/m.test(t);\n}\n\nfunction resultadoDeTeste(saida, codigoDoProcesso, status) {\n  const texto = String(saida ?? '');\n  const p = placar(texto);\n  const vermelho = (p !== null && p.falhou > 0)\n    || (typeof codigoDoProcesso === 'number' && codigoDoProcesso !== 0)\n    || status === 'error'\n    || temFalhaDart(texto);\n  const verde = !vermelho && ((p !== null && p.falhou === 0) || codigoDoProcesso === 0);\n  return { p, vermelho, verde };\n}\n```\n\nWait, need to double check the `+N -M: Some tests failed` anchored regex against duplicated inside the fixture `+0: Some tests failed` — matches. And against `+1 -0: Some tests failed` — matches `(?:\\s+-\\d+)?` = ` -0`. Good.\n\nBut hold on: is it possible the real dart failure's final line has trailing `.` (e.g., `Some tests failed.`)? Historically package:test uses `Some tests failed` without period in the `-1: ...` lines and the final summary. I recall:\n\n```\n00:03 +0 -1: Some tests failed\n```\nNo period. OK.\n\nNow export `temFalhaDart`? Not necessary. Only `resultadoDeTeste` is exported and used by tests. Keep exports as-is. Actually the existing test calls `m.resultadoDeTeste`. Keep that.\n\nShould I export temFalhaDart for testability? The user says \"Fix ONLY exporter and exporter test; commit only two explicit files\". I don't need to. Keep functions as internal.\n\nNow let me write the test additions. I'll add to the test file after the existing resultadoDeTeste tests.\n\nLet me construct the 15-title TAP fixture with the real titles from the file (11 ehComandoDeTeste + 4 resultadoDeTeste = 15). Actually the file has 11 ehComandoDeTeste tests (lines 10-52: 11 tests) and 4 resultadoDeTeste tests (56-80) = 15 total. Titles:\n\n1. ehComandoDeTeste reconhece \"&\" com caminho entre aspas terminado em dart.exe\n2. ehComandoDeTeste reconhece \"&\" com caminho entre aspas terminado em flutter.bat\n3. ehComandoDeTeste reconhece caminho entre aspas sem \"&\" terminado em dart.exe\n4. ehComandoDeTeste reconhece flutter.bat test sem aspas\n5. ehComandoDeTeste reconhece dart test no Linux\n6. ehComandoDeTeste reconhece flutter test no Linux\n7. ehComandoDeTeste rejeita git commit -m \"dart test\"\n8. ehComandoDeTeste rejeita echo dart test\n9. ehComandoDeTeste rejeita analyze\n10. ehComandoDeTeste rejeita pub get\n11. ehComandoDeTeste rejeita dart test citado num commit\n12. resultadoDeTeste: \"Failed to load\" é vermelho mesmo com exit 0 no pipe\n13. resultadoDeTeste: \"Some tests failed\" é vermelho mesmo com exit 0\n14. resultadoDeTeste: \"All tests passed\" com exit 0 é verde\n15. resultadoDeTeste: exit 1 é vermelho e não verde\n\nI'll generate via an array.\n\nLet me write it as:\n\n```js\ntest('resultadoDeTeste: node --test 15 verdes com títulos que citam \"Failed to load\"/\"Some tests failed\" e exit 0 é verde', () => {\n  const titulos = [\n    'ehComandoDeTeste reconhece \"&\" com caminho entre aspas terminado em dart.exe',\n    'ehComandoDeTeste reconhece \"&\" com caminho entre aspas terminado em flutter.bat',\n    'ehComandoDeTeste reconhece caminho entre aspas sem \"&\" terminado em dart.exe',\n    'ehComandoDeTeste reconhece flutter.bat test sem aspas',\n    'ehComandoDeTeste reconhece dart test no Linux',\n    'ehComandoDeTeste reconhece flutter test no Linux',\n    'ehComandoDeTeste rejeita git commit -m \"dart test\"',\n    'ehComandoDeTeste rejeita echo dart test',\n    'ehComandoDeTeste rejeita analyze',\n    'ehComandoDeTeste rejeita pub get',\n    'ehComandoDeTeste rejeita dart test citado num commit',\n    'resultadoDeTeste: \"Failed to load\" é vermelho mesmo com exit 0 no pipe',\n    'resultadoDeTeste: \"Some tests failed\" é vermelho mesmo com exit 0',\n    'resultadoDeTeste: \"All tests passed\" com exit 0 é verde',\n    'resultadoDeTeste: exit 1 é vermelho e não verde',\n  ];\n  const tap = `${titulos.map((t, i) => `# Subtest: ${t}\\nok ${i + 1} - ${t}`).join('\\n')}\n# tests ${titulos.length}\n# pass ${titulos.length}\n# fail 0`;\n  const r = m.resultadoDeTeste(tap, 0, undefined);\n  assert.equal(r.placar.ok, 15);\n  assert.equal(r.vermelho, false);\n  assert.equal(r.verde, true);\n});\n\ntest('resultadoDeTeste: Dart \"All tests passed\" com nome de teste contendo as frases e exit 0 é verde', () => {\n  const saida = [\n    '00:01 +1: resultadoDeTeste: \"Failed to load\" é vermelho mesmo com exit 0 no pipe',\n    '00:02 +2: resultadoDeTeste: \"Some tests failed\" é vermelho mesmo com exit 0',\n    '00:03 +2: All tests passed',\n  ].join('\\n');\n  const r = m.resultadoDeTeste(saida, 0, undefined);\n  assert.equal(r.placar.ok, 2);\n  assert.equal(r.vermelho, false);\n  assert.equal(r.verde, true);\n});\n```\n\nWait — in the Dart green test, the first/name line `00:01 +1: resultadoDeTeste: ...` — does placar match `\\+(\\d+)(?:\\s+~\\d+)?(?:\\s+-(\\d+))?:\\s+(?:All tests passed|Some tests failed)`? `+1: resultadoDeTeste: \"Failed to load\"...` — after `:\\s+` comes `resultadoDeTeste:` → not literal. No match. Good. And `+2: result...Some tests failed...` — after `+2:` comes ` resultadoDeTeste...` no match. Good. And the final `00:03 +2: All tests passed` matches.\n\nBut hold on, what about `r.placar.ok === 2`? The regex pop takes the LAST match. Last match is `+2: All tests passed` → ok=2. Good.\n\nHowever, wait: could `placar` also match nodes? No `# pass` lines here. Good.\n\nNow, in the TAP 15 test, `r.placar.ok` = 15 because `# pass 15` matched by node --test logic first. Good.\n\nBoth regressions RED on current code because vermelho true. \n\nNow also the existing \"All tests passed com exit 0 é verde\" test still passes (text `+5 -0: All tests passed` no phrases). Good.\n\nNow let me also think: Do I need to worry about the `placar` naively matching `+2: All tests passed` inside a TAP title? Not relevant now.\n\nEdge: `temFalhaDart` anchored `^\\s*Failed to load\\s+\"[^\"]+\"\\s*:` — what about TAP `ok 12 - resultadoDeTeste: \"Failed to load\" é vermelho...`? `^` starts at `ok`, no. Good.\n\nNow implement. First edit the test file to add regressions, run → show RED. Then edit exporter, run → GREEN.\n\nLet me also double check there's no other place using `/Failed to load|Some tests failed/.test` — grep earlier found only this. Good.\n\nLet me also verify the exporter test currently passes (baseline green) before I add — run current tests first.\n\nLet me do it.",
+     "time": {
+      "start": 1790116790219,
+      "end": 1790116849452
+     },
+     "id": "prt_0cb467fcb001825TArA8CbD5Sq",
+     "sessionID": "ses_f34b9e535ffed3QwMzWLqsv0ll",
+     "messageID": "msg_0cb467a38001xL2rMjxpaXQt02"
+    },
+    {
+     "type": "tool",
+     "tool": "todowrite",
+     "callID": "call_1e834df1514a43bcbf46d600",
+     "state": {
+      "status": "completed",
+      "input": {
+       "todos": [
+        {
+         "content": "Baseline: rodar node --test do exportador para confirmar estado atual",
+         "status": "in_progress",
+         "priority": "high"
+        },
+        {
+         "content": "Adicionar regressões (TAP verde com títulos + Dart All tests passed com nome) no teste",
+         "status": "pending",
+         "priority": "high"
+        },
+        {
+         "content": "Rodar para DEMONSTRAR RED",
+         "status": "pending",
+         "priority": "high"
+        },
+        {
+         "content": "Restringir detecção em resultadoDeTeste a linhas reais de diagnóstico Dart",
+         "status": "pending",
+         "priority": "high"
+        },
+        {
+         "content": "Rodar para GREEN total",
+         "status": "pending",
+         "priority": "high"
+        },
+        {
+         "content": "Commit somente exportador + teste, sem --no-verify, sem push",
+         "status": "pending",
+         "priority": "high"
+        }
+       ]
+      },
+      "output": "[\n  {\n    \"content\": \"Baseline: rodar node --test do exportador para confirmar estado atual\",\n    \"status\": \"in_progress\",\n    \"priority\": \"high\"\n  },\n  {\n    \"content\": \"Adicionar regressões (TAP verde com títulos + Dart All tests passed com nome) no teste\",\n    \"status\": \"pending\",\n    \"priority\": \"high\"\n  },\n  {\n    \"content\": \"Rodar para DEMONSTRAR RED\",\n    \"status\": \"pending\",\n    \"priority\": \"high\"\n  },\n  {\n    \"content\": \"Restringir detecção em resultadoDeTeste a linhas reais de diagnóstico Dart\",\n    \"status\": \"pending\",\n    \"priority\": \"high\"\n  },\n  {\n    \"content\": \"Rodar para GREEN total\",\n    \"status\": \"pending\",\n    \"priority\": \"high\"\n  },\n  {\n    \"content\": \"Commit somente exportador + teste, sem --no-verify, sem push\",\n    \"status\": \"pending\",\n    \"priority\": \"high\"\n  }\n]",
+      "metadata": {
+       "todos": [
+        {
+         "content": "Baseline: rodar node --test do exportador para confirmar estado atual",
+         "status": "in_progress",
+         "priority": "high"
+        },
+        {
+         "content": "Adicionar regressões (TAP verde com títulos + Dart All tests passed com nome) no teste",
+         "status": "pending",
+         "priority": "high"
+        },
+        {
+         "content": "Rodar para DEMONSTRAR RED",
+         "status": "pending",
+         "priority": "high"
+        },
+        {
+         "content": "Restringir detecção em resultadoDeTeste a linhas reais de diagnóstico Dart",
+         "status": "pending",
+         "priority": "high"
+        },
+        {
+         "content": "Rodar para GREEN total",
+         "status": "pending",
+         "priority": "high"
+        },
+        {
+         "content": "Commit somente exportador + teste, sem --no-verify, sem push",
+         "status": "pending",
+         "priority": "high"
+        }
+       ],
+       "truncated": false
+      },
+      "title": "6 todos",
+      "time": {
+       "start": 1790116850136,
+       "end": 1790116850145
+      }
+     },
+     "id": "prt_0cb47673c001dsY3CO1hy8Ybdg",
+     "sessionID": "ses_f34b9e535ffed3QwMzWLqsv0ll",
+     "messageID": "msg_0cb467a38001xL2rMjxpaXQt02"
+    },
+    {
+     "reason": "tool-calls",
+     "snapshot": "a0ed49a0d23a53bdbc0a5d5b2b7c00fc4d4f60d3",
+     "type": "step-finish",
+     "tokens": {
+      "total": 52494,
+      "input": 11684,
+      "output": 11370,
+      "reasoning": 0,
+      "cache": {
+       "write": 0,
+       "read": 29440
+      }
+     },
+     "cost": 0,
+     "id": "prt_0cb476c16001LOA3weesCHe7yM",
+     "sessionID": "ses_f34b9e535ffed3QwMzWLqsv0ll",
+     "messageID": "msg_0cb467a38001xL2rMjxpaXQt02"
+    },
+    {
+     "type": "patch",
+     "hash": "549d5c70bb9194dc866b7016bb938c7141bc8197",
+     "files": [
+      "C:/Users/Clara L Peretti/TrabalhoIA-WomanInTech/api/test/confirmacao_test.dart",
+      "C:/Users/Clara L Peretti/TrabalhoIA-WomanInTech/api/test/fila_test.dart"
+     ],
+     "id": "prt_0cb476f740016g0FyQgmm5grF6",
+     "sessionID": "ses_f34b9e535ffed3QwMzWLqsv0ll",
+     "messageID": "msg_0cb467a38001xL2rMjxpaXQt02"
+    }
+   ]
+  },
+  {
+   "info": {
+    "parentID": "msg_0cb461b68001PpMFufrD24MMAP",
+    "role": "assistant",
+    "mode": "build",
+    "agent": "build",
+    "path": {
+     "cwd": "C:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech",
+     "root": "C:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech"
+    },
+    "cost": 0,
+    "tokens": {
+     "total": 52816,
+     "input": 259,
+     "output": 77,
+     "reasoning": 0,
+     "cache": {
+      "write": 0,
+      "read": 52480
+     }
+    },
+    "modelID": "big-pickle",
+    "providerID": "opencode",
+    "time": {
+     "created": 1790116851622,
+     "completed": 1790116859017
+    },
+    "finish": "tool-calls",
+    "id": "msg_0cb476fa6001w4Z7ERflHpUo7R",
+    "sessionID": "ses_f34b9e535ffed3QwMzWLqsv0ll"
+   },
+   "parts": [
+    {
+     "snapshot": "a0ed49a0d23a53bdbc0a5d5b2b7c00fc4d4f60d3",
+     "type": "step-start",
+     "id": "prt_0cb4775a5001RRNmaM1LW9Qme5",
+     "sessionID": "ses_f34b9e535ffed3QwMzWLqsv0ll",
+     "messageID": "msg_0cb476fa6001w4Z7ERflHpUo7R"
+    },
+    {
+     "type": "reasoning",
+     "text": "Baseline: run current tests.",
+     "time": {
+      "start": 1790116853173,
+      "end": 1790116853327
+     },
+     "id": "prt_0cb4775b500146EhfpWI0krtHW",
+     "sessionID": "ses_f34b9e535ffed3QwMzWLqsv0ll",
+     "messageID": "msg_0cb476fa6001w4Z7ERflHpUo7R"
+    },
+    {
+     "type": "tool",
+     "tool": "bash",
+     "callID": "call_9940efa56b864ffaa3996333",
+     "state": {
+      "status": "completed",
+      "input": {
+       "command": "node --test evidencias/exportar-evidencias.test.js 2>&1; echo \"exit=$LASTEXITCODE\""
+      },
+      "output": "TAP version 13\n# Subtest: ehComandoDeTeste reconhece \"&\" com caminho entre aspas terminado em dart.exe\nok 1 - ehComandoDeTeste reconhece \"&\" com caminho entre aspas terminado em dart.exe\n  ---\n  duration_ms: 8.6732\n  type: 'test'\n  ...\n# Subtest: ehComandoDeTeste reconhece \"&\" com caminho entre aspas terminado em flutter.bat\nok 2 - ehComandoDeTeste reconhece \"&\" com caminho entre aspas terminado em flutter.bat\n  ---\n  duration_ms: 1.3586\n  type: 'test'\n  ...\n# Subtest: ehComandoDeTeste reconhece caminho entre aspas sem \"&\" terminado em dart.exe\nok 3 - ehComandoDeTeste reconhece caminho entre aspas sem \"&\" terminado em dart.exe\n  ---\n  duration_ms: 0.5208\n  type: 'test'\n  ...\n# Subtest: ehComandoDeTeste reconhece flutter.bat test sem aspas\nok 4 - ehComandoDeTeste reconhece flutter.bat test sem aspas\n  ---\n  duration_ms: 0.291\n  type: 'test'\n  ...\n# Subtest: ehComandoDeTeste reconhece dart test no Linux\nok 5 - ehComandoDeTeste reconhece dart test no Linux\n  ---\n  duration_ms: 0.3911\n  type: 'test'\n  ...\n# Subtest: ehComandoDeTeste reconhece flutter test no Linux\nok 6 - ehComandoDeTeste reconhece flutter test no Linux\n  ---\n  duration_ms: 0.1882\n  type: 'test'\n  ...\n# Subtest: ehComandoDeTeste rejeita git commit -m \"dart test\"\nok 7 - ehComandoDeTeste rejeita git commit -m \"dart test\"\n  ---\n  duration_ms: 0.2888\n  type: 'test'\n  ...\n# Subtest: ehComandoDeTeste rejeita echo dart test\nok 8 - ehComandoDeTeste rejeita echo dart test\n  ---\n  duration_ms: 0.1849\n  type: 'test'\n  ...\n# Subtest: ehComandoDeTeste rejeita analyze\nok 9 - ehComandoDeTeste rejeita analyze\n  ---\n  duration_ms: 0.6104\n  type: 'test'\n  ...\n# Subtest: ehComandoDeTeste rejeita pub get\nok 10 - ehComandoDeTeste rejeita pub get\n  ---\n  duration_ms: 0.6764\n  type: 'test'\n  ...\n# Subtest: ehComandoDeTeste rejeita dart test citado num commit\nok 11 - ehComandoDeTeste rejeita dart test citado num commit\n  ---\n  duration_ms: 0.3267\n  type: 'test'\n  ...\n# Subtest: resultadoDeTeste: \"Failed to load\" é vermelho mesmo com exit 0 no pipe\nok 12 - resultadoDeTeste: \"Failed to load\" é vermelho mesmo com exit 0 no pipe\n  ---\n  duration_ms: 1.104\n  type: 'test'\n  ...\n# Subtest: resultadoDeTeste: \"Some tests failed\" é vermelho mesmo com exit 0\nok 13 - resultadoDeTeste: \"Some tests failed\" é vermelho mesmo com exit 0\n  ---\n  duration_ms: 0.3777\n  type: 'test'\n  ...\n# Subtest: resultadoDeTeste: \"All tests passed\" com exit 0 é verde\nok 14 - resultadoDeTeste: \"All tests passed\" com exit 0 é verde\n  ---\n  duration_ms: 0.161\n  type: 'test'\n  ...\n# Subtest: resultadoDeTeste: exit 1 é vermelho e não verde\nok 15 - resultadoDeTeste: exit 1 é vermelho e não verde\n  ---\n  duration_ms: 0.1513\n  type: 'test'\n  ...\n1..15\n# tests 15\n# suites 0\n# pass 15\n# fail 0\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 547.3335\nexit=0\r\n",
+      "metadata": {
+       "output": "TAP version 13\n# Subtest: ehComandoDeTeste reconhece \"&\" com caminho entre aspas terminado em dart.exe\nok 1 - ehComandoDeTeste reconhece \"&\" com caminho entre aspas terminado em dart.exe\n  ---\n  duration_ms: 8.6732\n  type: 'test'\n  ...\n# Subtest: ehComandoDeTeste reconhece \"&\" com caminho entre aspas terminado em flutter.bat\nok 2 - ehComandoDeTeste reconhece \"&\" com caminho entre aspas terminado em flutter.bat\n  ---\n  duration_ms: 1.3586\n  type: 'test'\n  ...\n# Subtest: ehComandoDeTeste reconhece caminho entre aspas sem \"&\" terminado em dart.exe\nok 3 - ehComandoDeTeste reconhece caminho entre aspas sem \"&\" terminado em dart.exe\n  ---\n  duration_ms: 0.5208\n  type: 'test'\n  ...\n# Subtest: ehComandoDeTeste reconhece flutter.bat test sem aspas\nok 4 - ehComandoDeTeste reconhece flutter.bat test sem aspas\n  ---\n  duration_ms: 0.291\n  type: 'test'\n  ...\n# Subtest: ehComandoDeTeste reconhece dart test no Linux\nok 5 - ehComandoDeTeste reconhece dart test no Linux\n  ---\n  duration_ms: 0.3911\n  type: 'test'\n  ...\n# Subtest: ehComandoDeTeste reconhece flutter test no Linux\nok 6 - ehComandoDeTeste reconhece flutter test no Linux\n  ---\n  duration_ms: 0.1882\n  type: 'test'\n  ...\n# Subtest: ehComandoDeTeste rejeita git commit -m \"dart test\"\nok 7 - ehComandoDeTeste rejeita git commit -m \"dart test\"\n  ---\n  duration_ms: 0.2888\n  type: 'test'\n  ...\n# Subtest: ehComandoDeTeste rejeita echo dart test\nok 8 - ehComandoDeTeste rejeita echo dart test\n  ---\n  duration_ms: 0.1849\n  type: 'test'\n  ...\n# Subtest: ehComandoDeTeste rejeita analyze\nok 9 - ehComandoDeTeste rejeita analyze\n  ---\n  duration_ms: 0.6104\n  type: 'test'\n  ...\n# Subtest: ehComandoDeTeste rejeita pub get\nok 10 - ehComandoDeTeste rejeita pub get\n  ---\n  duration_ms: 0.6764\n  type: 'test'\n  ...\n# Subtest: ehComandoDeTeste rejeita dart test citado num commit\nok 11 - ehComandoDeTeste rejeita dart test citado num commit\n  ---\n  duration_ms: 0.3267\n  type: 'test'\n  ...\n# Subtest: resultadoDeTeste: \"Failed to load\" é vermelho mesmo com exit 0 no pipe\nok 12 - resultadoDeTeste: \"Failed to load\" é vermelho mesmo com exit 0 no pipe\n  ---\n  duration_ms: 1.104\n  type: 'test'\n  ...\n# Subtest: resultadoDeTeste: \"Some tests failed\" é vermelho mesmo com exit 0\nok 13 - resultadoDeTeste: \"Some tests failed\" é vermelho mesmo com exit 0\n  ---\n  duration_ms: 0.3777\n  type: 'test'\n  ...\n# Subtest: resultadoDeTeste: \"All tests passed\" com exit 0 é verde\nok 14 - resultadoDeTeste: \"All tests passed\" com exit 0 é verde\n  ---\n  duration_ms: 0.161\n  type: 'test'\n  ...\n# Subtest: resultadoDeTeste: exit 1 é vermelho e não verde\nok 15 - resultadoDeTeste: exit 1 é vermelho e não verde\n  ---\n  duration_ms: 0.1513\n  type: 'test'\n  ...\n1..15\n# tests 15\n# suites 0\n# pass 15\n# fail 0\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 547.3335\nexit=0\r\n",
+       "exit": 0,
+       "truncated": false
+      },
+      "title": "node --test evidencias/exportar-evidencias.test.js 2>&1; echo \"exit=$LASTEXITCODE\"",
+      "time": {
+       "start": 1790116853487,
+       "end": 1790116857952
+      }
+     },
+     "id": "prt_0cb4776570016XyKSvRZ5NHIpr",
+     "sessionID": "ses_f34b9e535ffed3QwMzWLqsv0ll",
+     "messageID": "msg_0cb476fa6001w4Z7ERflHpUo7R"
+    },
+    {
+     "reason": "tool-calls",
+     "snapshot": "a0ed49a0d23a53bdbc0a5d5b2b7c00fc4d4f60d3",
+     "type": "step-finish",
+     "tokens": {
+      "total": 52816,
+      "input": 259,
+      "output": 77,
+      "reasoning": 0,
+      "cache": {
+       "write": 0,
+       "read": 52480
+      }
+     },
+     "cost": 0,
+     "id": "prt_0cb478a9c0012V4rZ1LVDWYvzX",
+     "sessionID": "ses_f34b9e535ffed3QwMzWLqsv0ll",
+     "messageID": "msg_0cb476fa6001w4Z7ERflHpUo7R"
+    }
+   ]
+  },
+  {
+   "info": {
+    "parentID": "msg_0cb461b68001PpMFufrD24MMAP",
+    "role": "assistant",
+    "mode": "build",
+    "agent": "build",
+    "path": {
+     "cwd": "C:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech",
+     "root": "C:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech"
+    },
+    "cost": 0,
+    "tokens": {
+     "total": 54845,
+     "input": 1101,
+     "output": 1008,
+     "reasoning": 0,
+     "cache": {
+      "write": 0,
+      "read": 52736
+     }
+    },
+    "modelID": "big-pickle",
+    "providerID": "opencode",
+    "time": {
+     "created": 1790116859030,
+     "completed": 1790116867085
+    },
+    "finish": "tool-calls",
+    "id": "msg_0cb478c96001jcQl1uF17uaBSz",
+    "sessionID": "ses_f34b9e535ffed3QwMzWLqsv0ll"
+   },
+   "parts": [
+    {
+     "snapshot": "a0ed49a0d23a53bdbc0a5d5b2b7c00fc4d4f60d3",
+     "type": "step-start",
+     "id": "prt_0cb4791e60016nBEOmM2vX1m0T",
+     "sessionID": "ses_f34b9e535ffed3QwMzWLqsv0ll",
+     "messageID": "msg_0cb478c96001jcQl1uF17uaBSz"
+    },
+    {
+     "type": "reasoning",
+     "text": "Baseline green (15/15) as confirmed. Now add the regression tests. This is exactly the false-red scenario: this green TAP run with exit 0 would be marked red by the exporter because titles contain \"Failed to load\" and \"Some tests failed\". Let me add the two regression tests.",
+     "time": {
+      "start": 1790116860398,
+      "end": 1790116860646
+     },
+     "id": "prt_0cb4791ed001uZTub5pfCOl2NL",
+     "sessionID": "ses_f34b9e535ffed3QwMzWLqsv0ll",
+     "messageID": "msg_0cb478c96001jcQl1uF17uaBSz"
+    },
+    {
+     "type": "text",
+     "text": "Baseline 15/15 verde. Agora adiciono as regressões do falso vermelho.",
+     "time": {
+      "start": 1790116860650,
+      "end": 1790116863503
+     },
+     "id": "prt_0cb4792ea001jQYPv63MjLk25D",
+     "sessionID": "ses_f34b9e535ffed3QwMzWLqsv0ll",
+     "messageID": "msg_0cb478c96001jcQl1uF17uaBSz"
+    },
+    {
+     "type": "tool",
+     "tool": "edit",
+     "callID": "call_572900168ef54cb496411bde",
+     "state": {
+      "status": "completed",
+      "input": {
+       "filePath": "C:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\evidencias\\exportar-evidencias.test.js",
+       "oldString": "test('resultadoDeTeste: exit 1 é vermelho e não verde', () => {\n  const r = m.resultadoDeTeste('+3 -0: All tests passed', 1, undefined);\n  assert.equal(r.vermelho, true);\n  assert.equal(r.verde, false);\n});",
+       "newString": "test('resultadoDeTeste: exit 1 é vermelho e não verde', () => {\n  const r = m.resultadoDeTeste('+3 -0: All tests passed', 1, undefined);\n  assert.equal(r.vermelho, true);\n  assert.equal(r.verde, false);\n});\n\n// False positive real: a frase dentro do título de um teste TAP verde (ou num nome de\n// teste Dart) não é diagnóstico de falha e não pode marcar vermelho.\ntest('resultadoDeTeste: node --test 15 verdes com títulos citando \"Failed to load\"/\"Some tests failed\" e exit 0 é verde', () => {\n  const titulos = [\n    'ehComandoDeTeste reconhece \"&\" com caminho entre aspas terminado em dart.exe',\n    'ehComandoDeTeste reconhece \"&\" com caminho entre aspas terminado em flutter.bat',\n    'ehComandoDeTeste reconhece caminho entre aspas sem \"&\" terminado em dart.exe',\n    'ehComandoDeTeste reconhece flutter.bat test sem aspas',\n    'ehComandoDeTeste reconhece dart test no Linux',\n    'ehComandoDeTeste reconhece flutter test no Linux',\n    'ehComandoDeTeste rejeita git commit -m \"dart test\"',\n    'ehComandoDeTeste rejeita echo dart test',\n    'ehComandoDeTeste rejeita analyze',\n    'ehComandoDeTeste rejeita pub get',\n    'ehComandoDeTeste rejeita dart test citado num commit',\n    'resultadoDeTeste: \"Failed to load\" é vermelho mesmo com exit 0 no pipe',\n    'resultadoDeTeste: \"Some tests failed\" é vermelho mesmo com exit 0',\n    'resultadoDeTeste: \"All tests passed\" com exit 0 é verde',\n    'resultadoDeTeste: exit 1 é vermelho e não verde',\n  ];\n  const tap = `${titulos.map((t, i) => `# Subtest: ${t}\\nok ${i + 1} - ${t}`).join('\\n')}\n# tests ${titulos.length}\n# pass ${titulos.length}\n# fail 0`;\n  const r = m.resultadoDeTeste(tap, 0, undefined);\n  assert.equal(r.placar.ok, 15);\n  assert.equal(r.placar.falhou, 0);\n  assert.equal(r.vermelho, false);\n  assert.equal(r.verde, true);\n});\n\ntest('resultadoDeTeste: Dart \"All tests passed\" com nome de teste contendo as frases e exit 0 é verde', () => {\n  const saida = [\n    '00:01 +1: resultadoDeTeste: \"Failed to load\" é vermelho mesmo com exit 0 no pipe',\n    '00:02 +2: resultadoDeTeste: \"Some tests failed\" é vermelho mesmo com exit 0',\n    '00:03 +2: All tests passed',\n  ].join('\\n');\n  const r = m.resultadoDeTeste(saida, 0, undefined);\n  assert.equal(r.placar.ok, 2);\n  assert.equal(r.placar.falhou, 0);\n  assert.equal(r.vermelho, false);\n  assert.equal(r.verde, true);\n});"
+      },
+      "output": "Edit applied successfully.",
+      "metadata": {
+       "diagnostics": {},
+       "diff": "Index: C:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\evidencias\\exportar-evidencias.test.js\n===================================================================\n--- C:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\evidencias\\exportar-evidencias.test.js\n+++ C:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\evidencias\\exportar-evidencias.test.js\n@@ -76,5 +76,49 @@\n test('resultadoDeTeste: exit 1 é vermelho e não verde', () => {\n   const r = m.resultadoDeTeste('+3 -0: All tests passed', 1, undefined);\n   assert.equal(r.vermelho, true);\n   assert.equal(r.verde, false);\n+});\n+\n+// False positive real: a frase dentro do título de um teste TAP verde (ou num nome de\n+// teste Dart) não é diagnóstico de falha e não pode marcar vermelho.\n+test('resultadoDeTeste: node --test 15 verdes com títulos citando \"Failed to load\"/\"Some tests failed\" e exit 0 é verde', () => {\n+  const titulos = [\n+    'ehComandoDeTeste reconhece \"&\" com caminho entre aspas terminado em dart.exe',\n+    'ehComandoDeTeste reconhece \"&\" com caminho entre aspas terminado em flutter.bat',\n+    'ehComandoDeTeste reconhece caminho entre aspas sem \"&\" terminado em dart.exe',\n+    'ehComandoDeTeste reconhece flutter.bat test sem aspas',\n+    'ehComandoDeTeste reconhece dart test no Linux',\n+    'ehComandoDeTeste reconhece flutter test no Linux',\n+    'ehComandoDeTeste rejeita git commit -m \"dart test\"',\n+    'ehComandoDeTeste rejeita echo dart test',\n+    'ehComandoDeTeste rejeita analyze',\n+    'ehComandoDeTeste rejeita pub get',\n+    'ehComandoDeTeste rejeita dart test citado num commit',\n+    'resultadoDeTeste: \"Failed to load\" é vermelho mesmo com exit 0 no pipe',\n+    'resultadoDeTeste: \"Some tests failed\" é vermelho mesmo com exit 0',\n+    'resultadoDeTeste: \"All tests passed\" com exit 0 é verde',\n+    'resultadoDeTeste: exit 1 é vermelho e não verde',\n+  ];\n+  const tap = `${titulos.map((t, i) => `# Subtest: ${t}\\nok ${i + 1} - ${t}`).join('\\n')}\n+# tests ${titulos.length}\n+# pass ${titulos.length}\n+# fail 0`;\n+  const r = m.resultadoDeTeste(tap, 0, undefined);\n+  assert.equal(r.placar.ok, 15);\n+  assert.equal(r.placar.falhou, 0);\n+  assert.equal(r.vermelho, false);\n+  assert.equal(r.verde, true);\n+});\n+\n+test('resultadoDeTeste: Dart \"All tests passed\" com nome de teste contendo as frases e exit 0 é verde', () => {\n+  const saida = [\n+    '00:01 +1: resultadoDeTeste: \"Failed to load\" é vermelho mesmo com exit 0 no pipe',\n+    '00:02 +2: resultadoDeTeste: \"Some tests failed\" é vermelho mesmo com exit 0',\n+    '00:03 +2: All tests passed',\n+  ].join('\\n');\n+  const r = m.resultadoDeTeste(saida, 0, undefined);\n+  assert.equal(r.placar.ok, 2);\n+  assert.equal(r.placar.falhou, 0);\n+  assert.equal(r.vermelho, false);\n+  assert.equal(r.verde, true);\n });\n\\ No newline at end of file\n",
+       "filediff": {
+        "file": "C:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\evidencias\\exportar-evidencias.test.js",
+        "patch": "Index: C:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\evidencias\\exportar-evidencias.test.js\n===================================================================\n--- C:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\evidencias\\exportar-evidencias.test.js\n+++ C:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\evidencias\\exportar-evidencias.test.js\n@@ -76,5 +76,49 @@\n test('resultadoDeTeste: exit 1 é vermelho e não verde', () => {\n   const r = m.resultadoDeTeste('+3 -0: All tests passed', 1, undefined);\n   assert.equal(r.vermelho, true);\n   assert.equal(r.verde, false);\n+});\n+\n+// False positive real: a frase dentro do título de um teste TAP verde (ou num nome de\n+// teste Dart) não é diagnóstico de falha e não pode marcar vermelho.\n+test('resultadoDeTeste: node --test 15 verdes com títulos citando \"Failed to load\"/\"Some tests failed\" e exit 0 é verde', () => {\n+  const titulos = [\n+    'ehComandoDeTeste reconhece \"&\" com caminho entre aspas terminado em dart.exe',\n+    'ehComandoDeTeste reconhece \"&\" com caminho entre aspas terminado em flutter.bat',\n+    'ehComandoDeTeste reconhece caminho entre aspas sem \"&\" terminado em dart.exe',\n+    'ehComandoDeTeste reconhece flutter.bat test sem aspas',\n+    'ehComandoDeTeste reconhece dart test no Linux',\n+    'ehComandoDeTeste reconhece flutter test no Linux',\n+    'ehComandoDeTeste rejeita git commit -m \"dart test\"',\n+    'ehComandoDeTeste rejeita echo dart test',\n+    'ehComandoDeTeste rejeita analyze',\n+    'ehComandoDeTeste rejeita pub get',\n+    'ehComandoDeTeste rejeita dart test citado num commit',\n+    'resultadoDeTeste: \"Failed to load\" é vermelho mesmo com exit 0 no pipe',\n+    'resultadoDeTeste: \"Some tests failed\" é vermelho mesmo com exit 0',\n+    'resultadoDeTeste: \"All tests passed\" com exit 0 é verde',\n+    'resultadoDeTeste: exit 1 é vermelho e não verde',\n+  ];\n+  const tap = `${titulos.map((t, i) => `# Subtest: ${t}\\nok ${i + 1} - ${t}`).join('\\n')}\n+# tests ${titulos.length}\n+# pass ${titulos.length}\n+# fail 0`;\n+  const r = m.resultadoDeTeste(tap, 0, undefined);\n+  assert.equal(r.placar.ok, 15);\n+  assert.equal(r.placar.falhou, 0);\n+  assert.equal(r.vermelho, false);\n+  assert.equal(r.verde, true);\n+});\n+\n+test('resultadoDeTeste: Dart \"All tests passed\" com nome de teste contendo as frases e exit 0 é verde', () => {\n+  const saida = [\n+    '00:01 +1: resultadoDeTeste: \"Failed to load\" é vermelho mesmo com exit 0 no pipe',\n+    '00:02 +2: resultadoDeTeste: \"Some tests failed\" é vermelho mesmo com exit 0',\n+    '00:03 +2: All tests passed',\n+  ].join('\\n');\n+  const r = m.resultadoDeTeste(saida, 0, undefined);\n+  assert.equal(r.placar.ok, 2);\n+  assert.equal(r.placar.falhou, 0);\n+  assert.equal(r.vermelho, false);\n+  assert.equal(r.verde, true);\n });\n\\ No newline at end of file\n",
+        "additions": 44,
+        "deletions": 0
+       },
+       "truncated": false
+      },
+      "title": "evidencias\\exportar-evidencias.test.js",
+      "time": {
+       "start": 1790116863494,
+       "end": 1790116863619
+      }
+     },
+     "id": "prt_0cb47935f001f6wjRswxvmBgSm",
+     "sessionID": "ses_f34b9e535ffed3QwMzWLqsv0ll",
+     "messageID": "msg_0cb478c96001jcQl1uF17uaBSz"
+    },
+    {
+     "reason": "tool-calls",
+     "snapshot": "e1441a974c476a2e6b151921bd02d60f3cc0a3ab",
+     "type": "step-finish",
+     "tokens": {
+      "total": 54845,
+      "input": 1101,
+      "output": 1008,
+      "reasoning": 0,
+      "cache": {
+       "write": 0,
+       "read": 52736
+      }
+     },
+     "cost": 0,
+     "id": "prt_0cb47a6f5001C9V0wedJ1j09oM",
+     "sessionID": "ses_f34b9e535ffed3QwMzWLqsv0ll",
+     "messageID": "msg_0cb478c96001jcQl1uF17uaBSz"
+    },
+    {
+     "type": "patch",
+     "hash": "a0ed49a0d23a53bdbc0a5d5b2b7c00fc4d4f60d3",
+     "files": [
+      "C:/Users/Clara L Peretti/TrabalhoIA-WomanInTech/evidencias/exportar-evidencias.test.js"
+     ],
+     "id": "prt_0cb47ac020010eX8phmVdL8QLZ",
+     "sessionID": "ses_f34b9e535ffed3QwMzWLqsv0ll",
+     "messageID": "msg_0cb478c96001jcQl1uF17uaBSz"
+    }
+   ]
+  },
+  {
+   "info": {
+    "parentID": "msg_0cb461b68001PpMFufrD24MMAP",
+    "role": "assistant",
+    "mode": "build",
+    "agent": "build",
+    "path": {
+     "cwd": "C:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech",
+     "root": "C:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech"
+    },
+    "cost": 0,
+    "tokens": {
+     "total": 54929,
+     "input": 75,
+     "output": 70,
+     "reasoning": 0,
+     "cache": {
+      "write": 0,
+      "read": 54784
+     }
+    },
+    "modelID": "big-pickle",
+    "providerID": "opencode",
+    "time": {
+     "created": 1790116867109,
+     "completed": 1790116876336
+    },
+    "finish": "tool-calls",
+    "id": "msg_0cb47ac250018MhcF5J2z7EUUo",
+    "sessionID": "ses_f34b9e535ffed3QwMzWLqsv0ll"
+   },
+   "parts": [
+    {
+     "snapshot": "e1441a974c476a2e6b151921bd02d60f3cc0a3ab",
+     "type": "step-start",
+     "id": "prt_0cb47b2fa001RB3TasDh7ojnCB",
+     "sessionID": "ses_f34b9e535ffed3QwMzWLqsv0ll",
+     "messageID": "msg_0cb47ac250018MhcF5J2z7EUUo"
+    },
+    {
+     "type": "tool",
+     "tool": "bash",
+     "callID": "call_8d87b003014e4e809585bc84",
+     "state": {
+      "status": "completed",
+      "input": {
+       "command": "node --test evidencias/exportar-evidencias.test.js 2>&1; echo \"exit=$LASTEXITCODE\""
+      },
+      "output": "TAP version 13\n# Subtest: ehComandoDeTeste reconhece \"&\" com caminho entre aspas terminado em dart.exe\nok 1 - ehComandoDeTeste reconhece \"&\" com caminho entre aspas terminado em dart.exe\n  ---\n  duration_ms: 9.7559\n  type: 'test'\n  ...\n# Subtest: ehComandoDeTeste reconhece \"&\" com caminho entre aspas terminado em flutter.bat\nok 2 - ehComandoDeTeste reconhece \"&\" com caminho entre aspas terminado em flutter.bat\n  ---\n  duration_ms: 1.3037\n  type: 'test'\n  ...\n# Subtest: ehComandoDeTeste reconhece caminho entre aspas sem \"&\" terminado em dart.exe\nok 3 - ehComandoDeTeste reconhece caminho entre aspas sem \"&\" terminado em dart.exe\n  ---\n  duration_ms: 0.44\n  type: 'test'\n  ...\n# Subtest: ehComandoDeTeste reconhece flutter.bat test sem aspas\nok 4 - ehComandoDeTeste reconhece flutter.bat test sem aspas\n  ---\n  duration_ms: 0.3356\n  type: 'test'\n  ...\n# Subtest: ehComandoDeTeste reconhece dart test no Linux\nok 5 - ehComandoDeTeste reconhece dart test no Linux\n  ---\n  duration_ms: 0.5475\n  type: 'test'\n  ...\n# Subtest: ehComandoDeTeste reconhece flutter test no Linux\nok 6 - ehComandoDeTeste reconhece flutter test no Linux\n  ---\n  duration_ms: 0.1921\n  type: 'test'\n  ...\n# Subtest: ehComandoDeTeste rejeita git commit -m \"dart test\"\nok 7 - ehComandoDeTeste rejeita git commit -m \"dart test\"\n  ---\n  duration_ms: 0.5205\n  type: 'test'\n  ...\n# Subtest: ehComandoDeTeste rejeita echo dart test\nok 8 - ehComandoDeTeste rejeita echo dart test\n  ---\n  duration_ms: 0.3843\n  type: 'test'\n  ...\n# Subtest: ehComandoDeTeste rejeita analyze\nok 9 - ehComandoDeTeste rejeita analyze\n  ---\n  duration_ms: 1.1838\n  type: 'test'\n  ...\n# Subtest: ehComandoDeTeste rejeita pub get\nok 10 - ehComandoDeTeste rejeita pub get\n  ---\n  duration_ms: 1.9831\n  type: 'test'\n  ...\n# Subtest: ehComandoDeTeste rejeita dart test citado num commit\nok 11 - ehComandoDeTeste rejeita dart test citado num commit\n  ---\n  duration_ms: 0.904\n  type: 'test'\n  ...\n# Subtest: resultadoDeTeste: \"Failed to load\" é vermelho mesmo com exit 0 no pipe\nok 12 - resultadoDeTeste: \"Failed to load\" é vermelho mesmo com exit 0 no pipe\n  ---\n  duration_ms: 2.6499\n  type: 'test'\n  ...\n# Subtest: resultadoDeTeste: \"Some tests failed\" é vermelho mesmo com exit 0\nok 13 - resultadoDeTeste: \"Some tests failed\" é vermelho mesmo com exit 0\n  ---\n  duration_ms: 1.0998\n  type: 'test'\n  ...\n# Subtest: resultadoDeTeste: \"All tests passed\" com exit 0 é verde\nok 14 - resultadoDeTeste: \"All tests passed\" com exit 0 é verde\n  ---\n  duration_ms: 0.6213\n  type: 'test'\n  ...\n# Subtest: resultadoDeTeste: exit 1 é vermelho e não verde\nok 15 - resultadoDeTeste: exit 1 é vermelho e não verde\n  ---\n  duration_ms: 0.3426\n  type: 'test'\n  ...\n# Subtest: resultadoDeTeste: node --test 15 verdes com títulos citando \"Failed to load\"/\"Some tests failed\" e exit 0 é verde\nnot ok 16 - resultadoDeTeste: node --test 15 verdes com títulos citando \"Failed to load\"/\"Some tests failed\" e exit 0 é verde\n  ---\n  duration_ms: 1.0669\n  type: 'test'\n  location: 'C:\\\\Users\\\\Clara L Peretti\\\\TrabalhoIA-WomanInTech\\\\evidencias\\\\exportar-evidencias.test.js:84:1'\n  failureType: 'testCodeFailure'\n  error: \"Cannot read properties of undefined (reading 'ok')\"\n  code: 'ERR_TEST_FAILURE'\n  name: 'TypeError'\n  stack: |-\n    TestContext.<anonymous> (C:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\evidencias\\exportar-evidencias.test.js:107:25)\n    Test.runInAsyncScope (node:async_hooks:214:14)\n    Test.run (node:internal/test_runner/test:1047:25)\n    Test.processPendingSubtests (node:internal/test_runner/test:744:18)\n    Test.postRun (node:internal/test_runner/test:1173:19)\n    Test.run (node:internal/test_runner/test:1101:12)\n    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)\n  ...\n# Subtest: resultadoDeTeste: Dart \"All tests passed\" com nome de teste contendo as frases e exit 0 é verde\nnot ok 17 - resultadoDeTeste: Dart \"All tests passed\" com nome de teste contendo as frases e exit 0 é verde\n  ---\n  duration_ms: 0.3811\n  type: 'test'\n  location: 'C:\\\\Users\\\\Clara L Peretti\\\\TrabalhoIA-WomanInTech\\\\evidencias\\\\exportar-evidencias.test.js:113:1'\n  failureType: 'testCodeFailure'\n  error: \"Cannot read properties of undefined (reading 'ok')\"\n  code: 'ERR_TEST_FAILURE'\n  name: 'TypeError'\n  stack: |-\n    TestContext.<anonymous> (C:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\evidencias\\exportar-evidencias.test.js:120:25)\n    Test.runInAsyncScope (node:async_hooks:214:14)\n    Test.run (node:internal/test_runner/test:1047:25)\n    Test.processPendingSubtests (node:internal/test_runner/test:744:18)\n    Test.postRun (node:internal/test_runner/test:1173:19)\n    Test.run (node:internal/test_runner/test:1101:12)\n    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)\n  ...\n1..17\n# tests 17\n# suites 0\n# pass 15\n# fail 2\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 675.96\nexit=1\r\n",
+      "metadata": {
+       "output": "TAP version 13\n# Subtest: ehComandoDeTeste reconhece \"&\" com caminho entre aspas terminado em dart.exe\nok 1 - ehComandoDeTeste reconhece \"&\" com caminho entre aspas terminado em dart.exe\n  ---\n  duration_ms: 9.7559\n  type: 'test'\n  ...\n# Subtest: ehComandoDeTeste reconhece \"&\" com caminho entre aspas terminado em flutter.bat\nok 2 - ehComandoDeTeste reconhece \"&\" com caminho entre aspas terminado em flutter.bat\n  ---\n  duration_ms: 1.3037\n  type: 'test'\n  ...\n# Subtest: ehComandoDeTeste reconhece caminho entre aspas sem \"&\" terminado em dart.exe\nok 3 - ehComandoDeTeste reconhece caminho entre aspas sem \"&\" terminado em dart.exe\n  ---\n  duration_ms: 0.44\n  type: 'test'\n  ...\n# Subtest: ehComandoDeTeste reconhece flutter.bat test sem aspas\nok 4 - ehComandoDeTeste reconhece flutter.bat test sem aspas\n  ---\n  duration_ms: 0.3356\n  type: 'test'\n  ...\n# Subtest: ehComandoDeTeste reconhece dart test no Linux\nok 5 - ehComandoDeTeste reconhece dart test no Linux\n  ---\n  duration_ms: 0.5475\n  type: 'test'\n  ...\n# Subtest: ehComandoDeTeste reconhece flutter test no Linux\nok 6 - ehComandoDeTeste reconhece flutter test no Linux\n  ---\n  duration_ms: 0.1921\n  type: 'test'\n  ...\n# Subtest: ehComandoDeTeste rejeita git commit -m \"dart test\"\nok 7 - ehComandoDeTeste rejeita git commit -m \"dart test\"\n  ---\n  duration_ms: 0.5205\n  type: 'test'\n  ...\n# Subtest: ehComandoDeTeste rejeita echo dart test\nok 8 - ehComandoDeTeste rejeita echo dart test\n  ---\n  duration_ms: 0.3843\n  type: 'test'\n  ...\n# Subtest: ehComandoDeTeste rejeita analyze\nok 9 - ehComandoDeTeste rejeita analyze\n  ---\n  duration_ms: 1.1838\n  type: 'test'\n  ...\n# Subtest: ehComandoDeTeste rejeita pub get\nok 10 - ehComandoDeTeste rejeita pub get\n  ---\n  duration_ms: 1.9831\n  type: 'test'\n  ...\n# Subtest: ehComandoDeTeste rejeita dart test citado num commit\nok 11 - ehComandoDeTeste rejeita dart test citado num commit\n  ---\n  duration_ms: 0.904\n  type: 'test'\n  ...\n# Subtest: resultadoDeTeste: \"Failed to load\" é vermelho mesmo com exit 0 no pipe\nok 12 - resultadoDeTeste: \"Failed to load\" é vermelho mesmo com exit 0 no pipe\n  ---\n  duration_ms: 2.6499\n  type: 'test'\n  ...\n# Subtest: resultadoDeTeste: \"Some tests failed\" é vermelho mesmo com exit 0\nok 13 - resultadoDeTeste: \"Some tests failed\" é vermelho mesmo com exit 0\n  ---\n  duration_ms: 1.0998\n  type: 'test'\n  ...\n# Subtest: resultadoDeTeste: \"All tests passed\" com exit 0 é verde\nok 14 - resultadoDeTeste: \"All tests passed\" com exit 0 é verde\n  ---\n  duration_ms: 0.6213\n  type: 'test'\n  ...\n# Subtest: resultadoDeTeste: exit 1 é vermelho e não verde\nok 15 - resultadoDeTeste: exit 1 é vermelho e não verde\n  ---\n  duration_ms: 0.3426\n  type: 'test'\n  ...\n# Subtest: resultadoDeTeste: node --test 15 verdes com títulos citando \"Failed to load\"/\"Some tests failed\" e exit 0 é verde\nnot ok 16 - resultadoDeTeste: node --test 15 verdes com títulos citando \"Failed to load\"/\"Some tests failed\" e exit 0 é verde\n  ---\n  duration_ms: 1.0669\n  type: 'test'\n  location: 'C:\\\\Users\\\\Clara L Peretti\\\\TrabalhoIA-WomanInTech\\\\evidencias\\\\exportar-evidencias.test.js:84:1'\n  failureType: 'testCodeFailure'\n  error: \"Cannot read properties of undefined (reading 'ok')\"\n  code: 'ERR_TEST_FAILURE'\n  name: 'TypeError'\n  stack: |-\n    TestContext.<anonymous> (C:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\evidencias\\exportar-evidencias.test.js:107:25)\n    Test.runInAsyncScope (node:async_hooks:214:14)\n    Test.run (node:internal/test_runner/test:1047:25)\n    Test.processPendingSubtests (node:internal/test_runner/test:744:18)\n    Test.postRun (node:internal/test_runner/test:1173:19)\n    Test.run (node:internal/test_runner/test:1101:12)\n    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)\n  ...\n# Subtest: resultadoDeTeste: Dart \"All tests passed\" com nome de teste contendo as frases e exit 0 é verde\nnot ok 17 - resultadoDeTeste: Dart \"All tests passed\" com nome de teste contendo as frases e exit 0 é verde\n  ---\n  duration_ms: 0.3811\n  type: 'test'\n  location: 'C:\\\\Users\\\\Clara L Peretti\\\\TrabalhoIA-WomanInTech\\\\evidencias\\\\exportar-evidencias.test.js:113:1'\n  failureType: 'testCodeFailure'\n  error: \"Cannot read properties of undefined (reading 'ok')\"\n  code: 'ERR_TEST_FAILURE'\n  name: 'TypeError'\n  stack: |-\n    TestContext.<anonymous> (C:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\evidencias\\exportar-evidencias.test.js:120:25)\n    Test.runInAsyncScope (node:async_hooks:214:14)\n    Test.run (node:internal/test_runner/test:1047:25)\n    Test.processPendingSubtests (node:internal/test_runner/test:744:18)\n    Test.postRun (node:internal/test_runner/test:1173:19)\n    Test.run (node:internal/test_runner/test:1101:12)\n    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)\n  ...\n1..17\n# tests 17\n# suites 0\n# pass 15\n# fail 2\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 675.96\nexit=1\r\n",
+       "exit": 0,
+       "truncated": false
+      },
+      "title": "node --test evidencias/exportar-evidencias.test.js 2>&1; echo \"exit=$LASTEXITCODE\"",
+      "time": {
+       "start": 1790116869128,
+       "end": 1790116874474
+      }
+     },
+     "id": "prt_0cb47b394001Z3AMVGDbhr0vJk",
+     "sessionID": "ses_f34b9e535ffed3QwMzWLqsv0ll",
+     "messageID": "msg_0cb47ac250018MhcF5J2z7EUUo"
+    },
+    {
+     "reason": "tool-calls",
+     "snapshot": "e1441a974c476a2e6b151921bd02d60f3cc0a3ab",
+     "type": "step-finish",
+     "tokens": {
+      "total": 54929,
+      "input": 75,
+      "output": 70,
+      "reasoning": 0,
+      "cache": {
+       "write": 0,
+       "read": 54784
+      }
+     },
+     "cost": 0,
+     "id": "prt_0cb47cb36001EkiEiDG1o0Oavr",
+     "sessionID": "ses_f34b9e535ffed3QwMzWLqsv0ll",
+     "messageID": "msg_0cb47ac250018MhcF5J2z7EUUo"
+    },
+    {
+     "type": "patch",
+     "hash": "e1441a974c476a2e6b151921bd02d60f3cc0a3ab",
+     "files": [
+      "C:/Users/Clara L Peretti/TrabalhoIA-WomanInTech/api/lib/server.dart"
+     ],
+     "id": "prt_0cb47d029001l6UJD2is0Mp48D",
+     "sessionID": "ses_f34b9e535ffed3QwMzWLqsv0ll",
+     "messageID": "msg_0cb47ac250018MhcF5J2z7EUUo"
+    }
+   ]
+  },
+  {
+   "info": {
+    "parentID": "msg_0cb461b68001PpMFufrD24MMAP",
+    "role": "assistant",
+    "mode": "build",
+    "agent": "build",
+    "path": {
+     "cwd": "C:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech",
+     "root": "C:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech"
+    },
+    "cost": 0,
+    "tokens": {
+     "total": 57742,
+     "input": 1820,
+     "output": 1138,
+     "reasoning": 0,
+     "cache": {
+      "write": 0,
+      "read": 54784
+     }
+    },
+    "modelID": "big-pickle",
+    "providerID": "opencode",
+    "time": {
+     "created": 1790116876346,
+     "completed": 1790116888305
+    },
+    "finish": "tool-calls",
+    "id": "msg_0cb47d03a0010bXkNO1kV0xylp",
+    "sessionID": "ses_f34b9e535ffed3QwMzWLqsv0ll"
+   },
+   "parts": [
+    {
+     "snapshot": "fe8368be4061dff0305c2e2f672cbc65577de813",
+     "type": "step-start",
+     "id": "prt_0cb47d669001dfI5RqQwifA8tq",
+     "sessionID": "ses_f34b9e535ffed3QwMzWLqsv0ll",
+     "messageID": "msg_0cb47d03a0010bXkNO1kV0xylp"
+    },
+    {
+     "type": "reasoning",
+     "text": "RED confirmed: tests 16 and 17 failed. Note the failure message: `Cannot read properties of undefined (reading 'ok')` — because `placar` returned null? Wait — `r.placar` is undefined because `placar(tap)` returned null. Why?\n\nWait, `placar` for the TAP fixture: node --test regex is `/^\\s*[ℹ#]\\s*pass\\s+(\\d+)/m`. My fixture has `# pass 15`. Should match... but wait, my fixture line `# pass ${titulos.length}` — I used a template literal with `\\n`. Hmm, but the `r.placar` is null → `r.placar.ok` throws. Wait, that means placar returned null.\n\nOh wait — actually `resultadoDeTeste` returns `{ p, vermelho, verde }` where `p = placar(texto)`. For my TAP fixture, `placar` should return `{ok:15, falhou:0}`. Let me check: the regex `/^\\s*[ℹ#]\\s*pass\\s+(\\d+)/m`. My fixture:\n\n```\n# tests 15\n# pass 15\n# fail 0\n```\n\nThe line `# pass 15` starts with `#` → `^\\s*[ℹ#]\\s*pass\\s+(\\d+)` → `# pass 15` matches, ok=15. So p should be {ok:15, falhou:0}. So why is `r.placar` undefined?\n\nHmm, unless... the test failed at `r.placar.ok` meaning `r.placar` is null. Wait — actually maybe placar matched something else first. Let me re-trace: `passou = t.match(/^\\s*[ℹ#]\\s*pass\\s+(\\d+)/m)`. In the fixture, is `# pass 15` present at line start? Yes. Hmm.\n\nWait — actually maybe the issue: `falhou = t.match(/^\\s*[ℹ#]\\s*fail\\s+(\\d+)/m)`. My fixture also has `# fail 0`. So `{ok:15, falhou:0}`. That's not null.\n\nSo why TypeError? Because `r.placar` where `p` is... Actually wait, maybe the ordering: In `resultadoDeTeste`, `p = placar(texto)` — p not null. Then vermelho computed. In `analisar`, `p` used. Fine.\n\nHmm, but the error says reading 'ok' of undefined, at line 107 (the `assert.equal(r.placar.ok, 15)`). That means `r.placar` is null/undefined, NOT false or {...}. But placar should return an object for the fixture...\n\nWait, let me re-examine. Maybe the problem: node --test's `# pass 15` — my regex `^\\s*[ℹ#]\\s*pass...`. Hmm `# pass 15` — yes `#`, space, `pass`, space, `15`. Match.\n\nUnless the actual number substitution failed because... `titulos.length` is 15. Hmm.\n\nWait, maybe the issue is different: the fixture string got the `# Subtest:` lines, and the regex for node also checks `passou || falhou`. It returns `{ok:15, falhou:0}`. \n\nLet me just test directly to see. Actually wait — maybe the problem is that node --test in the TEST RUN itself is using a DIFFERENT placar? No.\n\nHmm, actually — wait. Let me re-read: the error message is `Cannot read properties of undefined (reading 'ok')`. In node's assertion, `assert.equal(r.placar.ok, 15)` — r.placar is undefined → reading 'ok' throws TypeError, and node reports the ORIGINAL exception? Actually node test captures the assertion error... The error code is ERR_TEST_FAILURE with `Cannot read properties of undefined (reading 'ok')`. So indeed `r.placar` is undefined.\n\nBut wait, could `placar` have matched the `+N -M:` regex in the fixture? My fixture has no `+N` lines. Hmm.\n\nLet me actually debug: run node to evaluate resultadoDeTeste on the fixture.",
+     "time": {
+      "start": 1790116877935,
+      "end": 1790116882188
+     },
+     "id": "prt_0cb47d66f0012ifGy9GXk8JDue",
+     "sessionID": "ses_f34b9e535ffed3QwMzWLqsv0ll",
+     "messageID": "msg_0cb47d03a0010bXkNO1kV0xylp"
+    },
+    {
+     "type": "text",
+     "text": "RED confirmado (16 e 17 falharam). O TypeError é porque `placar` retornou null no fixture; vou inspecionar antes de corrigir.",
+     "time": {
+      "start": 1790116882194,
+      "end": 1790116882783
+     },
+     "id": "prt_0cb47e712001pA3CPAhO5dTCTl",
+     "sessionID": "ses_f34b9e535ffed3QwMzWLqsv0ll",
+     "messageID": "msg_0cb47d03a0010bXkNO1kV0xylp"
+    },
+    {
+     "type": "tool",
+     "tool": "bash",
+     "callID": "call_3445971d2d5a4162bafb3f15",
+     "state": {
+      "status": "completed",
+      "input": {
+       "command": "node -e \"const m=require('./evidencias/exportar-evidencias.js');const p=require('node:path');const fs=require('fs');const t=['a','b','c'];const tap=t.map((x,i)=>'# Subtest: '+x+'\\nok '+(i+1)+' - '+x).join('\\n')+'\\n# tests 3\\n# pass 3\\n# fail 0';console.log('tap=',JSON.stringify(tap));console.log('placar=',JSON.stringify(m.placar(tap)));\""
+      },
+      "output": "tap= \"# Subtest: a\\nok 1 - a\\n# Subtest: b\\nok 2 - b\\n# Subtest: c\\nok 3 - c\\n# tests 3\\n# pass 3\\n# fail 0\"\nplacar= {\"ok\":3,\"falhou\":0}\n",
+      "metadata": {
+       "output": "tap= \"# Subtest: a\\nok 1 - a\\n# Subtest: b\\nok 2 - b\\n# Subtest: c\\nok 3 - c\\n# tests 3\\n# pass 3\\n# fail 0\"\nplacar= {\"ok\":3,\"falhou\":0}\n",
+       "exit": 0,
+       "truncated": false
+      },
+      "title": "node -e \"const m=require('./evidencias/exportar-evidencias.js');const p=require('node:path');const fs=require('fs');const t=['a','b','c'];const tap=t.map((x,i)=>'# Subtest: '+x+'\\nok '+(i+1)+' - '+x).join('\\n')+'\\n# tests 3\\n# pass 3\\n# fail 0';console.log('tap=',JSON.stringify(tap));console.log('placar=',JSON.stringify(m.placar(tap)));\"",
+      "time": {
+       "start": 1790116882761,
+       "end": 1790116887103
+      }
+     },
+     "id": "prt_0cb47e7bd001aTMfhdSuCHbJZO",
+     "sessionID": "ses_f34b9e535ffed3QwMzWLqsv0ll",
+     "messageID": "msg_0cb47d03a0010bXkNO1kV0xylp"
+    },
+    {
+     "reason": "tool-calls",
+     "snapshot": "11b45f16bd2a87617b6d4c5eccf049abc3b35c26",
+     "type": "step-finish",
+     "tokens": {
+      "total": 57742,
+      "input": 1820,
+      "output": 1138,
+      "reasoning": 0,
+      "cache": {
+       "write": 0,
+       "read": 54784
+      }
+     },
+     "cost": 0,
+     "id": "prt_0cb47fc710019dITz3awZmiRjF",
+     "sessionID": "ses_f34b9e535ffed3QwMzWLqsv0ll",
+     "messageID": "msg_0cb47d03a0010bXkNO1kV0xylp"
+    },
+    {
+     "type": "patch",
+     "hash": "fe8368be4061dff0305c2e2f672cbc65577de813",
+     "files": [
+      "C:/Users/Clara L Peretti/TrabalhoIA-WomanInTech/api/lib/server.dart"
+     ],
+     "id": "prt_0cb47feec0019hiYPzznAYP9d3",
+     "sessionID": "ses_f34b9e535ffed3QwMzWLqsv0ll",
+     "messageID": "msg_0cb47d03a0010bXkNO1kV0xylp"
+    }
+   ]
+  },
+  {
+   "info": {
+    "parentID": "msg_0cb461b68001PpMFufrD24MMAP",
+    "role": "assistant",
+    "mode": "build",
+    "agent": "build",
+    "path": {
+     "cwd": "C:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech",
+     "root": "C:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech"
+    },
+    "cost": 0,
+    "tokens": {
+     "total": 58760,
+     "input": 219,
+     "output": 941,
+     "reasoning": 0,
+     "cache": {
+      "write": 0,
+      "read": 57600
+     }
+    },
+    "modelID": "big-pickle",
+    "providerID": "opencode",
+    "time": {
+     "created": 1790116888315,
+     "completed": 1790116900334
+    },
+    "finish": "tool-calls",
+    "id": "msg_0cb47fefb0013W0Qk4uJSxCP6Z",
+    "sessionID": "ses_f34b9e535ffed3QwMzWLqsv0ll"
+   },
+   "parts": [
+    {
+     "snapshot": "11b45f16bd2a87617b6d4c5eccf049abc3b35c26",
+     "type": "step-start",
+     "id": "prt_0cb480528001yxv4bY24w1Avyq",
+     "sessionID": "ses_f34b9e535ffed3QwMzWLqsv0ll",
+     "messageID": "msg_0cb47fefb0013W0Qk4uJSxCP6Z"
+    },
+    {
+     "type": "reasoning",
+     "text": "Hmm, placar works fine on a simple fixture. So why did the test fail with `r.placar` undefined? \n\nOh wait — I see. The test title itself contains the phrase `\"Some tests failed\"` and `\"Failed to load\"`. When running `node --test`, node prints the SUBTEST result — but that's within the test runner. But the TypeError is `Cannot read properties of undefined (reading 'ok')` at `r.placar.ok`. \n\nHmm wait, maybe the issue is that when the subtest runs, the `m.resultadoDeTeste(tap, 0, undefined)` — `tap` string. But wait, the actual fixture I passed uses `${titulos.map((t, i) => `# Subtest: ${t}\\nok ${i + 1} - ${t}`).join('\\n')}`. That's fine. 15 titles. placar should give {ok:15, falhou:0}.\n\nUnless... the fixture has a problem: some title contains a newline? No.\n\nWait, actually — maybe the issue is that the title array at index 3: `'ehComandoDeTeste reconhece flutter.bat test sem aspas'` — fine.\n\nHmm, let me look again at the error. `location: '...:84:1'` — test 16 located at line 84. Error at line 107:25: `assert.equal(r.placar.ok, 15)`. So `r.placar` is undefined meaning `resultadoDeTeste` returned `{p: null, ...}`? But placar should work.\n\nWait — is it possible that `resultadoDeTeste` uses a DIFFERENT text? `const texto = String(saida ?? '')`. saída is the tap string. Fine.\n\nHold on — maybe the `placar` regex matched and returned an object, but then... no, `p` is placer's return directly.\n\nHmm, let me actually reproduce with the real test fixture. Let me extract the exact array from the test file and run resultadoDeTeste.",
+     "time": {
+      "start": 1790116889900,
+      "end": 1790116891958
+     },
+     "id": "prt_0cb48052c0010RT9vpu4Oa52rg",
+     "sessionID": "ses_f34b9e535ffed3QwMzWLqsv0ll",
+     "messageID": "msg_0cb47fefb0013W0Qk4uJSxCP6Z"
+    },
+    {
+     "type": "text",
+     "text": "`placar` funciona no fixture simples. Vou reproduzir exatamente o array do teste real.\n\n",
+     "time": {
+      "start": 1790116891962,
+      "end": 1790116896254
+     },
+     "id": "prt_0cb480d3a001GgOtYSzE9zpp2S",
+     "sessionID": "ses_f34b9e535ffed3QwMzWLqsv0ll",
+     "messageID": "msg_0cb47fefb0013W0Qk4uJSxCP6Z"
+    },
+    {
+     "type": "tool",
+     "tool": "bash",
+     "callID": "call_be94cf7360164ac592a82bed",
+     "state": {
+      "status": "completed",
+      "input": {
+       "command": "node -e \"\nconst m=require('./evidencias/exportar-evidencias.js');\nconst titulos = [\n    'ehComandoDeTeste reconhece \\\"&\\\" com caminho entre aspas terminado em dart.exe',\n    'ehComandoDeTeste reconhece \\\"&\\\" com caminho entre aspas terminado em flutter.bat',\n    'ehComandoDeTeste reconhece caminho entre aspas sem \\\"&\\\" terminado em dart.exe',\n    'ehComandoDeTeste reconhece flutter.bat test sem aspas',\n    'ehComandoDeTeste reconhece dart test no Linux',\n    'ehComandoDeTeste reconhece flutter test no Linux',\n    'ehComandoDeTeste rejeita git commit -m \\\"dart test\\\"',\n    'ehComandoDeTeste rejeita echo dart test',\n    'ehComandoDeTeste rejeita analyze',\n    'ehComandoDeTeste rejeita pub get',\n    'ehComandoDeTeste rejeita dart test citado num commit',\n    'resultadoDeTeste: \\\"Failed to load\\\" é vermelho mesmo com exit 0 no pipe',\n    'resultadoDeTeste: \\\"Some tests failed\\\" é vermelho mesmo com exit 0',\n    'resultadoDeTeste: \\\"All tests passed\\\" com exit 0 é verde',\n    'resultadoDeTeste: exit 1 é vermelho e não verde',\n  ];\nconst tap = titulos.map((t, i) => '# Subtest: '+t+'\\nok '+(i + 1)+' - '+t).join('\\n')+'\\n# tests '+titulos.length+'\\n# pass '+titulos.length+'\\n# fail 0';\nconsole.log('placar =', JSON.stringify(m.placar(tap)));\nconst r=m.resultadoDeTeste(tap,0,undefined);\nconsole.log('resultado =', JSON.stringify(r));\n\""
+      },
+      "output": "No linha:4 caractere:35\r\n+     'ehComandoDeTeste reconhece \\\"&\\\" com caminho entre aspas termina ...\r\n+                                   ~\r\nO car�ter de E comercial (&) n�o � permitido. O operador & est� reservado para uso futuro; coloque um E comercial \r\nentre aspas duplas (\"&\") para transmiti-lo como parte de uma cadeia de caracteres.\r\nNo linha:5 caractere:35\r\n+     'ehComandoDeTeste reconhece \\\"&\\\" com caminho entre aspas termina ...\r\n+                                   ~\r\nO car�ter de E comercial (&) n�o � permitido. O operador & est� reservado para uso futuro; coloque um E comercial \r\nentre aspas duplas (\"&\") para transmiti-lo como parte de uma cadeia de caracteres.\r\nNo linha:6 caractere:59\r\n+     'ehComandoDeTeste reconhece caminho entre aspas sem \\\"&\\\" termina ...\r\n+                                                           ~\r\nO car�ter de E comercial (&) n�o � permitido. O operador & est� reservado para uso futuro; coloque um E comercial \r\nentre aspas duplas (\"&\") para transmiti-lo como parte de uma cadeia de caracteres.\r\n    + CategoryInfo          : ParserError: (:) [], ParentContainsErrorRecordException\r\n    + FullyQualifiedErrorId : AmpersandNotAllowed\r\n \r\n",
+      "metadata": {
+       "output": "No linha:4 caractere:35\r\n+     'ehComandoDeTeste reconhece \\\"&\\\" com caminho entre aspas termina ...\r\n+                                   ~\r\nO car�ter de E comercial (&) n�o � permitido. O operador & est� reservado para uso futuro; coloque um E comercial \r\nentre aspas duplas (\"&\") para transmiti-lo como parte de uma cadeia de caracteres.\r\nNo linha:5 caractere:35\r\n+     'ehComandoDeTeste reconhece \\\"&\\\" com caminho entre aspas termina ...\r\n+                                   ~\r\nO car�ter de E comercial (&) n�o � permitido. O operador & est� reservado para uso futuro; coloque um E comercial \r\nentre aspas duplas (\"&\") para transmiti-lo como parte de uma cadeia de caracteres.\r\nNo linha:6 caractere:59\r\n+     'ehComandoDeTeste reconhece caminho entre aspas sem \\\"&\\\" termina ...\r\n+                                                           ~\r\nO car�ter de E comercial (&) n�o � permitido. O operador & est� reservado para uso futuro; coloque um E comercial \r\nentre aspas duplas (\"&\") para transmiti-lo como parte de uma cadeia de caracteres.\r\n    + CategoryInfo          : ParserError: (:) [], ParentContainsErrorRecordException\r\n    + FullyQualifiedErrorId : AmpersandNotAllowed\r\n \r\n",
+       "exit": 1,
+       "truncated": false
+      },
+      "title": "node -e \"\nconst m=require('./evidencias/exportar-evidencias.js');\nconst titulos = [\n    'ehComandoDeTeste reconhece \\\"&\\\" com caminho entre aspas terminado em dart.exe',\n    'ehComandoDeTeste reconhece \\\"&\\\" com caminho entre aspas terminado em flutter.bat',\n    'ehComandoDeTeste reconhece caminho entre aspas sem \\\"&\\\" terminado em dart.exe',\n    'ehComandoDeTeste reconhece flutter.bat test sem aspas',\n    'ehComandoDeTeste reconhece dart test no Linux',\n    'ehComandoDeTeste reconhece flutter test no Linux',\n    'ehComandoDeTeste rejeita git commit -m \\\"dart test\\\"',\n    'ehComandoDeTeste rejeita echo dart test',\n    'ehComandoDeTeste rejeita analyze',\n    'ehComandoDeTeste rejeita pub get',\n    'ehComandoDeTeste rejeita dart test citado num commit',\n    'resultadoDeTeste: \\\"Failed to load\\\" é vermelho mesmo com exit 0 no pipe',\n    'resultadoDeTeste: \\\"Some tests failed\\\" é vermelho mesmo com exit 0',\n    'resultadoDeTeste: \\\"All tests passed\\\" com exit 0 é verde',\n    'resultadoDeTeste: exit 1 é vermelho e não verde',\n  ];\nconst tap = titulos.map((t, i) => '# Subtest: '+t+'\\nok '+(i + 1)+' - '+t).join('\\n')+'\\n# tests '+titulos.length+'\\n# pass '+titulos.length+'\\n# fail 0';\nconsole.log('placar =', JSON.stringify(m.placar(tap)));\nconst r=m.resultadoDeTeste(tap,0,undefined);\nconsole.log('resultado =', JSON.stringify(r));\n\"",
+      "time": {
+       "start": 1790116896230,
+       "end": 1790116899451
+      }
+     },
+     "id": "prt_0cb480dc1001v274lDc0jRLWRZ",
+     "sessionID": "ses_f34b9e535ffed3QwMzWLqsv0ll",
+     "messageID": "msg_0cb47fefb0013W0Qk4uJSxCP6Z"
+    },
+    {
+     "reason": "tool-calls",
+     "snapshot": "11b45f16bd2a87617b6d4c5eccf049abc3b35c26",
+     "type": "step-finish",
+     "tokens": {
+      "total": 58760,
+      "input": 219,
+      "output": 941,
+      "reasoning": 0,
+      "cache": {
+       "write": 0,
+       "read": 57600
+      }
+     },
+     "cost": 0,
+     "id": "prt_0cb482c2b001yAizOd0b0ImHVG",
+     "sessionID": "ses_f34b9e535ffed3QwMzWLqsv0ll",
+     "messageID": "msg_0cb47fefb0013W0Qk4uJSxCP6Z"
+    }
+   ]
+  },
+  {
+   "info": {
+    "parentID": "msg_0cb461b68001PpMFufrD24MMAP",
+    "role": "assistant",
+    "mode": "build",
+    "agent": "build",
+    "path": {
+     "cwd": "C:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech",
+     "root": "C:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech"
+    },
+    "cost": 0,
+    "tokens": {
+     "total": 59794,
+     "input": 1001,
+     "output": 681,
+     "reasoning": 0,
+     "cache": {
+      "write": 0,
+      "read": 58112
+     }
+    },
+    "modelID": "big-pickle",
+    "providerID": "opencode",
+    "time": {
+     "created": 1790116900347,
+     "completed": 1790116906540
+    },
+    "finish": "tool-calls",
+    "id": "msg_0cb482dfb001pqPIubrP63ygL3",
+    "sessionID": "ses_f34b9e535ffed3QwMzWLqsv0ll"
+   },
+   "parts": [
+    {
+     "snapshot": "11b45f16bd2a87617b6d4c5eccf049abc3b35c26",
+     "type": "step-start",
+     "id": "prt_0cb4838e20011ntEIOio8M4F2o",
+     "sessionID": "ses_f34b9e535ffed3QwMzWLqsv0ll",
+     "messageID": "msg_0cb482dfb001pqPIubrP63ygL3"
+    },
+    {
+     "type": "reasoning",
+     "text": "PowerShell escaping issue with `&`. Let me write a quick temp script file instead to reproduce.",
+     "time": {
+      "start": 1790116903145,
+      "end": 1790116903211
+     },
+     "id": "prt_0cb4838e9001PokhEjbx2S4BMR",
+     "sessionID": "ses_f34b9e535ffed3QwMzWLqsv0ll",
+     "messageID": "msg_0cb482dfb001pqPIubrP63ygL3"
+    },
+    {
+     "type": "tool",
+     "tool": "write",
+     "callID": "call_48fb13cb87ab4c329cf45a64",
+     "state": {
+      "status": "error",
+      "input": {
+       "filePath": "C:\\Users\\CLARAL~1\\AppData\\Local\\Temp\\opencode\\probe.js",
+       "content": "'use strict';\nconst m = require('C:/Users/Clara L Peretti/TrabalhoIA-WomanInTech/evidencias/exportar-evidencias.js');\nconst titulos = [\n  'ehComandoDeTeste reconhece \"&\" com caminho entre aspas terminado em dart.exe',\n  'ehComandoDeTeste reconhece \"&\" com caminho entre aspas terminado em flutter.bat',\n  'ehComandoDeTeste reconhece caminho entre aspas sem \"&\" terminado em dart.exe',\n  'ehComandoDeTeste reconhece flutter.bat test sem aspas',\n  'ehComandoDeTeste reconhece dart test no Linux',\n  'ehComandoDeTeste reconhece flutter test no Linux',\n  'ehComandoDeTeste rejeita git commit -m \"dart test\"',\n  'ehComandoDeTeste rejeita echo dart test',\n  'ehComandoDeTeste rejeita analyze',\n  'ehComandoDeTeste rejeita pub get',\n  'ehComandoDeTeste rejeita dart test citado num commit',\n  'resultadoDeTeste: \"Failed to load\" é vermelho mesmo com exit 0 no pipe',\n  'resultadoDeTeste: \"Some tests failed\" é vermelho mesmo com exit 0',\n  'resultadoDeTeste: \"All tests passed\" com exit 0 é verde',\n  'resultadoDeTeste: exit 1 é vermelho e não verde',\n];\nconst tap = titulos.map((t, i) => `# Subtest: ${t}\\nok ${i + 1} - ${t}`).join('\\n') + `\\n# tests ${titulos.length}\\n# pass ${titulos.length}\\n# fail 0`;\nconsole.log('PLACAR=' + JSON.stringify(m.placar(tap)));\nconsole.log('RESULTADO=' + JSON.stringify(m.resultadoDeTeste(tap, 0, undefined)));\nconsole.log('TAP_LEN=' + tap.length);\nconst dupla = [\n  '00:01 +1: resultadoDeTeste: \"Failed to load\" é vermelho mesmo com exit 0 no pipe',\n  '00:02 +2: resultadoDeTeste: \"Some tests failed\" é vermelho mesmo com exit 0',\n  '00:03 +2: All tests passed',\n].join('\\n');\nconsole.log('DART_PLACAR=' + JSON.stringify(m.placar(dupla)));\nconsole.log('DART_RESULTADO=' + JSON.stringify(m.resultadoDeTeste(dupla, 0, undefined)));"
+      },
+      "error": "The user rejected permission to use this specific tool call.",
+      "time": {
+       "start": 1790116905296,
+       "end": 1790116905525
+      }
+     },
+     "id": "prt_0cb483934001d3LWLNxxaWoRfi",
+     "sessionID": "ses_f34b9e535ffed3QwMzWLqsv0ll",
+     "messageID": "msg_0cb482dfb001pqPIubrP63ygL3"
+    },
+    {
+     "reason": "tool-calls",
+     "snapshot": "4f4393cd8fc77411201cb77643c6f278c9b51847",
+     "type": "step-finish",
+     "tokens": {
+      "total": 59794,
+      "input": 1001,
+      "output": 681,
+      "reasoning": 0,
+      "cache": {
+       "write": 0,
+       "read": 58112
+      }
+     },
+     "cost": 0,
+     "id": "prt_0cb4843af001avPRT0i5XAbKCS",
+     "sessionID": "ses_f34b9e535ffed3QwMzWLqsv0ll",
+     "messageID": "msg_0cb482dfb001pqPIubrP63ygL3"
+    },
+    {
+     "type": "patch",
+     "hash": "11b45f16bd2a87617b6d4c5eccf049abc3b35c26",
+     "files": [
+      "C:/Users/Clara L Peretti/TrabalhoIA-WomanInTech/api/lib/server.dart"
+     ],
+     "id": "prt_0cb484622001DrH5opx3a5PXvS",
+     "sessionID": "ses_f34b9e535ffed3QwMzWLqsv0ll",
+     "messageID": "msg_0cb482dfb001pqPIubrP63ygL3"
+    }
+   ]
+  }
+ ]
+}

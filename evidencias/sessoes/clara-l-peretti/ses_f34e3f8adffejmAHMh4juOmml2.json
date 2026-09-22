@@ -1,0 +1,908 @@
+{
+ "info": {
+  "id": "ses_f34e3f8adffejmAHMh4juOmml2",
+  "slug": "curious-knight",
+  "projectID": "5ec1c46d9cd3888456c10ad574c60d609ed0d0a9",
+  "directory": "C:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech",
+  "path": "",
+  "title": "M2: spec concisa to-spec",
+  "agent": "build",
+  "model": {
+   "id": "big-pickle",
+   "providerID": "opencode",
+   "variant": "default"
+  },
+  "version": "1.18.32",
+  "summary": {
+   "additions": 0,
+   "deletions": 0,
+   "files": 0
+  },
+  "cost": 0,
+  "tokens": {
+   "input": 33709,
+   "output": 12878,
+   "reasoning": 0,
+   "cache": {
+    "read": 213504,
+    "write": 0
+   }
+  },
+  "permission": [
+   {
+    "permission": "question",
+    "pattern": "*",
+    "action": "deny"
+   },
+   {
+    "permission": "plan_enter",
+    "pattern": "*",
+    "action": "deny"
+   },
+   {
+    "permission": "plan_exit",
+    "pattern": "*",
+    "action": "deny"
+   }
+  ],
+  "time": {
+   "created": 1790114006866,
+   "updated": 1790114107295
+  }
+ },
+ "messages": [
+  {
+   "info": {
+    "role": "user",
+    "time": {
+     "created": 1790114007091
+    },
+    "agent": "build",
+    "model": {
+     "providerID": "opencode",
+     "modelID": "big-pickle"
+    },
+    "summary": {
+     "diffs": [
+      {
+       "file": "specs/M2-inscricoes.md",
+       "patch": "Index: specs/M2-inscricoes.md\n===================================================================\n--- specs/M2-inscricoes.md\t\n+++ specs/M2-inscricoes.md\t\n@@ -0,0 +1,112 @@\n+# Spec — M2 Inscrições e Lista de Espera\n+\n+## 1. Objetivo\n+Permite que participantes se inscrevam em atividades da Semana Acadêmica 2026, entrem na lista de espera quando lotadas, sejam convocados automaticamente quando uma vaga abrir e confirmem a convocação dentro de um prazo. Participantes e organização consultam inscrições; apenas participantes mutam as próprias.\n+\n+Nota de rastreabilidade: as decisões da Rodada 2 (P-01 a P-29) foram escolhidas por delegação expressa da usuária em 22/09/2026, com base no `contrato-api.md` e na spec do M1; **não foram conferidas contra requisitos externos do professor**. Valem como contrato local até verificação externa.\n+\n+## 2. Fora de escopo\n+- Presença (M3), certificados e extrato (M4) e painel da organização (M5) não são implementados pelo M2.\n+- `INSCRICAO_BLOQUEADA` (M5) não é aplicada no M2. Origem: P-18.\n+- Interface mínima Flutter é só registrada, sem implementação nesta rodada. Origem: P-34.\n+- P-35 (higiene de repositório, `.tools/` no `.gitignore`) não é regra de API.\n+- O relógio real (sem `MODO_TESTE`) não é controlado pelas rotas `/_teste/*`.\n+\n+## 3. Modelo\n+Entidade `Inscricao` (campo — origem):\n+- `id`: gerado, prefixo `ins_` + 8 hexadecimais minúsculos (F-04).\n+- `atividadeId`: referência a atividade existente (F-04).\n+- `participanteId`: referência a usuário participante (F-04).\n+- `status`: `confirmada | em_espera | convocada | cancelada | expirada` (F-05).\n+- `posicaoNaEspera`: número só quando `em_espera`; derivado e compacto, nunca gravado como histórico (P-08).\n+- `convocadaAte`: instante só quando `convocada` (F-04).\n+- `criadaEm`: instante de criação (F-04).\n+\n+Nenhum dos dados iniciais inclui inscrição (F-15). A ordem de inserção é persistida por uma sequência monotônica gravada na criação da inscrição (P-07, P-30).\n+\n+## 4. Endpoints\n+- `POST /atividades/:id/inscricoes` — participante; sem corpo na entrada; sucesso `201 Inscricao` (F-01).\n+- `POST /inscricoes/:id/cancelamento` — participante; sucesso `200 Inscricao` (F-02).\n+- `POST /inscricoes/:id/confirmacao` — participante; sucesso `200 Inscricao` (F-02).\n+- `GET /inscricoes` — todos identificados; participante vê só as próprias; filtro `?atividadeId=` (F-03).\n+- `GET /inscricoes/:id` — todos identificados; `200 Inscricao` (F-03).\n+\n+## 5. Regras\n+- R01. Toda rota do M2 exige `X-Usuario`; sem cabeçalho ou id inexistente → `401 USUARIO_DESCONHECIDO` primeiro. Origem: F-06.\n+- R02. Rotas de participante (inscrever, cancelar, confirmar) recusam organização → `403 SOMENTE_PARTICIPANTE`. Origem: F-08.\n+- R03. Atividade ou inscrição inexistente → `404 NAO_ENCONTRADO` antes das regras do recurso. Origem: F-09.\n+- R04. Corpo ausente/vazio é aceito nas três rotas de mutação; JSON objeto bem formado é ignorado; JSON malformado ou raiz não-objeto → `422 DADOS_INVALIDOS`. Origem: P-27.\n+- R05. Ordem das verificações: identificação (401) → perfil (403) → existência (404) → corpo (422) → regras do recurso. Origem: F-07.\n+- R06. `POST /_teste/reset` recarrega dados iniciais sem nenhuma inscrição. Origem: F-15 / P-31.\n+- R07. Ao inscrever, há vaga disponível → `confirmada`; sem vaga → `em_espera` no fim da fila FIFO. `201 Inscricao`. Origem: P-33.\n+- R08. Inscrições encerram no início do primeiro encontro; `agora >= inicio` → `422 INSCRICOES_ENCERRADAS`. Origem: P-01.\n+- R09. Atividade iniciada ou encerrada (não cancelada) → `422 INSCRICOES_ENCERRADAS`; `ATIVIDADE_CANCELADA` só para atividade cancelada. Origem: P-02.\n+- R10. Inscrever em atividade cancelada → `422 ATIVIDADE_CANCELADA`. Origem: F-12 / P-02.\n+- R11. `agora == inicio` do primeiro encontro já é `INSCRICOES_ENCERRADAS` (borda inclusiva). Origem: P-03.\n+- R12. Precedência ao inscrever: `ATIVIDADE_CANCELADA` → `INSCRICOES_ENCERRADAS` → `JA_INSCRITO` → `CONFLITO_DE_HORARIO` → `LIMITE_DE_MINICURSOS`. Origem: P-18.\n+- R13. `JA_INSCRITO` (409) para `confirmada`, `em_espera` e `convocada`; `cancelada` e `expirada` liberam nova inscrição. Origem: P-23.\n+- R14. Reinscrição após cancelamento: nova `Inscricao`, novo `id`, fim da fila; nunca reconvoca o registro antigo. Origem: P-21.\n+- R15. Reinscrição após expirar: como participante novo, fim da fila, sem privilégio ou punição; nunca reconvoca o registro antigo. Origem: P-22.\n+- R16. A espera é FIFO estrita pela ordem de inserção persistida. Origem: P-06.\n+- R17. Empate desfeito pela sequência monotônica gravada na criação; nunca por `id` aleatório. Origem: P-07.\n+- R18. Posições são derivadas e compactas: quem sai da espera faz os demais subirem, re-enumerados de 1 em FIFO. Origem: P-08.\n+- R19. Toda abertura de vaga convoca automaticamente — cancelamento, expiração ou aumento de vagas — sempre em FIFO. Origem: P-09 / F-18.\n+- R20. Convocar é FIFO, sem pular; conflito de horário e limite de minicursos são revalidados na confirmação; se falhar, a convocação é preservada até `convocadaAte` e só então o próximo da fila é convocado. Origem: P-10.\n+- R21. `convocadaAte` = instante da convocação + 24 horas, limitado ao início do primeiro encontro. Origem: P-04.\n+- R22. `agora >= convocadaAte` → `422 CONVOCACAO_EXPIRADA` (borda inclusiva). Origem: P-05.\n+- R23. Expiração é processada a cada leitura, cronologicamente, inclusive cascatas ocorridas sem requisições; relógio de teste e leituras veem o resultado atualizado. Origem: P-11.\n+- R24. Expirada libera a vaga e convoca o próximo da fila usando o instante do vencimento anterior como instante de convocação; o expirado não mantém fila nem vaga. Origem: P-12.\n+- R25. Salto do relógio para frente reprocessa a cadeia completa de vencimentos/convocações até o instante final, deterministicamente; novas convocações param no início do primeiro encontro. Origem: P-13.\n+- R26. No início do primeiro encontro, convocadas vencidas expiram, a fila `em_espera` encerra como `expirada`, `confirmada` é preservada e novas convocações cessam. Origem: P-32.\n+- R27. O juiz de teste só avança o relógio; retrocesso não desfaz transições históricas já materializadas por leitura; cancelamentos permanecem. Origem: P-14 / P-29.\n+- R28. `CONFLITO_DE_HORARIO`: só inscrições `confirmadas` contam; na confirmação, excluir a própria inscrição da verificação. Origem: P-15.\n+- R29. Conflito existe quando qualquer encontro sobrepõe em `[inicio, fim)` (início inclusivo, fim exclusivo), independente da sala; terminar 10h e começar 10h é permitido; o intervalo mínimo de 15 minutos do conflito de sala do M1 não se aplica. Origem: P-16.\n+- R30. `LIMITE_DE_MINICURSOS`: máximo de 2 minicursos `confirmados` por participante por evento; `em_espera` e `convocada` não contam; validado ao inscrever e ao confirmar, excluindo a própria inscrição. Origem: P-17.\n+- R31. Confirmar convocação, em ordem: `SEM_CONVOCACAO` → `CONVOCACAO_EXPIRADA` → `CONFLITO_DE_HORARIO` → `LIMITE_DE_MINICURSOS`; convocada vencida pelo relógio retorna `CONVOCACAO_EXPIRADA` mesmo depois de leitura já ter observado o vencimento. Origem: P-20.\n+- R32. Confirmar inscrição sem convocação ativa → `422 SEM_CONVOCACAO`. Origem: contrato-api.md.\n+- R33. Cancelar inscrição, em ordem: `ATIVIDADE_JA_INICIADA` → `INSCRICAO_INATIVA`; não existe `ATIVIDADE_CANCELADA` nesta rota (o cancelamento da atividade já converteu as ativas em `cancelada`). Sucesso `200 Inscricao`. Origem: P-19.\n+- R34. Cancelar inscrição de atividade já iniciada → `422 ATIVIDADE_JA_INICIADA`. Origem: F-13.\n+- R35. Cancelar inscrição já `cancelada` ou `expirada` → `422 INSCRICAO_INATIVA`. Origem: contrato-api.md / P-19.\n+- R36. No cancelamento da atividade, `confirmada`, `convocada` e `em_espera` viram `cancelada` com `posicaoNaEspera` e `convocadaAte` limpos; `expirada` é preservada; a fila é esvaziada. Origem: P-24 / F-19.\n+- R37. Participante só consulta/cancela/confirma as próprias; inscrição alheia → `404 NAO_ENCONTRADO`; organização consulta todas, mas não muta (`403 SOMENTE_PARTICIPANTE`). Origem: P-25.\n+- R38. `GET /inscricoes` inclui todos os status, inclusive `cancelada` e `expirada`; `?atividadeId=` mantém o isolamento e valor sem inscrições → lista vazia; organização vê todas. Origem: P-26.\n+- R39. `GET /inscricoes` retorna na ordem de inserção persistida, ascendente. Origem: P-28.\n+- R40. Sem `MODO_TESTE`, o estado M1/M2 e a sequência de ordem de inserção são persistidos em arquivo JSON local, sem serviços externos. Origem: P-30.\n+- R41. Com `MODO_TESTE=1`, o estado fica em memória isolada (não toca o arquivo de persistência); `POST /_teste/reset` apaga tudo e recarrega os dados iniciais; o relógio é controlado por `PUT/GET /_teste/relogio`. Origem: P-31.\n+\n+## 6. Critérios de aceite\n+1. (R01, R05) `GET /inscricoes` sem `X-Usuario` ou com id inexistente → `401 USUARIO_DESCONHECIDO`.\n+2. (R02, R05) `POST /atividades/:id/inscricoes` com usuário organização → `403 SOMENTE_PARTICIPANTE`.\n+3. (R03, R05) Inscrição ou atividade inexistente → `404 NAO_ENCONTRADO`.\n+4. (R04) Corpo ausente/vazio aceito nas três rotas; corpo `{}` ignorado; corpo com raiz não-objeto → `422 DADOS_INVALIDOS`.\n+5. (R06, R41) `POST /_teste/reset` → 204 e `GET /inscricoes` do participante → `200 []`.\n+6. (R07, R13) Inscrever com vaga → 201 `confirmada`; sem vaga → 201 `em_espera`; repetir com `confirmada`/`em_espera`/`convocada` → `409 JA_INSCRITO`.\n+7. (R08, R09, R10, R11) `agora >= inicio` (inclusive `==`) → `INSCRICOES_ENCERRADAS`; atividade cancelada → `ATIVIDADE_CANCELADA`.\n+8. (R12, R13) Atividade cancelada e com duplicidade simultâneas → `ATIVIDADE_CANCELADA` primeiro.\n+9. (R14, R15) Após `cancelada` ou `expirada`, reinscrever → nova `201 Inscricao` no fim da fila, novo `id`.\n+10. (R16, R17, R18) Três inscritos em atividade lotada → posições 1, 2, 3 na ordem de inserção; saída da fila renumera os demais de 1; empate desfeito pela sequência gravada.\n+11. (R19, R24) Cancelar `confirmada` ou expirar `convocada` libera vaga e convoca o primeiro da fila FIFO.\n+12. (R20) Convocado que falhar conflito/limite na confirmação permanece `convocada` até `convocadaAte`; após vencer, o próximo é convocado.\n+13. (R21, R22) Confirmar antes de `convocadaAte` → 200 `confirmada`; exatamente em `convocadaAte` → `CONVOCACAO_EXPIRADA`.\n+14. (R23, R25, R26) Salto do relógio sem requisições reprocessa a cadeia em cascata; no início do primeiro encontro `em_espera` → `expirada`, convocadas vencidas expiram, `confirmada` preservada, novas convocações cessam.\n+15. (R27) Retrocesso do relógio não desfaz expiração já observada por leitura.\n+16. (R28, R29) Inscrição de atividade com encontro sobreposto em `[inicio, fim)` a atividade já `confirmada` → `409 CONFLITO_DE_HORARIO`; fim 10h + início 10h é permitido; conflito indepente de sala e sem intervalo mínimo de 15 min.\n+17. (R30) Terceiro minicurso `confirmado` → `422 LIMITE_DE_MINICURSOS` ao inscrever e ao confirmar; `em_espera`/`convocada` não contam.\n+18. (R31, R32) Confirmar sem convocação → `SEM_CONVOCACAO`; convocada vencida → `CONVOCACAO_EXPIRADA`.\n+19. (R33, R34, R35) Cancelar inscrição de atividade já iniciada → `ATIVIDADE_JA_INICIADA`; de inscrição já `cancelada`/`expirada` → `INSCRICAO_INATIVA`.\n+20. (R36) Cancelar a atividade converte ativas em `cancelada` com `posicaoNaEspera`/`convocadaAte` nulos; `expirada` preservada; novas inscrições bloqueadas.\n+21. (R37) Participante em inscrição alheia (consulta/cancelamento/confirmação) → `404 NAO_ENCONTRADO`; organização em cancelamento/confirmação → `403 SOMENTE_PARTICIPANTE`; organização vê todas.\n+22. (R38) `GET /inscricoes` mostra `cancelada`/`expirada`; `?atividadeId=` sem inscrições → `200 []`.\n+23. (R39) `GET /inscricoes` ordena pela ordem de inserção, ascendente.\n+24. (R40) Sem `MODO_TESTE`, inscrições sobrevivem a reinício via arquivo JSON local, sem serviço externo.\n+\n+## 7. Como isto será verificado\n+Pela interface HTTP de `contrato-api.md` via servidor, com `MODO_TESTE=1`: `POST /_teste/reset` zera o estado e `PUT/GET /_teste/relogio` controlam o tempo para as regras temporais (P-11, P-13, P-27). É a costura mais externa existente; cobre autenticação, perfil, contrato de JSON, status HTTP, códigos de erro, fila, convocação e cascatas observáveis pelo cliente.\n+\n+## 8. Fatias de entrega (TDD)\n+1. **Fundações**: identificação, perfil, existência, corpo e ordem de verificações; reset e dados iniciais; `GET /inscricoes` isolado e ordenado. Regras: R01–R06, R37–R39.\n+2. **Inscrição**: status inicial `confirmada`/`em_espera`, `JA_INSCRITO`, reinscrição, encerramento, borda e precedência. Regras: R07–R15.\n+3. **Fila**: FIFO, desempate por sequência, posições compactas e convocação automática em toda abertura de vaga. Regras: R16–R19.\n+4. **Convocação e confirmação**: janela de 24h, borda de expiração, `SEM_CONVOCACAO`/`CONVOCACAO_EXPIRADA`, conflito e limite na confirmação, precedência. Regras: R20–R22, R28–R32.\n+5. **Cascatas temporais**: expiração sob demanda, efeito sobre vaga/fila, salto para frente, início do primeiro encontro e retrocesso. Regras: R23–R27.\n+6. **Cancelamentos e persistência**: cancelar inscrição, cancelamento da atividade, isolamento completo, persistência JSON e memória isolada do modo de teste. Regras: R33–R36, R40–R41.\n\\ No newline at end of file\n",
+       "additions": 112,
+       "deletions": 0,
+       "status": "added"
+      }
+     ]
+    },
+    "id": "msg_0cb1c0833001fDXbQjrT43ag7g",
+    "sessionID": "ses_f34e3f8adffejmAHMh4juOmml2"
+   },
+   "parts": [
+    {
+     "type": "text",
+     "text": "\"Use to-spec. Crie agora specs/M2-inscricoes.md com oito secoes a partir da rodada 2 de entrevistas/M2-inscricoes.md e contrato-api.md. Regras numeradas R1..Rn citando P-xx, criterios de aceite para cada regra e 6 fatias TDD. Seja conciso, ate 180 linhas. Nao acrescente decisoes ou RN. Use respostas finais, nao sugestoes descartadas. Usuario delegou escolhas e autorizou continuar sem perguntas. Nao programe ainda. Commit somente spec, sem --no-verify, sem push. Registre limitacao escolhas nao conferidas com requisitos do professor.\"",
+     "id": "prt_0cb1c0843001stF0YjrvPwrdSh",
+     "sessionID": "ses_f34e3f8adffejmAHMh4juOmml2",
+     "messageID": "msg_0cb1c0833001fDXbQjrT43ag7g"
+    }
+   ]
+  },
+  {
+   "info": {
+    "parentID": "msg_0cb1c0833001fDXbQjrT43ag7g",
+    "role": "assistant",
+    "mode": "build",
+    "agent": "build",
+    "path": {
+     "cwd": "C:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech",
+     "root": "C:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech"
+    },
+    "cost": 0,
+    "tokens": {
+     "total": 9158,
+     "input": 7302,
+     "output": 64,
+     "reasoning": 0,
+     "cache": {
+      "write": 0,
+      "read": 1792
+     }
+    },
+    "modelID": "big-pickle",
+    "providerID": "opencode",
+    "time": {
+     "created": 1790114007970,
+     "completed": 1790114013938
+    },
+    "finish": "tool-calls",
+    "id": "msg_0cb1c0ba20015YRmuJznQ9MqrI",
+    "sessionID": "ses_f34e3f8adffejmAHMh4juOmml2"
+   },
+   "parts": [
+    {
+     "snapshot": "c0099d262072e6a747a816ab587a57734ad8ed3d",
+     "type": "step-start",
+     "id": "prt_0cb1c1e050019SxbNDVO1YJmuC",
+     "sessionID": "ses_f34e3f8adffejmAHMh4juOmml2",
+     "messageID": "msg_0cb1c0ba20015YRmuJznQ9MqrI"
+    },
+    {
+     "type": "reasoning",
+     "text": "The user wants me to use the to-spec skill. Let me load it first.",
+     "time": {
+      "start": 1790114012688,
+      "end": 1790114012745
+     },
+     "id": "prt_0cb1c1e1000147pT8oWUN2iJ5g",
+     "sessionID": "ses_f34e3f8adffejmAHMh4juOmml2",
+     "messageID": "msg_0cb1c0ba20015YRmuJznQ9MqrI"
+    },
+    {
+     "type": "text",
+     "text": "\n\n",
+     "time": {
+      "start": 1790114012753,
+      "end": 1790114013104
+     },
+     "id": "prt_0cb1c1e51001XCWheaqvuHSr2Z",
+     "sessionID": "ses_f34e3f8adffejmAHMh4juOmml2",
+     "messageID": "msg_0cb1c0ba20015YRmuJznQ9MqrI"
+    },
+    {
+     "type": "tool",
+     "tool": "skill",
+     "callID": "call_411b6244e65e459d916d69bf",
+     "state": {
+      "status": "completed",
+      "input": {
+       "name": "to-spec"
+      },
+      "output": "<skill_content name=\"to-spec\">\n# Skill: to-spec\n\n# A conversa vira contrato\r\n\r\nVocê já tem tudo o que precisa: está na conversa. **Não entreviste de novo.** Sua\r\ntarefa é escrever, num arquivo, o que já foi decidido — e nada além.\r\n\r\nRegra que ninguém decidiu **não entra**. Se faltar alguma coisa para a spec ficar de pé,\r\npare e pergunte só aquilo. Não preencha buraco com \"geralmente é assim\".\r\n\r\n## Onde escrever\r\n\r\n`spec-<recurso>.md`, na raiz do projeto. Um arquivo por recurso.\r\n\r\n## Antes de escrever\r\n\r\nLeia o repositório: convenções, vocabulário, nomes que já existem. A spec fala a língua\r\ndo projeto — se o código chama de `leitor`, a spec não inventa `usuário`.\r\n\r\nDecida também **onde isto vai ser verificado**. Prefira a costura mais externa que já\r\nexistir (aqui: HTTP, pelo `criarServidor()`). Quanto menos pontos de teste novos, melhor.\r\n\r\n## Modelo\r\n\r\n```markdown\r\n# Spec — <recurso>\r\n\r\n## 1. Objetivo\r\nUm parágrafo: que problema isto resolve, na visão de quem usa.\r\n\r\n## 2. Fora de escopo\r\nLista do que este recurso NÃO faz. Isto é tão contrato quanto o resto — é aqui que\r\nse recusa código que ninguém pediu.\r\n\r\n## 3. Modelo\r\nOs campos da entidade, com tipo e origem (informado pelo cliente / calculado / derivado).\r\nCampo derivado nunca é guardado.\r\n\r\n## 4. Endpoints\r\nMétodo, caminho, corpo esperado, status de sucesso.\r\n\r\n## 5. Regras\r\nNumeradas: R1, R2, R3… Uma regra por linha de decisão, cada uma com o número, o limite\r\nou o valor exato que foi decidido, e o status HTTP de recusa quando houver.\r\n\r\nToda regra precisa ser observável de fora. \"O sistema deve ser rápido\" não é regra.\r\n\"Devolver depois da data prevista cobra 1,50 por dia inteiro de atraso, teto de 30\" é.\r\n\r\nQuando duas regras podem recusar a mesma operação, diga qual vale primeiro.\r\n\r\n## 6. Critérios de aceite\r\nLista numerada de cenários concretos, cada um apontando a regra que ele prova:\r\n\r\n1. (R1, R3) POST /x com dados válidos → 201, campo `y` igual a Z.\r\n\r\nRegra sem pelo menos um critério é regra sem prova. Volte e escreva o critério.\r\n\r\n## 7. Como isto será verificado\r\nA costura (interface) usada nos testes e por quê.\r\n\r\n## 8. Fatias de entrega\r\nA ordem de implementação, em fatias verticais. Cada fatia é um conjunto pequeno de\r\nregras que já dá para rodar e verificar sozinho.\r\n```\r\n\r\n## Depois de escrever\r\n\r\nMostre ao usuário a lista das regras numeradas — só os números e uma linha cada — e\r\npergunte se falta alguma. É a última chance de corrigir barato.\n\nBase directory for this skill: C:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\skills\\to-spec\nRelative paths in this skill (e.g., scripts/, reference/) are relative to this base directory.\nNote: file list is sampled.\n\n<skill_files>\n\n</skill_files>\n</skill_content>",
+      "metadata": {
+       "name": "to-spec",
+       "dir": "C:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\skills\\to-spec",
+       "truncated": false
+      },
+      "title": "Loaded skill: to-spec",
+      "time": {
+       "start": 1790114012997,
+       "end": 1790114013120
+      }
+     },
+     "id": "prt_0cb1c1e67001fyMkhbJC1MuYuA",
+     "sessionID": "ses_f34e3f8adffejmAHMh4juOmml2",
+     "messageID": "msg_0cb1c0ba20015YRmuJznQ9MqrI"
+    },
+    {
+     "reason": "tool-calls",
+     "snapshot": "c0099d262072e6a747a816ab587a57734ad8ed3d",
+     "type": "step-finish",
+     "tokens": {
+      "total": 9158,
+      "input": 7302,
+      "output": 64,
+      "reasoning": 0,
+      "cache": {
+       "write": 0,
+       "read": 1792
+      }
+     },
+     "cost": 0,
+     "id": "prt_0cb1c2198001S4CiBqVhQMIuQ4",
+     "sessionID": "ses_f34e3f8adffejmAHMh4juOmml2",
+     "messageID": "msg_0cb1c0ba20015YRmuJznQ9MqrI"
+    }
+   ]
+  },
+  {
+   "info": {
+    "parentID": "msg_0cb1c0833001fDXbQjrT43ag7g",
+    "role": "assistant",
+    "mode": "build",
+    "agent": "build",
+    "path": {
+     "cwd": "C:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech",
+     "root": "C:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech"
+    },
+    "cost": 0,
+    "tokens": {
+     "total": 10250,
+     "input": 1134,
+     "output": 156,
+     "reasoning": 0,
+     "cache": {
+      "write": 0,
+      "read": 8960
+     }
+    },
+    "modelID": "big-pickle",
+    "providerID": "opencode",
+    "time": {
+     "created": 1790114013946,
+     "completed": 1790114016504
+    },
+    "finish": "tool-calls",
+    "id": "msg_0cb1c22fa001C173PnchlnFpI6",
+    "sessionID": "ses_f34e3f8adffejmAHMh4juOmml2"
+   },
+   "parts": [
+    {
+     "snapshot": "c0099d262072e6a747a816ab587a57734ad8ed3d",
+     "type": "step-start",
+     "id": "prt_0cb1c28030012rgZ20ZXe4X4OJ",
+     "sessionID": "ses_f34e3f8adffejmAHMh4juOmml2",
+     "messageID": "msg_0cb1c22fa001C173PnchlnFpI6"
+    },
+    {
+     "type": "reasoning",
+     "text": "Let me read the relevant files: the entrevista from round 2, the contrato-api.md, and any existing specs to follow conventions.",
+     "time": {
+      "start": 1790114015241,
+      "end": 1790114015368
+     },
+     "id": "prt_0cb1c2809001DGKSs3V0cdu4bY",
+     "sessionID": "ses_f34e3f8adffejmAHMh4juOmml2",
+     "messageID": "msg_0cb1c22fa001C173PnchlnFpI6"
+    },
+    {
+     "type": "tool",
+     "tool": "read",
+     "callID": "call_44a57dc3b3724760a1fffc53",
+     "state": {
+      "status": "completed",
+      "input": {
+       "filePath": "C:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\entrevistas\\M2-inscricoes.md"
+      },
+      "output": "[31361 caracteres omitidos]",
+      "title": "entrevistas\\M2-inscricoes.md",
+      "time": {
+       "start": 1790114015537,
+       "end": 1790114015785
+      }
+     },
+     "id": "prt_0cb1c288d001vPi9Nm3MS1Azud",
+     "sessionID": "ses_f34e3f8adffejmAHMh4juOmml2",
+     "messageID": "msg_0cb1c22fa001C173PnchlnFpI6"
+    },
+    {
+     "type": "tool",
+     "tool": "read",
+     "callID": "call_390eb38712d545928d2b3b3e",
+     "state": {
+      "status": "completed",
+      "input": {
+       "filePath": "C:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\contrato-api.md"
+      },
+      "output": "[13894 caracteres omitidos]",
+      "title": "contrato-api.md",
+      "time": {
+       "start": 1790114015701,
+       "end": 1790114015834
+      }
+     },
+     "id": "prt_0cb1c293c001UKwtwV9h9HrFkZ",
+     "sessionID": "ses_f34e3f8adffejmAHMh4juOmml2",
+     "messageID": "msg_0cb1c22fa001C173PnchlnFpI6"
+    },
+    {
+     "type": "text",
+     "text": "\n",
+     "time": {
+      "start": 1790114015706,
+      "end": 1790114015718
+     },
+     "id": "prt_0cb1c29da001IuFXlKMRqfA5aD",
+     "sessionID": "ses_f34e3f8adffejmAHMh4juOmml2",
+     "messageID": "msg_0cb1c22fa001C173PnchlnFpI6"
+    },
+    {
+     "reason": "tool-calls",
+     "snapshot": "c0099d262072e6a747a816ab587a57734ad8ed3d",
+     "type": "step-finish",
+     "tokens": {
+      "total": 10250,
+      "input": 1134,
+      "output": 156,
+      "reasoning": 0,
+      "cache": {
+       "write": 0,
+       "read": 8960
+      }
+     },
+     "cost": 0,
+     "id": "prt_0cb1c2bab001bC3n55uoiiw6Gz",
+     "sessionID": "ses_f34e3f8adffejmAHMh4juOmml2",
+     "messageID": "msg_0cb1c22fa001C173PnchlnFpI6"
+    }
+   ]
+  },
+  {
+   "info": {
+    "parentID": "msg_0cb1c0833001fDXbQjrT43ag7g",
+    "role": "assistant",
+    "mode": "build",
+    "agent": "build",
+    "path": {
+     "cwd": "C:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech",
+     "root": "C:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech"
+    },
+    "cost": 0,
+    "tokens": {
+     "total": 26194,
+     "input": 16105,
+     "output": 105,
+     "reasoning": 0,
+     "cache": {
+      "write": 0,
+      "read": 9984
+     }
+    },
+    "modelID": "big-pickle",
+    "providerID": "opencode",
+    "time": {
+     "created": 1790114016514,
+     "completed": 1790114020795
+    },
+    "finish": "tool-calls",
+    "id": "msg_0cb1c2d02001xlSkSoI7FKdc92",
+    "sessionID": "ses_f34e3f8adffejmAHMh4juOmml2"
+   },
+   "parts": [
+    {
+     "snapshot": "c0099d262072e6a747a816ab587a57734ad8ed3d",
+     "type": "step-start",
+     "id": "prt_0cb1c325e001mgwxcg93lc06eb",
+     "sessionID": "ses_f34e3f8adffejmAHMh4juOmml2",
+     "messageID": "msg_0cb1c2d02001xlSkSoI7FKdc92"
+    },
+    {
+     "type": "reasoning",
+     "text": "Let me look at the existing spec directory structure and the M1 spec to understand conventions.",
+     "time": {
+      "start": 1790114017890,
+      "end": 1790114017942
+     },
+     "id": "prt_0cb1c3262001DRJlnxcEmWJ9z8",
+     "sessionID": "ses_f34e3f8adffejmAHMh4juOmml2",
+     "messageID": "msg_0cb1c2d02001xlSkSoI7FKdc92"
+    },
+    {
+     "type": "tool",
+     "tool": "glob",
+     "callID": "call_1a1672afda8c42dfa33f3657",
+     "state": {
+      "status": "completed",
+      "input": {
+       "pattern": "specs/**/*.md"
+      },
+      "output": "[76 caracteres omitidos]",
+      "title": "",
+      "time": {
+       "start": 1790114018146,
+       "end": 1790114018251
+      }
+     },
+     "id": "prt_0cb1c329d001WaumtA7USmv6Xh",
+     "sessionID": "ses_f34e3f8adffejmAHMh4juOmml2",
+     "messageID": "msg_0cb1c2d02001xlSkSoI7FKdc92"
+    },
+    {
+     "type": "tool",
+     "tool": "bash",
+     "callID": "call_a02df76738f04a8e8a85c7c0",
+     "state": {
+      "status": "completed",
+      "input": {
+       "command": "git status; git log --oneline -5"
+      },
+      "output": "On branch main\nYour branch is ahead of 'origin/main' by 1 commit.\n  (use \"git push\" to publish your local commits)\n\nUntracked files:\n  (use \"git add <file>...\" to include in what will be committed)\n\tevidencias/sessoes/clara-l-peretti/\n\nnothing added to commit but untracked files present (use \"git add\" to track)\nba2bb6e M2: rodada 2 com decisoes delegadas e rastreabilidade\n5237d5a docs: registra auditoria e evidencias do M1\n5e7ea16 test: amplia cobertura do M1 em Dart e Flutter\n2ee18bc feat: implementa frontend Flutter do M1\n96e3aa0 feat: migra backend do M1 para Dart\n",
+      "metadata": {
+       "output": "On branch main\nYour branch is ahead of 'origin/main' by 1 commit.\n  (use \"git push\" to publish your local commits)\n\nUntracked files:\n  (use \"git add <file>...\" to include in what will be committed)\n\tevidencias/sessoes/clara-l-peretti/\n\nnothing added to commit but untracked files present (use \"git add\" to track)\nba2bb6e M2: rodada 2 com decisoes delegadas e rastreabilidade\n5237d5a docs: registra auditoria e evidencias do M1\n5e7ea16 test: amplia cobertura do M1 em Dart e Flutter\n2ee18bc feat: implementa frontend Flutter do M1\n96e3aa0 feat: migra backend do M1 para Dart\n",
+       "exit": 0,
+       "truncated": false
+      },
+      "title": "git status; git log --oneline -5",
+      "time": {
+       "start": 1790114018299,
+       "end": 1790114020163
+      }
+     },
+     "id": "prt_0cb1c337b001GhZsPrRjyd72m8",
+     "sessionID": "ses_f34e3f8adffejmAHMh4juOmml2",
+     "messageID": "msg_0cb1c2d02001xlSkSoI7FKdc92"
+    },
+    {
+     "reason": "tool-calls",
+     "snapshot": "c0099d262072e6a747a816ab587a57734ad8ed3d",
+     "type": "step-finish",
+     "tokens": {
+      "total": 26194,
+      "input": 16105,
+      "output": 105,
+      "reasoning": 0,
+      "cache": {
+       "write": 0,
+       "read": 9984
+      }
+     },
+     "cost": 0,
+     "id": "prt_0cb1c3c80001KEfD37MlDYGvie",
+     "sessionID": "ses_f34e3f8adffejmAHMh4juOmml2",
+     "messageID": "msg_0cb1c2d02001xlSkSoI7FKdc92"
+    }
+   ]
+  },
+  {
+   "info": {
+    "parentID": "msg_0cb1c0833001fDXbQjrT43ag7g",
+    "role": "assistant",
+    "mode": "build",
+    "agent": "build",
+    "path": {
+     "cwd": "C:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech",
+     "root": "C:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech"
+    },
+    "cost": 0,
+    "tokens": {
+     "total": 26493,
+     "input": 308,
+     "output": 73,
+     "reasoning": 0,
+     "cache": {
+      "write": 0,
+      "read": 26112
+     }
+    },
+    "modelID": "big-pickle",
+    "providerID": "opencode",
+    "time": {
+     "created": 1790114020802,
+     "completed": 1790114023041
+    },
+    "finish": "tool-calls",
+    "id": "msg_0cb1c3dc200168Ywb2MlNuoSw6",
+    "sessionID": "ses_f34e3f8adffejmAHMh4juOmml2"
+   },
+   "parts": [
+    {
+     "snapshot": "c0099d262072e6a747a816ab587a57734ad8ed3d",
+     "type": "step-start",
+     "id": "prt_0cb1c42d3001JLFLAUa8mKyj8A",
+     "sessionID": "ses_f34e3f8adffejmAHMh4juOmml2",
+     "messageID": "msg_0cb1c3dc200168Ywb2MlNuoSw6"
+    },
+    {
+     "type": "tool",
+     "tool": "read",
+     "callID": "call_398812ff1d8640e8b5a92705",
+     "state": {
+      "status": "completed",
+      "input": {
+       "filePath": "C:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\specs\\M1-grade-atividades.md"
+      },
+      "output": "[23658 caracteres omitidos]",
+      "title": "specs\\M1-grade-atividades.md",
+      "time": {
+       "start": 1790114022216,
+       "end": 1790114022258
+      }
+     },
+     "id": "prt_0cb1c42da001JaaIjj7nFGKr9W",
+     "sessionID": "ses_f34e3f8adffejmAHMh4juOmml2",
+     "messageID": "msg_0cb1c3dc200168Ywb2MlNuoSw6"
+    },
+    {
+     "reason": "tool-calls",
+     "snapshot": "c0099d262072e6a747a816ab587a57734ad8ed3d",
+     "type": "step-finish",
+     "tokens": {
+      "total": 26493,
+      "input": 308,
+      "output": 73,
+      "reasoning": 0,
+      "cache": {
+       "write": 0,
+       "read": 26112
+      }
+     },
+     "cost": 0,
+     "id": "prt_0cb1c44f8001CFWrobG20IRgja",
+     "sessionID": "ses_f34e3f8adffejmAHMh4juOmml2",
+     "messageID": "msg_0cb1c3dc200168Ywb2MlNuoSw6"
+    }
+   ]
+  },
+  {
+   "info": {
+    "parentID": "msg_0cb1c0833001fDXbQjrT43ag7g",
+    "role": "assistant",
+    "mode": "build",
+    "agent": "build",
+    "path": {
+     "cwd": "C:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech",
+     "root": "C:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech"
+    },
+    "cost": 0,
+    "tokens": {
+     "total": 46746,
+     "input": 8474,
+     "output": 11904,
+     "reasoning": 0,
+     "cache": {
+      "write": 0,
+      "read": 26368
+     }
+    },
+    "modelID": "big-pickle",
+    "providerID": "opencode",
+    "time": {
+     "created": 1790114023055,
+     "completed": 1790114092420
+    },
+    "finish": "tool-calls",
+    "id": "msg_0cb1c468f00150wsCkc15J5Eah",
+    "sessionID": "ses_f34e3f8adffejmAHMh4juOmml2"
+   },
+   "parts": [
+    {
+     "snapshot": "c0099d262072e6a747a816ab587a57734ad8ed3d",
+     "type": "step-start",
+     "id": "prt_0cb1c4c03001SGIxma7tGcRNiU",
+     "sessionID": "ses_f34e3f8adffejmAHMh4juOmml2",
+     "messageID": "msg_0cb1c468f00150wsCkc15J5Eah"
+    },
+    {
+     "type": "reasoning",
+     "text": "Now I have a complete picture. Let me write the spec for M2. The user wants:\n- specs/M2-inscricoes.md\n- Exactly eight sections from round 2 of entrevistas/M2-inscricoes.md and contrato-api.md\n- Numbered rules R1..Rn citing P-xx\n- Acceite criteria for each rule\n- 6 TDD slices\n- Concise, up to 180 lines\n- Don't add decisions or RN (regras de negócio) invented\n- Use final answers, not discarded suggestions\n- User delegated choices and authorized continue without questions\n- Don't program yet\n- Commit only spec, without --no-verify, without push\n- Register limitation: choices not checked against professor's requirements\n\n\"oito secoes\" - eight sections. The skill template has 8 sections: 1 Objetivo, 2 Fora de escopo, 3 Modelo, 4 Endpoints, 5 Regras, 6 Critérios de aceite, 7 Como verificado, 8 Fatias. So \"oito secoes\" likely means those 8 sections from the to-spec skill model.\n\nWait: 1. Objetivo, 2. Fora de escopo, 3. Modelo, 4. Endpoints, 5. Regras, 6. Critérios de aceite, 7. Verificação, 8. Fatias TDD. That's 8 sections. \n\nThe M1 spec has more sections but the user explicitly asked for 8 sections. So use the skill model's 8 sections.\n\n\"Registre limitacao escolhas nao conferidas com requisitos do professor\" - register the limitation that choices were not checked against professor's requirements. This should go in the spec. Maybe in a section on rastreabilidade or a note. I'll add a note in section 5 or a limitation line. Actually the instruction says to register the limitation — I'll add it, probably in Regras notes or as a preamble. Let me include it elegantly — perhaps in the \"Objetivo\" or a note near the end. The user said \"oito secoes\" so I shouldn't add a 9th section. I'll put the limitation inside section 1 or as a note within the Regras/verificacao section. Better: add a short note at the end of section 1 (Objetivo) or as introduction. Actually, let me add it as a note right after section 1 title, or in section 7. I think the cleanest is a numbered note. Let me just add a line within section 1 or a \"Nota de rastreabilidade\" inside section 5. Hmm.\n\nLet me think about placement: The user said \"Registre limitacao escolhas nao conferidas com requisitos do professor.\" I'll add a note in a visible spot, perhaps right under the title or in the Objetivo section. I'll put it as a note at the top of section 5 (Regras) or as a paragraph in section 1. Actually a note in section 1 would work: \"Nota: as decisoes da rodada 2 sao escolhas delegadas e nao foram conferidas contra requisitos externos do professor.\"\n\nNow let me derive the rules from the final answers, citing P-xx, using only final answers, no discarded suggestions.\n\nLet me enumerate rules from funciones:\n\nFrom F-01..F-19 (fixed facts) and P-01..P-29 + P-30..P-35.\n\nLet me create rules R01..Rn:\n\nR01: POST /atividades/:id/inscricoes is participant-only, no body entry, 201 Inscricao. (F-01, P-33)\nR02: POST /inscricoes/:id/cancelamento and /confirmacao participant-only, 200 Inscricao. (F-02)\nR03: GET /inscricoes and /inscricoes/:id for all identified users; participant sees own only; ?atividadeId= filter. (F-03)\nR04: Identification: no X-Usuario or inexistent → 401 USUARIO_DESCONHECIDO. (F-06)\nR05: Participant-only ops refuse organization with 403 SOMENTE_PARTICIPANTE. (F-08)\nR06: Inexistent resource (activity or inscription) → 404 NAO_ENCONTRADO. (F-09)\nR07: Correlation/body: non-JSON, missing field, wrong type → 422 DADOS_INVALIDOS. (F-10, P-27: absent/empty body accepted on three routes; well-formed JSON object ignored; malformed/non-object root → 422). Actually P-27 refines this. Let me make a body rule based on P-27.\nR08: Order of checks: identification → profile → existence → body → resource rules. (F-07)\n\nNow business rules from final answers:\n\nEncerramento:\nR09 (P-01): inscriptions close at instant of first encounter start; agora >= inicio → 422 INSCRICOES_ENCERRADAS.\nR10 (P-02): started/encerrada (not canceled) also → INSCRICOES_ENCERRADAS; ATIVIDADE_CANCELADA reserved for canceled activity.\nR11 (P-03): agora == inicio → INSCRICOES_ENCERRADAS (inclusive border).\nR12 (F-12, P-02): canceled activity → ATIVIDADE_CANCELADA.\n\nConvocação:\nR13 (P-04): convocadaAte = convocation instant + 24h, capped at start of first encounter.\nR14 (P-05): agora >= convocadaAte → 422 CONVOCACAO_EXPIRADA (inclusive border).\nR15 (P-20): confirm order: SEM_CONVOCACAO → CONVOCACAO_EXPIRADA → CONFLITO_DE_HORARIO → LIMITE_DE_MINICURSOS.\nR16 (P-33): initial status: vaga available → confirmada; sem vaga → em_espera at end of FIFO.\n\nFila:\nR17 (P-06): FIFO strict by insertion order (persisted).\nR18 (P-07): tie-break by persisted insertion sequence (monotonic), never random id.\nR19 (P-08): positions derived & compact; leaving waitlist renumbers others from 1 in FIFO order.\nR20 (P-09): any vacancy opening (cancel, expire, increase vagas) auto-convokes in FIFO.\nR21 (P-10): convoke FIFO without skipping; conflict/limit revalidated at confirmation; if fails, convocation preserved until convocadaAte, then next in queue convoked.\n\nExpiração / clock:\nR22 (P-11): expiration is temporal, processed at each read, processing vencimentos chronologically including cascades; test clock & reads see updated result.\nR23 (P-12): expiration releases the vaga and convokes next in queue using the previous expiration instant as convocation instant (chronological cascade); expired keeps neither queue nor vaga.\nR24 (P-13): forward clock jump reprocesses full chain of vencimentos/convocações chronologically to final instant, deterministically; new convocations stop at start of first encounter.\nR25 (P-32): at start of first encounter, convocated vencidas expire, em_espera queue ends as expirada; confirmada preserved; new convocations cease.\nR26 (P-14 + P-29): test clock only advances; retrocesso doesn't undo historical transitions already applied; observed transitions materialized (historical stamp).\nR27 (P-29) — this is merged into 26 maybe. Let me keep R26 P-14/P-29.\n\nConflito/limite:\nR28 (P-15): only confirmada counts for conflict; exclude the own inscription at confirmation.\nR29 (P-16): conflict when any overlapping encounter between activities, intervals [inicio, fim) (inicio inclusive, fim exclusive), room-independent; finish 10h + start 10h allowed; M1's 15-min room-conflict interval doesn't apply.\nR30 (P-17): max 2 confirmed minicursos per participant per event; em_espera and convocada don't count; validate at inscrever and confirmar, excluding own.\n\nReinscrição:\nR31 (P-23): JA_INSCRITO for confirmada, em_espera, convocada; cancelada/expirada free new inscription.\nR32 (P-21): reinscrição after cancel yes, new Inscricao, new id, end of queue; never reconvoke old record.\nR33 (P-22): reinscrição after expire yes, as new participant, end of queue, no privilege/punishment; never reconvoke old.\n\nCancelamento da atividade:\nR34 (P-24): on activity cancel, ativas (confirmada, convocada, em_espera) → cancelada, clearing posicaoNaEspera and convocadaAte; expirada preserved.\n\nIsolamento/listagem:\nR35 (P-25): participant only consults/canfirms own; alheia → 404 NAO_ENCONTRADO; organization consults all but doesn't mutate (403 SOMENTE_PARTICIPANTE on cancel/confirm routes).\nR36 (P-26): GET /inscricoes includes all statuses including cancelada and expirada; ?atividadeId= keeps isolation, value without inscriptions → empty list; organization sees all.\nR37 (P-28): GET /inscricoes ordered by persisted insertion order ascending.\n\nPrecedência ao inscrever:\nR38 (P-18): inscrever order: ATIVIDADE_CANCELADA → INSCRICOES_ENCERRADAS → JA_INSCRITO → CONFLITO_DE_HORARIO → LIMITE_DE_MINICURSOS; INSCRICAO_BLOQUEADA (M5) out of scope P, no — it's out of scope. Actually INSCRICAO_BLOQUEADA is out of M2 scope.\n\nCancelar:\nR39 (P-19): cancel route: ATIVIDADE_JA_INICIADA antes de INSCRICAO_INATIVA; no ATIVIDADE_CANCELADA on this route (cancel already converted ativas → cancelada, so canceling one → INSCRICAO_INATIVA).\nR40 (F-13): cancel inscrição of already-started activity → ATIVIDADE_JA_INICIADA.\nR41: INSCRICAO_INATIVA for canceling already-canceled/expired/... Let me check contract: INSCRICAO_INATIVA appears for cancelar inscrição. And SEM_CONVOCACAO/CONVOCACAO_EXPIRADA for confirm.\n\nConfirmar:\nR42 (P-20 already R15) - merge.\n\nArquitetura:\nR43 (P-30): without MODO_TESTE, M1/M2 state + insertion-order sequence persisted in local JSON file, no external services.\nR44 (P-31): with MODO_TESTE=1, state in isolated memory (doesn't touch persistence file); POST /_teste/reset clears inscriptions & all state, reloads initial data; clock controlled by PUT/GET /_teste/relogio.\n\nWait, \"não acrescente decisões ou RN\" — don't add decisions or RN. So I should only include rules traceable to the interview/contract. R43, R44 are from P-30, P-31 which are in the interview. Good.\n\nAlso P-35 (gitignore .tools/) is repo hygiene, not API — exclude or note out of scope.\n\nLet me also consider F-15: initial data includes no inscriptions. That's a fact; can include as rule or in model/endpoints. I'll add to R05 area maybe. F-15 → \"dados iniciais sem inscrições; apenas usuários e salas\". Add rule.\n\nF-16, F-17, F-18, F-19 are M1 facts — dependencies. ocupadas/vagasRestantes count confirmada+convocada (F-16), emEspera count (F-17), increasing vagas allowed with auto-convocation belongs to M2 (F-18, P-09), cancel activity → cancel active inscriptions + block new (F-19, P-24).\n\nLet me keep it compact. Count: aim under 180 lines. Let me organize rules R01..R44 or so, then criteria mapping, then 6 fatias.\n\nNow let me design the 8 sections concisely:\n\n1. Objetivo\n2. Fora de escopo\n3. Modelo\n4. Endpoints\n5. Regras (R01..R44)\n6. Critérios de aceite\n7. Como será verificado\n8. Fatias TDD\n\nPlus register limitation note. I'll place the limitation note in section 5 intro or section 1. Let me add a \"Nota\" in section 1. Actually the user said \"Registre limitacao escolhas nao conferidas com requisitos do professor.\" I'll put it as a short note under the title at the top, or in section 1. I'll add to the end of section 1 as a note paragraph. Or better, in section 6/7 as note. I'll put it prominently in section 1.\n\nLet me keep rules concisely. Each rule: one line, \"Origem: P-xx\".\n\nLet me draft.\n\nLine budget: 180 lines max. Let me write compactly.\n\nModel section: fields of Inscricao with origin. From F-04.\n\nEndpoints section from F-01..F-03.\n\nLet me now write the file.\n\nLet me now carefully craft the criteria to cover each rule. Each rule at least one criterion. Rules R01-R44; criteria list could be ~20 items, each proving multiple rules. Let me create criteria numbered C1..C2x.\n\nLet me write rules list first:\n\nR01. Identificação obrigatória (F-06): sem X-Usuario ou id inexistente → 401 USUARIO_DESCONHECIDO antes de perfil/existência/regras. Origem: contrato-api.md convenções.\nR02. Perfil (F-08): rotas de participante recusam organização com 403 SOMENTE_PARTICIPANTE. Origem: contrato-api.md.\nR03. Existência (F-09): atividade ou inscrição inexistente → 404 NAO_ENCONTRADO. Origem: contrato-api.md.\nR04. Corpo (P-27): ausente/vazio aceito em inscrever, cancelar e confirmar; JSON objeto bem formado ignorado; JSON malformado ou raiz não-objeto → 422 DADOS_INVALIDOS. Origem: F-10 / P-27.\nR05. Ordem das verificações (F-07): identificação → perfil → existência → corpo → regras do recurso. Origem: contrato-api.md.\nR06. Dados iniciais (F-15): reset não cria nenhuma inscrição. Origem: contrato-api.md.\n\nR07. Criação de inscrição (F-01, P-33): POST /atividades/:id/inscricoes cria inscrição; com vaga disponível → confirmada; sem vaga → em_espera no fim da fila FIFO. 201 Inscricao.\nR08. Encerramento (P-01): inscrições encerram no início do primeiro encontro; agora >= inicio → 422 INSCRICOES_ENCERRADAS.\nR09. Iniciada/encerrada não cancelada (P-02): também → 422 INSCRICOES_ENCERRADAS; ATIVIDADE_CANCELADA reservado a atividade cancelada.\nR10. Atividade cancelada (F-12, P-02): inscrever em atividade cancelada → 422 ATIVIDADE_CANCELADA.\nR11. Borda de encerramento (P-03): agora == início já é INSCRICOES_ENCERRADAS (inclusiva).\nR12. Precedência ao inscrever (P-18): ATIVIDADE_CANCELADA → INSCRICOES_ENCERRADAS → JA_INSCRITO → CONFLITO_DE_HORARIO → LIMITE_DE_MINICURSOS. INSCRICAO_BLOQUEADA (M5) fora do escopo.\n\nR13. JA_INSCRITO (P-23): 409 para confirmada, em_espera, convocada; cancelada/expirada liberam nova inscrição.\nR14. Reinscrição após cancelar (P-21): nova Inscricao, novo id, fim da fila; nunca reconvoca o antigo.\nR15. Reinscrição após expirar (P-22): como participante novo, fim da fila, sem privilégio/punição; nunca reconvoca o antigo.\n\nR16. FILA FIFO (P-06): espera é FIFO estrita pela ordem de inserção persistida.\nR17. Desempate (P-07): pela sequência monotônica de inserção persistida; nunca por id aleatório.\nR18. Posições derivadas (P-08): quem sai da espera faz os demais subirem, re-enumerados de 1 em FIFO.\nR19. Convocação automática (P-09): toda abertura de vaga (cancelamento, expiração, aumento de vagas) convoca em FIFO.\n\nR20. Convocação sem pular (P-10): convocação é FIFO sem pular; conflito/limite revalidados na confirmação; se falhar, preserva a convocação até convocadaAte e só então convoca o próximo.\nR21. Janela de convocação (P-04): convocadaAte = instante da convocação + 24h, limitado ao início do primeiro encontro.\nR22. Borda da expiração (P-05): agora >= convocadaAte → 422 CONVOCACAO_EXPIRADA (inclusiva).\nR23. Expiração sob demanda (P-11): expiração processada a cada leitura, vencimentos cronologicamente, cascatas sem requisições inclusas; relógio de teste e leituras veem o resultado.\nR24. Efeito da expiração (P-12): expirada libera vaga e convoca o próximo usando o instante do vencimento anterior como instante de convocação; expirada não mantém fila nem vaga.\nR25. Salto para frente (P-13): reprocessa a cadeia completa de vencimentos/convocações cronologicamente até o instante final; novas convocações param no início do primeiro encontro.\nR26. Início do primeiro encontro (P-32): convocadas vencidas expiram, em_espera encerra como expirada, confirmada é preservada, novas convocações cessam.\nR27. Retrocesso (P-14/P-29): relógio de teste só avança; retrocesso não desfaz transições históricas já materializadas por leitura; cancelamentos permanecem.\n\nR28. CONFLITO_DE_HORARIO (P-15): só inscrições confirmadas contam; na confirmação, excluir a própria.\nR29. Medida do conflito (P-16): há conflito quando qualquer encontro sobrepõe em [inicio, fim), independe de sala; fim 10h + início 10h permitido; intervalo de 15 min do conflito de sala do M1 não se aplica.\nR30. LIMITE_DE_MINICURSOS (P-17): máx 2 minicursos confirmados por participante por evento; em_espera/convocada não contam; validado ao inscrever e ao confirmar, excluindo a própria.\n\nR31. Confirmar convocação (P-20): ordem SEM_CONVOCACAO → CONVOCACAO_EXPIRADA → CONFLITO_DE_HORARIO → LIMITE_DE_MINICURSOS; convocada vencida pelo relógio retorna CONVOCACAO_EXPIRADA mesmo após leitura ter observado o vencimento.\nR32. Sem convocação (F-11/contrato): confirmar inscrição sem estar convocada → 422 SEM_CONVOCACAO.\n\nR33. Cancelamento de inscrição (F-02/P-19): POST /inscricoes/:id/cancelamento 200 Inscricao; ordem ATIVIDADE_JA_INICIADA → INSCRICAO_INATIVA; sem ATIVIDADE_CANCELADA nesta rota.\nR34. Atividade já iniciada (F-13): cancelar inscrição de atividade já iniciada → 422 ATIVIDADE_JA_INICIADA.\nR35. INSCRICAO_INATIVA (contrato/P-19): cancelar inscrição cancelada/expirada → 422 INSCRICAO_INATIVA.\n\nR36. Cancelamento da atividade (P-24): ativas (confirmada, convocada, em_espera) viram cancelada com posicaoNaEspera/convocadaAte limpos; expirada preservada; fila esvaziada.\n\nR37. Isolamento do participante (P-25): participante só consulta/cancela/confirma as próprias; inscrição alheia → 404 NAO_ENCONTRADO; organização consulta todas, mas não muta (403).\nR38. GET /inscricoes conteúdo e filtro (P-26): inclui todos os status; ?atividadeId= mantém isolamento e valor sem inscrições → lista vazia; organização vê todas.\nR39. Ordenação (P-28): ordem de inserção persistida, ascendente.\n\nR40. Persistência (P-30): sem MODO_TESTE, estado M1/M2 e sequência de inserção persistidos em arquivo JSON local, sem serviços externos.\nR41. Modo de teste (P-31): MODO_TESTE=1 → estado em memória isolada; POST /_teste/reset apaga tudo e recarrega dados iniciais; relógio via PUT/GET /_teste/relogio.\n\nFuentes:\n- F-01..F-19 map to contrato/spec M1. I cite them as \"contrato-api.md\" in origem where useful, or F-xx. The user says \"citando P-xx\" for rules. I'll cite P-xx primarily and add F-xx/contrato where applicable.\n\nNow criteria. Each rule needs at least one criterion. Let me write C01..C28 covering all rules R01..R41. I'll group.\n\nC01 (R01): GET /inscricoes sem X-Usuario → 401 USUARIO_DESCONHECIDO; com id inexistente idem.\nC02 (R02, R05): organização em POST /atividades/:id/inscricoes → 403 SOMENTE_PARTICIPANTE.\nC03 (R03): POST /inscricoes/:id de inscrição inexistente → 404 NAO_ENCONTRADO; POST /atividades/:id/inscricoes de atividade inexistente → 404.\nC04 (R04): corpo vazio/ausente aceito nas três rotas; corpo { } JSON objeto ignorado; corpo \"[1]\" (raiz não objeto) → 422 DADOS_INVALIDOS.\nC05 (R05, R41): com MODO_TESTE=1, POST /_teste/reset → 204 e GET /inscricoes de participante → 200 [].\nC06 (R07, R08, R09, R10, R11, R12): inscrever em atividade cancelada → ATIVIDADE_CANCELADA; em atividade iniciada/con encerramento → INSCRICOES_ENCERRADAS; agora == inicio → INSCRICOES_ENCERRADAS.\nC07 (R12): cenário combinado: atividade cancelada e já em conflito → ATIVIDADE_CANCELADA (precedência).\nC08 (R13): inscrever com inscrição confirmada/em_espera/convocada → 409 JA_INSCRITO; com cancelada/expirada → nova 201.\nC09 (R14, R15): após cancelar/expiar, reinscrever cria nova Inscricao no fim da fila.\nC10 (R16, R17, R18): em atividade lotada, 3 inscrições → posições 1,2,3 em ordem; sair da fila renumera; empate desfeito pela sequência gravada.\nC11 (R19, R24): cancelamento de confirmada ou expiração de convocada libera vaga e convoca o próximo da fila.\nC12 (R20): convocação sempre FIFO; convocado que falhar conflito/limite na confirmação mantém convocada até convocadaAte; depois convoca o próximo.\nC13 (R21, R22): confirmar exatamente em convocadaAte → CONVOCACAO_EXPIRADA (R22); antes → 200 confirmada.\nC14 (R23, R25, R26): salto do relógio sem requisições: expirações e convocações em cascata processadas; novas convocações param no início do primeiro encontro; em_espera vira expirada no início.\nC15 (R27): retrocesso não desfaz expiração observada.\nC16 (R28, R29): inscrever em atividade com encontro sobreposto [inicio,fim) de atividade já confirmada → 409 CONFLITO_DE_HORARIO; fim 10h + início 10h permitido; mesma sala/conflito de 15min M1 não se aplica.\nC17 (R30): terceira confirmação de minicurso → 422 LIMITE_DE_MINICURSOS ao inscrever e ao confirmar; em_espera/convocada não contam.\nC18 (R31, R32): confirmar inscrição não convocada → 422 SEM_CONVOCACAO antes de CONVOCACAO_EXPIRADA; convocada vencida → CONVOCACAO_EXPIRADA.\nC19 (R33, R34, R35): cancelar inscrição de atividade já iniciada → ATIVIDADE_JA_INICIADA antes de INSCRICAO_INATIVA; cancelar inscrição já cancelada → INSCRICAO_INATIVA.\nC20 (R36): cancelar atividade converte confirmada/convocada/em_espera → cancelada com posicaoNaEspera/convocadaAte null; expirada preservada.\nC21 (R37): participante consulta/cancela/confirma inscrição alheia → 404 NAO_ENCONTRADO; organização em cancelamento/confirmação → 403 SOMENTE_PARTICIPANTE; organização vê todas em GET /inscricoes.\nC22 (R38): GET /inscricoes inclui cancelada/expirada; ?atividadeId= de valor sem inscrições → [].\nC23 (R39): GET /inscricoes ordena pela ordem de inserção.\nC24 (R40): sem MODO_TESTE, estado sobrevive a reinício (arquivo JSON), sem serviços externos.\n\nHmm C24 is hard to verify by HTTP; but it's plannable. Fine.\n\nFatias TDD (6):\n1. Dados iniciais, autenticação/autorização, existência, corpo e rotas básicas de criação/consulta (R01-R07, R37-R39 básicos).\n2. Criação de inscrição: status inicial confirmada/em_espera, JA_INSCRITO, reinscrição, encerramento e precedência (R07-R15).\n3. Fila FIFO: ordem, desempate, posições compactas, convocação automática (R16-R19).\n4. Convocação e confirmação: janela 24h, bordas, SEM_CONVOCACAO/CONVOCACAO_EXPIRADA, conflito/limite na confirmação, precedências (R20-R22, R28-R32).\n5. Cascatas temporais: expiração sob demanda, salto para frente, início do primeiro encontro, retrocesso (R23-R27).\n6. Cancelamentos e isolamento: cancelar inscrição, cancelamento de atividade, isolamento/listagem/ordenação, persistência e modo de teste (R33-R41).\n\nWait, but conflict/limite rules R28-R30 are validated at inscrever too. Slice 2 mentions encerramento; R12 includes CONFLITO/limite order. Let me put CONFLITO/limite na inscrição in slice 3 or 4. Slice 4 focuses on confirmação. Let me redo:\n\n1. Fundações: identificação, perfil, existência, corpo, reset, dados iniciais, GET /inscricoes isolado/ordenação (R01-R06, R37-R39).\n2. Inscrição: status inicial, JA_INSCRITO, reinscrição, encerramento/precedência e ATIVIDADE_CANCELADA (R07-R15).\n3. Fila: FIFO, desempate, posições, convocação automática por toda abertura de vaga (R16-R19).\n4. Convocação e confirmação: janela, bordas, SEM_CONVOCACAO/CONVOCACAO_EXPIRADA, CONFLITO/LIMITE na confirmação, precedência (R20-R22, R28-R32).\n5. Tempo: expiração sob demanda, efeito sobre vaga/fila, cascatas, salto, início do primeiro encontro, retrocesso (R23-R27).\n6. Cancelamentos e persistência: cancelar inscrição, cancelamento da atividade, isolamento completo, persistência JSON e modo de teste (R33-R36, R40-R41).\n\nGood. CONFLITO/LIMITE (R28-R30) are also validated at inscrever — slice 2 covers order, slice 4 covers rules. I'll note them.\n\nNow write it, keeping ≤180 lines. Be concise. Use accents? M1 spec uses no accents (\"sa\", \"organizacao\"). But entrevista uses accents. To be consistent with specs/M1, I'll write without accents to match repo convention. Actually the M1 spec lacks accent marks entirely. The skill says \"A spec fala a língua do projeto\". I'll write without accents like M1 spec. Hmm, but the entrevista has accents. The spec document convention (M1) is no accents. I'll follow M1.\n\nLet me count lines roughly. I'll aim ~150-170 lines.\n\nLet me write the file now.\n\nSection 2 \"Fora de escopo\": \n- INSCRICAO_BLOQUEADA (M5) fora do escopo do M2 (P-18).\n- Interface minima Flutter (P-34) nao implementada nesta rodada.\n- Presenca, certificados, painel, bloqueios, extrato pertencem a outros modulos.\n- P-35 (higiene repositório) não é regra de API.\n- Relógio real: sem MODO_TESTE relógio é o real (contrato) — but R41 covers.\n\nSection 3 Modelo: Inscricao fields (F-04) with origin. Also mention posicaoNaEspera number only em_espera; convocadaAte instante only convocada.\n\nSection 4 endpoints list.\n\nSection 7 \"Como será verificado\": HTTP via servidor, MODO_TESTE, POST /_teste/reset, PUT/GET /_teste/relogio. Costura mais externa existente (criarServidor HTTP).\n\nAlso register limitation. I'll add a \"Nota\" in section 1:\n\"Nota de rastreabilidade: as decisoes da Rodada 2 (P-01 a P-29) foram escolhidas por delegacao da usuaria e nao foram conferidas contra os requisitos do professor; estas regras valem ate nova verificacao externa.\"\n\nLet me write concisely. Include origem citations with P-xx.\n\nNow writing.",
+     "time": {
+      "start": 1790114024456,
+      "end": 1790114063279
+     },
+     "id": "prt_0cb1c4c08001zVTf3Boa6ufYqG",
+     "sessionID": "ses_f34e3f8adffejmAHMh4juOmml2",
+     "messageID": "msg_0cb1c468f00150wsCkc15J5Eah"
+    },
+    {
+     "type": "text",
+     "text": "Spec M1 e entrevista M2 lidos. Vou derivar as regras apenas das decisões finais da Rodada 2, seguindo o modelo de 8 seções do to-spec.",
+     "time": {
+      "start": 1790114063289,
+      "end": 1790114091044
+     },
+     "id": "prt_0cb1ce3b9001Acsx2zOvXkM52U",
+     "sessionID": "ses_f34e3f8adffejmAHMh4juOmml2",
+     "messageID": "msg_0cb1c468f00150wsCkc15J5Eah"
+    },
+    {
+     "type": "tool",
+     "tool": "write",
+     "callID": "call_a4dfdeae00054191a0eb764a",
+     "state": {
+      "status": "completed",
+      "input": {
+       "filePath": "C:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\specs\\M2-inscricoes.md",
+       "content": "# Spec — M2 Inscrições e Lista de Espera\n\n## 1. Objetivo\nPermite que participantes se inscrevam em atividades da Semana Acadêmica 2026, entrem na lista de espera quando lotadas, sejam convocados automaticamente quando uma vaga abrir e confirmem a convocação dentro de um prazo. Participantes e organização consultam inscrições; apenas participantes mutam as próprias.\n\nNota de rastreabilidade: as decisões da Rodada 2 (P-01 a P-29) foram escolhidas por delegação expressa da usuária em 22/09/2026, com base no `contrato-api.md` e na spec do M1; **não foram conferidas contra requisitos externos do professor**. Valem como contrato local até verificação externa.\n\n## 2. Fora de escopo\n- Presença (M3), certificados e extrato (M4) e painel da organização (M5) não são implementados pelo M2.\n- `INSCRICAO_BLOQUEADA` (M5) não é aplicada no M2. Origem: P-18.\n- Interface mínima Flutter é só registrada, sem implementação nesta rodada. Origem: P-34.\n- P-35 (higiene de repositório, `.tools/` no `.gitignore`) não é regra de API.\n- O relógio real (sem `MODO_TESTE`) não é controlado pelas rotas `/_teste/*`.\n\n## 3. Modelo\nEntidade `Inscricao` (campo — origem):\n- `id`: gerado, prefixo `ins_` + 8 hexadecimais minúsculos (F-04).\n- `atividadeId`: referência a atividade existente (F-04).\n- `participanteId`: referência a usuário participante (F-04).\n- `status`: `confirmada | em_espera | convocada | cancelada | expirada` (F-05).\n- `posicaoNaEspera`: número só quando `em_espera`; derivado e compacto, nunca gravado como histórico (P-08).\n- `convocadaAte`: instante só quando `convocada` (F-04).\n- `criadaEm`: instante de criação (F-04).\n\nNenhum dos dados iniciais inclui inscrição (F-15). A ordem de inserção é persistida por uma sequência monotônica gravada na criação da inscrição (P-07, P-30).\n\n## 4. Endpoints\n- `POST /atividades/:id/inscricoes` — participante; sem corpo na entrada; sucesso `201 Inscricao` (F-01).\n- `POST /inscricoes/:id/cancelamento` — participante; sucesso `200 Inscricao` (F-02).\n- `POST /inscricoes/:id/confirmacao` — participante; sucesso `200 Inscricao` (F-02).\n- `GET /inscricoes` — todos identificados; participante vê só as próprias; filtro `?atividadeId=` (F-03).\n- `GET /inscricoes/:id` — todos identificados; `200 Inscricao` (F-03).\n\n## 5. Regras\n- R01. Toda rota do M2 exige `X-Usuario`; sem cabeçalho ou id inexistente → `401 USUARIO_DESCONHECIDO` primeiro. Origem: F-06.\n- R02. Rotas de participante (inscrever, cancelar, confirmar) recusam organização → `403 SOMENTE_PARTICIPANTE`. Origem: F-08.\n- R03. Atividade ou inscrição inexistente → `404 NAO_ENCONTRADO` antes das regras do recurso. Origem: F-09.\n- R04. Corpo ausente/vazio é aceito nas três rotas de mutação; JSON objeto bem formado é ignorado; JSON malformado ou raiz não-objeto → `422 DADOS_INVALIDOS`. Origem: P-27.\n- R05. Ordem das verificações: identificação (401) → perfil (403) → existência (404) → corpo (422) → regras do recurso. Origem: F-07.\n- R06. `POST /_teste/reset` recarrega dados iniciais sem nenhuma inscrição. Origem: F-15 / P-31.\n- R07. Ao inscrever, há vaga disponível → `confirmada`; sem vaga → `em_espera` no fim da fila FIFO. `201 Inscricao`. Origem: P-33.\n- R08. Inscrições encerram no início do primeiro encontro; `agora >= inicio` → `422 INSCRICOES_ENCERRADAS`. Origem: P-01.\n- R09. Atividade iniciada ou encerrada (não cancelada) → `422 INSCRICOES_ENCERRADAS`; `ATIVIDADE_CANCELADA` só para atividade cancelada. Origem: P-02.\n- R10. Inscrever em atividade cancelada → `422 ATIVIDADE_CANCELADA`. Origem: F-12 / P-02.\n- R11. `agora == inicio` do primeiro encontro já é `INSCRICOES_ENCERRADAS` (borda inclusiva). Origem: P-03.\n- R12. Precedência ao inscrever: `ATIVIDADE_CANCELADA` → `INSCRICOES_ENCERRADAS` → `JA_INSCRITO` → `CONFLITO_DE_HORARIO` → `LIMITE_DE_MINICURSOS`. Origem: P-18.\n- R13. `JA_INSCRITO` (409) para `confirmada`, `em_espera` e `convocada`; `cancelada` e `expirada` liberam nova inscrição. Origem: P-23.\n- R14. Reinscrição após cancelamento: nova `Inscricao`, novo `id`, fim da fila; nunca reconvoca o registro antigo. Origem: P-21.\n- R15. Reinscrição após expirar: como participante novo, fim da fila, sem privilégio ou punição; nunca reconvoca o registro antigo. Origem: P-22.\n- R16. A espera é FIFO estrita pela ordem de inserção persistida. Origem: P-06.\n- R17. Empate desfeito pela sequência monotônica gravada na criação; nunca por `id` aleatório. Origem: P-07.\n- R18. Posições são derivadas e compactas: quem sai da espera faz os demais subirem, re-enumerados de 1 em FIFO. Origem: P-08.\n- R19. Toda abertura de vaga convoca automaticamente — cancelamento, expiração ou aumento de vagas — sempre em FIFO. Origem: P-09 / F-18.\n- R20. Convocar é FIFO, sem pular; conflito de horário e limite de minicursos são revalidados na confirmação; se falhar, a convocação é preservada até `convocadaAte` e só então o próximo da fila é convocado. Origem: P-10.\n- R21. `convocadaAte` = instante da convocação + 24 horas, limitado ao início do primeiro encontro. Origem: P-04.\n- R22. `agora >= convocadaAte` → `422 CONVOCACAO_EXPIRADA` (borda inclusiva). Origem: P-05.\n- R23. Expiração é processada a cada leitura, cronologicamente, inclusive cascatas ocorridas sem requisições; relógio de teste e leituras veem o resultado atualizado. Origem: P-11.\n- R24. Expirada libera a vaga e convoca o próximo da fila usando o instante do vencimento anterior como instante de convocação; o expirado não mantém fila nem vaga. Origem: P-12.\n- R25. Salto do relógio para frente reprocessa a cadeia completa de vencimentos/convocações até o instante final, deterministicamente; novas convocações param no início do primeiro encontro. Origem: P-13.\n- R26. No início do primeiro encontro, convocadas vencidas expiram, a fila `em_espera` encerra como `expirada`, `confirmada` é preservada e novas convocações cessam. Origem: P-32.\n- R27. O juiz de teste só avança o relógio; retrocesso não desfaz transições históricas já materializadas por leitura; cancelamentos permanecem. Origem: P-14 / P-29.\n- R28. `CONFLITO_DE_HORARIO`: só inscrições `confirmadas` contam; na confirmação, excluir a própria inscrição da verificação. Origem: P-15.\n- R29. Conflito existe quando qualquer encontro sobrepõe em `[inicio, fim)` (início inclusivo, fim exclusivo), independente da sala; terminar 10h e começar 10h é permitido; o intervalo mínimo de 15 minutos do conflito de sala do M1 não se aplica. Origem: P-16.\n- R30. `LIMITE_DE_MINICURSOS`: máximo de 2 minicursos `confirmados` por participante por evento; `em_espera` e `convocada` não contam; validado ao inscrever e ao confirmar, excluindo a própria inscrição. Origem: P-17.\n- R31. Confirmar convocação, em ordem: `SEM_CONVOCACAO` → `CONVOCACAO_EXPIRADA` → `CONFLITO_DE_HORARIO` → `LIMITE_DE_MINICURSOS`; convocada vencida pelo relógio retorna `CONVOCACAO_EXPIRADA` mesmo depois de leitura já ter observado o vencimento. Origem: P-20.\n- R32. Confirmar inscrição sem convocação ativa → `422 SEM_CONVOCACAO`. Origem: contrato-api.md.\n- R33. Cancelar inscrição, em ordem: `ATIVIDADE_JA_INICIADA` → `INSCRICAO_INATIVA`; não existe `ATIVIDADE_CANCELADA` nesta rota (o cancelamento da atividade já converteu as ativas em `cancelada`). Sucesso `200 Inscricao`. Origem: P-19.\n- R34. Cancelar inscrição de atividade já iniciada → `422 ATIVIDADE_JA_INICIADA`. Origem: F-13.\n- R35. Cancelar inscrição já `cancelada` ou `expirada` → `422 INSCRICAO_INATIVA`. Origem: contrato-api.md / P-19.\n- R36. No cancelamento da atividade, `confirmada`, `convocada` e `em_espera` viram `cancelada` com `posicaoNaEspera` e `convocadaAte` limpos; `expirada` é preservada; a fila é esvaziada. Origem: P-24 / F-19.\n- R37. Participante só consulta/cancela/confirma as próprias; inscrição alheia → `404 NAO_ENCONTRADO`; organização consulta todas, mas não muta (`403 SOMENTE_PARTICIPANTE`). Origem: P-25.\n- R38. `GET /inscricoes` inclui todos os status, inclusive `cancelada` e `expirada`; `?atividadeId=` mantém o isolamento e valor sem inscrições → lista vazia; organização vê todas. Origem: P-26.\n- R39. `GET /inscricoes` retorna na ordem de inserção persistida, ascendente. Origem: P-28.\n- R40. Sem `MODO_TESTE`, o estado M1/M2 e a sequência de ordem de inserção são persistidos em arquivo JSON local, sem serviços externos. Origem: P-30.\n- R41. Com `MODO_TESTE=1`, o estado fica em memória isolada (não toca o arquivo de persistência); `POST /_teste/reset` apaga tudo e recarrega os dados iniciais; o relógio é controlado por `PUT/GET /_teste/relogio`. Origem: P-31.\n\n## 6. Critérios de aceite\n1. (R01, R05) `GET /inscricoes` sem `X-Usuario` ou com id inexistente → `401 USUARIO_DESCONHECIDO`.\n2. (R02, R05) `POST /atividades/:id/inscricoes` com usuário organização → `403 SOMENTE_PARTICIPANTE`.\n3. (R03, R05) Inscrição ou atividade inexistente → `404 NAO_ENCONTRADO`.\n4. (R04) Corpo ausente/vazio aceito nas três rotas; corpo `{}` ignorado; corpo com raiz não-objeto → `422 DADOS_INVALIDOS`.\n5. (R06, R41) `POST /_teste/reset` → 204 e `GET /inscricoes` do participante → `200 []`.\n6. (R07, R13) Inscrever com vaga → 201 `confirmada`; sem vaga → 201 `em_espera`; repetir com `confirmada`/`em_espera`/`convocada` → `409 JA_INSCRITO`.\n7. (R08, R09, R10, R11) `agora >= inicio` (inclusive `==`) → `INSCRICOES_ENCERRADAS`; atividade cancelada → `ATIVIDADE_CANCELADA`.\n8. (R12, R13) Atividade cancelada e com duplicidade simultâneas → `ATIVIDADE_CANCELADA` primeiro.\n9. (R14, R15) Após `cancelada` ou `expirada`, reinscrever → nova `201 Inscricao` no fim da fila, novo `id`.\n10. (R16, R17, R18) Três inscritos em atividade lotada → posições 1, 2, 3 na ordem de inserção; saída da fila renumera os demais de 1; empate desfeito pela sequência gravada.\n11. (R19, R24) Cancelar `confirmada` ou expirar `convocada` libera vaga e convoca o primeiro da fila FIFO.\n12. (R20) Convocado que falhar conflito/limite na confirmação permanece `convocada` até `convocadaAte`; após vencer, o próximo é convocado.\n13. (R21, R22) Confirmar antes de `convocadaAte` → 200 `confirmada`; exatamente em `convocadaAte` → `CONVOCACAO_EXPIRADA`.\n14. (R23, R25, R26) Salto do relógio sem requisições reprocessa a cadeia em cascata; no início do primeiro encontro `em_espera` → `expirada`, convocadas vencidas expiram, `confirmada` preservada, novas convocações cessam.\n15. (R27) Retrocesso do relógio não desfaz expiração já observada por leitura.\n16. (R28, R29) Inscrição de atividade com encontro sobreposto em `[inicio, fim)` a atividade já `confirmada` → `409 CONFLITO_DE_HORARIO`; fim 10h + início 10h é permitido; conflito indepente de sala e sem intervalo mínimo de 15 min.\n17. (R30) Terceiro minicurso `confirmado` → `422 LIMITE_DE_MINICURSOS` ao inscrever e ao confirmar; `em_espera`/`convocada` não contam.\n18. (R31, R32) Confirmar sem convocação → `SEM_CONVOCACAO`; convocada vencida → `CONVOCACAO_EXPIRADA`.\n19. (R33, R34, R35) Cancelar inscrição de atividade já iniciada → `ATIVIDADE_JA_INICIADA`; de inscrição já `cancelada`/`expirada` → `INSCRICAO_INATIVA`.\n20. (R36) Cancelar a atividade converte ativas em `cancelada` com `posicaoNaEspera`/`convocadaAte` nulos; `expirada` preservada; novas inscrições bloqueadas.\n21. (R37) Participante em inscrição alheia (consulta/cancelamento/confirmação) → `404 NAO_ENCONTRADO`; organização em cancelamento/confirmação → `403 SOMENTE_PARTICIPANTE`; organização vê todas.\n22. (R38) `GET /inscricoes` mostra `cancelada`/`expirada`; `?atividadeId=` sem inscrições → `200 []`.\n23. (R39) `GET /inscricoes` ordena pela ordem de inserção, ascendente.\n24. (R40) Sem `MODO_TESTE`, inscrições sobrevivem a reinício via arquivo JSON local, sem serviço externo.\n\n## 7. Como isto será verificado\nPela interface HTTP de `contrato-api.md` via servidor, com `MODO_TESTE=1`: `POST /_teste/reset` zera o estado e `PUT/GET /_teste/relogio` controlam o tempo para as regras temporais (P-11, P-13, P-27). É a costura mais externa existente; cobre autenticação, perfil, contrato de JSON, status HTTP, códigos de erro, fila, convocação e cascatas observáveis pelo cliente.\n\n## 8. Fatias de entrega (TDD)\n1. **Fundações**: identificação, perfil, existência, corpo e ordem de verificações; reset e dados iniciais; `GET /inscricoes` isolado e ordenado. Regras: R01–R06, R37–R39.\n2. **Inscrição**: status inicial `confirmada`/`em_espera`, `JA_INSCRITO`, reinscrição, encerramento, borda e precedência. Regras: R07–R15.\n3. **Fila**: FIFO, desempate por sequência, posições compactas e convocação automática em toda abertura de vaga. Regras: R16–R19.\n4. **Convocação e confirmação**: janela de 24h, borda de expiração, `SEM_CONVOCACAO`/`CONVOCACAO_EXPIRADA`, conflito e limite na confirmação, precedência. Regras: R20–R22, R28–R32.\n5. **Cascatas temporais**: expiração sob demanda, efeito sobre vaga/fila, salto para frente, início do primeiro encontro e retrocesso. Regras: R23–R27.\n6. **Cancelamentos e persistência**: cancelar inscrição, cancelamento da atividade, isolamento completo, persistência JSON e memória isolada do modo de teste. Regras: R33–R36, R40–R41."
+      },
+      "output": "Wrote file successfully.",
+      "metadata": {
+       "diagnostics": {},
+       "filepath": "C:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\specs\\M2-inscricoes.md",
+       "exists": false,
+       "truncated": false
+      },
+      "title": "specs\\M2-inscricoes.md",
+      "time": {
+       "start": 1790114090991,
+       "end": 1790114091034
+      }
+     },
+     "id": "prt_0cb1ce4d3001G1WWnLZ5JHUFbO",
+     "sessionID": "ses_f34e3f8adffejmAHMh4juOmml2",
+     "messageID": "msg_0cb1c468f00150wsCkc15J5Eah"
+    },
+    {
+     "reason": "tool-calls",
+     "snapshot": "587ff1f1a1e85d5b00a2d5469dd26594a3f457e1",
+     "type": "step-finish",
+     "tokens": {
+      "total": 46746,
+      "input": 8474,
+      "output": 11904,
+      "reasoning": 0,
+      "cache": {
+       "write": 0,
+       "read": 26368
+      }
+     },
+     "cost": 0,
+     "id": "prt_0cb1d534b001s3I8h9iI9lpoKk",
+     "sessionID": "ses_f34e3f8adffejmAHMh4juOmml2",
+     "messageID": "msg_0cb1c468f00150wsCkc15J5Eah"
+    },
+    {
+     "type": "patch",
+     "hash": "c0099d262072e6a747a816ab587a57734ad8ed3d",
+     "files": [
+      "C:/Users/Clara L Peretti/TrabalhoIA-WomanInTech/specs/M2-inscricoes.md"
+     ],
+     "id": "prt_0cb1d557f001COaLiyaBr17LIf",
+     "sessionID": "ses_f34e3f8adffejmAHMh4juOmml2",
+     "messageID": "msg_0cb1c468f00150wsCkc15J5Eah"
+    }
+   ]
+  },
+  {
+   "info": {
+    "parentID": "msg_0cb1c0833001fDXbQjrT43ag7g",
+    "role": "assistant",
+    "mode": "build",
+    "agent": "build",
+    "path": {
+     "cwd": "C:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech",
+     "root": "C:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech"
+    },
+    "cost": 0,
+    "tokens": {
+     "total": 46851,
+     "input": 168,
+     "output": 91,
+     "reasoning": 0,
+     "cache": {
+      "write": 0,
+      "read": 46592
+     }
+    },
+    "modelID": "big-pickle",
+    "providerID": "opencode",
+    "time": {
+     "created": 1790114092430,
+     "completed": 1790114097061
+    },
+    "finish": "tool-calls",
+    "id": "msg_0cb1d558e001o02iUF1f6z3k8Y",
+    "sessionID": "ses_f34e3f8adffejmAHMh4juOmml2"
+   },
+   "parts": [
+    {
+     "snapshot": "587ff1f1a1e85d5b00a2d5469dd26594a3f457e1",
+     "type": "step-start",
+     "id": "prt_0cb1d5b3b001IaS3m1gtNQtbCs",
+     "sessionID": "ses_f34e3f8adffejmAHMh4juOmml2",
+     "messageID": "msg_0cb1d558e001o02iUF1f6z3k8Y"
+    },
+    {
+     "type": "reasoning",
+     "text": "Let me check line count and then commit only the spec. Also register the limitation (done in section 1). Let me verify line count ≤ 180.",
+     "time": {
+      "start": 1790114093888,
+      "end": 1790114094183
+     },
+     "id": "prt_0cb1d5b40001Kca1NCn3k15po2",
+     "sessionID": "ses_f34e3f8adffejmAHMh4juOmml2",
+     "messageID": "msg_0cb1d558e001o02iUF1f6z3k8Y"
+    },
+    {
+     "type": "tool",
+     "tool": "bash",
+     "callID": "call_8f9b39aa779b4b06ae94ccd4",
+     "state": {
+      "status": "completed",
+      "input": {
+       "command": "(Get-Content \"specs\\M2-inscricoes.md\").Count"
+      },
+      "output": "112\r\n",
+      "metadata": {
+       "output": "112\r\n",
+       "exit": 0,
+       "truncated": false
+      },
+      "title": "(Get-Content \"specs\\M2-inscricoes.md\").Count",
+      "time": {
+       "start": 1790114094355,
+       "end": 1790114096349
+      }
+     },
+     "id": "prt_0cb1d5c6d001xyyg3dDarYuUsH",
+     "sessionID": "ses_f34e3f8adffejmAHMh4juOmml2",
+     "messageID": "msg_0cb1d558e001o02iUF1f6z3k8Y"
+    },
+    {
+     "reason": "tool-calls",
+     "snapshot": "587ff1f1a1e85d5b00a2d5469dd26594a3f457e1",
+     "type": "step-finish",
+     "tokens": {
+      "total": 46851,
+      "input": 168,
+      "output": 91,
+      "reasoning": 0,
+      "cache": {
+       "write": 0,
+       "read": 46592
+      }
+     },
+     "cost": 0,
+     "id": "prt_0cb1d666300124on77Hf2EA9j2",
+     "sessionID": "ses_f34e3f8adffejmAHMh4juOmml2",
+     "messageID": "msg_0cb1d558e001o02iUF1f6z3k8Y"
+    }
+   ]
+  },
+  {
+   "info": {
+    "parentID": "msg_0cb1c0833001fDXbQjrT43ag7g",
+    "role": "assistant",
+    "mode": "build",
+    "agent": "build",
+    "path": {
+     "cwd": "C:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech",
+     "root": "C:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech"
+    },
+    "cost": 0,
+    "tokens": {
+     "total": 46958,
+     "input": 17,
+     "output": 93,
+     "reasoning": 0,
+     "cache": {
+      "write": 0,
+      "read": 46848
+     }
+    },
+    "modelID": "big-pickle",
+    "providerID": "opencode",
+    "time": {
+     "created": 1790114097071,
+     "completed": 1790114102135
+    },
+    "finish": "tool-calls",
+    "id": "msg_0cb1d67af0018AqeE1yjLbU0cx",
+    "sessionID": "ses_f34e3f8adffejmAHMh4juOmml2"
+   },
+   "parts": [
+    {
+     "snapshot": "587ff1f1a1e85d5b00a2d5469dd26594a3f457e1",
+     "type": "step-start",
+     "id": "prt_0cb1d6c5e0012F0zZmBlYTsYU0",
+     "sessionID": "ses_f34e3f8adffejmAHMh4juOmml2",
+     "messageID": "msg_0cb1d67af0018AqeE1yjLbU0cx"
+    },
+    {
+     "type": "text",
+     "text": "Dentro do limite (112 linhas). Commit da spec apenas.",
+     "time": {
+      "start": 1790114098274,
+      "end": 1790114098903
+     },
+     "id": "prt_0cb1d6c620010wP4eFgXB2mdTh",
+     "sessionID": "ses_f34e3f8adffejmAHMh4juOmml2",
+     "messageID": "msg_0cb1d67af0018AqeE1yjLbU0cx"
+    },
+    {
+     "type": "tool",
+     "tool": "bash",
+     "callID": "call_77c4dc4c24f542a5aab52dc3",
+     "state": {
+      "status": "completed",
+      "input": {
+       "command": "git add specs/M2-inscricoes.md; if ($?) { git commit -m \"spec: regras do M2 inscricoes e lista de espera\" }"
+      },
+      "output": "warning: in the working copy of 'specs/M2-inscricoes.md', LF will be replaced by CRLF the next time Git touches it\n[main 3974924] spec: regras do M2 inscricoes e lista de espera\n 1 file changed, 112 insertions(+)\n create mode 100644 specs/M2-inscricoes.md\n",
+      "metadata": {
+       "output": "warning: in the working copy of 'specs/M2-inscricoes.md', LF will be replaced by CRLF the next time Git touches it\n[main 3974924] spec: regras do M2 inscricoes e lista de espera\n 1 file changed, 112 insertions(+)\n create mode 100644 specs/M2-inscricoes.md\n",
+       "exit": 0,
+       "truncated": false
+      },
+      "title": "git add specs/M2-inscricoes.md; if ($?) { git commit -m \"spec: regras do M2 inscricoes e lista de espera\" }",
+      "time": {
+       "start": 1790114098872,
+       "end": 1790114100768
+      }
+     },
+     "id": "prt_0cb1d6d56001wlfPXfK3x0dCvJ",
+     "sessionID": "ses_f34e3f8adffejmAHMh4juOmml2",
+     "messageID": "msg_0cb1d67af0018AqeE1yjLbU0cx"
+    },
+    {
+     "reason": "tool-calls",
+     "snapshot": "587ff1f1a1e85d5b00a2d5469dd26594a3f457e1",
+     "type": "step-finish",
+     "tokens": {
+      "total": 46958,
+      "input": 17,
+      "output": 93,
+      "reasoning": 0,
+      "cache": {
+       "write": 0,
+       "read": 46848
+      }
+     },
+     "cost": 0,
+     "id": "prt_0cb1d78290018kf4S1dt7daDrc",
+     "sessionID": "ses_f34e3f8adffejmAHMh4juOmml2",
+     "messageID": "msg_0cb1d67af0018AqeE1yjLbU0cx"
+    }
+   ]
+  },
+  {
+   "info": {
+    "parentID": "msg_0cb1c0833001fDXbQjrT43ag7g",
+    "role": "assistant",
+    "mode": "build",
+    "agent": "build",
+    "path": {
+     "cwd": "C:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech",
+     "root": "C:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech"
+    },
+    "cost": 0,
+    "tokens": {
+     "total": 47441,
+     "input": 201,
+     "output": 392,
+     "reasoning": 0,
+     "cache": {
+      "write": 0,
+      "read": 46848
+     }
+    },
+    "modelID": "big-pickle",
+    "providerID": "opencode",
+    "time": {
+     "created": 1790114102155,
+     "completed": 1790114107248
+    },
+    "finish": "stop",
+    "id": "msg_0cb1d7b8b001GUxL95uzbGbKuH",
+    "sessionID": "ses_f34e3f8adffejmAHMh4juOmml2"
+   },
+   "parts": [
+    {
+     "snapshot": "587ff1f1a1e85d5b00a2d5469dd26594a3f457e1",
+     "type": "step-start",
+     "id": "prt_0cb1d824a001fSYMCY1IhTQpB6",
+     "sessionID": "ses_f34e3f8adffejmAHMh4juOmml2",
+     "messageID": "msg_0cb1d7b8b001GUxL95uzbGbKuH"
+    },
+    {
+     "type": "reasoning",
+     "text": "Committed. Let me verify no push and that git status is clean for that file. Show a brief summary of rules to user and check if anything is missing, per the skill. But user delegated choices and authorized continue without questions. Still, the skill says show the list of numbered rules. The user asked explicitly not to program. I'll present concise rule summary.",
+     "time": {
+      "start": 1790114103886,
+      "end": 1790114104489
+     },
+     "id": "prt_0cb1d824e001U42jr7J9jcE0Ol",
+     "sessionID": "ses_f34e3f8adffejmAHMh4juOmml2",
+     "messageID": "msg_0cb1d7b8b001GUxL95uzbGbKuH"
+    },
+    {
+     "type": "text",
+     "text": "Spec criada e commitada (`3974924`), sem push. Regras numeradas R01–R41:\n\n- **R01–R06** fundações: 401, 403, 404, 422 de corpo/ordem, reset.\n- **R07–R15** inscrição: status inicial, encerramento/borda, `JA_INSCRITO`, reinscrição, precedência.\n- **R16–R19** fila FIFO: sequência persistida, posições compactas, convocação em toda abertura de vaga.\n- **R20–R27** convocação/tempo: janela 24h, borda expirar, cascatas, salto, início do 1º encontro, retrocesso.\n- **R28–R32** conflito/limite/confirmação: só `confirmada` conta, `[inicio,fim)`, máx 2 minicursos, precedência confirmar.\n- **R33–R36** cancelamentos: cancelar inscrição e da atividade, fila.\n- **R37–R39** isolamento, conteúdo/ordenação de `GET /inscricoes`.\n- **R40–R41** persistência JSON local e modo de teste.\n\nLimitação registrada na seção 1: escolhas delegadas não conferidas com requisitos do professor. 6 fatias TDD na seção 8; nada de RN inventado.",
+     "time": {
+      "start": 1790114104495,
+      "end": 1790114106414
+     },
+     "id": "prt_0cb1d84af0017XZgI1PIOw3jXw",
+     "sessionID": "ses_f34e3f8adffejmAHMh4juOmml2",
+     "messageID": "msg_0cb1d7b8b001GUxL95uzbGbKuH"
+    },
+    {
+     "reason": "stop",
+     "snapshot": "587ff1f1a1e85d5b00a2d5469dd26594a3f457e1",
+     "type": "step-finish",
+     "tokens": {
+      "total": 47441,
+      "input": 201,
+      "output": 392,
+      "reasoning": 0,
+      "cache": {
+       "write": 0,
+       "read": 46848
+      }
+     },
+     "cost": 0,
+     "id": "prt_0cb1d8dc4001xvfIY2f8XQq0HP",
+     "sessionID": "ses_f34e3f8adffejmAHMh4juOmml2",
+     "messageID": "msg_0cb1d7b8b001GUxL95uzbGbKuH"
+    }
+   ]
+  }
+ ]
+}

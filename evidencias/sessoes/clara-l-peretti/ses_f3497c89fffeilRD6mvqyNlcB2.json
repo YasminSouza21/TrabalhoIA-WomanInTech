@@ -1,0 +1,667 @@
+{
+ "info": {
+  "id": "ses_f3497c89fffeilRD6mvqyNlcB2",
+  "slug": "playful-engine",
+  "projectID": "5ec1c46d9cd3888456c10ad574c60d609ed0d0a9",
+  "directory": "C:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech",
+  "path": "",
+  "title": "M2: auditoria final somente leitura",
+  "agent": "build",
+  "model": {
+   "id": "big-pickle",
+   "providerID": "opencode",
+   "variant": "default"
+  },
+  "version": "1.18.32",
+  "summary": {
+   "additions": 0,
+   "deletions": 0,
+   "files": 0
+  },
+  "cost": 0,
+  "tokens": {
+   "input": 38049,
+   "output": 1290,
+   "reasoning": 0,
+   "cache": {
+    "read": 40192,
+    "write": 0
+   }
+  },
+  "permission": [
+   {
+    "permission": "question",
+    "pattern": "*",
+    "action": "deny"
+   },
+   {
+    "permission": "plan_enter",
+    "pattern": "*",
+    "action": "deny"
+   },
+   {
+    "permission": "plan_exit",
+    "pattern": "*",
+    "action": "deny"
+   }
+  ],
+  "time": {
+   "created": 1790118999904,
+   "updated": 1790119020946
+  }
+ },
+ "messages": [
+  {
+   "info": {
+    "role": "user",
+    "time": {
+     "created": 1790119000005
+    },
+    "agent": "build",
+    "model": {
+     "providerID": "opencode",
+     "modelID": "big-pickle"
+    },
+    "summary": {
+     "diffs": []
+    },
+    "id": "msg_0cb6837c50019IT2tqg7Ng28wq",
+    "sessionID": "ses_f3497c89fffeilRD6mvqyNlcB2"
+   },
+   "parts": [
+    {
+     "type": "text",
+     "text": "\"Seja objetivo e economize tokens. Use REALMENTE task com subagent_type auditor para auditar M2 contra specs/M2-inscricoes.md e entrevista. Auditor somente leitura write/edit/taskfalse; rode dart test/analyze em api e flutter test/analyze em frontend via bash workdir correto comandos simples autorizados. Matriz R01-R45 com origem/teste:linha e veredito, achados concretos sem inventar cobertura. Nao ler enunciado/requisitos externos. Agente principal deve salvar parecer INTEGRAL SEM EDITAR em auditorias/M2-inscricoes-final.md novo arquivo. Depois chame REALMENTE task com subagent_type revisor-de-contrato um de cada vez, escopo M2 cinco rotas+frontend+integracao M1, M3-M5 foraescopo; salve parecer integral auditorias/M2-contrato-final.md. Nao altere codigo ou testes nesta sessao. Se achados reporte ao principal. Commit somente dois pareceres novos sem no-verify/push. Nao se autoaudite, os dois subagentes existem em .opencode/agent. SDK no PATH. Todos testes atuais78API40frontend e smoke16/buildrelease passaram, mas auditores devem verificar de fato. Nao pedir confirmacao.\"",
+     "id": "prt_0cb6837d0001D8VVkrVKYd2bND",
+     "sessionID": "ses_f3497c89fffeilRD6mvqyNlcB2",
+     "messageID": "msg_0cb6837c50019IT2tqg7Ng28wq"
+    }
+   ]
+  },
+  {
+   "info": {
+    "parentID": "msg_0cb6837c50019IT2tqg7Ng28wq",
+    "role": "assistant",
+    "mode": "build",
+    "agent": "build",
+    "path": {
+     "cwd": "C:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech",
+     "root": "C:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech"
+    },
+    "cost": 0,
+    "tokens": {
+     "total": 9855,
+     "input": 7710,
+     "output": 353,
+     "reasoning": 0,
+     "cache": {
+      "write": 0,
+      "read": 1792
+     }
+    },
+    "modelID": "big-pickle",
+    "providerID": "opencode",
+    "time": {
+     "created": 1790119000556,
+     "completed": 1790119006019
+    },
+    "finish": "tool-calls",
+    "id": "msg_0cb6839ec001CO9KJ4GygEUS5f",
+    "sessionID": "ses_f3497c89fffeilRD6mvqyNlcB2"
+   },
+   "parts": [
+    {
+     "snapshot": "54bdc7273565840f8e40a667e67f63b6e6ddfec4",
+     "type": "step-start",
+     "id": "prt_0cb6846a4001Qep3XKOUk3jTE7",
+     "sessionID": "ses_f3497c89fffeilRD6mvqyNlcB2",
+     "messageID": "msg_0cb6839ec001CO9KJ4GygEUS5f"
+    },
+    {
+     "type": "reasoning",
+     "text": "Let me understand the task:\n\n1. Audit M2 against specs/M2-inscricoes.md and interview using the auditor subagent\n2. Save the full report to auditorias/M2-inscricoes-final.md\n3. Call revisor-de-contrato for each, scope M2 five routes + frontend + M1 integration, M3-M5 out of scope\n4. Save report to auditorias/M2-contrato-final.md\n5. Don't alter code or tests\n6. Commit only two new reports, no-verify/push\n7. Use task with subagent_type auditor and revisor-de-contrato\n\nLet me start by exploring the structure a bit to understand what files exist, then call the auditor agent.\n\nLet me first check the directory structure to understand the layout.\n\nLet me look at the specs and the existing auditorias folder.\n\nLet me start by checking key files quickly, then invoke the task tool with auditor.\n\nActually, the instructions say to use the task tool with the auditor subagent. Let me first do a quick exploration to give the auditor good context, then launch the auditor.\n\nLet me check the directory structure, the spec file, contracts, and the .opencode/agent folder.\n\nLet me be efficient. I'll do a few parallel reads/globs.",
+     "time": {
+      "start": 1790119003817,
+      "end": 1790119005183
+     },
+     "id": "prt_0cb6846a90018rZrEGJHkNA4fu",
+     "sessionID": "ses_f3497c89fffeilRD6mvqyNlcB2",
+     "messageID": "msg_0cb6839ec001CO9KJ4GygEUS5f"
+    },
+    {
+     "type": "text",
+     "text": "\n\n",
+     "time": {
+      "start": 1790119005190,
+      "end": 1790119005458
+     },
+     "id": "prt_0cb684c06001eGfEkbkAJj3mZ1",
+     "sessionID": "ses_f3497c89fffeilRD6mvqyNlcB2",
+     "messageID": "msg_0cb6839ec001CO9KJ4GygEUS5f"
+    },
+    {
+     "type": "tool",
+     "tool": "glob",
+     "callID": "call_f70ac3d0bccc4be38a8897ab",
+     "state": {
+      "status": "completed",
+      "input": {
+       "pattern": "**/*.md"
+      },
+      "output": "[5343 caracteres omitidos]",
+      "title": "",
+      "time": {
+       "start": 1790119005345,
+       "end": 1790119005426
+      }
+     },
+     "id": "prt_0cb684c58001yNnWUJlKTNRRB1",
+     "sessionID": "ses_f3497c89fffeilRD6mvqyNlcB2",
+     "messageID": "msg_0cb6839ec001CO9KJ4GygEUS5f"
+    },
+    {
+     "type": "tool",
+     "tool": "glob",
+     "callID": "call_b71d5a61a2e245b1a3393de1",
+     "state": {
+      "status": "completed",
+      "input": {
+       "pattern": ".opencode/agent/*.md"
+      },
+      "output": "[14 caracteres omitidos]",
+      "title": "",
+      "time": {
+       "start": 1790119005418,
+       "end": 1790119005511
+      }
+     },
+     "id": "prt_0cb684ca5001fW6EjwQVoUm3qV",
+     "sessionID": "ses_f3497c89fffeilRD6mvqyNlcB2",
+     "messageID": "msg_0cb6839ec001CO9KJ4GygEUS5f"
+    },
+    {
+     "reason": "tool-calls",
+     "snapshot": "54bdc7273565840f8e40a667e67f63b6e6ddfec4",
+     "type": "step-finish",
+     "tokens": {
+      "total": 9855,
+      "input": 7710,
+      "output": 353,
+      "reasoning": 0,
+      "cache": {
+       "write": 0,
+       "read": 1792
+      }
+     },
+     "cost": 0,
+     "id": "prt_0cb684e4d001SKbmsvGTyBk3QD",
+     "sessionID": "ses_f3497c89fffeilRD6mvqyNlcB2",
+     "messageID": "msg_0cb6839ec001CO9KJ4GygEUS5f"
+    }
+   ]
+  },
+  {
+   "info": {
+    "parentID": "msg_0cb6837c50019IT2tqg7Ng28wq",
+    "role": "assistant",
+    "mode": "build",
+    "agent": "build",
+    "path": {
+     "cwd": "C:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech",
+     "root": "C:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech"
+    },
+    "cost": 0,
+    "tokens": {
+     "total": 12417,
+     "input": 2549,
+     "output": 140,
+     "reasoning": 0,
+     "cache": {
+      "write": 0,
+      "read": 9728
+     }
+    },
+    "modelID": "big-pickle",
+    "providerID": "opencode",
+    "time": {
+     "created": 1790119006025,
+     "completed": 1790119008096
+    },
+    "finish": "tool-calls",
+    "id": "msg_0cb684f480019gSPSGnjKbVdX8",
+    "sessionID": "ses_f3497c89fffeilRD6mvqyNlcB2"
+   },
+   "parts": [
+    {
+     "snapshot": "54bdc7273565840f8e40a667e67f63b6e6ddfec4",
+     "type": "step-start",
+     "id": "prt_0cb685389001D9pPGP0RdXQ0lv",
+     "sessionID": "ses_f3497c89fffeilRD6mvqyNlcB2",
+     "messageID": "msg_0cb684f480019gSPSGnjKbVdX8"
+    },
+    {
+     "type": "reasoning",
+     "text": "The .opencode/agent folder glob returned no files. Let me check the directory structure. Maybe the agents are defined elsewhere. Let me check.",
+     "time": {
+      "start": 1790119007117,
+      "end": 1790119007186
+     },
+     "id": "prt_0cb68538d001wEwRh4IUdCns4c",
+     "sessionID": "ses_f3497c89fffeilRD6mvqyNlcB2",
+     "messageID": "msg_0cb684f480019gSPSGnjKbVdX8"
+    },
+    {
+     "type": "text",
+     "text": "\n\n",
+     "time": {
+      "start": 1790119007190,
+      "end": 1790119007554
+     },
+     "id": "prt_0cb6853d6001Ox3e9AVouRkhBe",
+     "sessionID": "ses_f3497c89fffeilRD6mvqyNlcB2",
+     "messageID": "msg_0cb684f480019gSPSGnjKbVdX8"
+    },
+    {
+     "type": "tool",
+     "tool": "glob",
+     "callID": "call_22b2dfef78d44e1fb9d548c2",
+     "state": {
+      "status": "completed",
+      "input": {
+       "pattern": ".opencode/**/*.md"
+      },
+      "output": "[14 caracteres omitidos]",
+      "title": "",
+      "time": {
+       "start": 1790119007338,
+       "end": 1790119007416
+      }
+     },
+     "id": "prt_0cb685421001iGIPhud1xsdmwo",
+     "sessionID": "ses_f3497c89fffeilRD6mvqyNlcB2",
+     "messageID": "msg_0cb684f480019gSPSGnjKbVdX8"
+    },
+    {
+     "type": "tool",
+     "tool": "read",
+     "callID": "call_0c4e78f4abf84cffb4f5c465",
+     "state": {
+      "status": "completed",
+      "input": {
+       "filePath": "C:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\auditorias\\M1-dart-flutter-final.md"
+      },
+      "output": "[12202 caracteres omitidos]",
+      "title": "auditorias\\M1-dart-flutter-final.md",
+      "time": {
+       "start": 1790119007519,
+       "end": 1790119007549
+      }
+     },
+     "id": "prt_0cb68546d001lBY3sCYZhw1Keq",
+     "sessionID": "ses_f3497c89fffeilRD6mvqyNlcB2",
+     "messageID": "msg_0cb684f480019gSPSGnjKbVdX8"
+    },
+    {
+     "reason": "tool-calls",
+     "snapshot": "54bdc7273565840f8e40a667e67f63b6e6ddfec4",
+     "type": "step-finish",
+     "tokens": {
+      "total": 12417,
+      "input": 2549,
+      "output": 140,
+      "reasoning": 0,
+      "cache": {
+       "write": 0,
+       "read": 9728
+      }
+     },
+     "cost": 0,
+     "id": "prt_0cb685652001zRcy1bIZFDQet5",
+     "sessionID": "ses_f3497c89fffeilRD6mvqyNlcB2",
+     "messageID": "msg_0cb684f480019gSPSGnjKbVdX8"
+    }
+   ]
+  },
+  {
+   "info": {
+    "parentID": "msg_0cb6837c50019IT2tqg7Ng28wq",
+    "role": "assistant",
+    "mode": "build",
+    "agent": "build",
+    "path": {
+     "cwd": "C:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech",
+     "root": "C:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech"
+    },
+    "cost": 0,
+    "tokens": {
+     "total": 16592,
+     "input": 4144,
+     "output": 160,
+     "reasoning": 0,
+     "cache": {
+      "write": 0,
+      "read": 12288
+     }
+    },
+    "modelID": "big-pickle",
+    "providerID": "opencode",
+    "time": {
+     "created": 1790119008099,
+     "completed": 1790119014636
+    },
+    "finish": "tool-calls",
+    "id": "msg_0cb68576300193Z3rjZllb9Ut9",
+    "sessionID": "ses_f3497c89fffeilRD6mvqyNlcB2"
+   },
+   "parts": [
+    {
+     "snapshot": "54bdc7273565840f8e40a667e67f63b6e6ddfec4",
+     "type": "step-start",
+     "id": "prt_0cb685bb9001c95C6oyAZrRJpx",
+     "sessionID": "ses_f3497c89fffeilRD6mvqyNlcB2",
+     "messageID": "msg_0cb68576300193Z3rjZllb9Ut9"
+    },
+    {
+     "type": "reasoning",
+     "text": "The .opencode directory glob returned nothing. Let me check the .opencode directory structure. Maybe agent files are defined elsewhere. Let me check the config.",
+     "time": {
+      "start": 1790119009213,
+      "end": 1790119009425
+     },
+     "id": "prt_0cb685bbd001rfG68Tm4WbHonf",
+     "sessionID": "ses_f3497c89fffeilRD6mvqyNlcB2",
+     "messageID": "msg_0cb68576300193Z3rjZllb9Ut9"
+    },
+    {
+     "type": "tool",
+     "tool": "bash",
+     "callID": "call_967cb7b3cadd4be0ac249081",
+     "state": {
+      "status": "completed",
+      "input": {
+       "command": "Get-ChildItem -Recurse -Force -Path \".opencode\" -ErrorAction SilentlyContinue | Select-Object FullName"
+      },
+      "output": "...output truncated...\n\nFull output saved to: C:\\Users\\Clara L Peretti\\.local\\share\\opencode\\tool-output\\tool_0cb6866cf001MMWdsAOMJXUdJ1\n\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\src\\v4\\locales\\zh-CN.ts                     \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\src\\v4\\locales\\zh-TW.ts                     \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\src\\v4\\mini\\tests                           \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\src\\v4\\mini\\checks.ts                       \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\src\\v4\\mini\\coerce.ts                       \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\src\\v4\\mini\\external.ts                     \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\src\\v4\\mini\\index.ts                        \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\src\\v4\\mini\\iso.ts                          \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\src\\v4\\mini\\parse.ts                        \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\src\\v4\\mini\\schemas.ts                      \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\src\\v4\\mini\\tests\\assignability.test.ts     \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\src\\v4\\mini\\tests\\brand.test.ts             \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\src\\v4\\mini\\tests\\checks.test.ts            \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\src\\v4\\mini\\tests\\codec.test.ts             \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\src\\v4\\mini\\tests\\computed.test.ts          \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\src\\v4\\mini\\tests\\error.test.ts             \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\src\\v4\\mini\\tests\\functions.test.ts         \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\src\\v4\\mini\\tests\\index.test.ts             \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\src\\v4\\mini\\tests\\number.test.ts            \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\src\\v4\\mini\\tests\\object.test.ts            \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\src\\v4\\mini\\tests\\prototypes.test.ts        \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\src\\v4\\mini\\tests\\recursive-types.test.ts   \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\src\\v4\\mini\\tests\\string.test.ts            \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\src\\v4-mini\\index.ts                        \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v3\\helpers                                  \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v3\\locales                                  \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v3\\errors.cjs                               \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v3\\errors.d.cts                             \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v3\\errors.d.ts                              \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v3\\errors.js                                \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v3\\external.cjs                             \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v3\\external.d.cts                           \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v3\\external.d.ts                            \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v3\\external.js                              \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v3\\index.cjs                                \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v3\\index.d.cts                              \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v3\\index.d.ts                               \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v3\\index.js                                 \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v3\\package.json                             \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v3\\standard-schema.cjs                      \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v3\\standard-schema.d.cts                    \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v3\\standard-schema.d.ts                     \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v3\\standard-schema.js                       \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v3\\types.cjs                                \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v3\\types.d.cts                              \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v3\\types.d.ts                               \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v3\\types.js                                 \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v3\\ZodError.cjs                             \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v3\\ZodError.d.cts                           \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v3\\ZodError.d.ts                            \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v3\\ZodError.js                              \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v3\\helpers\\enumUtil.cjs                     \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v3\\helpers\\enumUtil.d.cts                   \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v3\\helpers\\enumUtil.d.ts                    \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v3\\helpers\\enumUtil.js                      \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v3\\helpers\\errorUtil.cjs                    \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v3\\helpers\\errorUtil.d.cts                  \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v3\\helpers\\errorUtil.d.ts                   \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v3\\helpers\\errorUtil.js                     \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v3\\helpers\\parseUtil.cjs                    \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v3\\helpers\\parseUtil.d.cts                  \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v3\\helpers\\parseUtil.d.ts                   \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v3\\helpers\\parseUtil.js                     \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v3\\helpers\\partialUtil.cjs                  \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v3\\helpers\\partialUtil.d.cts                \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v3\\helpers\\partialUtil.d.ts                 \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v3\\helpers\\partialUtil.js                   \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v3\\helpers\\typeAliases.cjs                  \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v3\\helpers\\typeAliases.d.cts                \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v3\\helpers\\typeAliases.d.ts                 \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v3\\helpers\\typeAliases.js                   \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v3\\helpers\\util.cjs                         \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v3\\helpers\\util.d.cts                       \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v3\\helpers\\util.d.ts                        \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v3\\helpers\\util.js                          \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v3\\locales\\en.cjs                           \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v3\\locales\\en.d.cts                         \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v3\\locales\\en.d.ts                          \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v3\\locales\\en.js                            \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\classic                                  \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\core                                     \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales                                  \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\mini                                     \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\index.cjs                                \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\index.d.cts                              \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\index.d.ts                               \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\index.js                                 \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\package.json                             \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\classic\\checks.cjs                       \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\classic\\checks.d.cts                     \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\classic\\checks.d.ts                      \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\classic\\checks.js                        \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\classic\\coerce.cjs                       \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\classic\\coerce.d.cts                     \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\classic\\coerce.d.ts                      \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\classic\\coerce.js                        \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\classic\\compat.cjs                       \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\classic\\compat.d.cts                     \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\classic\\compat.d.ts                      \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\classic\\compat.js                        \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\classic\\errors.cjs                       \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\classic\\errors.d.cts                     \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\classic\\errors.d.ts                      \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\classic\\errors.js                        \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\classic\\external.cjs                     \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\classic\\external.d.cts                   \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\classic\\external.d.ts                    \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\classic\\external.js                      \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\classic\\index.cjs                        \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\classic\\index.d.cts                      \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\classic\\index.d.ts                       \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\classic\\index.js                         \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\classic\\iso.cjs                          \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\classic\\iso.d.cts                        \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\classic\\iso.d.ts                         \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\classic\\iso.js                           \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\classic\\package.json                     \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\classic\\parse.cjs                        \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\classic\\parse.d.cts                      \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\classic\\parse.d.ts                       \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\classic\\parse.js                         \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\classic\\schemas.cjs                      \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\classic\\schemas.d.cts                    \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\classic\\schemas.d.ts                     \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\classic\\schemas.js                       \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\core\\api.cjs                             \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\core\\api.d.cts                           \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\core\\api.d.ts                            \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\core\\api.js                              \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\core\\checks.cjs                          \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\core\\checks.d.cts                        \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\core\\checks.d.ts                         \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\core\\checks.js                           \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\core\\core.cjs                            \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\core\\core.d.cts                          \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\core\\core.d.ts                           \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\core\\core.js                             \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\core\\doc.cjs                             \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\core\\doc.d.cts                           \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\core\\doc.d.ts                            \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\core\\doc.js                              \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\core\\errors.cjs                          \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\core\\errors.d.cts                        \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\core\\errors.d.ts                         \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\core\\errors.js                           \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\core\\index.cjs                           \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\core\\index.d.cts                         \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\core\\index.d.ts                          \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\core\\index.js                            \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\core\\json-schema.cjs                     \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\core\\json-schema.d.cts                   \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\core\\json-schema.d.ts                    \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\core\\json-schema.js                      \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\core\\package.json                        \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\core\\parse.cjs                           \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\core\\parse.d.cts                         \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\core\\parse.d.ts                          \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\core\\parse.js                            \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\core\\regexes.cjs                         \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\core\\regexes.d.cts                       \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\core\\regexes.d.ts                        \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\core\\regexes.js                          \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\core\\registries.cjs                      \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\core\\registries.d.cts                    \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\core\\registries.d.ts                     \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\core\\registries.js                       \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\core\\schemas.cjs                         \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\core\\schemas.d.cts                       \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\core\\schemas.d.ts                        \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\core\\schemas.js                          \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\core\\standard-schema.cjs                 \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\core\\standard-schema.d.cts               \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\core\\standard-schema.d.ts                \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\core\\standard-schema.js                  \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\core\\to-json-schema.cjs                  \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\core\\to-json-schema.d.cts                \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\core\\to-json-schema.d.ts                 \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\core\\to-json-schema.js                   \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\core\\util.cjs                            \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\core\\util.d.cts                          \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\core\\util.d.ts                           \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\core\\util.js                             \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\core\\versions.cjs                        \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\core\\versions.d.cts                      \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\core\\versions.d.ts                       \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\core\\versions.js                         \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\ar.cjs                           \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\ar.d.cts                         \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\ar.d.ts                          \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\ar.js                            \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\az.cjs                           \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\az.d.cts                         \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\az.d.ts                          \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\az.js                            \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\be.cjs                           \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\be.d.cts                         \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\be.d.ts                          \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\be.js                            \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\bg.cjs                           \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\bg.d.cts                         \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\bg.d.ts                          \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\bg.js                            \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\ca.cjs                           \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\ca.d.cts                         \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\ca.d.ts                          \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\ca.js                            \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\cs.cjs                           \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\cs.d.cts                         \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\cs.d.ts                          \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\cs.js                            \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\da.cjs                           \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\da.d.cts                         \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\da.d.ts                          \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\da.js                            \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\de.cjs                           \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\de.d.cts                         \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\de.d.ts                          \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\de.js                            \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\en.cjs                           \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\en.d.cts                         \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\en.d.ts                          \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\en.js                            \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\eo.cjs                           \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\eo.d.cts                         \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\eo.d.ts                          \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\eo.js                            \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\es.cjs                           \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\es.d.cts                         \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\es.d.ts                          \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\es.js                            \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\fa.cjs                           \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\fa.d.cts                         \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\fa.d.ts                          \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\fa.js                            \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\fi.cjs                           \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\fi.d.cts                         \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\fi.d.ts                          \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\fi.js                            \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\fr-CA.cjs                        \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\fr-CA.d.cts                      \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\fr-CA.d.ts                       \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\fr-CA.js                         \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\fr.cjs                           \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\fr.d.cts                         \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\fr.d.ts                          \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\fr.js                            \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\he.cjs                           \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\he.d.cts                         \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\he.d.ts                          \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\he.js                            \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\hu.cjs                           \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\hu.d.cts                         \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\hu.d.ts                          \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\hu.js                            \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\id.cjs                           \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\id.d.cts                         \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\id.d.ts                          \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\id.js                            \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\index.cjs                        \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\index.d.cts                      \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\index.d.ts                       \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\index.js                         \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\is.cjs                           \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\is.d.cts                         \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\is.d.ts                          \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\is.js                            \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\it.cjs                           \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\it.d.cts                         \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\it.d.ts                          \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\it.js                            \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\ja.cjs                           \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\ja.d.cts                         \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\ja.d.ts                          \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\ja.js                            \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\ka.cjs                           \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\ka.d.cts                         \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\ka.d.ts                          \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\ka.js                            \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\kh.cjs                           \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\kh.d.cts                         \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\kh.d.ts                          \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\kh.js                            \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\km.cjs                           \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\km.d.cts                         \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\km.d.ts                          \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\km.js                            \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\ko.cjs                           \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\ko.d.cts                         \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\ko.d.ts                          \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\ko.js                            \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\lt.cjs                           \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\lt.d.cts                         \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\lt.d.ts                          \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\lt.js                            \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\mk.cjs                           \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\mk.d.cts                         \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\mk.d.ts                          \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\mk.js                            \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\ms.cjs                           \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\ms.d.cts                         \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\ms.d.ts                          \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\ms.js                            \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\nl.cjs                           \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\nl.d.cts                         \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\nl.d.ts                          \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\nl.js                            \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\no.cjs                           \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\no.d.cts                         \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\no.d.ts                          \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\no.js                            \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\ota.cjs                          \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\ota.d.cts                        \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\ota.d.ts                         \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\ota.js                           \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\package.json                     \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\pl.cjs                           \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\pl.d.cts                         \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\pl.d.ts                          \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\pl.js                            \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\ps.cjs                           \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\ps.d.cts                         \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\ps.d.ts                          \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\ps.js                            \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\pt.cjs                           \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\pt.d.cts                         \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\pt.d.ts                          \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\pt.js                            \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\ru.cjs                           \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\ru.d.cts                         \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\ru.d.ts                          \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\ru.js                            \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\sl.cjs                           \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\sl.d.cts                         \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\sl.d.ts                          \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\sl.js                            \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\sv.cjs                           \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\sv.d.cts                         \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\sv.d.ts                          \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\sv.js                            \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\ta.cjs                           \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\ta.d.cts                         \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\ta.d.ts                          \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\ta.js                            \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\th.cjs                           \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\th.d.cts                         \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\th.d.ts                          \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\th.js                            \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\tr.cjs                           \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\tr.d.cts                         \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\tr.d.ts                          \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\tr.js                            \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\ua.cjs                           \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\ua.d.cts                         \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\ua.d.ts                          \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\ua.js                            \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\uk.cjs                           \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\uk.d.cts                         \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\uk.d.ts                          \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\uk.js                            \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\ur.cjs                           \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\ur.d.cts                         \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\ur.d.ts                          \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\ur.js                            \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\vi.cjs                           \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\vi.d.cts                         \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\vi.d.ts                          \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\vi.js                            \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\yo.cjs                           \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\yo.d.cts                         \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\yo.d.ts                          \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\yo.js                            \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\zh-CN.cjs                        \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\zh-CN.d.cts                      \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\zh-CN.d.ts                       \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\zh-CN.js                         \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\zh-TW.cjs                        \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\zh-TW.d.cts                      \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\zh-TW.d.ts                       \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\zh-TW.js                         \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\mini\\checks.cjs                          \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\mini\\checks.d.cts                        \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\mini\\checks.d.ts                         \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\mini\\checks.js                           \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\mini\\coerce.cjs                          \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\mini\\coerce.d.cts                        \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\mini\\coerce.d.ts                         \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\mini\\coerce.js                           \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\mini\\external.cjs                        \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\mini\\external.d.cts                      \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\mini\\external.d.ts                       \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\mini\\external.js                         \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\mini\\index.cjs                           \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\mini\\index.d.cts                         \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\mini\\index.d.ts                          \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\mini\\index.js                            \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\mini\\iso.cjs                             \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\mini\\iso.d.cts                           \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\mini\\iso.d.ts                            \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\mini\\iso.js                              \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\mini\\package.json                        \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\mini\\parse.cjs                           \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\mini\\parse.d.cts                         \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\mini\\parse.d.ts                          \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\mini\\parse.js                            \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\mini\\schemas.cjs                         \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\mini\\schemas.d.cts                       \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\mini\\schemas.d.ts                        \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\mini\\schemas.js                          \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4-mini\\index.cjs                           \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4-mini\\index.d.cts                         \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4-mini\\index.d.ts                          \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4-mini\\index.js                            \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4-mini\\package.json                        \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\skills\\grilling                                              \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\skills\\novo-subagente                                        \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\skills\\tdd                                                   \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\skills\\telas-flutter                                         \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\skills\\to-spec                                               \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\skills\\grilling\\SKILL.md                                     \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\skills\\novo-subagente\\SKILL.md                               \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\skills\\tdd\\SKILL.md                                          \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\skills\\telas-flutter\\SKILL.md                                \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\skills\\to-spec\\SKILL.md                                      \r\n\r\n\r\n",
+      "metadata": {
+       "output": "...\n\nra L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\core\\to-json-schema.d.cts                \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\core\\to-json-schema.d.ts                 \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\core\\to-json-schema.js                   \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\core\\util.cjs                            \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\core\\util.d.cts                          \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\core\\util.d.ts                           \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\core\\util.js                             \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\core\\versions.cjs                        \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\core\\versions.d.cts                      \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\core\\versions.d.ts                       \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\core\\versions.js                         \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\ar.cjs                           \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\ar.d.cts                         \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\ar.d.ts                          \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\ar.js                            \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\az.cjs                           \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\az.d.cts                         \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\az.d.ts                          \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\az.js                            \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\be.cjs                           \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\be.d.cts                         \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\be.d.ts                          \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\be.js                            \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\bg.cjs                           \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\bg.d.cts                         \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\bg.d.ts                          \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\bg.js                            \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\ca.cjs                           \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\ca.d.cts                         \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\ca.d.ts                          \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\ca.js                            \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\cs.cjs                           \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\cs.d.cts                         \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\cs.d.ts                          \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\cs.js                            \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\da.cjs                           \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\da.d.cts                         \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\da.d.ts                          \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\da.js                            \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\de.cjs                           \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\de.d.cts                         \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\de.d.ts                          \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\de.js                            \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\en.cjs                           \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\en.d.cts                         \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\en.d.ts                          \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\en.js                            \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\eo.cjs                           \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\eo.d.cts                         \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\eo.d.ts                          \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\eo.js                            \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\es.cjs                           \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\es.d.cts                         \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\es.d.ts                          \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\es.js                            \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\fa.cjs                           \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\fa.d.cts                         \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\fa.d.ts                          \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\fa.js                            \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\fi.cjs                           \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\fi.d.cts                         \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\fi.d.ts                          \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\fi.js                            \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\fr-CA.cjs                        \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\fr-CA.d.cts                      \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\fr-CA.d.ts                       \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\fr-CA.js                         \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\fr.cjs                           \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\fr.d.cts                         \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\fr.d.ts                          \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\fr.js                            \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\he.cjs                           \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\he.d.cts                         \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\he.d.ts                          \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\he.js                            \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\hu.cjs                           \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\hu.d.cts                         \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\hu.d.ts                          \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\hu.js                            \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\id.cjs                           \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\id.d.cts                         \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\id.d.ts                          \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\id.js                            \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\index.cjs                        \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\index.d.cts                      \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\index.d.ts                       \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\index.js                         \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\is.cjs                           \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\is.d.cts                         \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\is.d.ts                          \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\is.js                            \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\it.cjs                           \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\it.d.cts                         \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\it.d.ts                          \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\it.js                            \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\ja.cjs                           \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\ja.d.cts                         \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\ja.d.ts                          \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\ja.js                            \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\ka.cjs                           \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\ka.d.cts                         \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\ka.d.ts                          \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\ka.js                            \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\kh.cjs                           \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\kh.d.cts                         \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\kh.d.ts                          \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\kh.js                            \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\km.cjs                           \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\km.d.cts                         \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\km.d.ts                          \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\km.js                            \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\ko.cjs                           \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\ko.d.cts                         \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\ko.d.ts                          \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\ko.js                            \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\lt.cjs                           \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\lt.d.cts                         \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\lt.d.ts                          \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\lt.js                            \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\mk.cjs                           \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\mk.d.cts                         \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\mk.d.ts                          \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\mk.js                            \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\ms.cjs                           \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\ms.d.cts                         \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\ms.d.ts                          \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\ms.js                            \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\nl.cjs                           \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\nl.d.cts                         \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\nl.d.ts                          \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\nl.js                            \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\no.cjs                           \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\no.d.cts                         \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\no.d.ts                          \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\no.js                            \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\ota.cjs                          \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\ota.d.cts                        \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\ota.d.ts                         \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\ota.js                           \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\package.json                     \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\pl.cjs                           \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\pl.d.cts                         \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\pl.d.ts                          \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\pl.js                            \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\ps.cjs                           \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\ps.d.cts                         \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\ps.d.ts                          \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\ps.js                            \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\pt.cjs                           \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\pt.d.cts                         \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\pt.d.ts                          \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\pt.js                            \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\ru.cjs                           \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\ru.d.cts                         \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\ru.d.ts                          \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\ru.js                            \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\sl.cjs                           \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\sl.d.cts                         \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\sl.d.ts                          \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\sl.js                            \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\sv.cjs                           \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\sv.d.cts                         \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\sv.d.ts                          \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\sv.js                            \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\ta.cjs                           \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\ta.d.cts                         \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\ta.d.ts                          \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\ta.js                            \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\th.cjs                           \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\th.d.cts                         \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\th.d.ts                          \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\th.js                            \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\tr.cjs                           \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\tr.d.cts                         \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\tr.d.ts                          \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\tr.js                            \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\ua.cjs                           \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\ua.d.cts                         \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\ua.d.ts                          \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\ua.js                            \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\uk.cjs                           \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\uk.d.cts                         \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\uk.d.ts                          \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\uk.js                            \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\ur.cjs                           \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\ur.d.cts                         \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\ur.d.ts                          \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\ur.js                            \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\vi.cjs                           \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\vi.d.cts                         \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\vi.d.ts                          \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\vi.js                            \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\yo.cjs                           \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\yo.d.cts                         \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\yo.d.ts                          \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\yo.js                            \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\zh-CN.cjs                        \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\zh-CN.d.cts                      \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\zh-CN.d.ts                       \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\zh-CN.js                         \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\zh-TW.cjs                        \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\zh-TW.d.cts                      \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\zh-TW.d.ts                       \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\locales\\zh-TW.js                         \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\mini\\checks.cjs                          \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\mini\\checks.d.cts                        \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\mini\\checks.d.ts                         \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\mini\\checks.js                           \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\mini\\coerce.cjs                          \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\mini\\coerce.d.cts                        \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\mini\\coerce.d.ts                         \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\mini\\coerce.js                           \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\mini\\external.cjs                        \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\mini\\external.d.cts                      \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\mini\\external.d.ts                       \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\mini\\external.js                         \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\mini\\index.cjs                           \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\mini\\index.d.cts                         \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\mini\\index.d.ts                          \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\mini\\index.js                            \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\mini\\iso.cjs                             \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\mini\\iso.d.cts                           \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\mini\\iso.d.ts                            \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\mini\\iso.js                              \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\mini\\package.json                        \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\mini\\parse.cjs                           \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\mini\\parse.d.cts                         \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\mini\\parse.d.ts                          \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\mini\\parse.js                            \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\mini\\schemas.cjs                         \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\mini\\schemas.d.cts                       \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\mini\\schemas.d.ts                        \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4\\mini\\schemas.js                          \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4-mini\\index.cjs                           \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4-mini\\index.d.cts                         \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4-mini\\index.d.ts                          \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4-mini\\index.js                            \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\node_modules\\zod\\v4-mini\\package.json                        \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\skills\\grilling                                              \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\skills\\novo-subagente                                        \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\skills\\tdd                                                   \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\skills\\telas-flutter                                         \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\skills\\to-spec                                               \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\skills\\grilling\\SKILL.md                                     \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\skills\\novo-subagente\\SKILL.md                               \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\skills\\tdd\\SKILL.md                                          \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\skills\\telas-flutter\\SKILL.md                                \r\nC:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\skills\\to-spec\\SKILL.md                                      \r\n\r\n\r\n",
+       "exit": 0,
+       "truncated": true,
+       "outputPath": "C:\\Users\\Clara L Peretti\\.local\\share\\opencode\\tool-output\\tool_0cb6866cf001MMWdsAOMJXUdJ1"
+      },
+      "title": "Get-ChildItem -Recurse -Force -Path \".opencode\" -ErrorAction SilentlyContinue | Select-Object FullName",
+      "time": {
+       "start": 1790119009801,
+       "end": 1790119014101
+      }
+     },
+     "id": "prt_0cb685c95001z0PCGBAmLb6Gre",
+     "sessionID": "ses_f3497c89fffeilRD6mvqyNlcB2",
+     "messageID": "msg_0cb68576300193Z3rjZllb9Ut9"
+    },
+    {
+     "type": "tool",
+     "tool": "read",
+     "callID": "call_db911565459e4f878b4fac52",
+     "state": {
+      "status": "completed",
+      "input": {
+       "filePath": "C:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\specs\\M2-inscricoes.md"
+      },
+      "output": "[17646 caracteres omitidos]",
+      "title": "specs\\M2-inscricoes.md",
+      "time": {
+       "start": 1790119009949,
+       "end": 1790119010003
+      }
+     },
+     "id": "prt_0cb685e150019QCwJxcicRqJ0j",
+     "sessionID": "ses_f3497c89fffeilRD6mvqyNlcB2",
+     "messageID": "msg_0cb68576300193Z3rjZllb9Ut9"
+    },
+    {
+     "reason": "tool-calls",
+     "snapshot": "54bdc7273565840f8e40a667e67f63b6e6ddfec4",
+     "type": "step-finish",
+     "tokens": {
+      "total": 16592,
+      "input": 4144,
+      "output": 160,
+      "reasoning": 0,
+      "cache": {
+       "write": 0,
+       "read": 12288
+      }
+     },
+     "cost": 0,
+     "id": "prt_0cb686fd4001Rk68cxP66fYIgY",
+     "sessionID": "ses_f3497c89fffeilRD6mvqyNlcB2",
+     "messageID": "msg_0cb68576300193Z3rjZllb9Ut9"
+    }
+   ]
+  },
+  {
+   "info": {
+    "parentID": "msg_0cb6837c50019IT2tqg7Ng28wq",
+    "role": "assistant",
+    "mode": "build",
+    "agent": "build",
+    "path": {
+     "cwd": "C:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech",
+     "root": "C:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech"
+    },
+    "cost": 0,
+    "tokens": {
+     "total": 40667,
+     "input": 23646,
+     "output": 637,
+     "reasoning": 0,
+     "cache": {
+      "write": 0,
+      "read": 16384
+     }
+    },
+    "modelID": "big-pickle",
+    "providerID": "opencode",
+    "time": {
+     "created": 1790119014640,
+     "completed": 1790119020933
+    },
+    "finish": "tool-calls",
+    "id": "msg_0cb6870f0001Mf8tLxOcCO3Vqp",
+    "sessionID": "ses_f3497c89fffeilRD6mvqyNlcB2"
+   },
+   "parts": [
+    {
+     "snapshot": "54bdc7273565840f8e40a667e67f63b6e6ddfec4",
+     "type": "step-start",
+     "id": "prt_0cb687701001KZ26T3yA1kYFHQ",
+     "sessionID": "ses_f3497c89fffeilRD6mvqyNlcB2",
+     "messageID": "msg_0cb6870f0001Mf8tLxOcCO3Vqp"
+    },
+    {
+     "type": "reasoning",
+     "text": "The agent files are not in `.opencode/agent`, but the system prompt says the two subagents (auditor and revisor-de-contrato) exist. I can call them via the task tool with subagent_type \"auditor\" and \"revisor-de-contrato\".\n\nLet me check git status, and quickly look at the current state. The user says tests pass (78 API, 40 frontend, smoke 16/build release). The auditors must verify.\n\nLet me now launch the auditor task. I need to give it a detailed prompt. Let me also launch the revisor-de-contrato after. Actually the instructions say \"Depois chame REALMENTE task com subagent_type revisor-de-contrato um de cada vez\" - after saving the auditor report, then call revisor.\n\nFirst let me launch the auditor. The auditor has read-only access, can run dart test/analyze in api and flutter test/analyze in frontend.\n\nLet me give the auditor comprehensive context:\n- Auditar M2 contra specs/M2-inscricoes.md e entrevistas/M2-inscricoes.md\n- Matriz R01-R45 com origem/teste:linha e veredito\n- Achados concretos, sem inventar cobertura\n- Não ler enunciado/requisitos externos\n- Rodar dart test/analyze em api e flutter test/analyze em frontend\n- Return the full parecer integral so I can save it\n\nThe auditor should check each rule R01-R45: origin (from entrevista P-perguntas) and test:line evidence. Veredito: COMPROVADA / PARCIAL / SEM PROVA etc.\n\nLet me launch the auditor now.",
+     "time": {
+      "start": 1790119016196,
+      "end": 1790119018976
+     },
+     "id": "prt_0cb687704001I3TT2t1nPAmBRe",
+     "sessionID": "ses_f3497c89fffeilRD6mvqyNlcB2",
+     "messageID": "msg_0cb6870f0001Mf8tLxOcCO3Vqp"
+    },
+    {
+     "type": "text",
+     "text": "Entendido. Vou lançar o `@auditor` para auditar M2, depois salvo o parecer integral, e em seguida chamo o `revisor-de-contrato`.",
+     "time": {
+      "start": 1790119018978,
+      "end": 1790119020419
+     },
+     "id": "prt_0cb6881e2001ZhlE2zC2vnMnu0",
+     "sessionID": "ses_f3497c89fffeilRD6mvqyNlcB2",
+     "messageID": "msg_0cb6870f0001Mf8tLxOcCO3Vqp"
+    },
+    {
+     "type": "tool",
+     "tool": "todowrite",
+     "callID": "call_4037fbed395849d788ee9773",
+     "state": {
+      "status": "completed",
+      "input": {
+       "todos": [
+        {
+         "content": "Auditar M2 via subagente auditor (R01-R45, origem+teste:linha, veredito)",
+         "status": "in_progress",
+         "priority": "high"
+        },
+        {
+         "content": "Salvar parecer integral do auditor em auditorias/M2-inscricoes-final.md",
+         "status": "pending",
+         "priority": "high"
+        },
+        {
+         "content": "Revisar contrato M2 via revisor-de-contrato (5 rotas+frontend+integração M1)",
+         "status": "pending",
+         "priority": "high"
+        },
+        {
+         "content": "Salvar parecer integral em auditorias/M2-contrato-final.md",
+         "status": "pending",
+         "priority": "high"
+        },
+        {
+         "content": "Commit dos dois pareceres (sem no-verify/push)",
+         "status": "pending",
+         "priority": "medium"
+        }
+       ]
+      },
+      "output": "[\n  {\n    \"content\": \"Auditar M2 via subagente auditor (R01-R45, origem+teste:linha, veredito)\",\n    \"status\": \"in_progress\",\n    \"priority\": \"high\"\n  },\n  {\n    \"content\": \"Salvar parecer integral do auditor em auditorias/M2-inscricoes-final.md\",\n    \"status\": \"pending\",\n    \"priority\": \"high\"\n  },\n  {\n    \"content\": \"Revisar contrato M2 via revisor-de-contrato (5 rotas+frontend+integração M1)\",\n    \"status\": \"pending\",\n    \"priority\": \"high\"\n  },\n  {\n    \"content\": \"Salvar parecer integral em auditorias/M2-contrato-final.md\",\n    \"status\": \"pending\",\n    \"priority\": \"high\"\n  },\n  {\n    \"content\": \"Commit dos dois pareceres (sem no-verify/push)\",\n    \"status\": \"pending\",\n    \"priority\": \"medium\"\n  }\n]",
+      "metadata": {
+       "todos": [
+        {
+         "content": "Auditar M2 via subagente auditor (R01-R45, origem+teste:linha, veredito)",
+         "status": "in_progress",
+         "priority": "high"
+        },
+        {
+         "content": "Salvar parecer integral do auditor em auditorias/M2-inscricoes-final.md",
+         "status": "pending",
+         "priority": "high"
+        },
+        {
+         "content": "Revisar contrato M2 via revisor-de-contrato (5 rotas+frontend+integração M1)",
+         "status": "pending",
+         "priority": "high"
+        },
+        {
+         "content": "Salvar parecer integral em auditorias/M2-contrato-final.md",
+         "status": "pending",
+         "priority": "high"
+        },
+        {
+         "content": "Commit dos dois pareceres (sem no-verify/push)",
+         "status": "pending",
+         "priority": "medium"
+        }
+       ],
+       "truncated": false
+      },
+      "title": "5 todos",
+      "time": {
+       "start": 1790119020352,
+       "end": 1790119020357
+      }
+     },
+     "id": "prt_0cb688374001fzykn3q8wQ7272",
+     "sessionID": "ses_f3497c89fffeilRD6mvqyNlcB2",
+     "messageID": "msg_0cb6870f0001Mf8tLxOcCO3Vqp"
+    },
+    {
+     "reason": "tool-calls",
+     "snapshot": "54bdc7273565840f8e40a667e67f63b6e6ddfec4",
+     "type": "step-finish",
+     "tokens": {
+      "total": 40667,
+      "input": 23646,
+      "output": 637,
+      "reasoning": 0,
+      "cache": {
+       "write": 0,
+       "read": 16384
+      }
+     },
+     "cost": 0,
+     "id": "prt_0cb6888760012EBq0iDOboa7nM",
+     "sessionID": "ses_f3497c89fffeilRD6mvqyNlcB2",
+     "messageID": "msg_0cb6870f0001Mf8tLxOcCO3Vqp"
+    }
+   ]
+  },
+  {
+   "info": {
+    "parentID": "msg_0cb6837c50019IT2tqg7Ng28wq",
+    "role": "assistant",
+    "mode": "build",
+    "agent": "build",
+    "path": {
+     "cwd": "C:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech",
+     "root": "C:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech"
+    },
+    "cost": 0,
+    "tokens": {
+     "input": 0,
+     "output": 0,
+     "reasoning": 0,
+     "cache": {
+      "read": 0,
+      "write": 0
+     }
+    },
+    "modelID": "big-pickle",
+    "providerID": "opencode",
+    "time": {
+     "created": 1790119020944
+    },
+    "id": "msg_0cb688990001yBxjt4mUVy8fqr",
+    "sessionID": "ses_f3497c89fffeilRD6mvqyNlcB2"
+   },
+   "parts": [
+    {
+     "snapshot": "54bdc7273565840f8e40a667e67f63b6e6ddfec4",
+     "type": "step-start",
+     "id": "prt_0cb688da70017CuMx16DQELhKA",
+     "sessionID": "ses_f3497c89fffeilRD6mvqyNlcB2",
+     "messageID": "msg_0cb688990001yBxjt4mUVy8fqr"
+    },
+    {
+     "type": "tool",
+     "tool": "task",
+     "callID": "call_46bb29bea80542c9b553837e",
+     "state": {
+      "title": "Auditar M2 inscrições",
+      "metadata": {
+       "parentSessionId": "ses_f3497c89fffeilRD6mvqyNlcB2",
+       "sessionId": "ses_f349751b6ffewSTir1Mx9KH14m",
+       "model": {
+        "modelID": "big-pickle",
+        "providerID": "opencode"
+       }
+      },
+      "status": "running",
+      "input": {
+       "description": "Auditar M2 inscrições",
+       "subagent_type": "auditor",
+       "prompt": "Audite o Módulo 2 (Inscrições e Lista de Espera) da Semana Acadêmica contra a spec e a entrevista. Modo SOMENTE LEITURA: não escreva, edite nem altere nenhum arquivo de código, teste, spec, contrato, entrevista ou auditoria. Você pode rodar comandos para verificar: `dart test`, `dart analyze` no workdir `api`, e `flutter test`, `flutter analyze` no workdir `frontend`.\n\nFONTES OBRIGATÓRIAS:\n- `specs/M2-inscricoes.md` (regras numeradas R01-R45)\n- `entrevistas/M2-inscricoes.md` (perguntas P-01 a P-36 e decisões; origem de cada regra)\n- `contrato-api.md` (somente para conferir códigos de erro/formato quando a spec remeter)\n- Implementação em `api/lib/` (servidor e helpers) e `frontend/lib/` (ApiClient e telas M2)\n- Testes em `api/test/` (especialmente os do M2) e `frontend/test/`\n\nMÉTODO:\n1. Para cada regra R01 a R45 da spec, identifique:\n   - ORIGEM: a pergunta/decidão da entrevista (ou contrato) que deu origem à regra — cite `entrevistas/M2-inscricoes.md:<linha>` ou a origem declarada na spec.\n   - EVIDÊNCIA: o teste que comprova a regra — cite `arquivo:linha` exato (ex. `api/test/server_test.dart:120-135`) e, se útil, onde a lógica está em `api/lib/`.\n   - VEREDITO: COMPROVADA (regra exercitada diretamente por teste), PARCIAL (há evidência mas não cobre o requisito inteiro), SEM PROVA (sem teste suficiente; diferencie \"implementação existe mas sem teste\" de \"nem implementação materializada\"), ou N/A/FORA DE ESCOPO se aplicável (ex. regra de M3/M4/M5 que a spec marca como fora).\n2. Não invente cobertura: só cite teste:linha que você leu de fato. Se um teste existe mas não cobre o cenário exigido, marque PARCIAL/SEM PROVA e explique o que falta exatamente.\n3. Cheque também: persistência JSON (R40), MODO_TESTE isolado (R41), formato do id e envelope de erro (R42), campos calculados da atividade (R43) — e os requisitos de frontend R44 e R45 (ApiClient + testes de widget com MockClient, sem replicar regras de domínio, estados carregamento/vazio/erro/sucesso, permissão por papel, refresh após mutação, timers descartados, layout em 360px).\n4. Rode e reporte o resultado real de: `dart test` e `dart analyze` no workdir `api`; `flutter test` e `flutter analyze` no workdir `frontend`. Se algum comando falhar, descreva o erro real. NÃO rode `flutter build` nem testes de smoke se exigirem subir servidor; apenas test/analyze conforme autorizado.\n5. Considere as interações com M1 (grade de atividades): encerramento no início do primeiro encontro, cancelamento da atividade, capacidade/vagas, sem ler enunciado/requisitos externos do professor.\n\nENTREGÁVEL: produza o PAREÇAR COMPLETO e INTEGRAL em markdown (será salvo em um arquivo novo), contendo:\n- # título \"Auditoria final M2 — Inscrições e Lista de Espera\"\n- ## 1. Escopo e fontes (com nota de que é somente leitura; nada foi alterado)\n- ## 2. Matriz requisito -> origem -> evidência -> veredito (tabela completa R01-R45, uma linha por regra com colunas Requisito | Origem (entrevista:linha) | Evidência (teste:linha) | Veredito)\n- ## 3. Interface Flutter (R44-R45) — itemizada\n- ## 4. Testes e análise executados (resultados reais dos 4 comandos)\n- ## 5. Achados concretos (lista objetiva de lacunas: regras sem prova, cobertura parcial, origem não rastreada, divergências de contrato de passagem se avistar, sem consertar nada)\n- ## 6. Veredito final (PASSOU / NÃO PASSOU, com justificativa)\nRetorne TODO esse markdown integral na sua mensagem final; nada deve ficar de fora."
+      },
+      "time": {
+       "start": 1790119030350
+      }
+     },
+     "id": "prt_0cb688dc7001DWM87EGA4MbwrU",
+     "sessionID": "ses_f3497c89fffeilRD6mvqyNlcB2",
+     "messageID": "msg_0cb688990001yBxjt4mUVy8fqr"
+    }
+   ]
+  }
+ ]
+}

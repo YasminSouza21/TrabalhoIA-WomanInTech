@@ -1,0 +1,771 @@
+{
+ "info": {
+  "id": "ses_f34f80f66ffeyg6tcIUDSeyrgx",
+  "slug": "lucky-tiger",
+  "projectID": "5ec1c46d9cd3888456c10ad574c60d609ed0d0a9",
+  "directory": "C:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech",
+  "path": "",
+  "title": "M2: rodada 1 de levantamento de inscricoes",
+  "agent": "build",
+  "model": {
+   "id": "big-pickle",
+   "providerID": "opencode",
+   "variant": "default"
+  },
+  "version": "1.18.32",
+  "summary": {
+   "additions": 0,
+   "deletions": 0,
+   "files": 0
+  },
+  "cost": 0,
+  "tokens": {
+   "input": 55797,
+   "output": 17935,
+   "reasoning": 0,
+   "cache": {
+    "read": 130560,
+    "write": 0
+   }
+  },
+  "permission": [
+   {
+    "permission": "question",
+    "pattern": "*",
+    "action": "deny"
+   },
+   {
+    "permission": "plan_enter",
+    "pattern": "*",
+    "action": "deny"
+   },
+   {
+    "permission": "plan_exit",
+    "pattern": "*",
+    "action": "deny"
+   }
+  ],
+  "time": {
+   "created": 1790112690329,
+   "updated": 1790112853842
+  }
+ },
+ "messages": [
+  {
+   "info": {
+    "role": "user",
+    "time": {
+     "created": 1790112690502
+    },
+    "agent": "build",
+    "model": {
+     "providerID": "opencode",
+     "modelID": "big-pickle"
+    },
+    "summary": {
+     "diffs": [
+      {
+       "file": "entrevistas/M2-inscricoes.md",
+       "patch": "Index: entrevistas/M2-inscricoes.md\n===================================================================\n--- entrevistas/M2-inscricoes.md\t\n+++ entrevistas/M2-inscricoes.md\t\n@@ -0,0 +1,298 @@\n+# Entrevista — M2 Inscrições e Lista de Espera\n+\n+## Registro\n+\n+Os fatos abaixo já estão fixados pelo contrato da API (`contrato-api.md`) e pela\n+spec do M1 (`specs/M1-grade-atividades.md`). Eles **não** são perguntados na\n+entrevista. As perguntas P-xx da Rodada 1 são regras de negócio ainda **PENDENTE**,\n+que o contrato não decide.\n+\n+## Fatos já definidos (não perguntar)\n+\n+| # | Fato | Fonte |\n+|---|---|---|\n+| F-01 | `POST /atividades/:id/inscricoes` cria inscrição, é exclusivo de participante e **não recebe corpo na entrada**; sucesso retorna `201 Inscricao`. | contrato-api.md, rotas M2 |\n+| F-02 | `POST /inscricoes/:id/cancelamento` e `POST /inscricoes/:id/confirmacao` são exclusivos de participante e retornam `200 Inscricao`. | contrato-api.md, rotas M2 |\n+| F-03 | `GET /inscricoes` e `GET /inscricoes/:id` são acessíveis a todos os usuários identificados. Em `GET /inscricoes` o participante recebe **apenas as próprias** inscrições, e existe o filtro `?atividadeId=`. | contrato-api.md, rotas M2 |\n+| F-04 | `Inscricao` tem `id` (`ins_` + 8 hexadecimais), `atividadeId`, `participanteId`, `status`, `posicaoNaEspera` (número só quando `em_espera`), `convocadaAte` (instante só quando `convocada`) e `criadaEm`. | contrato-api.md, modelo Inscricao |\n+| F-05 | Os status de inscrição são: `confirmada`, `em_espera`, `convocada`, `cancelada` e `expirada`. | contrato-api.md, modelo Inscricao |\n+| F-06 | Toda rota identificada exige `X-Usuario`; sem cabeçalho ou com id inexistente → `401 USUARIO_DESCONHECIDO`. | contrato-api.md, convenções |\n+| F-07 | Ordem das verificações: identificação (401) → perfil (403) → existência (404 `NAO_ENCONTRADO`) → corpo (422 `DADOS_INVALIDOS`) → regras do recurso. Quando mais de uma regra do recurso recusa a mesma operação, a ordem entre elas é regra de negócio (**PENDENTE**). | contrato-api.md, convenções |\n+| F-08 | Operações de participante recusam organização com `403 SOMENTE_PARTICIPANTE`. | contrato-api.md, convenções e rotas M2 |\n+| F-09 | Recurso inexistente (atividade ou inscrição) → `404 NAO_ENCONTRADO`. | contrato-api.md, convenções |\n+| F-10 | Corpo que não é JSON, campo obrigatório ausente ou de tipo errado → `422 DADOS_INVALIDOS`. | contrato-api.md, convenções |\n+| F-11 | Códigos de erro do M2 presentes no contrato: `ATIVIDADE_CANCELADA` (422), `INSCRICOES_ENCERRADAS` (422), `INSCRICAO_BLOQUEADA` (422, só grupos com M5), `JA_INSCRITO` (409), `CONFLITO_DE_HORARIO` (409), `LIMITE_DE_MINICURSOS` (422), `INSCRICAO_INATIVA` (422), `SEM_CONVOCACAO` (422), `CONVOCACAO_EXPIRADA` (422) e `ATIVIDADE_JA_INICIADA` (422, para cancelamento de inscrição). | contrato-api.md, códigos de retorno |\n+| F-12 | Inscrever em atividade cancelada → `ATIVIDADE_CANCELADA`. | contrato-api.md, códigos de retorno |\n+| F-13 | Cancelar inscrição de atividade já iniciada → `ATIVIDADE_JA_INICIADA`. | contrato-api.md, códigos de retorno |\n+| F-14 | Datas em ISO 8601 com fuso. Com `MODO_TESTE=1` o relógio é controlado e toda regra temporal usa esse relógio; `POST /_teste/reset` apaga tudo e põe o relógio em `2026-10-13T09:00:00-03:00`. | contrato-api.md, convenções e modo de teste |\n+| F-15 | Os dados iniciais não incluem nenhuma inscrição; apenas usuários e salas do contrato. | contrato-api.md, dados iniciais |\n+| F-16 | `ocupadas`/`vagasRestantes` contam apenas inscrições `confirmadas` e `convocadas`; `em_espera`, `canceladas` e `expiradas` não ocupam vaga. | specs/M1-grade-atividades.md, R29 e R30 |\n+| F-17 | `emEspera` de uma atividade é a quantidade de inscrições `em_espera`. | contrato-api.md, modelo Atividade |\n+| F-18 | Aumentar vagas é permitido e a convocação automática da lista de espera pertence ao M2. | specs/M1-grade-atividades.md, R31 |\n+| F-19 | Ao cancelar a atividade, as inscrições ativas são canceladas e novas inscrições ficam bloqueadas. | specs/M1-grade-atividades.md, seção 17 e entrevistas/M1-grade-atividades.md, R2-P24 |\n+\n+## Rodada 1 — Perguntas pendentes (regras de negócio)\n+\n+### Bloco A — Prazos e bordas de encerramento e de convocação\n+\n+❓ **P-01 — Prazo de encerramento das inscrições**: até quando um participante pode\n+se inscrever antes de aparecer `INSCRICOES_ENCERRADAS`? (início do primeiro\n+encontro? fim do último encontro? N horas/minutos antes? prazo fixo calendário?)\n+\n+➡️ Recomendação: encerrar exatamente no instante do início do primeiro encontro,\n+mantendo o mesmo critério de borda do M1 para início de atividade.\n+\n+---\n+\n+❓ **P-02 — Inscrição em atividade iniciada ou encerrada**: inscrever em atividade\n+já iniciada (mas não cancelada) retorna também `INSCRICOES_ENCERRADAS`, ou outro\n+código?\n+\n+➡️ Recomendação: `INSCRICOES_ENCERRADAS` para iniciada e encerrada (não cancelada);\n+`ATIVIDADE_CANCELADA` fica reservado para cancelada, como no contrato.\n+\n+---\n+\n+❓ **P-03 — Borda do encerramento**: inscrever exatamente com `agora == início do\n+primeiro encontro` é aceito ou recusado?\n+\n+➡️ Recomendação: recusar (borda inclusiva, coerente com `em_andamento` no M1).\n+\n+---\n+\n+❓ **P-04 — Janela de convocação (`convocadaAte`)**: qual é o prazo entre convocar\n+e confirmar? (quanto vale `convocadaAte`: minutos, horas, até o início da\n+atividade?)\n+\n+➡️ Recomendação: definir um prazo fixo explícito (você decide o valor) e registrá-lo\n+como RN.\n+\n+---\n+\n+❓ **P-05 — Borda da convocação**: confirmar exatamente com `agora == convocadaAte`\n+é aceito (`CONVOCACAO_EXPIRADA` só depois) ou já expirou nesse instante?\n+\n+➡️ Recomendação: aceitar na borda (expiração só depois do instante), por simetria\n+com as bordas inclusivas de início/fim do M1.\n+\n+### Bloco B — FIFO e empate\n+\n+❓ **P-06 — Ordem da fila**: a lista de espera é FIFO estrita pela ordem de criação\n+(`criadaEm`), com o primeiro da fila ganhando vaga/convocação primeiro?\n+\n+➡️ Recomendação: FIFO estrito por `criadaEm`.\n+\n+---\n+\n+❓ **P-07 — Empate na fila**: duas inscrições com `criadaEm` idêntico (mesmo\n+instante de relógio) — qual desempata?\n+\n+➡️ Recomendação: desempatar deterministicamente por `id` de inscrição (lexicográfico),\n+já que não há outra ordem observável.\n+\n+---\n+\n+❓ **P-08 — Renoção de posições**: quando alguém sai da espera (cancela, expira,\n+confirma), os que ficam sobem de posição mantendo a ordem original (remumeração\n+compacta) ou ficam com a posição antiga gravada?\n+\n+➡️ Recomendação: encurtar a fila e re-enumerar de 1 em ordem FIFO.\n+\n+---\n+\n+❓ **P-09 — Abertura de vaga sem aumento de vagas**: quando uma vaga abre por\n+cancelamento ou expiração de uma inscrição `confirmada`/`convocada`, a lista de\n+espera é convocada automaticamente (como no aumento de vagas)? Ou só o aumento de\n+vagas convoca?\n+\n+➡️ Recomendação: convocar automaticamente em qualquer abertura de vaga (aumento ou\n+liberação), mesma fila FIFO.\n+\n+---\n+\n+❓ **P-10 — Convocação e conflito**: na convocação automática, quem está em espera\n+mas em conflito de horário (ou excedeu o limite de minicursos) é pulado e o\n+próximo da fila é convocado? E essa pessoa pulada mantém a posição?\n+\n+➡️ Recomendação: pular quem está em conflito/limite, mantendo a posição para uma\n+eventual convocação futura.\n+\n+### Bloco C — Expiração sem acesso e salto do relógio\n+\n+❓ **P-11 — Expiração sem acesso**: se o relógio passa de `convocadaAte` sem nenhuma\n+requisição, a inscrição expira sozinha? A expiração é calculada sob demanda pelo\n+relógio a qualquer leitura (estado rederivado), sem precisar de evento/job?\n+\n+➡️ Recomendação: expiração é regra temporal rederivada do relógio a cada leitura,\n+sem job assíncrono.\n+\n+---\n+\n+❓ **P-12 — Efeito da expiração**: ao expirar, a vaga que a convocação reservava é\n+liberada e a lista de espera é convocada em seguida? O expirado mantém algo (fila\n+ou vaga)?\n+\n+➡️ Recomendação: expirada libera a vaga e dispara a próxima convocação da fila.\n+\n+---\n+\n+❓ **P-13 — Salto do relógio para frente (modo de teste)**: no `PUT /_teste/relogio`\n+com salto grande para frente, o sistema deve reprocessar toda a cadeia de expirações\n+e convocações intermediárias de uma vez (cascata), ou apenas valer o estado final?\n+\n+➡️ Recomendação: reprocessar a cadeia completa de expirações/convocações até o\n+instante final, de modo determinístico.\n+\n+---\n+\n+❓ **P-14 — Salto do relógio para trás**: o relógio do modo de teste pode voltar?\n+Se voltar, expirações e convocações já aplicadas são revertidas?\n+\n+➡️ Recomendação: relógio é a fonte de verdade absoluta; estado é rederivado do\n+instante atual, então retrocesso reverte o que não é persistente (cancelamento\n+e cancelada permanecem).\n+\n+### Bloco D — Estados que contam para conflito de horário e limite de minicursos\n+\n+❓ **P-15 — `CONFLITO_DE_HORARIO` — quais status contam**: quais inscrições do\n+mesmo participante contam para conflito de horário ao inscrever/confirmar?\n+(`confirmada`, `convocada`, `em_espera`, `expirada`, `cancelada`?)\n+\n+➡️ Recomendação: contar apenas `confirmada` e `convocada` (as que ocupam vaga),\n+coerente com F-16.\n+\n+---\n+\n+❓ **P-16 — Como medir o conflito**: o conflito de horário compara os encontros das\n+atividades (intervalos no horário de Brasília, mesmas bordas do M1), independente\n+de sala?\n+\n+➡️ Recomendação: comparar os intervalos de encontros das atividades envolvidas.\n+\n+---\n+\n+❓ **P-17 — `LIMITE_DE_MINICURSOS`**: qual é o limite de minicursos por participante\n+(número)? Quais status contam para esse limite (`confirmada`, `convocada`,\n+`em_espera`, `expirada`, `cancelada`)? O limite vale por evento inteiro e é\n+verificado também na confirmação de convocação?\n+\n+➡️ Recomendação: definir o número; contar `confirmada` + `convocada` (mesmo critério\n+de ocupar vaga); validar em inscrever e em confirmar convocação.\n+\n+### Bloco E — Precedência de erros\n+\n+❓ **P-18 — Precedência ao inscrever**: quando uma mesma inscrição viola várias\n+regras de recurso ao mesmo tempo (ex.: `ATIVIDADE_CANCELADA`, `INSCRICOES_ENCERRADAS`,\n+`INSCRICAO_BLOQUEADA`, `JA_INSCRITO`, `CONFLITO_DE_HORARIO`,\n+`LIMITE_DE_MINICURSOS`), qual erro o participante recebe primeiro?\n+\n+➡️ Recomendação: seguir uma ordem fixa documentada, começando pelo estado da\n+atividade (cancelada → encerramentos), depois `INSCRICAO_BLOQUEADA`/`JA_INSCRITO`,\n+depois `CONFLITO_DE_HORARIO`/`LIMITE_DE_MINICURSOS`.\n+\n+---\n+\n+❓ **P-19 — Precedência ao cancelar inscrição**: ao cancelar inscrição, qual erro\n+vale primeiro entre `ATIVIDADE_CANCELADA`, `ATIVIDADE_JA_INICIADA` e\n+`INSCRICAO_INATIVA` (ex.: cancelar inscrição já cancelada/expirada numa atividade\n+já iniciada)?\n+\n+➡️ Recomendação: primeiro o estado da atividade (`ATIVIDADE_CANCELADA`, depois\n+`ATIVIDADE_JA_INICIADA`), depois `INSCRICAO_INATIVA`.\n+\n+---\n+\n+❓ **P-20 — Precedência ao confirmar convocação**: ao confirmar, qual erro vale\n+primeiro entre `SEM_CONVOCACAO`, `CONVOCACAO_EXPIRADA`, `CONFLITO_DE_HORARIO` e\n+`LIMITE_DE_MINICURSOS`?\n+\n+➡️ Recomendação: primeiro `SEM_CONVOCACAO`, depois `CONVOCACAO_EXPIRADA`, depois\n+conflito e limite.\n+\n+### Bloco F — Reinscrição\n+\n+❓ **P-21 — Reinscrição após cancelamento**: um participante que cancelou a\n+própria inscrição pode se inscrever de novo na mesma atividade depois? Se sim,\n+volta para o fim da fila (em caso de lotada) ou revive a posição?\n+\n+➡️ Recomendação: permite nova inscrição (nova `Inscricao`, fim da fila), sem\n+reviver a posição antiga.\n+\n+---\n+\n+❓ **P-22 — Reinscrição após expirar**: quem teve convocação expirada pode se\n+reinscrever ou ser reconvocado se uma nova vaga abrir?\n+\n+➡️ Recomendação: sim, nova inscrição/reconvocação como se fosse um participante novo,\n+sem privilégio nem punição.\n+\n+---\n+\n+❓ **P-23 — Quando `JA_INSCRITO` vale**: `JA_INSCRITO` dispara para quais status da\n+inscrição existente? (`confirmada`, `convocada`, `em_espera`; e `cancelada`/\n+`expirada` liberam a reinscrição?)\n+\n+➡️ Recomendação: `JA_INSCRITO` apenas para `confirmada`, `convocada` e `em_espera`\n+(status ativos); `cancelada` e `expirada` permitem nova inscrição.\n+\n+### Bloco G — Cancelamento da atividade\n+\n+❓ **P-24 — Cancelamento da atividade e a fila**: no cancelamento da atividade,\n+quais status são considerados \"inscrições ativas\" que viram `cancelada`\n+(`confirmada`, `convocada`, `em_espera`)? E o que acontece com a fila/posições\n+destas inscrições?\n+\n+➡️ Recomendação: `confirmada`, `convocada` e `em_espera` viram `cancelada`;\n+`expirada` já é inativa e não muda; fila é esvaziada.\n+\n+### Bloco H — Isolamento de inscrições alheias\n+\n+❓ **P-25 — `GET /inscricoes/:id` de inscrição de outro**: um participante acessando\n+o detalhe de uma inscrição que não é dele retorna `404 NAO_ENCONTRADO` (tratada\n+como inexistente) ou outro erro?\n+\n+➡️ Recomendação: `404 NAO_ENCONTRADO`, mantendo o isolamento (participante só\n+enxerga as próprias).\n+\n+---\n+\n+❓ **P-26 — Contéudo de `GET /inscricoes`**: a lista do participante inclui também\n+`canceladas` e `expiradas`, ou somente status ativos? O filtro `?atividadeId=`\n+mantém o mesmo princípio? E a organização vê todas as inscrições de todos?\n+\n+➡️ Recomendação: incluir todos os status (inclusive canceladas/expiradas) para\n+histórico, com o mesmo princípio de isolamento e filtro.\n+\n+### Bloco I — Corpo da requisição e ordenação/persistência\n+\n+❓ **P-27 — Corpo enviado onde não há entrada**: como o contrato diz \"sem corpo na\n+entrada\", um corpo ausente ou vazio é aceito. Um corpo JSON presente (mesmo sem\n+campos definidos) deve ser ignorado ou vira `422 DADOS_INVALIDOS`? Vale o mesmo\n+para cancelamento e confirmação?\n+\n+➡️ Recomendação: corpo ausente/vazio aceito; corpo presente com JSON bem formado é\n+ignorado (sem campos a validar); corpo mal formado (não-JSON) vira `DADOS_INVALIDOS`.\n+\n+---\n+\n+❓ **P-28 — Ordenação de `GET /inscricoes`**: em que ordem a lista de inscrições\n+é retornada (por `criadaEm`? por status? por atividade?)?\n+\n+➡️ Recomendação: ordenar por `criadaEm` ascendente; empate por `id`.\n+\n+---\n+\n+❓ **P-29 — Persistência de estados temporais**: uma vez que a expiração de uma\n+convocação é observada por uma leitura, esse resultado precisa ser \"carimbado\" e\n+não voltar se o relógio for colocado para trás no modo de teste?\n+\n+➡️ Recomendação: tudo é rederivado do relógio; nada é carimbado, exceto o que é\n+persistente por decisão (cancelamentos).\n+\n+## Pontos Confirmados\n+\n+(vazio — rodada 1 em andamento)\n+\n+## Pontos Pendentes\n+\n+P-01 a P-29 da Rodada 1.\n\\ No newline at end of file\n",
+       "additions": 298,
+       "deletions": 0,
+       "status": "added"
+      }
+     ]
+    },
+    "id": "msg_0cb07f146001XKlXOW0JadzaaV",
+    "sessionID": "ses_f34f80f66ffeyg6tcIUDSeyrgx"
+   },
+   "parts": [
+    {
+     "type": "text",
+     "text": "\"Use a skill grilling para iniciar apenas a rodada 1 do M2 inscricoes e lista de espera. Leia AGENTS.md, api/AGENTS.md, frontend/AGENTS.md, contrato-api.md, specs/M1-grade-atividades.md, api/lib/server.dart e frontend/lib/api_client.dart. Registre em entrevistas/M2-inscricoes.md os fatos ja definidos pelo contrato com a fonte correta e as perguntas P-xx de regras de negocio ainda PENDENTE. Pergunte a fronteira inteira, sem inventar respostas, numeros, RN ou entrevista do usuario. Inclua prazos e bordas de encerramento e convocacao, FIFO e empate, expiracao sem acesso e salto do relogio, estados que contam para conflito e limite de minicursos, precedencia de erros, reinscricao, cancelamento da atividade, isolamento de inscricoes alheias, corpos sem entrada e persistencia. Nao leia arquivos externos de requisitos nem enunciados. Nao implemente nem escreva testes ou spec ainda. Preserve todos os arquivos historicos. Responda em portugues com as perguntas que precisam ser respondidas pelo usuario. Nao faca commit nem push.\"",
+     "id": "prt_0cb07f157001XBcUHoS4en4iiz",
+     "sessionID": "ses_f34f80f66ffeyg6tcIUDSeyrgx",
+     "messageID": "msg_0cb07f146001XKlXOW0JadzaaV"
+    }
+   ]
+  },
+  {
+   "info": {
+    "parentID": "msg_0cb07f146001XKlXOW0JadzaaV",
+    "role": "assistant",
+    "mode": "build",
+    "agent": "build",
+    "path": {
+     "cwd": "C:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech",
+     "root": "C:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech"
+    },
+    "cost": 0,
+    "tokens": {
+     "total": 9324,
+     "input": 7427,
+     "output": 105,
+     "reasoning": 0,
+     "cache": {
+      "write": 0,
+      "read": 1792
+     }
+    },
+    "modelID": "big-pickle",
+    "providerID": "opencode",
+    "time": {
+     "created": 1790112691514,
+     "completed": 1790112699986
+    },
+    "finish": "tool-calls",
+    "id": "msg_0cb07f53a001dcFBSMZEqZDXB0",
+    "sessionID": "ses_f34f80f66ffeyg6tcIUDSeyrgx"
+   },
+   "parts": [
+    {
+     "snapshot": "fa4ba504c33fc83ae70d3d78b468298f347d8dde",
+     "type": "step-start",
+     "id": "prt_0cb081019001kmxQD3zuc6x2sQ",
+     "sessionID": "ses_f34f80f66ffeyg6tcIUDSeyrgx",
+     "messageID": "msg_0cb07f53a001dcFBSMZEqZDXB0"
+    },
+    {
+     "type": "reasoning",
+     "text": "The user wants me to use the \"grilling\" skill to start round 1 of M2 (inscrições e lista de espera). Let me load the skill first, then read the required files.\n\nLet me start by loading the skill and reading the files in parallel where possible.",
+     "time": {
+      "start": 1790112698399,
+      "end": 1790112698677
+     },
+     "id": "prt_0cb08101f001QyCzb0Hlti60FP",
+     "sessionID": "ses_f34f80f66ffeyg6tcIUDSeyrgx",
+     "messageID": "msg_0cb07f53a001dcFBSMZEqZDXB0"
+    },
+    {
+     "type": "text",
+     "text": "\n\n",
+     "time": {
+      "start": 1790112698687,
+      "end": 1790112698870
+     },
+     "id": "prt_0cb08113f001M2SoiSxxakwm2x",
+     "sessionID": "ses_f34f80f66ffeyg6tcIUDSeyrgx",
+     "messageID": "msg_0cb07f53a001dcFBSMZEqZDXB0"
+    },
+    {
+     "type": "tool",
+     "tool": "skill",
+     "callID": "call_71d4dfb368a14a6d9397b43c",
+     "state": {
+      "status": "completed",
+      "input": {
+       "name": "grilling"
+      },
+      "output": "<skill_content name=\"grilling\">\n# Skill: grilling\n\n# Entrevista até o fim\r\n\r\nO pedido que você recebeu está incompleto. Sempre está. Seu trabalho aqui **não é\r\nprogramar** — é descobrir tudo o que o usuário sabe e não escreveu, antes que você\r\nprecise adivinhar.\r\n\r\nToda vez que você adivinha, você decide sozinho uma regra de negócio que não é sua.\r\nEla vai passar no teste que você mesmo escrever e falhar no primeiro contato com o\r\ncliente. Perguntar é mais barato.\r\n\r\n## Como conduzir\r\n\r\nTrate as decisões como uma árvore: cada resposta abre as decisões que dependiam dela.\r\n\r\nTrabalhe em **rodadas**. A **fronteira** é o conjunto de decisões cujos pré-requisitos\r\njá estão resolvidos — o que dá para perguntar **agora**, sem chutar resposta que você\r\nainda não ouviu. Pergunte a fronteira inteira de uma vez, numerada, e **espere** o\r\nusuário responder antes da próxima rodada.\r\n\r\nUma pergunta que só faz sentido depois de outra pergunta desta mesma rodada pertence à\r\n**rodada seguinte**, não a esta.\r\n\r\nFormato de cada rodada:\r\n\r\n```\r\n❓ **P1 — <título curto>**: <a pergunta, com as opções quando houver>\r\n\r\n➡️ <sua recomendação, uma linha>\r\n\r\n---\r\n\r\n❓ **P2 — <título curto>**: <...>\r\n\r\n➡️ <sua recomendação>\r\n```\r\n\r\nSempre dê a sua recomendação. O usuário pode responder \"todas as recomendadas\" e a\r\nrodada acaba em dez segundos — mas ele decidiu, e está registrado.\r\n\r\n## O que perguntar\r\n\r\nPasse por estas famílias antes de declarar a fronteira vazia:\r\n\r\n- **Números.** Prazo, limite, quantidade, valor, teto, piso. Todo número que aparecer\r\n  no código sem estar na resposta do usuário é invenção sua.\r\n- **Ordem e precedência.** Quando duas regras recusam a mesma operação, qual erro o\r\n  cliente recebe?\r\n- **Estados e transições.** O que pode acontecer com uma coisa já criada? O que é\r\n  proibido depois?\r\n- **Fronteira do escopo.** O que este recurso **não** faz. Pergunte explicitamente.\r\n- **Contrato de saída.** Nomes de campo, códigos de status, formato de data. Se existe\r\n  cliente consumindo, os nomes não são escolha sua.\r\n- **Como se verifica.** Para cada regra: qual cenário provaria que ela funciona? Regra\r\n  que não dá para verificar não é regra, é desejo — e você precisa dizer isso ao\r\n  usuário durante a entrevista, não depois.\r\n\r\n## Fatos são seu problema, decisões são do usuário\r\n\r\nSe a resposta está no repositório, **vá ler o repositório**. Não pergunte ao usuário\r\nconvenção de código, nome de arquivo, formato que já existe — procure com `grep` e\r\n`read` e traga já resolvido.\r\n\r\nPergunte só o que ele decide e você não teria como saber.\r\n\r\n## Quando acaba\r\n\r\nAcaba quando a fronteira está vazia: nenhuma decisão restante escondida atrás de um\r\n\"acho que\". Aí faça um resumo numerado das decisões e **confirme** com o usuário.\r\n\r\nNão escreva código nesta skill. Nem teste. A saída é entendimento compartilhado.\n\nBase directory for this skill: C:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\skills\\grilling\nRelative paths in this skill (e.g., scripts/, reference/) are relative to this base directory.\nNote: file list is sampled.\n\n<skill_files>\n\n</skill_files>\n</skill_content>",
+      "metadata": {
+       "name": "grilling",
+       "dir": "C:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\.opencode\\skills\\grilling",
+       "truncated": false
+      },
+      "title": "Loaded skill: grilling",
+      "time": {
+       "start": 1790112698812,
+       "end": 1790112698936
+      }
+     },
+     "id": "prt_0cb081163001jgywIhgZsCjAWu",
+     "sessionID": "ses_f34f80f66ffeyg6tcIUDSeyrgx",
+     "messageID": "msg_0cb07f53a001dcFBSMZEqZDXB0"
+    },
+    {
+     "reason": "tool-calls",
+     "snapshot": "fa4ba504c33fc83ae70d3d78b468298f347d8dde",
+     "type": "step-finish",
+     "tokens": {
+      "total": 9324,
+      "input": 7427,
+      "output": 105,
+      "reasoning": 0,
+      "cache": {
+       "write": 0,
+       "read": 1792
+      }
+     },
+     "cost": 0,
+     "id": "prt_0cb08147b001Nk6az6kRPAytJ1",
+     "sessionID": "ses_f34f80f66ffeyg6tcIUDSeyrgx",
+     "messageID": "msg_0cb07f53a001dcFBSMZEqZDXB0"
+    }
+   ]
+  },
+  {
+   "info": {
+    "parentID": "msg_0cb07f146001XKlXOW0JadzaaV",
+    "role": "assistant",
+    "mode": "build",
+    "agent": "build",
+    "path": {
+     "cwd": "C:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech",
+     "root": "C:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech"
+    },
+    "cost": 0,
+    "tokens": {
+     "total": 10714,
+     "input": 1125,
+     "output": 373,
+     "reasoning": 0,
+     "cache": {
+      "write": 0,
+      "read": 9216
+     }
+    },
+    "modelID": "big-pickle",
+    "providerID": "opencode",
+    "time": {
+     "created": 1790112699994,
+     "completed": 1790112704910
+    },
+    "finish": "tool-calls",
+    "id": "msg_0cb08165a001cOyZggCk8IMUil",
+    "sessionID": "ses_f34f80f66ffeyg6tcIUDSeyrgx"
+   },
+   "parts": [
+    {
+     "snapshot": "fa4ba504c33fc83ae70d3d78b468298f347d8dde",
+     "type": "step-start",
+     "id": "prt_0cb081b79001kqqM5YgnopkDfl",
+     "sessionID": "ses_f34f80f66ffeyg6tcIUDSeyrgx",
+     "messageID": "msg_0cb08165a001cOyZggCk8IMUil"
+    },
+    {
+     "type": "reasoning",
+     "text": "Now let me read the required files. AGENTS.md is already in my context. Let me read the other files in parallel.",
+     "time": {
+      "start": 1790112701310,
+      "end": 1790112701471
+     },
+     "id": "prt_0cb081b7e001pSvNEnrWRsNGci",
+     "sessionID": "ses_f34f80f66ffeyg6tcIUDSeyrgx",
+     "messageID": "msg_0cb08165a001cOyZggCk8IMUil"
+    },
+    {
+     "type": "tool",
+     "tool": "read",
+     "callID": "call_bc8300b6bba34bc08ad0cd3e",
+     "state": {
+      "status": "completed",
+      "input": {
+       "filePath": "C:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\api\\AGENTS.md"
+      },
+      "output": "[861 caracteres omitidos]",
+      "title": "api\\AGENTS.md",
+      "time": {
+       "start": 1790112701671,
+       "end": 1790112701813
+      }
+     },
+     "id": "prt_0cb081c23001v9ej33e7sIImpq",
+     "sessionID": "ses_f34f80f66ffeyg6tcIUDSeyrgx",
+     "messageID": "msg_0cb08165a001cOyZggCk8IMUil"
+    },
+    {
+     "type": "tool",
+     "tool": "read",
+     "callID": "call_0b60b244a1014031b6027123",
+     "state": {
+      "status": "completed",
+      "input": {
+       "filePath": "C:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\frontend\\AGENTS.md"
+      },
+      "output": "[784 caracteres omitidos]",
+      "title": "frontend\\AGENTS.md",
+      "time": {
+       "start": 1790112701775,
+       "end": 1790112701863
+      }
+     },
+     "id": "prt_0cb081cea001QISQXq09ghbZvc",
+     "sessionID": "ses_f34f80f66ffeyg6tcIUDSeyrgx",
+     "messageID": "msg_0cb08165a001cOyZggCk8IMUil"
+    },
+    {
+     "type": "tool",
+     "tool": "read",
+     "callID": "call_d66ed72b01664e1fbcd02af6",
+     "state": {
+      "status": "completed",
+      "input": {
+       "filePath": "C:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\contrato-api.md"
+      },
+      "output": "[13894 caracteres omitidos]",
+      "title": "contrato-api.md",
+      "time": {
+       "start": 1790112701932,
+       "end": 1790112701993
+      }
+     },
+     "id": "prt_0cb081d53001OvSLpoSawM3Fiy",
+     "sessionID": "ses_f34f80f66ffeyg6tcIUDSeyrgx",
+     "messageID": "msg_0cb08165a001cOyZggCk8IMUil"
+    },
+    {
+     "type": "tool",
+     "tool": "read",
+     "callID": "call_ae2d5490a7ff4d0c9063fc0d",
+     "state": {
+      "status": "completed",
+      "input": {
+       "filePath": "C:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\specs\\M1-grade-atividades.md"
+      },
+      "output": "[23658 caracteres omitidos]",
+      "title": "specs\\M1-grade-atividades.md",
+      "time": {
+       "start": 1790112702121,
+       "end": 1790112702202
+      }
+     },
+     "id": "prt_0cb081df2001igzOTQmOYPJb93",
+     "sessionID": "ses_f34f80f66ffeyg6tcIUDSeyrgx",
+     "messageID": "msg_0cb08165a001cOyZggCk8IMUil"
+    },
+    {
+     "type": "tool",
+     "tool": "read",
+     "callID": "call_6ad6941aec034fe6ae0f4199",
+     "state": {
+      "status": "completed",
+      "input": {
+       "filePath": "C:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\api\\lib\\server.dart"
+      },
+      "output": "[18451 caracteres omitidos]",
+      "title": "api\\lib\\server.dart",
+      "time": {
+       "start": 1790112703251,
+       "end": 1790112703763
+      }
+     },
+     "id": "prt_0cb081ee10018XCx82pP4mrbYX",
+     "sessionID": "ses_f34f80f66ffeyg6tcIUDSeyrgx",
+     "messageID": "msg_0cb08165a001cOyZggCk8IMUil"
+    },
+    {
+     "type": "tool",
+     "tool": "read",
+     "callID": "call_ebe2aae8b1df45e78606f925",
+     "state": {
+      "status": "completed",
+      "input": {
+       "filePath": "C:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\frontend\\lib\\api_client.dart"
+      },
+      "output": "[5655 caracteres omitidos]",
+      "title": "frontend\\lib\\api_client.dart",
+      "time": {
+       "start": 1790112703458,
+       "end": 1790112703772
+      }
+     },
+     "id": "prt_0cb0823c6001o98PctfP8L7aep",
+     "sessionID": "ses_f34f80f66ffeyg6tcIUDSeyrgx",
+     "messageID": "msg_0cb08165a001cOyZggCk8IMUil"
+    },
+    {
+     "reason": "tool-calls",
+     "snapshot": "fa4ba504c33fc83ae70d3d78b468298f347d8dde",
+     "type": "step-finish",
+     "tokens": {
+      "total": 10714,
+      "input": 1125,
+      "output": 373,
+      "reasoning": 0,
+      "cache": {
+       "write": 0,
+       "read": 9216
+      }
+     },
+     "cost": 0,
+     "id": "prt_0cb0826ce001BYb5qxrPYbQN5q",
+     "sessionID": "ses_f34f80f66ffeyg6tcIUDSeyrgx",
+     "messageID": "msg_0cb08165a001cOyZggCk8IMUil"
+    }
+   ]
+  },
+  {
+   "info": {
+    "parentID": "msg_0cb07f146001XKlXOW0JadzaaV",
+    "role": "assistant",
+    "mode": "build",
+    "agent": "build",
+    "path": {
+     "cwd": "C:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech",
+     "root": "C:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech"
+    },
+    "cost": 0,
+    "tokens": {
+     "total": 31985,
+     "input": 21421,
+     "output": 68,
+     "reasoning": 0,
+     "cache": {
+      "write": 0,
+      "read": 10496
+     }
+    },
+    "modelID": "big-pickle",
+    "providerID": "opencode",
+    "time": {
+     "created": 1790112704924,
+     "completed": 1790112708352
+    },
+    "finish": "tool-calls",
+    "id": "msg_0cb08299c001x2OHA06fVHT0Bz",
+    "sessionID": "ses_f34f80f66ffeyg6tcIUDSeyrgx"
+   },
+   "parts": [
+    {
+     "snapshot": "fa4ba504c33fc83ae70d3d78b468298f347d8dde",
+     "type": "step-start",
+     "id": "prt_0cb0830a2001YVqT0izujE8Sbn",
+     "sessionID": "ses_f34f80f66ffeyg6tcIUDSeyrgx",
+     "messageID": "msg_0cb08299c001x2OHA06fVHT0Bz"
+    },
+    {
+     "type": "reasoning",
+     "text": "Now let me check the entrevistas directory to see if M2-inscricoes.md already exists.",
+     "time": {
+      "start": 1790112706737,
+      "end": 1790112706826
+     },
+     "id": "prt_0cb0830b0001iMVvEqz9k87gOw",
+     "sessionID": "ses_f34f80f66ffeyg6tcIUDSeyrgx",
+     "messageID": "msg_0cb08299c001x2OHA06fVHT0Bz"
+    },
+    {
+     "type": "tool",
+     "tool": "glob",
+     "callID": "call_a336682564f349e1adc5f92c",
+     "state": {
+      "status": "completed",
+      "input": {
+       "pattern": "entrevistas/**"
+      },
+      "output": "[151 caracteres omitidos]",
+      "title": "",
+      "time": {
+       "start": 1790112706901,
+       "end": 1790112707252
+      }
+     },
+     "id": "prt_0cb08311c001ZN40rp0unGaPx1",
+     "sessionID": "ses_f34f80f66ffeyg6tcIUDSeyrgx",
+     "messageID": "msg_0cb08299c001x2OHA06fVHT0Bz"
+    },
+    {
+     "reason": "tool-calls",
+     "snapshot": "fa4ba504c33fc83ae70d3d78b468298f347d8dde",
+     "type": "step-finish",
+     "tokens": {
+      "total": 31985,
+      "input": 21421,
+      "output": 68,
+      "reasoning": 0,
+      "cache": {
+       "write": 0,
+       "read": 10496
+      }
+     },
+     "cost": 0,
+     "id": "prt_0cb08352c0014uqBvVOVYclXQ4",
+     "sessionID": "ses_f34f80f66ffeyg6tcIUDSeyrgx",
+     "messageID": "msg_0cb08299c001x2OHA06fVHT0Bz"
+    }
+   ]
+  },
+  {
+   "info": {
+    "parentID": "msg_0cb07f146001XKlXOW0JadzaaV",
+    "role": "assistant",
+    "mode": "build",
+    "agent": "build",
+    "path": {
+     "cwd": "C:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech",
+     "root": "C:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech"
+    },
+    "cost": 0,
+    "tokens": {
+     "total": 32141,
+     "input": 308,
+     "output": 89,
+     "reasoning": 0,
+     "cache": {
+      "write": 0,
+      "read": 31744
+     }
+    },
+    "modelID": "big-pickle",
+    "providerID": "opencode",
+    "time": {
+     "created": 1790112708359,
+     "completed": 1790112710868
+    },
+    "finish": "tool-calls",
+    "id": "msg_0cb083707001TVTMgzoINPCan3",
+    "sessionID": "ses_f34f80f66ffeyg6tcIUDSeyrgx"
+   },
+   "parts": [
+    {
+     "snapshot": "fa4ba504c33fc83ae70d3d78b468298f347d8dde",
+     "type": "step-start",
+     "id": "prt_0cb083bf5001ullWjA9gRA7HbE",
+     "sessionID": "ses_f34f80f66ffeyg6tcIUDSeyrgx",
+     "messageID": "msg_0cb083707001TVTMgzoINPCan3"
+    },
+    {
+     "type": "reasoning",
+     "text": "Let me read the existing M1 interview file to understand the format used.",
+     "time": {
+      "start": 1790112709628,
+      "end": 1790112709636
+     },
+     "id": "prt_0cb083bfc001Q8f5NdRMiaxFG8",
+     "sessionID": "ses_f34f80f66ffeyg6tcIUDSeyrgx",
+     "messageID": "msg_0cb083707001TVTMgzoINPCan3"
+    },
+    {
+     "type": "tool",
+     "tool": "read",
+     "callID": "call_ab41193d9fba4c93876ca743",
+     "state": {
+      "status": "completed",
+      "input": {
+       "filePath": "C:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\entrevistas\\M1-grade-atividades.md"
+      },
+      "output": "[37476 caracteres omitidos]",
+      "title": "entrevistas\\M1-grade-atividades.md",
+      "time": {
+       "start": 1790112709812,
+       "end": 1790112709967
+      }
+     },
+     "id": "prt_0cb083c0a001hZhHeeP78XQSGA",
+     "sessionID": "ses_f34f80f66ffeyg6tcIUDSeyrgx",
+     "messageID": "msg_0cb083707001TVTMgzoINPCan3"
+    },
+    {
+     "reason": "tool-calls",
+     "snapshot": "fa4ba504c33fc83ae70d3d78b468298f347d8dde",
+     "type": "step-finish",
+     "tokens": {
+      "total": 32141,
+      "input": 308,
+      "output": 89,
+      "reasoning": 0,
+      "cache": {
+       "write": 0,
+       "read": 31744
+      }
+     },
+     "cost": 0,
+     "id": "prt_0cb083f22001lyzWR2M3033KkL",
+     "sessionID": "ses_f34f80f66ffeyg6tcIUDSeyrgx",
+     "messageID": "msg_0cb083707001TVTMgzoINPCan3"
+    }
+   ]
+  },
+  {
+   "info": {
+    "parentID": "msg_0cb07f146001XKlXOW0JadzaaV",
+    "role": "assistant",
+    "mode": "build",
+    "agent": "build",
+    "path": {
+     "cwd": "C:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech",
+     "root": "C:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech"
+    },
+    "cost": 0,
+    "tokens": {
+     "total": 59396,
+     "input": 11418,
+     "output": 15978,
+     "reasoning": 0,
+     "cache": {
+      "write": 0,
+      "read": 32000
+     }
+    },
+    "modelID": "big-pickle",
+    "providerID": "opencode",
+    "time": {
+     "created": 1790112710874,
+     "completed": 1790112843127
+    },
+    "finish": "tool-calls",
+    "id": "msg_0cb0840da001fsr2c1UWQLLkn8",
+    "sessionID": "ses_f34f80f66ffeyg6tcIUDSeyrgx"
+   },
+   "parts": [
+    {
+     "snapshot": "fa4ba504c33fc83ae70d3d78b468298f347d8dde",
+     "type": "step-start",
+     "id": "prt_0cb08471d001CWC55d6ccfdF36",
+     "sessionID": "ses_f34f80f66ffeyg6tcIUDSeyrgx",
+     "messageID": "msg_0cb0840da001fsr2c1UWQLLkn8"
+    },
+    {
+     "type": "reasoning",
+     "text": "Now I understand the format. Let me analyze the facts already defined by the contract for M2 and what questions remain.\n\nLet me extract M2 facts from the contract (contrato-api.md):\n\n**M2 Rotas:**\n- POST `/atividades/:id/inscricoes` — participante — 201 `Inscricao` (sem corpo na entrada)\n- GET `/inscricoes` — todos — 200 `[Inscricao]` — participante recebe só as próprias; filtro `?atividadeId=`\n- GET `/inscricoes/:id` — todos — 200 `Inscricao`\n- POST `/inscricoes/:id/cancelamento` — participante — 200 `Inscricao`\n- POST `/inscricoes/:id/confirmacao` — participante — 200 `Inscricao`\n\n**Inscricao model:**\n- `id`: `ins_` + 8 hexadecimais\n- `atividadeId`\n- `participanteId`\n- `status`: `confirmada` | `em_espera` | `convocada` | `cancelada` | `expirada`\n- `posicaoNaEspera`: null, número (1, 2, …) só quando em_espera\n- `convocadaAte`: null, instante, só quando convocada\n- `criadaEm`\n\n**M2 error codes:**\n- `ATIVIDADE_CANCELADA` (422) — inscrever (changing... \"alterar e cancelar atividade, inscrever, obter código, certificado\") — wait, in M1 spec the ATIVIDADE_CANCELADA appears on \"alterar e cancelar atividade, inscrever, obter código, certificado\" per contract section 6. Actually the contract says `ATIVIDADE_CANCELADA` | 422 | alterar e cancelar atividade, inscrever, obter código, certificado.\n- `INSCRICOES_ENCERRADAS` (422) — inscrever\n- `INSCRICAO_BLOQUEADA` (422) — inscrever — só em grupos com M5\n- `JA_INSCRITO` (409) — inscrever\n- `CONFLITO_DE_HORARIO` (409) — inscrever, confirmar convocação\n- `LIMITE_DE_MINICURSOS` (422) — inscrever, confirmar convocação\n- `INSCRICAO_INATIVA` (422) — cancelar inscrição\n- `SEM_CONVOCACAO` (422) — confirmar convocação\n- `CONVOCACAO_EXPIRADA` (422) — confirmar convocação\n\nAlso, related to M1 spec for M2:\n- R601 (in M1 spec section 17): M2 dependency on activity states; cancelamento de atividade deve impedir novas inscrições e cancelar inscrições ativas conforme regra do M2. So the activity cancellation effect on active enrollments is stated in R2-P24 in M1: \"Ao cancelar a atividade, todas as inscrições ativas são canceladas\" (RN-203).\n\nOther facts from contract:\n- Identification: X-Usuario header required on all routes except GET /certificados/:codigo and /_teste/*. Without header or unknown id → 401 USUARIO_DESCONHECIDO.\n- Order of verifications: identificação (401) → perfil (403) → existência (404 NAO_ENCONTRADO) → corpo (422 DADOS_INVALIDOS) → regras do recurso.\n- 403 SOMENTE_PARTICIPANTE for participante routes.\n- 404 NAO_ENCONTRADO for non-existent resource.\n- 422 DADOS_INVALIDOS for malformed body.\n- Datas ISO 8601 com fuso.\n- Identifiers: ins_ + 8 hex.\n- M1 exposes `ocupadas` (confirmadas + convocadas count) and `emEspera` (em_espera count) and `vagasRestantes`.\n- R29/R30 in M1 spec: inscrições confirmadas e convocadas contam como ocupando vaga; em_espera, canceladas e expiradas não contam.\n- R31: aumentar vagas é permitido; convocação automática da lista de espera é dependência do M2.\n- POST /inscricoes não tem corpo na entrada.\n- GET /inscricoes — participante recebe só as próprias; filtro ?atividadeId=.\n- status values and field semantics: posicaoNaEspera only when em_espera; convocadaAte only when convocada.\n- ST101: `ATIVIDADE_JA_INICIADA` (422) — cancelar atividade, cancelar inscrição. So canceling inscription when the activity already started → ATIVIDADE_JA_INICIADA.\n- `INSCRICAO_INATIVA` (422) — cancelar inscrição.\n- `JA_INSCRITO` (409) — inscrever (already enrolled).\n- `CONFLITO_DE_HORARIO` (409) — inscrever, confirmar convocação.\n- `LIMITE_DE_MINICURSOS` (422) — inscrever, confirmar convocação.\n- `SEM_CONVOCACAO` (422) — confirmar convocação (calling confirm without being convocada, likely).\n- `CONVOCACAO_EXPIRADA` (422) — confirmar convocação (convocadaAte passed).\n- `INSCRICOES_ENCERRADAS` (422) — inscrever.\n- `INSCRICAO_BLOQUEADA` (422) — inscrever (M5 only).\n\nNow, the user wants me to:\n1. Register in entrevistas/M2-inscricoes.md the facts already defined by the contract with correct source, and the P-xx business rule questions still PENDENTE.\n2. Ask the whole frontier, without inventing answers, numbers, RN, or user interview.\n3. Include: prazos e bordas de encerramento e convocação (deadlines and closing/convocatória borders), FIFO e empate (FIFO and tie), expiração sem acesso e salto do relógio (expiration without access and clock jump), estados que contam para conflito e limite de minicursos (statuses that count for conflict and minicourse limit), precedência de erros, reinscrição, cancelamento da atividade, isolamento de inscrições alheias, corpos sem entrada e persistência (bodies without input and persistence).\n\nLet me enumerate the frontier questions for round 1. Following the skill: ask the whole frontier numbered, each with recommendation. And wait for user to respond before next round.\n\nI need to create entrevistas/M2-inscricoes.md with:\n- Facts already defined by the contract with correct source (contrato-api.md, M1 spec, RN references - but wait, RN references are from the document consulted in round 2 of M1, which is external. I should not read external requirements files. But the M1 spec file contains references to RN-203 etc. I can cite facts from contrato-api.md and specs/M1-grade-atividades.md. I should not invent RN references. The M1 R2-P24 said \"Ao cancelar a atividade, todas as inscrições ativas são canceladas\" (RN-203, RN-217...). This is recorded in entrevistas/M1-grade-atividades.md which is a historical file I can reference. Actually user said don't read external requirement files or statements. The M1 interview file is internal project artifact. I already read it. I can use it as a source for the fact that canceling activity cancels active registrations, since it's already registered in the historical interview. But I should be careful: facts \"já definidos pelo contrato\" should be sourced from contrato-api.md and specs. The spec M1 R2-P24 is referenced in the M1 spec file itself (section 17). I'll cite those.\n\nLet me structure the M2-inscricoes.md file with:\n- ## Registro\n- ## Rodada 1\n- Table with facts already defined (F-xx with source) and pending questions divided into: Perguntas Já Definidas (F) and Perguntas Pendentes (P-xx).\n\nActually, the M1 file format: table with # | Pergunta | Resposta | Fonte. For M2, I'll create a similar structure. Let me create:\n\n# Entrevista — M2 Inscrições e Lista de Espera\n\n## Fatos já definidos pelo contrato\n\nTable: # | Fato | Fonte \n\nThen ## Rodada 1 with perguntas pendentes P-01..P-xx.\n\nLet me enumerate the facts from the contract:\n\n1. POST `/atividades/:id/inscricoes` é operação de participante (403 SOMENTE_PARTICIPANTE para não participante) e não recebe corpo na entrada. — contrato-api.md, rotas M2\n2. POST `/inscricoes/:id/cancelamento` e POST `/inscricoes/:id/confirmacao` são operações de participante. — contrato-api.md, rotas M2\n3. GET `/inscricoes` e GET `/inscricoes/:id` são acessíveis a todos os usuários identificados; participante recebe só as próprias inscrições em GET /inscricoes; filtro ?atividadeId=. — contrato-api.md, rotas M2\n4. Os campos da Inscricao: id (ins_ + 8 hex), atividadeId, participanteId, status (confirmada | em_espera | convocada | cancelada | expirada), posicaoNaEspera (só quando em_espera), convocadaAte (só quando convocada), criadaEm. — contrato-api.md, modelo Inscricao\n5. Status HTTP: POST inscrição → 201; cancelamento/confirmação → 200; GET → 200. — contrato-api.md\n6. Identificação via X-Usuario em toda rota; 401 USUARIO_DESCONHECIDO. — contrato-api.md, convenções\n7. Ordem das verificações: 401 → 403 → 404 → 422 corpo → regras do recurso. Quando mais de uma regra do recurso recusa, ordem é regra de negócio. — contrato-api.md, convenções\n8. Códigos de erro M2 existentes: JA_INSCRITO (409), CONFLITO_DE_HORARIO (409), LIMITE_DE_MINICURSOS (422), INSCRICOES_ENCERRADAS (422), INSCRICAO_BLOQUEADA (422, só M5), ATIVIDADE_CANCELADA (422), ATIVIDADE_JA_INICIADA (422, cancelar inscrição), INSCRICAO_INATIVA (422), SEM_CONVOCACAO (422), CONVOCACAO_EXPIRADA (422). — contrato-api.md, códigos de retorno\n9. Inscrever em atividade cancelada → ATIVIDADE_CANCELADA. — contrato-api.md, códigos de retorno\n10. Cancelar inscrição de atividade já iniciada → ATIVIDADE_JA_INICIADA. — contrato-api.md, códigos de retorno\n11. Datas ISO 8601 com fuso; relógio controlado em MODO_TESTE. — contrato-api.md, convenções e modo de teste\n12. Inscrições confirmadas e convocadas contam como ocupadas (ocupadas/vagasRestantes); em_espera, canceladas e expiradas não. — specs/M1-grade-atividades.md R29, R30\n13. emEspera = quantidade de em_espera. — contrato-api.md, modelo Atividade / specs M1\n14. Aumentar vagas é permitido; convocação automática da lista de espera pertence ao M2. — specs/M1-grade-atividades.md R31\n15. Ao cancelar a atividade, todas as inscrições ativas são canceladas; novas inscrições bloqueadas. — specs/M1-grade-atividades.md (R2-P24 / RN-203 referenced in section 17) — source: entrevistas/M1-grade-atividades.md R2-P24 e specs/M1-grade-atividades.md seção 17.\n16. Nenhum dado inicial de inscrição é carregado; dados iniciais são usuários e salas apenas. Hmm — the contract's section 4 says dados iniciais are users and rooms, no enrollment. That's a fact: o sistema inicia sem inscrições (dados iniciais do contrato não incluem inscrições). Actually contract section 4 \"Não há rota para criar usuário ou sala.\" states data inicial. It's reasonable to note that no Inscricao is in initial data. This is fact from contrato-api.md §4.\n\nNow the pending frontier questions (P-xx). The user enumerated the areas:\n- prazos e bordas de encerramento e convocação (deadlines: when do inscrições close? bordas inclusive; convocação deadline — convocadaAte window)\n- FIFO e empate (waiting list order, tie-breaking on same timestamp)\n- expiração sem acesso e salto do relógio (o que acontece quando o tempo passa sem ninguém acessar — expiração de convocação calculada por relógio; salto de relógio no modo teste)\n- estados que contam para conflito e limite de minicursos (which statuses count for CONFLITO_DE_HORARIO and LIMITE_DE_MINICURSOS)\n- precedência de erros (order among M2 rule errors)\n- reinscrição (re-enrollment after cancel/expire)\n- cancelamento da atividade (activity cancellation effect on enrollments — already partly defined by M1 fact #15, but maybe depth: what happens to lista de espera — but that's defined: \"todas as inscrições ativas são canceladas\". Wait \"ativas\" means confirmada, em_espera, convocada → canceladas. expirada already inactive. Hmm, but what defines \"ativa\"? That's a question! Actually RN-203 said all active registrations are canceled. What statuses are \"ativas\"? Might be a question but the fact is recorded. Let me keep it as pending: quais status são \"ativas\" (confirmada, em_espera, convocada?) — hmm, but I don't want to ask questions whose answer M1 round2 already gave... the M1 round 2 said \"todas as inscrições ativas são canceladas\". The statuses that are \"active\": confirmada, em_espera, convocada presumably. But expirada is also arguably active-ish? No, expirada is inactive. Actually this is a reasonable pregunta to confirm. But careful — user said \"sem inventar\". Asking to confirm statuses is legit.\n\nActually let me define the pending questions within the areas the user asked:\n\nPrazos e bordas:\n- P-xx encerramento de inscrições: quando as inscrições encerram? (ex.: início da atividade? fim do último encontro? N horas antes? INSCRICOES_ENCERRADAS). Bordas inclusivas/exclusivas.\n- P-xx convocação: janela de validade de convocadaAte (prazo para confirmar). Bordas.\n\nFIFO e empate:\n- P-xx ordem da fila: FIFO estrito por criadaEm? Desempate quando criadaEm igual (mesmo instante de relógio)?\n- P-xx posicaoNaEspera renumeração ao remover alguém (cancelamento/expirado) — fila comprime?\n\nExpiração sem acesso e salto do relógio:\n- P-xx convocação expira sozinha quando o relógio passa de convocadaAte sem ninguém acessar? (\"o que acontece quando o tempo passa sem ninguém acessar\" — expiração é computada sob demanda pela regra do relógio, não por job? E o status expirada aparece retroativamente?)\n- P-xx salto do relógio no modo de teste: saltos grandes/para trás afetam expiração e convocação; convocações feitas durante o salto?\n\nEstados que contam para conflito e limite de minicursos:\n- P-xx CONFLITO_DE_HORARIO: quais status contam como ocupando horário? (confirmada, convocada, em_espera? expirada?, cancelada?)\n- P-xx LIMITE_DE_MINICURSOS: quais status contam para o limite de minicursos; qual é o limite (número)?\n- P-xx conflito compara sobreposição de encontros da atividade inscrita contra outras inscrições.\n\nPrecedência de erros:\n- P-xx ordem entre regras M2 (ex.: JA_INSCRITO vs INSCRICOES_ENCERRADAS vs CONFLITO_DE_HORARIO vs LIMITE_DE_MINICURSOS vs ATIVIDADE_CANCELADA) — when multiple violated together.\n\nReinscrição:\n- P-xx após cancelar ou expirar, pode reinscrever? REC? Se está em espera e cancela, volta ao final? Pode criar nova inscrição?\n\nCancelamento da atividade:\n- P-xx efeito sobre inscrições (já factual: ativas canceladas) — confirmar quais status/posição; e se lista de espera é limpa.\n\nIsolamento de inscrições alheias:\n- P-xx GET /inscricoes/:id de inscrição de outro participante → 404? ou retorna? participante recebe só as próprias — what for organization? GET /inscricoes — todos, mas participante só as próprias. Organização vê todas. Para GET /inscricoes/:id de outro participante não existe 404? The contract says GET /inscricoes pode ser usado por todos; participante recebe só as próprias. That suggests isolation. For detail, isolation question: participante acessando inscrição alheia → 404 NAO_ENCONTRADO (não existe para ele)? That's a frontier question.\n\nCorpos sem entrada e persistência:\n- P-xx POST /inscricoes sem corpo (null body) — DADOS_INVALIDOS or ignore? Contract says \"sem corpo na entrada\". So body empty accepted. What if JSON body sent? ignored or DADOS_INVALIDOS? \"Corpo que não é JSON, campo obrigatório ausente ou de tipo errado → 422 DADOS_INVALIDOS.\" Since there are no fields, sending fields? Hmm. Request with body maybe ignored. Question: corpo vazio vs corpo presente com campos desconhecidos.\n- P-xx persistência: modo teste reset apaga inscrições (fact: reset apaga tudo). Sem MODO_TESTE, relógio real, e... \"o que acontece quando o tempo passa sem ninguém acessar\" is about expiração. Persistência em memória é fato (AGENTS.md). Ordering of GET /inscricoes — order by criadaEm? Not in contract; question.\n\nNúmeros:\n- LIMITE_DE_MINICURSOS limite numérico (quantos minicursos um participante pode ter simultâneos? confirmados?).\n- Janela de convocação (convocadaAte) — número.\n- Prazo de encerramento de inscrições — número.\n\nAlso: dados iniciais — nenhuma inscrição inicial (contrato). Not a question.\n\nAlso: confirmed (confirmada) transition — does confirmar convocação create confirmada and pull from espera? \"confirmacao\" moves convocada → confirmada. posicaoNaEspera nulled.\n\nAlso question: quem pode inscrever em atividade que não existe → 404 NAO_ENCONTRADO (fact, convenções order: existência 404 antes de corpo/regras). That's contract-defined: \"Ordem das verificações: identificação (401) → perfil (403) → existência (404 NAO_ENCONTRADO) → corpo (422) → regras\". So non-existent activity → 404. Fact.\n\nAlso: inscrição para atividade encerrada/cancelada/iniciada → ATIVIDADE_CANCELADA (fact) / ATIVIDADE_JA_INICIADA? No: ATIVIDADE_JA_INICIADA only for cancelar inscrição. Inscrever em atividade já iniciada → INSCRICOES_ENCERRADAS perhaps. That's the pending part (deadline).\n\nLet me also consider: what counts as \"convocada\" — should another participation canceling free a slot that goes to someone? Automatic convocation when someone cancels a confirmada inscrição? The contract says convocação on increasing vagas (M1 R31). When a confirmada cancels, slot frees — convoca em espera automaticamente? That's a pending question (FIFO + convocação).\n\nNow, I must not invent. Each P question includes my recommendation (➡️). The user will respond.\n\nLet me draft the perguntas. I'll try to keep to the areas but numbered. Let me organize into blocks matching the frontier families.\n\nBlock A — Números e prazos:\n- P-01: Prazo de encerramento de inscrições (inscrever até quando? INSCRICOES_ENCERRADAS). Recommendation: encerra no início do primeiro encontro? Actually I shouldn't invent RN. But recommendation can be a reasonable hypothesis flagged as \"recomendação\". The skill says give recommendation. But user says \"sem inventar respostas, números, RN\". Recommendation is allowed by skill. I'll give recommendations clearly as suggestions (hypothesis) — but the user instruction says don't invent numbers... A recommendation is not a registered answer; it's a suggestion to the user. The skill explicitly requires a recommendation. I'll keep recommendations general and neutral, and mark them as \"recomendação (hipótese a confirmar)\". To be safe, I'll phrase recommendations as default/simplest behavior and ask user to confirm or override. Given the instruction \"sem inventar respostas, números, RN\", I'll make recommendations that are explicitly framed as proposals and conservatively avoid inventing specific numbers where none derivable — for number questions I can recommend \"deixar explícito no contrato de resposta\" or propose a common-sense default clearly labeled. I think giving a recommendation is expected by the skill and doesn't conflict: answers recorded as facts come from user; recommendation is clearly the agent's suggestion.\n\nActually, re-reading: \"Pergunte a fronteira inteira, sem inventar respostas, numeros, RN ou entrevista do usuario.\" This means: when registering facts and asking questions, don't invent. The skill requires recommendations, which are fine as long as clearly proposals. I'll provide them concisely.\n\nLet me write the file. I'll structure:\n\n# Entrevista — M2 Inscrições e Lista de Espera\n\n## Rodada 1\n\n### F-P-xx? Actually let me do two tables.\n\n### Fatos já definidos (sem necessidade de pergunta)\n\nTable F-01..F-xx: # | Fato | Fonte\n\n### Perguntas da fronteira — Rodada 1\n\nEach: numbered with question, options, recommendation, status PENDENTE.\n\nI'll write the file, then present the questions in chat (portuguese).\n\nLet me enumerate facts (F-xx):\n\nF-01. POST /atividades/:id/inscricoes cria inscrição de participante e não recebe corpo na entrada; sucesso 201 Inscricao. Fonte: contrato-api.md, rotas M2.\nF-02. POST /inscricoes/:id/cancelamento e POST /inscricoes/:id/confirmacao são exclusivos de participante e retornam 200 Inscricao. Fonte: contrato-api.md, rotas M2.\nF-03. GET /inscricoes e GET /inscricoes/:id são acessíveis a todos os usuários identificados; em GET /inscricoes o participante recebe apenas as próprias inscrições e há filtro ?atividadeId=. Fonte: contrato-api.md, rotas M2.\nF-04. Inscricao possui id (ins_ + 8 hexadecimais), atividadeId, participanteId, status, posicaoNaEspera (só quando em_espera), convocadaAte (só quando convocada) e criadaEm. Fonte: contrato-api.md, modelo Inscricao.\nF-05. Status possíveis de inscrição: confirmada, em_espera, convocada, cancelada, expirada. Fonte: contrato-api.md, modelo Inscricao.\nF-06. Toda rota identificada exige X-Usuario; sem cabeçalho ou id inexistente → 401 USUARIO_DESCONHECIDO. Fonte: contrato-api.md, convenções.\nF-07. Ordem das verificações: 401 → perfil 403 → existência 404 → corpo 422 → regras do recurso. Quando mais de uma regra do recurso recusa a mesma operação, a ordem entre elas é regra de negócio (PENDENTE). Fonte: contrato-api.md, convenções.\nF-08. Operações de participante recusam organização com 403 SOMENTE_PARTICIPANTE. Fonte: contrato-api.md, convenções e rotas M2.\nF-09. Recurso inexistente em /atividades/:id/inscricoes e /inscricoes/:id → 404 NAO_ENCONTRADO. Fonte: contrato-api.md, convenções.\nF-10. Corpo que não é JSON, campo obrigatório ausente ou de tipo errado → 422 DADOS_INVALIDOS. Fonte: contrato-api.md, convenções.\nF-11. Códigos de erro M2 no contrato: ATIVIDADE_CANCELADA (422), INSCRICOES_ENCERRADAS (422), INSCRICAO_BLOQUEADA (422, só grupos com M5), JA_INSCRITO (409), CONFLITO_DE_HORARIO (409), LIMITE_DE_MINICURSOS (422), INSCRICAO_INATIVA (422), SEM_CONVOCACAO (422), CONVOCACAO_EXPIRADA (422) e ATIVIDADE_JA_INICIADA (422) para cancelamento de inscrição. Fonte: contrato-api.md, códigos de retorno.\nF-12. Inscrever em atividade cancelada → ATIVIDADE_CANCELADA. Fonte: contrato-api.md, códigos de retorno (ATIVIDADE_CANCELADA → inscrever).\nF-13. Cancelar inscrição de atividade já iniciada → ATIVIDADE_JA_INICIADA. Fonte: contrato-api.md, códigos de retorno (ATIVIDADE_JA_INICIADA → cancelar inscrição).\nF-14. Datas em ISO 8601 com fuso; relógio controlado em MODO_TESTE governa todas as regras temporais; reset apaga tudo e reinicia em 2026-10-13T09:00:00-03:00. Fonte: contrato-api.md, convenções e modo de teste.\nF-15. Dados iniciais não incluem inscrição alguma; apenas usuários e salas do contrato. Fonte: contrato-api.md, dados iniciais.\nF-16. Ocupadas (vagas) = inscrições confirmadas + convocadas; em_espera, canceladas e expiradas não ocupam vaga. Fonte: specs/M1-grade-atividades.md, R29/R30.\nF-17. emEspera de uma atividade = quantidade de inscrições em_espera. Fonte: contrato-api.md, modelo Atividade.\nF-18. Aumentar vagas é permitido e a convocação automática da lista de espera pertence ao M2. Fonte: specs/M1-grade-atividades.md, R31.\nF-19. Ao cancelar a atividade, as inscrições ativas são canceladas e novas inscrições ficam bloqueadas. Fonte: specs/M1-grade-atividades.md, seção 17 e entrevistas/M1-grade-atividades.md, R2-P24.\nF-20. Estado expirada existe e o relógio controlado é a fonte de verdade temporal — a capacidade de expiração sem acesso depende do relógio e é regra de negócio (PENDENTE). hmm maybe not a fact. Skip F-20.\n\nMaybe add: F-20: GET /inscricoes filtro ?atividadeId= (already in F-03). ok.\n\nNow pending perguntas. Let me draft in families. I'll number P-01..P-1x across the whole frontier, ordered by families. Let me be thorough but not invent.\n\nFamily 1 — Prazos e bordas (encerramento e convocação):\nP-01 Prazo de encerramento das inscrições: até quando um participante pode inscrever (INSCRICOES_ENCERRADAS)? Opções: início do primeiro encontro; N horas/minutos antes; fim do último encontro; outro. Recomendação: encerrar no instante do início do primeiro encontro (borda inclusiva, mesmo critério do M1 para ATIVIDADE_JA_INICIADA). Confirm at borda: agora == início → encerrada?\nP-02 Encerramento para atividade já iniciada/encerrada: qual código? INSCRICOES_ENCERRADAS mesmo para iniciada? Recomendação: INSCRICOES_ENCERRADAS para iniciada e encerrada (não-cancelada). \nP-03 Borda de encerramento: inscrição exatamente em agora == início aceita ou recusada?\nP-04 Janela de convocação (convocadaAte): prazo entre convocar e confirmar (número). Recomendação: propor valor e confirmar (ex. X minutos) — ask user.\nP-05 Borda da convocação: confirmar exatamente em agora == convocadaAte: aceita (CONVOCACAO_EXPIRADA só depois)? ou expira nesse instante?\nP-06 Convocação antes de encerradas? — hmm. Relates to when convocação can happen — not needed.\n\nFamily 2 — FIFO e empate:\nP-07 Ordem da lista de espera: FIFO estrito por momento da inscrição (criadaEm)? Quando alguém sai da espera (cancela/expirada/confirmada), os que ficam sobem de posição (renumera) sem reordenar por novo tempo?\nP-08 Empate: duas inscrições com criadaEm idêntico (mesmo instante de relógio) — desempate por quê? (ordem de processamento não observável; sorteio estável? id?) Recomendação: desempatar por id de inscrição lexicográfico (determinístico).\nP-09 Quando uma vaga abre (cancelamento de confirmada ou aumento de vagas), a convocação automática usa a mesma fila FIFO? (quem está primeiro na espera e não tem conflito recebe convocação?)\nP-10 Convocação ao abrir vaga por cancelamento de um confirmada: convoca automaticamente? (contrato só fala de aumento de vagas no M1). Perguntar se cancelamento/expiração de confirmada também gera convocação.\n\nFamily 3 — Expiração sem acesso e salto de relógio:\nP-11 expiração sem acesso: se o relógio passa de convocadaAte sem ninguém chamar a API, a inscrição expira automaticamente (estado expirado calculado sob demanda a qualquer leitura)? Ou precisa de evento?\nP-12 Ao expirar, o participante perde a posição na fila / vaga? A vaga abre pra próxima convocação?\nP-13 Salto do relógio (MODO_TESTE): relógio pode saltar para frente além de convocadaAte — expirações intermediárias são todas aplicadas de uma vez (cascata de convocações durante o salto é processada)? E salto para trás: reverter expiração/convocação?\nP-14 Convocação durante salto: se uma vaga abre e há fila, convoca dentro do processamento do salto ou apenas a partir do estado final? (cascata)\n\nFamily 4 — Estados que contam para conflito e limite:\nP-15 CONFLITO_DE_HORARIO: quais status contam para conflito de horário? (confirmada, convocada, em_espera, expirada, cancelada?) Recomendação: somente confirmada e convocada (as que ocupam vaga), coerente com R29.\nP-16 sobreposição de horário usa encontros das atividades (comparação por intervalo de encontros, fuso Brasília), igual ao M1.\nP-17 LIMITE_DE_MINICURSOS: qual o limite (quantos minicursos)? e quais status contam (confirmada/convocada? em espera? expirada? cancelada?). Recomendação: contar confirmada+convocada, limite número a definir.\nFamily 4 also: conflito considera atividades canceladas não bloqueiam (fato M1)? Inscrição em atividade cancelada já é ATIVIDADE_CANCELADA. skip.\n\nFamily 5 — Precedência de erros:\nP-18 Precedência entre regras M2 quando mais de uma violada (JA_INSCRITO vs CONFLITO_DE_HORARIO vs LIMITE_DE_MINICURSOS vs INSCRICOES_ENCERRADAS vs ATIVIDADE_CANCELADA vs INSCRICAO_BLOQUEADA).\nP-19 Precedência em cancelamento de inscrição (INSCRICAO_INATIVA vs ATIVIDADE_JA_INICIADA vs ATIVIDADE_CANCELADA).\nP-20 Precedência na confirmação (SEM_CONVOCACAO vs CONVOCACAO_EXPIRADA vs CONFLITO_DE_HORARIO vs LIMITE_DE_MINICURSOS).\n\nFamily 6 — Reinscrição:\nP-21 Cancelar própria inscrição: pode reinscrever depois? (nova inscrição) — e se havia vaga, volta ao final da fila ou novo prazo?\nP-22 Expirou convocação: pode se reinscrever? Pode ser reconvocado se novas vagas abrirem?\nP-23 JA_INSCRITO: quando a inscrição existente é cancelada/expirada, deixar de ser JA_INSCRITO (nova inscrição permitida)? Recomendação: sim, JA_INSCRITO só para status ativos (confirmada/em_espera/convocada).\n\nFamily 7 — Cancelamento da atividade:\nP-24 Cancelamento de atividade: quais status viram cancelada (ativo = confirmada+em_espera+convocada? e expirada fica? expirada já inativa). Confirma que a posição na fila some? e se atividade é re-criada? (não existe recriação — cancelada definitivo, fato M1). perguntar quais status são considerados \"ativas\" na RN.\n\nFamily 8 — Isolamento:\nP-25 GET /inscricoes/:id de inscrição de outro participante: 404 NAO_ENCONTRADO (isolamento) ou 403? Recomendação: 404 (tratar como inexistente).\nP-26 GET /inscricoes de participante: confirma que retorna só as próprias (fato) — e exclui canceladas/expiradas ou inclui todas? (listagem inclui todos os status?)\nP-27 Organização em GET /inscricoes/:id vê todas? Fato: GET /inscricoes cria filter... \"todos\" — organização vê todas.\n\nFamily 9 — Corpo e persistência:\nP-28 POST /inscricoes sem corpo: contrato diz \"sem corpo na entrada\" — corpo ausente/vazio aceito; corpo com JSON enviado: ignorado ou DADOS_INVALIDOS? Recomendação: ignorar campos enviados (como cargaHoraria no M1) — hmm, no M1 the cargaHoraria ignored is a RN. For inscrição, since no body defined, sending body fields → DADOS_INVALIDOS? Try: recommendation: corpo ausente ou vazio aceito; qualquer corpo presente → DADOS_INVALIDOS. Ask.\nP-29 Ordenação de GET /inscricoes: ordem de listagem (por criadaEm ascendente? por status?)\nP-30 Persistência: estado guardado em memória (fato AGENTS.md), reset apaga (fato). Sem MODO_TESTE, relógio real; expiração/convocação dependem do relógio real (fato). Pergunta: nenhuma. Hmm — persistência: para POST /inscricoes/:id/cancelamento e confirmacao — sem corpo? contract says body: none for cancelamento? Table for M2: POST /inscricoes/:id/cancelamento → 200, no body mention. Confirmacao also no body. So body absent → ok. That's fine, fact.\n\nAlso \"corpos sem entrada\" could also refer to cancelamento/confirmacao sem corpo. Include fact F: cancelamento e confirmação da inscrição também não têm corpo definido.\n\nActually I realize I should limit scope to remain a genuine \"fronteira inteira\" but avoid asking questions whose answers are already in contract. Let me also verify: \"Deve existir ... 15 min between?\" No, that's M1.\n\nLet me also add:\nP-31 Convocação de quem está em espera quando abre vaga exige que não haja conflito de horário com outras inscrições ativas do participante? (relaciona convocação e CONFLITO_DE_HORARIO). Na confirmação há CONFLITO_DE_HORARIO. Então convocar já aplica conflito? Pergunta: convocação automática pula quem está em conflito e convoca o próximo da fila? (fila + conflito interplay). Yes important.\n\nThat's plenty. Let me also keep to suggested item count ~ manageable. I'll number P-01..P-28, grouped.\n\nLet me now also reconsider \"salto do relógio\" — mode test PUT relógio. \"expiração sem acesso\" — critical rule: \"o que acontece quando o tempo passa sem ninguém acessar o sistema\" is explicitly mentioned in contract §7: \"Prazo, limite, janela, tolerância, arredondamento, ordem entre regras e o que acontece quando o tempo passa sem ninguém acessar o sistema: nada disso está aqui\". So this is a required frontier area. Include P about: expiração é aplicada retroativamente sob demanda (lazy) a partir do relógio, ou exige evento de acesso? And does the state update persist once computed? Also salto: PUT relógio com salto grande deve reprocessar cadeia de convocações/expirações?\n\nNow let me write the entrevistas/M2-inscricoes.md file. Format similar to M1: header with registration facts + Rodada 1 table. I'll include:\n\n- Section \"Fatos já definidos (do contrato e specs M1)\" — table F-01..F-19 with source.\n- Section \"Rodada 1 — Perguntas pendentes\" — grouped by family with markdown question blocks. For the doc, I'll present in the P-xx format shown in the skill, with recommendation and status PENDENTE.\n\nI'll write the file now, then output the questions in chat (in Portuguese), asking the user to respond.\n\nThe user asked \"Registre em entrevistas/M2-inscricoes.md os fatos já definidos pelo contrato com a fonte correta e as perguntas P-xx de regras de negócio ainda PENDENTE.\" So the file should contain facts + pending questions. And \"Responda em português com as perguntas que precisam ser respondidas pelo usuário.\" So final message = the questions.\n\nLet me write the file. I need to be careful not to invent numbers. For recommendations with numbers, I'll phrase as \"definir X\" and mark clearly as recommendation. Since the skill mandates giving a recommendation, and user prohibits inventing *answers/RN*, I'll phrase recommendations carefully, e.g. \"Recomendação: encerrar exatamente no início do primeiro encontro (borda inclusiva, coerente com o M1) — confirmar.\" That's a recommendation but flagged. For number recommendations I'll avoid proposing a made-up value; instead recommend \"definir um valor fixo documentado\" where I can't derive. Hmm but skill wants concrete suggestions. I'll give reasonable suggestions but labeled as suggestion. Actually the user is the domain owner; recommendations like \"15 minutos\" might be tempting invention. I'll avoid inventing specific magic numbers beyond what's already in contract (15 min already a contract-derived rule from M1 for sala; not for convocação). For janela de convocação I'll recommend \"definir em valor equivalente à abertura de inscrição... \" no. I'll just recommend: \"propor um prazo fixo razoável (ex.: poucos minutos) e registrar como RN\" — but proposing \"poucos minutos\" is vague enough. I'll keep it as \"definir um prazo específico\" and let user provide. That's honest.\n\nLet me draft the file content.\n\nI'll write in the table style for facts, and formatted questions for pending.\n\nLet me produce the file.\n\nFor the questions, I'll structure each as:\n\n❓ **P-01 — Título**: pergunta com opções\n➡️ recomendação\n\nGroup headers with families.\n\nLet me write everything carefully in PT-BR with the accent-free style? M1 file uses no accents mostly (\"nao\", \"organizacao\"). I'll follow that style (ASCII) to match project convention. Actually the M1 interview file uses \"nao\", \"organizacao\", \"usuaria\" — ASCII, no accents. I'll follow.\n\nLet me compose.\n\nFacts table:\n\n| # | Fato | Fonte |\n\nF-01 ... as above.\n\nThen Rodada 1.\n\nLet me now write it.\n\nOne more: the fact about \"GET /inscricoes - participante recebe so as proprias; filtro ?atividadeId=\" — the isolation fact. And organization? \"todos\". Good.\n\nAlso fact F-21: POST /inscricoes/:id/cancelamento e confirmacao nao definem corpo de entrada no contrato (como a inscricao). Merge into F-02.\n\nAlso fact: \"Ordem verificações\" — includes: corpo 422 DADOS_INVALIDOS antes das regras do recurso. And \"Quando mais de uma regra do recurso recusa, ordem entre elas e regra de negocio.\" Already.\n\nNow, an important nuance for precedência: the contract states order for identação/perfil/existência/corpo; but \"regras do recurso\" internal order = business rule (pending). Good F-07.\n\nNow write file. Then response with questions.\n\nLet me also double check date: reset sets clock to 2026-10-13T09:00:00-03:00 per contract. server.dart uses 12:00 UTC = 09:00 -03. Good fact.\n\nNotably the event days are 19-23 Oct. Inscriptions close deadline probably related to first meeting start or event start. Fine.\n\nLet me write file.\n\nI need to consider: does \"M2 inscricoes e lista de espera\" include convocação automatica on aumento de vagas — yes fact F-18. But also convocação on cancelamento of confirmada? Pending P-10.\n\nAlso: what happens when a convocada doesn't confirm before deadline → expirada → vaga volta? Pending P-12.\n\nAlright. Also question: can a convocada cancel? cancelamento of convocada — INSCRICAO_INATIVA? convocada is active. Probably allowed. Minor; I can fold into P-21/22.\n\nAlso: confirmacao of convocada when the activity already started? Probably INSCRICOES_ENCERRADAS? Not in contract. Skip; keep to frontier.\n\nAlso important: JA_INSCRITO statuses that trigger it (confirmada, convocada, em_espera?). P-23.\n\nOK writing now.\n\nThe response format in chat must list the questions. Since the file already has them, in chat I can reproduce them. The instruction: \"Responda em portugues com as perguntas que precisam ser respondidas pelo usuario.\" So chat should contain the questions (numbered, with recommendations) — the round format. I'll print them.\n\nLet me finalize the number of questions. I'll aim ~26 questions grouped:\n\nFamilia A — Prazos e bordas: P-01 encerramento prazo; P-02 encerramento atividade iniciada/encerrada (código); P-03 borda agora==inicio; P-04 janela convocação; P-05 borda convocadaAte.\nFamilia B — FIFO e empate: P-06 ordem da espera/FIFO; P-07 desempate criadaEm igual; P-08 renumeração; P-09 convocação ao abrir vaga por cancelamento/expiração de confirmada; P-10 convocação pula quem está em conflito.\nFamilia C — Expiração e salto: P-11 expiração sem acesso (lazy); P-12 efeito da expiração (vaga/posição); P-13 salto para frente (cascata); P-14 salto para trás.\nFamilia D — Estados que contam: P-15 CONFLITO_DE_HORARIO status; P-16 conferência de sobreposição (janela de encontros por Brasília, igual M1); P-17 LIMITE_DE_MINICURSOS (número e status).\nFamilia E — Precedência: P-18 inscrever; P-19 cancelamento; P-20 confirmação.\nFamilia F — Reinscrição: P-21 reinscrição após cancelar; P-22 reinscrição após expirar / reconvocação; P-23 JA_INSCRITO quais status.\nFamilia G — Cancelamento da atividade: P-24 quais status \"ativas\" viram cancelada e o que acontece com a fila/posições.\nFamilia H — Isolamento: P-25 GET inscrição alheia (404?); P-26 GET /inscricoes inclui canceladas/expiradas? ordem?\nFamilia I — Corpo e persistência: P-27 corpo presente em POST inscrição (DADOS_INVALIDOS? ignorado?); P-28 ordenação GET /inscricoes.\n\nThat's 28. Good.\n\nWait, re persistência \"corpos sem entrada e persistencia\" — the user mentioned \"corpos sem entrada e persistencia\" as topics: POST /inscricoes sem corpo (contract says no body — fact), but what if body present → P-27. Persistência: in-memory (fact), reset (fact), and \"salto do relógio\" covered. Add P about ordering? that's P-28. Maybe add: P-29: após `POST /_teste/reset`, inscrições somem (fact) — no question needed. But \"persistência\" could ask: o estado de expiração/convocacão deve persistir assim que computado? (relaciona lazy). Covered by P-11. OK.\n\nAlso GET /inscricoes ?atividadeId= filters all statuses? P-26 covers.\n\nAlso question: POST /inscricoes quando atividade não existe → 404 (fact). And inscrever em atividade com sala... no.\n\nAlso: pode confirmar convocação de atividade já iniciada? Edge. I'll skip to honor \"fronteira inteira ... sem inventar\" — it's fine; the frontier is what's askable now.\n\nAlso convocação automática quando vagas aumentam — o convocado pode recusar? Não há rota de recusa no contrato além de cancelamento. If convocada cancela, next in line. Covered by P-21.\n\nAlso — \"limite de minicursos\" also applies to confirmacao; whether espera counts. Covered P-17.\n\nAdditionally, CONFLITO_DE_HORARIO at inscrever também para em_espera? P-15.\n\nNow, I should double-check whether I ask about \"expiração sem acesso\" as \"estado expirado calculado sob demanda\" — key. Yes.\n\nAlright, let me write the file now.\n\nI'll use ASCII (no accents) to match repo style.\n\nFile: entrevistas/M2-inscricoes.md\n\nContent plan:\n\n# Entrevista — M2 Inscricoes e Lista de Espera\n\n## Registro\n\nNota: fatos ja fixados pelo contrato nao sao perguntados. Perguntas P-xx da rodada 1 sao regras de negocio ainda PENDENTE.\n\n## Fatos ja definidos (nao perguntar)\n\nTable F-01..F-19\n\n## Rodada 1 — Perguntas pendentes (regras de negocio)\n\n### Bloco A — Prazos e bordas de encerramento e convocacao\n... each question block\n\n### Bloco B — FIFO e empate\n...\n\n... etc\n\n### Pontos confirmados\n(vazio)\n\n### Pontos pendentes\n(list of P-xx)\n\nActually to keep it simple and replayable, I'll just list the question blocks. Let me not over-engineer. Follow M1 structure minimally.\n\nWrite now.\n\nThen final chat message: list questions in PT with format, then end. Also mention file created. No commit.\n\nLet me write the questions concisely.\n\nI'll now create the file.",
+     "time": {
+      "start": 1790112712481,
+      "end": 1790112803822
+     },
+     "id": "prt_0cb084720001Q5CUcVAl9cYIBU",
+     "sessionID": "ses_f34f80f66ffeyg6tcIUDSeyrgx",
+     "messageID": "msg_0cb0840da001fsr2c1UWQLLkn8"
+    },
+    {
+     "type": "text",
+     "text": "Vou registrar os fatos e perguntas em `entrevistas/M2-inscricoes.md` e depois apresentar a fronteira da rodada 1.",
+     "time": {
+      "start": 1790112803830,
+      "end": 1790112842008
+     },
+     "id": "prt_0cb09abf6001kHI1WBSbwHCO4M",
+     "sessionID": "ses_f34f80f66ffeyg6tcIUDSeyrgx",
+     "messageID": "msg_0cb0840da001fsr2c1UWQLLkn8"
+    },
+    {
+     "type": "tool",
+     "tool": "write",
+     "callID": "call_9f896f5ab13140e581fbca90",
+     "state": {
+      "status": "completed",
+      "input": {
+       "filePath": "C:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\entrevistas\\M2-inscricoes.md",
+       "content": "# Entrevista — M2 Inscrições e Lista de Espera\n\n## Registro\n\nOs fatos abaixo já estão fixados pelo contrato da API (`contrato-api.md`) e pela\nspec do M1 (`specs/M1-grade-atividades.md`). Eles **não** são perguntados na\nentrevista. As perguntas P-xx da Rodada 1 são regras de negócio ainda **PENDENTE**,\nque o contrato não decide.\n\n## Fatos já definidos (não perguntar)\n\n| # | Fato | Fonte |\n|---|---|---|\n| F-01 | `POST /atividades/:id/inscricoes` cria inscrição, é exclusivo de participante e **não recebe corpo na entrada**; sucesso retorna `201 Inscricao`. | contrato-api.md, rotas M2 |\n| F-02 | `POST /inscricoes/:id/cancelamento` e `POST /inscricoes/:id/confirmacao` são exclusivos de participante e retornam `200 Inscricao`. | contrato-api.md, rotas M2 |\n| F-03 | `GET /inscricoes` e `GET /inscricoes/:id` são acessíveis a todos os usuários identificados. Em `GET /inscricoes` o participante recebe **apenas as próprias** inscrições, e existe o filtro `?atividadeId=`. | contrato-api.md, rotas M2 |\n| F-04 | `Inscricao` tem `id` (`ins_` + 8 hexadecimais), `atividadeId`, `participanteId`, `status`, `posicaoNaEspera` (número só quando `em_espera`), `convocadaAte` (instante só quando `convocada`) e `criadaEm`. | contrato-api.md, modelo Inscricao |\n| F-05 | Os status de inscrição são: `confirmada`, `em_espera`, `convocada`, `cancelada` e `expirada`. | contrato-api.md, modelo Inscricao |\n| F-06 | Toda rota identificada exige `X-Usuario`; sem cabeçalho ou com id inexistente → `401 USUARIO_DESCONHECIDO`. | contrato-api.md, convenções |\n| F-07 | Ordem das verificações: identificação (401) → perfil (403) → existência (404 `NAO_ENCONTRADO`) → corpo (422 `DADOS_INVALIDOS`) → regras do recurso. Quando mais de uma regra do recurso recusa a mesma operação, a ordem entre elas é regra de negócio (**PENDENTE**). | contrato-api.md, convenções |\n| F-08 | Operações de participante recusam organização com `403 SOMENTE_PARTICIPANTE`. | contrato-api.md, convenções e rotas M2 |\n| F-09 | Recurso inexistente (atividade ou inscrição) → `404 NAO_ENCONTRADO`. | contrato-api.md, convenções |\n| F-10 | Corpo que não é JSON, campo obrigatório ausente ou de tipo errado → `422 DADOS_INVALIDOS`. | contrato-api.md, convenções |\n| F-11 | Códigos de erro do M2 presentes no contrato: `ATIVIDADE_CANCELADA` (422), `INSCRICOES_ENCERRADAS` (422), `INSCRICAO_BLOQUEADA` (422, só grupos com M5), `JA_INSCRITO` (409), `CONFLITO_DE_HORARIO` (409), `LIMITE_DE_MINICURSOS` (422), `INSCRICAO_INATIVA` (422), `SEM_CONVOCACAO` (422), `CONVOCACAO_EXPIRADA` (422) e `ATIVIDADE_JA_INICIADA` (422, para cancelamento de inscrição). | contrato-api.md, códigos de retorno |\n| F-12 | Inscrever em atividade cancelada → `ATIVIDADE_CANCELADA`. | contrato-api.md, códigos de retorno |\n| F-13 | Cancelar inscrição de atividade já iniciada → `ATIVIDADE_JA_INICIADA`. | contrato-api.md, códigos de retorno |\n| F-14 | Datas em ISO 8601 com fuso. Com `MODO_TESTE=1` o relógio é controlado e toda regra temporal usa esse relógio; `POST /_teste/reset` apaga tudo e põe o relógio em `2026-10-13T09:00:00-03:00`. | contrato-api.md, convenções e modo de teste |\n| F-15 | Os dados iniciais não incluem nenhuma inscrição; apenas usuários e salas do contrato. | contrato-api.md, dados iniciais |\n| F-16 | `ocupadas`/`vagasRestantes` contam apenas inscrições `confirmadas` e `convocadas`; `em_espera`, `canceladas` e `expiradas` não ocupam vaga. | specs/M1-grade-atividades.md, R29 e R30 |\n| F-17 | `emEspera` de uma atividade é a quantidade de inscrições `em_espera`. | contrato-api.md, modelo Atividade |\n| F-18 | Aumentar vagas é permitido e a convocação automática da lista de espera pertence ao M2. | specs/M1-grade-atividades.md, R31 |\n| F-19 | Ao cancelar a atividade, as inscrições ativas são canceladas e novas inscrições ficam bloqueadas. | specs/M1-grade-atividades.md, seção 17 e entrevistas/M1-grade-atividades.md, R2-P24 |\n\n## Rodada 1 — Perguntas pendentes (regras de negócio)\n\n### Bloco A — Prazos e bordas de encerramento e de convocação\n\n❓ **P-01 — Prazo de encerramento das inscrições**: até quando um participante pode\nse inscrever antes de aparecer `INSCRICOES_ENCERRADAS`? (início do primeiro\nencontro? fim do último encontro? N horas/minutos antes? prazo fixo calendário?)\n\n➡️ Recomendação: encerrar exatamente no instante do início do primeiro encontro,\nmantendo o mesmo critério de borda do M1 para início de atividade.\n\n---\n\n❓ **P-02 — Inscrição em atividade iniciada ou encerrada**: inscrever em atividade\njá iniciada (mas não cancelada) retorna também `INSCRICOES_ENCERRADAS`, ou outro\ncódigo?\n\n➡️ Recomendação: `INSCRICOES_ENCERRADAS` para iniciada e encerrada (não cancelada);\n`ATIVIDADE_CANCELADA` fica reservado para cancelada, como no contrato.\n\n---\n\n❓ **P-03 — Borda do encerramento**: inscrever exatamente com `agora == início do\nprimeiro encontro` é aceito ou recusado?\n\n➡️ Recomendação: recusar (borda inclusiva, coerente com `em_andamento` no M1).\n\n---\n\n❓ **P-04 — Janela de convocação (`convocadaAte`)**: qual é o prazo entre convocar\ne confirmar? (quanto vale `convocadaAte`: minutos, horas, até o início da\natividade?)\n\n➡️ Recomendação: definir um prazo fixo explícito (você decide o valor) e registrá-lo\ncomo RN.\n\n---\n\n❓ **P-05 — Borda da convocação**: confirmar exatamente com `agora == convocadaAte`\né aceito (`CONVOCACAO_EXPIRADA` só depois) ou já expirou nesse instante?\n\n➡️ Recomendação: aceitar na borda (expiração só depois do instante), por simetria\ncom as bordas inclusivas de início/fim do M1.\n\n### Bloco B — FIFO e empate\n\n❓ **P-06 — Ordem da fila**: a lista de espera é FIFO estrita pela ordem de criação\n(`criadaEm`), com o primeiro da fila ganhando vaga/convocação primeiro?\n\n➡️ Recomendação: FIFO estrito por `criadaEm`.\n\n---\n\n❓ **P-07 — Empate na fila**: duas inscrições com `criadaEm` idêntico (mesmo\ninstante de relógio) — qual desempata?\n\n➡️ Recomendação: desempatar deterministicamente por `id` de inscrição (lexicográfico),\njá que não há outra ordem observável.\n\n---\n\n❓ **P-08 — Renoção de posições**: quando alguém sai da espera (cancela, expira,\nconfirma), os que ficam sobem de posição mantendo a ordem original (remumeração\ncompacta) ou ficam com a posição antiga gravada?\n\n➡️ Recomendação: encurtar a fila e re-enumerar de 1 em ordem FIFO.\n\n---\n\n❓ **P-09 — Abertura de vaga sem aumento de vagas**: quando uma vaga abre por\ncancelamento ou expiração de uma inscrição `confirmada`/`convocada`, a lista de\nespera é convocada automaticamente (como no aumento de vagas)? Ou só o aumento de\nvagas convoca?\n\n➡️ Recomendação: convocar automaticamente em qualquer abertura de vaga (aumento ou\nliberação), mesma fila FIFO.\n\n---\n\n❓ **P-10 — Convocação e conflito**: na convocação automática, quem está em espera\nmas em conflito de horário (ou excedeu o limite de minicursos) é pulado e o\npróximo da fila é convocado? E essa pessoa pulada mantém a posição?\n\n➡️ Recomendação: pular quem está em conflito/limite, mantendo a posição para uma\neventual convocação futura.\n\n### Bloco C — Expiração sem acesso e salto do relógio\n\n❓ **P-11 — Expiração sem acesso**: se o relógio passa de `convocadaAte` sem nenhuma\nrequisição, a inscrição expira sozinha? A expiração é calculada sob demanda pelo\nrelógio a qualquer leitura (estado rederivado), sem precisar de evento/job?\n\n➡️ Recomendação: expiração é regra temporal rederivada do relógio a cada leitura,\nsem job assíncrono.\n\n---\n\n❓ **P-12 — Efeito da expiração**: ao expirar, a vaga que a convocação reservava é\nliberada e a lista de espera é convocada em seguida? O expirado mantém algo (fila\nou vaga)?\n\n➡️ Recomendação: expirada libera a vaga e dispara a próxima convocação da fila.\n\n---\n\n❓ **P-13 — Salto do relógio para frente (modo de teste)**: no `PUT /_teste/relogio`\ncom salto grande para frente, o sistema deve reprocessar toda a cadeia de expirações\ne convocações intermediárias de uma vez (cascata), ou apenas valer o estado final?\n\n➡️ Recomendação: reprocessar a cadeia completa de expirações/convocações até o\ninstante final, de modo determinístico.\n\n---\n\n❓ **P-14 — Salto do relógio para trás**: o relógio do modo de teste pode voltar?\nSe voltar, expirações e convocações já aplicadas são revertidas?\n\n➡️ Recomendação: relógio é a fonte de verdade absoluta; estado é rederivado do\ninstante atual, então retrocesso reverte o que não é persistente (cancelamento\ne cancelada permanecem).\n\n### Bloco D — Estados que contam para conflito de horário e limite de minicursos\n\n❓ **P-15 — `CONFLITO_DE_HORARIO` — quais status contam**: quais inscrições do\nmesmo participante contam para conflito de horário ao inscrever/confirmar?\n(`confirmada`, `convocada`, `em_espera`, `expirada`, `cancelada`?)\n\n➡️ Recomendação: contar apenas `confirmada` e `convocada` (as que ocupam vaga),\ncoerente com F-16.\n\n---\n\n❓ **P-16 — Como medir o conflito**: o conflito de horário compara os encontros das\natividades (intervalos no horário de Brasília, mesmas bordas do M1), independente\nde sala?\n\n➡️ Recomendação: comparar os intervalos de encontros das atividades envolvidas.\n\n---\n\n❓ **P-17 — `LIMITE_DE_MINICURSOS`**: qual é o limite de minicursos por participante\n(número)? Quais status contam para esse limite (`confirmada`, `convocada`,\n`em_espera`, `expirada`, `cancelada`)? O limite vale por evento inteiro e é\nverificado também na confirmação de convocação?\n\n➡️ Recomendação: definir o número; contar `confirmada` + `convocada` (mesmo critério\nde ocupar vaga); validar em inscrever e em confirmar convocação.\n\n### Bloco E — Precedência de erros\n\n❓ **P-18 — Precedência ao inscrever**: quando uma mesma inscrição viola várias\nregras de recurso ao mesmo tempo (ex.: `ATIVIDADE_CANCELADA`, `INSCRICOES_ENCERRADAS`,\n`INSCRICAO_BLOQUEADA`, `JA_INSCRITO`, `CONFLITO_DE_HORARIO`,\n`LIMITE_DE_MINICURSOS`), qual erro o participante recebe primeiro?\n\n➡️ Recomendação: seguir uma ordem fixa documentada, começando pelo estado da\natividade (cancelada → encerramentos), depois `INSCRICAO_BLOQUEADA`/`JA_INSCRITO`,\ndepois `CONFLITO_DE_HORARIO`/`LIMITE_DE_MINICURSOS`.\n\n---\n\n❓ **P-19 — Precedência ao cancelar inscrição**: ao cancelar inscrição, qual erro\nvale primeiro entre `ATIVIDADE_CANCELADA`, `ATIVIDADE_JA_INICIADA` e\n`INSCRICAO_INATIVA` (ex.: cancelar inscrição já cancelada/expirada numa atividade\njá iniciada)?\n\n➡️ Recomendação: primeiro o estado da atividade (`ATIVIDADE_CANCELADA`, depois\n`ATIVIDADE_JA_INICIADA`), depois `INSCRICAO_INATIVA`.\n\n---\n\n❓ **P-20 — Precedência ao confirmar convocação**: ao confirmar, qual erro vale\nprimeiro entre `SEM_CONVOCACAO`, `CONVOCACAO_EXPIRADA`, `CONFLITO_DE_HORARIO` e\n`LIMITE_DE_MINICURSOS`?\n\n➡️ Recomendação: primeiro `SEM_CONVOCACAO`, depois `CONVOCACAO_EXPIRADA`, depois\nconflito e limite.\n\n### Bloco F — Reinscrição\n\n❓ **P-21 — Reinscrição após cancelamento**: um participante que cancelou a\nprópria inscrição pode se inscrever de novo na mesma atividade depois? Se sim,\nvolta para o fim da fila (em caso de lotada) ou revive a posição?\n\n➡️ Recomendação: permite nova inscrição (nova `Inscricao`, fim da fila), sem\nreviver a posição antiga.\n\n---\n\n❓ **P-22 — Reinscrição após expirar**: quem teve convocação expirada pode se\nreinscrever ou ser reconvocado se uma nova vaga abrir?\n\n➡️ Recomendação: sim, nova inscrição/reconvocação como se fosse um participante novo,\nsem privilégio nem punição.\n\n---\n\n❓ **P-23 — Quando `JA_INSCRITO` vale**: `JA_INSCRITO` dispara para quais status da\ninscrição existente? (`confirmada`, `convocada`, `em_espera`; e `cancelada`/\n`expirada` liberam a reinscrição?)\n\n➡️ Recomendação: `JA_INSCRITO` apenas para `confirmada`, `convocada` e `em_espera`\n(status ativos); `cancelada` e `expirada` permitem nova inscrição.\n\n### Bloco G — Cancelamento da atividade\n\n❓ **P-24 — Cancelamento da atividade e a fila**: no cancelamento da atividade,\nquais status são considerados \"inscrições ativas\" que viram `cancelada`\n(`confirmada`, `convocada`, `em_espera`)? E o que acontece com a fila/posições\ndestas inscrições?\n\n➡️ Recomendação: `confirmada`, `convocada` e `em_espera` viram `cancelada`;\n`expirada` já é inativa e não muda; fila é esvaziada.\n\n### Bloco H — Isolamento de inscrições alheias\n\n❓ **P-25 — `GET /inscricoes/:id` de inscrição de outro**: um participante acessando\no detalhe de uma inscrição que não é dele retorna `404 NAO_ENCONTRADO` (tratada\ncomo inexistente) ou outro erro?\n\n➡️ Recomendação: `404 NAO_ENCONTRADO`, mantendo o isolamento (participante só\nenxerga as próprias).\n\n---\n\n❓ **P-26 — Contéudo de `GET /inscricoes`**: a lista do participante inclui também\n`canceladas` e `expiradas`, ou somente status ativos? O filtro `?atividadeId=`\nmantém o mesmo princípio? E a organização vê todas as inscrições de todos?\n\n➡️ Recomendação: incluir todos os status (inclusive canceladas/expiradas) para\nhistórico, com o mesmo princípio de isolamento e filtro.\n\n### Bloco I — Corpo da requisição e ordenação/persistência\n\n❓ **P-27 — Corpo enviado onde não há entrada**: como o contrato diz \"sem corpo na\nentrada\", um corpo ausente ou vazio é aceito. Um corpo JSON presente (mesmo sem\ncampos definidos) deve ser ignorado ou vira `422 DADOS_INVALIDOS`? Vale o mesmo\npara cancelamento e confirmação?\n\n➡️ Recomendação: corpo ausente/vazio aceito; corpo presente com JSON bem formado é\nignorado (sem campos a validar); corpo mal formado (não-JSON) vira `DADOS_INVALIDOS`.\n\n---\n\n❓ **P-28 — Ordenação de `GET /inscricoes`**: em que ordem a lista de inscrições\né retornada (por `criadaEm`? por status? por atividade?)?\n\n➡️ Recomendação: ordenar por `criadaEm` ascendente; empate por `id`.\n\n---\n\n❓ **P-29 — Persistência de estados temporais**: uma vez que a expiração de uma\nconvocação é observada por uma leitura, esse resultado precisa ser \"carimbado\" e\nnão voltar se o relógio for colocado para trás no modo de teste?\n\n➡️ Recomendação: tudo é rederivado do relógio; nada é carimbado, exceto o que é\npersistente por decisão (cancelamentos).\n\n## Pontos Confirmados\n\n(vazio — rodada 1 em andamento)\n\n## Pontos Pendentes\n\nP-01 a P-29 da Rodada 1."
+      },
+      "output": "Wrote file successfully.",
+      "metadata": {
+       "diagnostics": {},
+       "filepath": "C:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech\\entrevistas\\M2-inscricoes.md",
+       "exists": false,
+       "truncated": false
+      },
+      "title": "entrevistas\\M2-inscricoes.md",
+      "time": {
+       "start": 1790112842002,
+       "end": 1790112842050
+      }
+     },
+     "id": "prt_0cb09ad58001COMQoAA9QMjjIk",
+     "sessionID": "ses_f34f80f66ffeyg6tcIUDSeyrgx",
+     "messageID": "msg_0cb0840da001fsr2c1UWQLLkn8"
+    },
+    {
+     "reason": "tool-calls",
+     "snapshot": "9f145193de8dd566a16a2e05cbc024ee5ea0c89a",
+     "type": "step-finish",
+     "tokens": {
+      "total": 59396,
+      "input": 11418,
+      "output": 15978,
+      "reasoning": 0,
+      "cache": {
+       "write": 0,
+       "read": 32000
+      }
+     },
+     "cost": 0,
+     "id": "prt_0cb0a43f1001VcpnG0NAbcRtNw",
+     "sessionID": "ses_f34f80f66ffeyg6tcIUDSeyrgx",
+     "messageID": "msg_0cb0840da001fsr2c1UWQLLkn8"
+    },
+    {
+     "type": "patch",
+     "hash": "fa4ba504c33fc83ae70d3d78b468298f347d8dde",
+     "files": [
+      "C:/Users/Clara L Peretti/TrabalhoIA-WomanInTech/entrevistas/M2-inscricoes.md"
+     ],
+     "id": "prt_0cb0a4572001OQx37eDjQnRtN2",
+     "sessionID": "ses_f34f80f66ffeyg6tcIUDSeyrgx",
+     "messageID": "msg_0cb0840da001fsr2c1UWQLLkn8"
+    }
+   ]
+  },
+  {
+   "info": {
+    "parentID": "msg_0cb07f146001XKlXOW0JadzaaV",
+    "role": "assistant",
+    "mode": "build",
+    "agent": "build",
+    "path": {
+     "cwd": "C:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech",
+     "root": "C:\\Users\\Clara L Peretti\\TrabalhoIA-WomanInTech"
+    },
+    "cost": 0,
+    "tokens": {
+     "total": 60732,
+     "input": 14098,
+     "output": 1322,
+     "reasoning": 0,
+     "cache": {
+      "write": 0,
+      "read": 45312
+     }
+    },
+    "modelID": "big-pickle",
+    "providerID": "opencode",
+    "time": {
+     "created": 1790112843138,
+     "completed": 1790112853809
+    },
+    "finish": "stop",
+    "id": "msg_0cb0a4582001x9I6BrgwrvnGrY",
+    "sessionID": "ses_f34f80f66ffeyg6tcIUDSeyrgx"
+   },
+   "parts": [
+    {
+     "snapshot": "9f145193de8dd566a16a2e05cbc024ee5ea0c89a",
+     "type": "step-start",
+     "id": "prt_0cb0a4b4b001vFgAMBQm5QHPvY",
+     "sessionID": "ses_f34f80f66ffeyg6tcIUDSeyrgx",
+     "messageID": "msg_0cb0a4582001x9I6BrgwrvnGrY"
+    },
+    {
+     "type": "reasoning",
+     "text": "The file is created. Now the final chat output must present the questions in Portuguese — the frontier of round 1 — and wait for user to respond. Keep it concise but include the whole frontier numbered with recommendations. Since the skill format is required and user asked for \"as perguntas que precisam ser respondidas pelo usuario\", I'll present them grouped, in the format. The file already has them; chat should mirror. I'll keep it tight.",
+     "time": {
+      "start": 1790112844625,
+      "end": 1790112845164
+     },
+     "id": "prt_0cb0a4b510010jCiMHWbYDtBIY",
+     "sessionID": "ses_f34f80f66ffeyg6tcIUDSeyrgx",
+     "messageID": "msg_0cb0a4582001x9I6BrgwrvnGrY"
+    },
+    {
+     "type": "text",
+     "text": "Registrei os fatos em `entrevistas/M2-inscricoes.md`. Fronteira da **Rodada 1** — Regras de negócio do M2 ainda **PENDENTES**:\n\n**Bloco A — Prazos e bordas**\n- **P-01** Encerramento das inscrições (`INSCRICOES_ENCERRADAS`): até quando? ➡️ no início do primeiro encontro.\n- **P-02** Inscrever em atividade já iniciada/encerrada (não cancelada): mesmo código? ➡️ `INSCRICOES_ENCERRADAS`.\n- **P-03** Borda: `agora == início` aceita ou recusa? ➡️ recusa (borda inclusiva).\n- **P-04** Janela `convocadaAte`: qual prazo para confirmar? ➡️ definir valor explícito.\n- **P-05** Borda: confirmar com `agora == convocadaAte` vale? ➡️ vale (expira só depois).\n\n**Bloco B — FIFO e empate**\n- **P-06** Fila estritamente FIFO por `criadaEm`? ➡️ sim.\n- **P-07** Empate de `criadaEm`: desempate? ➡️ por `id`.\n- **P-08** Saída da fila renumera/recompacta posições? ➡️ sim.\n- **P-09** Vaga aberta por cancelamento/expiração também convoca automaticamente? ➡️ sim.\n- **P-10** Convocação pula quem está em conflito/limite, mantendo posição? ➡️ sim.\n\n**Bloco C — Expiração sem acesso e salto do relógio**\n- **P-11** Expiração sem acesso: rederivada do relógio a cada leitura, sem job? ➡️ sim.\n- **P-12** Expiração libera a vaga e dispara próxima convocação? ➡️ sim.\n- **P-13** Salto `PUT /_teste/relogio` para frente: reprocessa cascata de expirações/convocações? ➡️ sim.\n- **P-14** Salto para trás: reverte expirações/convocações? ➡️ rederiva tudo; só cancelamentos persistem.\n\n**Bloco D — Estados que contam**\n- **P-15** `CONFLITO_DE_HORARIO`: quais status contam? ➡️ `confirmada` + `convocada`.\n- **P-16** Conflito medido por sobreposição de encontros (horário de Brasília)? ➡️ sim.\n- **P-17** `LIMITE_DE_MINICURSOS`: qual número? Quais status contam? Vale na confirmação? ➡️ definir número; contar `confirmada`+`convocada`.\n\n**Bloco E — Precedência de erros**\n- **P-18** Ao inscrever (cancelada/encerrada/bloqueada/`JA_INSCRITO`/conflito/limite): ordem? ➡️ atividade → bloqueio/`JA_INSCRITO` → conflito/limite.\n- **P-19** Ao cancelar inscrição (`ATIVIDADE_CANCELADA`/`ATIVIDADE_JA_INICIADA`/`INSCRICAO_INATIVA`): ordem? ➡️ atividade → inativa.\n- **P-20** Ao confirmar (`SEM_CONVOCACAO`/`CONVOCACAO_EXPIRADA`/conflito/limite): ordem? ➡️ nessa ordem.\n\n**Bloco F — Reinscrição**\n- **P-21** Cancelou a própria: pode reinscrever? Posição? ➡️ sim, fim da fila.\n- **P-22** Expirou convocação: pode reinscrever/ser reconvocado? ➡️ sim, sem privilégio.\n- **P-23** `JA_INSCRITO` vale para quais status? ➡️ `confirmada`, `convocada`, `em_espera`.\n\n**Bloco G — Cancelamento da atividade**\n- **P-24** Quais status viram `cancelada` (ativas) e o que vira a fila? ➡️ `confirmada`, `convocada`, `em_espera` → `cancelada`; fila esvaziada.\n\n**Bloco H — Isolamento**\n- **P-25** Detalhe de inscrição alheia: `404`? ➡️ sim.\n- **P-26** Lista do participante inclui `canceladas`/`expiradas`? Filtro mantém isolamento? Organização vê todas? ➡️ incluir todas; sim; sim.\n\n**Bloco I — Corpo e persistência**\n- **P-27** Corpo JSON presente onde não há entrada: ignora ou `DADOS_INVALIDOS`? ➡️ ignora; mal formado → `DADOS_INVALIDOS`.\n- **P-28** Ordenação de `GET /inscricoes`? ➡️ `criadaEm`, empate por `id`.\n- **P-29** Estado temporal é carimbado ou sempre rederivado? ➡️ rederivado.\n\nPode responder \"todas as recomendadas\", numerar as respostas, ou corrigir ponto a ponto.",
+     "time": {
+      "start": 1790112845167,
+      "end": 1790112853150
+     },
+     "id": "prt_0cb0a4d6f0012wKLK7SIelDVKF",
+     "sessionID": "ses_f34f80f66ffeyg6tcIUDSeyrgx",
+     "messageID": "msg_0cb0a4582001x9I6BrgwrvnGrY"
+    },
+    {
+     "reason": "stop",
+     "snapshot": "9f145193de8dd566a16a2e05cbc024ee5ea0c89a",
+     "type": "step-finish",
+     "tokens": {
+      "total": 60732,
+      "input": 14098,
+      "output": 1322,
+      "reasoning": 0,
+      "cache": {
+       "write": 0,
+       "read": 45312
+      }
+     },
+     "cost": 0,
+     "id": "prt_0cb0a6dec001aOQ3kT6mPvQ78h",
+     "sessionID": "ses_f34f80f66ffeyg6tcIUDSeyrgx",
+     "messageID": "msg_0cb0a4582001x9I6BrgwrvnGrY"
+    }
+   ]
+  }
+ ]
+}
