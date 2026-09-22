@@ -481,7 +481,9 @@ void main() {
     final confirmacaoPlaceholder = await request(api, 'POST',
         '/inscricoes/$daElisa/confirmacao',
         user: 'p-elisa', body: {});
-    expect(confirmacaoPlaceholder.status, 501,
-        reason: 'objeto válido passa do corpo e mantém a confirmação como placeholder');
+    expect(confirmacaoPlaceholder.status, 422,
+        reason: 'objeto válido passa do corpo e cai na regra do recurso');
+    expect(confirmacaoPlaceholder.json['erro'], 'SEM_CONVOCACAO',
+        reason: 'confirmada sem convocação ativa (R32)');
   });
 }

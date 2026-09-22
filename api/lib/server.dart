@@ -480,6 +480,10 @@ class ApiServer {
     final user = _user(request)!;
     if (_hasActiveEnrollment(user.id, activityId))
       return _error(request, 409, 'JA_INSCRITO');
+    if (_hasTimeConflict(user.id, activityId))
+      return _error(request, 409, 'CONFLITO_DE_HORARIO');
+    if (activity.type == 'minicurso' && _confirmedMinicursos(user.id) >= 2)
+      return _error(request, 422, 'LIMITE_DE_MINICURSOS');
     final semVaga = _occupied(activityId) >= activity.slots;
     final enrollment = Enrollment(
         id: _id('ins_'),
@@ -517,7 +521,21 @@ class ApiServer {
       _promote(enrollment.activityId);
       return _json(request, 200, _inscricaoJson(enrollment));
     }
-    _error(request, 501, 'NAO_IMPLEMENTADO');
+    if (parts[2] != 'confirmacao') return _finish(request, 405);
+    if (enrollment.status == 'convocada' &&
+        !clock.isBefore(enrollment.convocationDeadline!))
+      return _error(request, 422, 'CONVOCACAO_EXPIRADA');
+    if (enrollment.status != 'convocada')
+      return _error(request, 422, 'SEM_CONVOCACAO');
+    final activity = activities[enrollment.activityId]!;
+    if (_hasTimeConflict(enrollment.participantId, enrollment.activityId))
+      return _error(request, 409, 'CONFLITO_DE_HORARIO');
+    if (activity.type == 'minicurso' &&
+        _confirmedMinicursos(enrollment.participantId) >= 2)
+      return _error(request, 422, 'LIMITE_DE_MINICURSOS');
+    enrollment.status = 'confirmada';
+    enrollment.convocationDeadline = null;
+    _json(request, 200, _inscricaoJson(enrollment));
   }
 
   Enrollment? _findEnrollment(String id) {
@@ -538,6 +556,32 @@ class ApiServer {
         return true;
     }
     return false;
+  }
+
+  bool _hasTimeConflict(String participantId, String activityId) {
+    final candidate = activities[activityId]!;
+    for (final enrollment in enrollments) {
+      if (enrollment.participantId != participantId ||
+          enrollment.status != 'confirmada' ||
+          enrollment.activityId == activityId)
+        continue;
+      final other = activities[enrollment.activityId]!;
+      for (final a in candidate.meetings)
+        for (final b in other.meetings)
+          if (a.start.isBefore(b.end) && b.start.isBefore(a.end)) return true;
+    }
+    return false;
+  }
+
+  int _confirmedMinicursos(String participantId) {
+    var count = 0;
+    for (final enrollment in enrollments) {
+      if (enrollment.participantId != participantId ||
+          enrollment.status != 'confirmada')
+        continue;
+      if (activities[enrollment.activityId]!.type == 'minicurso') count++;
+    }
+    return count;
   }
 
   void _promote(String activityId) {
