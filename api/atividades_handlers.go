@@ -4,6 +4,7 @@ import (
 	"crypto/rand"
 	"encoding/hex"
 	"encoding/json"
+	"io"
 	"net/http"
 	"sort"
 	"strings"
@@ -123,6 +124,11 @@ func criarAtividade(w http.ResponseWriter, r *http.Request, s *Store) {
 	var entrada atividadeEntrada
 	dec := json.NewDecoder(r.Body)
 	if err := dec.Decode(&entrada); err != nil || entrada.Titulo == nil || entrada.Tipo == nil || entrada.SalaID == nil || entrada.Vagas == nil || entrada.Encontros == nil {
+		responderErro(w, http.StatusUnprocessableEntity, "DADOS_INVALIDOS")
+		return
+	}
+	var extra any
+	if err := dec.Decode(&extra); err != io.EOF {
 		responderErro(w, http.StatusUnprocessableEntity, "DADOS_INVALIDOS")
 		return
 	}
@@ -415,7 +421,13 @@ func editarAtividade(w http.ResponseWriter, r *http.Request, s *Store, id string
 	}
 
 	var bruto map[string]json.RawMessage
-	if err := json.NewDecoder(r.Body).Decode(&bruto); err != nil {
+	dec := json.NewDecoder(r.Body)
+	if err := dec.Decode(&bruto); err != nil {
+		responderErro(w, http.StatusUnprocessableEntity, "DADOS_INVALIDOS")
+		return
+	}
+	var extra any
+	if err := dec.Decode(&extra); err != io.EOF {
 		responderErro(w, http.StatusUnprocessableEntity, "DADOS_INVALIDOS")
 		return
 	}

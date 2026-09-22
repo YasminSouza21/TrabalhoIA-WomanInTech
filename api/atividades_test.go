@@ -73,6 +73,25 @@ func criarAtividadeTeste(t *testing.T, handler http.Handler, corpo string) map[s
 	return decodificar(t, rec)
 }
 
+func TestPOSTAtividadesRejeitaConteudoExtraAposJSON(t *testing.T) {
+	store := NewStore()
+	handler := newServer(true, store)
+	executar(handler, http.MethodPost, "/_teste/reset", "", "")
+
+	corpo := palestraPadrao("Conteudo extra") + " {}"
+	erro(t, executar(handler, http.MethodPost, "/atividades", "org-ana", corpo), http.StatusUnprocessableEntity, "DADOS_INVALIDOS")
+}
+
+func TestPATCHAtividadesRejeitaConteudoExtraAposJSON(t *testing.T) {
+	store := NewStore()
+	handler := newServer(true, store)
+	executar(handler, http.MethodPost, "/_teste/reset", "", "")
+	atividade := criarAtividadeTeste(t, handler, palestraPadrao("Conteudo extra no patch"))
+
+	corpo := `{"titulo":"Novo titulo"} {}`
+	erro(t, executar(handler, http.MethodPatch, "/atividades/"+atividade["id"].(string), "org-ana", corpo), http.StatusUnprocessableEntity, "DADOS_INVALIDOS")
+}
+
 func TestM1Fatia1CriacaoDeAtividades(t *testing.T) {
 	store := NewStore()
 	handler := newServer(true, store)
