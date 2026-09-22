@@ -17,4 +17,8 @@ Requisições são chamadas ao modelo: cada passo do agente é uma. Skills conta
 | 21/09 23:43 | [Verificação de rastreabilidade M1 Rodada 2](ses_f39009e72ffePa1iCYmX6DP4p4.md) | 2 | — | — | 0 / 0 | 0 | 0 | 0 | — |
 | 21/09 23:45 | [Criar spec formal do M1 grade de atividades](ses_f38ff03c4ffeSgCXrMAJBQYekK.md) | 12 | to-spec | — | 0 / 0 | 0 | 0 | 0 | — |
 | 21/09 23:48 | [Implementação TDD do M1 Grade de Atividades](ses_f38fbc23dffe7p1lwmEVGYXe0e.md) | 32 | tdd | — | 4 / 6 | 0 | 0 | 0 | — |
-| | **Total: 5 sessões** | 111 | grilling (2), to-spec, tdd | — | 4 / 8 | 0 | 0 | 1 | — |
+| 21/09 23:56 | [Auditoria formal do módulo M1 — Grade de Atividades](ses_f38f4949effeMH4U268gEv13a2.md) | 11 | — | auditor | 0 / 0 | 0 | 0 | 0 | — |
+| 22/09 00:13 | [Correção TDD para rejeitar JSON extra em atividades](ses_f38e4e25fffeSovqi8CuDkig5k.md) | 19 | — | — | 2 / 3 | 0 | 0 | 0 | — |
+| 22/09 00:16 | [Restaurar linha original de M1 em EQUIPE.md](ses_f38e23ff3ffe2wolkCb2kbRKaw.md) | 4 | — | — | 0 / 0 | 0 | 0 | 0 | — |
+| 22/09 00:18 | [Auditoria pós-correção do M1 — Grade de Atividades](ses_f38e0c288ffeDitumIH6beGSrE.md) | 10 | — | auditor | 0 / 1 | 0 | 0 | 0 | — |
+| | **Total: 9 sessões** | 155 | grilling (2), to-spec, tdd | auditor (2) | 6 / 12 | 0 | 0 | 1 | — |
