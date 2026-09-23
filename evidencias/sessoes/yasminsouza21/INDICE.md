@@ -29,5 +29,13 @@ Requisições são chamadas ao modelo: cada passo do agente é uma. Skills conta
 | 22/09 21:11 | [Entrevista M3: perguntas sobre QR, presença e integrações](ses_f3465c1f2ffemfPF8NB2zix838.md) | 62 | grilling, to-spec, tdd | — | 4 / 12 | 0 | 0 | 0 | — |
 | 22/09 21:39 | [Auditoria somente leitura do M3 Presença QR](ses_f344b96b2ffeS126oN7olcixs6.md) | 4 | — | auditor, revisor-de-contrato, explore | 0 / 0 | 0 | 0 | 0 | — |
 | 22/09 21:46 | [Correção completa das pendências da auditoria M3](ses_f3445ba41ffeO0SM4kFIcfgplC.md) | 46 | tdd | — | 2 / 8 | 0 | 0 | 0 | — |
-| 22/09 21:55 | [Correção documental final do M3 sem alterar código](ses_f343d1a05ffeOik2CCZwbhtrDf.md) | 7 | — | — | 0 / 0 | 0 | 0 | 0 | — |
-| | **Total: 18 sessões** | 410 | grilling (3), to-spec (2), tdd (6) | auditor (8), revisor-de-contrato, explore | 20 / 62 | 0 | 0 | 1 | — |
+| 22/09 21:55 | [Correção documental final do M3 sem alterar código](ses_f343d1a05ffeOik2CCZwbhtrDf.md) | 10 | — | — | 0 / 0 | 0 | 0 | 0 | — |
+| 22/09 22:06 | [M3 — equipe e pareceres formais](ses_f3432fae1ffedPnagCGTqQlBHt.md) | 20 | — | auditor, revisor-de-contrato | 0 / 0 | 0 | 0 | 0 | — |
+| 22/09 22:14 | [M3 — Rodada 1 grilling](ses_f342bcfa4ffeqUhWNV1LOCMHLV.md) | 3 | grilling | — | 0 / 0 | 0 | 0 | 0 | — |
+| 22/09 22:15 | [M3 — Rodada 2 grilling](ses_f342b36b3ffexvWlGk2cvmNvz8.md) | 5 | grilling | — | 0 / 0 | 0 | 0 | 0 | — |
+| 22/09 22:15 | [M3 — Spec com to-spec](ses_f342a95a4ffegZNe64TSyAus0k.md) | 7 | to-spec | — | 0 / 0 | 0 | 0 | 0 | — |
+| 22/09 22:18 | [M3 — validação build Flutter e evidências](ses_f3428b1bfffeXns58X3NBTxmya.md) | 3 | — | — | 0 / 0 | 0 | 0 | 0 | — |
+| 22/09 22:21 | [M3 — remediação dos pareceres](ses_f342518fdffetcW5MICCK4xNm7.md) | 29 | tdd | — | 1 / 7 | 0 | 0 | 0 | — |
+| 22/09 22:28 | [M3 — auditoria pós-remediação](ses_f341ed569ffeClNfB0bYiyLUML.md) | 13 | — | auditor, revisor-de-contrato | 0 / 2 | 0 | 0 | 0 | — |
+| 22/09 22:36 | [M3 — corrigir achados finais do revisor](ses_f3417791dffePZCyF1BE5kzsZf.md) | 12 | tdd | — | 1 / 3 | 0 | 0 | 0 | — |
+| | **Total: 26 sessões** | 505 | grilling (5), to-spec (3), tdd (8) | auditor (10), revisor-de-contrato (3), explore | 22 / 74 | 0 | 0 | 1 | — |

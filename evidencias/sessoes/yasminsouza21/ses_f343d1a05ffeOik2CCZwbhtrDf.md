@@ -6,8 +6,8 @@
 | Pasta | yasmindesouza/TrabalhoIA-WomanInTech |
 | Período | 22/09 21:55 → 22/09 21:56 |
 | Modelo | openai/gpt-5.6-luna |
-| Requisições ao modelo | 7 |
-| Tokens de entrada / saída | 16.999 / 1.144 |
+| Requisições ao modelo | 10 |
+| Tokens de entrada / saída | 21.600 / 1.644 |
 | Skills | — |
 | Subagentes | — |
 | Execuções de teste | 0 vermelhas, 0 verdes |

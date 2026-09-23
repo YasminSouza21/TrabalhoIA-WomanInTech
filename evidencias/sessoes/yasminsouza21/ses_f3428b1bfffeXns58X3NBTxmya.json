@@ -1,0 +1,507 @@
+{
+ "info": {
+  "id": "ses_f3428b1bfffeXns58X3NBTxmya",
+  "slug": "witty-pixel",
+  "projectID": "5ec1c46d9cd3888456c10ad574c60d609ed0d0a9",
+  "directory": "/Users/yasmindesouza/TrabalhoIA-WomanInTech",
+  "path": "",
+  "title": "M3 — validação build Flutter e evidências",
+  "agent": "build",
+  "model": {
+   "id": "gpt-5.6-luna",
+   "providerID": "openai",
+   "variant": "default"
+  },
+  "version": "1.18.32",
+  "summary": {
+   "additions": 0,
+   "deletions": 0,
+   "files": 0
+  },
+  "cost": 0,
+  "tokens": {
+   "input": 10856,
+   "output": 348,
+   "reasoning": 91,
+   "cache": {
+    "read": 17408,
+    "write": 0
+   }
+  },
+  "permission": [
+   {
+    "permission": "question",
+    "pattern": "*",
+    "action": "deny"
+   },
+   {
+    "permission": "plan_enter",
+    "pattern": "*",
+    "action": "deny"
+   },
+   {
+    "permission": "plan_exit",
+    "pattern": "*",
+    "action": "deny"
+   }
+  ],
+  "time": {
+   "created": 1790126280256,
+   "updated": 1790126304938
+  }
+ },
+ "messages": [
+  {
+   "info": {
+    "role": "user",
+    "time": {
+     "created": 1790126280574
+    },
+    "agent": "build",
+    "model": {
+     "providerID": "openai",
+     "modelID": "gpt-5.6-luna"
+    },
+    "summary": {
+     "diffs": []
+    },
+    "id": "msg_0cbd74f7e001yMpEWNrwc9P8bo",
+    "sessionID": "ses_f3428b1bfffeXns58X3NBTxmya"
+   },
+   "parts": [
+    {
+     "type": "text",
+     "text": "\"Faça somente a validação do ambiente e das evidências, sem alterar código, specs, entrevistas, auditorias, EQUIPE.md ou fazer commit. Rode flutter doctor -v, verifique os snapshots Dart web ausentes, tente flutter precache --web e depois flutter build web --release. Se a instalação local continuar incompleta, registre o erro objetivo sem mascarar. Ao final rode node evidencias/exportar-evidencias.js, git diff --check e git status --short. Não faça upgrade destrutivo nem modifique o repositório.\"",
+     "id": "prt_0cbd74f850017bgnrYhMFiT1Bg",
+     "sessionID": "ses_f3428b1bfffeXns58X3NBTxmya",
+     "messageID": "msg_0cbd74f7e001yMpEWNrwc9P8bo"
+    }
+   ]
+  },
+  {
+   "info": {
+    "parentID": "msg_0cbd74f7e001yMpEWNrwc9P8bo",
+    "role": "assistant",
+    "mode": "build",
+    "agent": "build",
+    "path": {
+     "cwd": "/Users/yasmindesouza/TrabalhoIA-WomanInTech",
+     "root": "/Users/yasmindesouza/TrabalhoIA-WomanInTech"
+    },
+    "cost": 0,
+    "tokens": {
+     "total": 9183,
+     "input": 8996,
+     "output": 151,
+     "reasoning": 36,
+     "cache": {
+      "write": 0,
+      "read": 0
+     }
+    },
+    "modelID": "gpt-5.6-luna",
+    "providerID": "openai",
+    "time": {
+     "created": 1790126280592,
+     "completed": 1790126288303
+    },
+    "finish": "tool-calls",
+    "id": "msg_0cbd74f90001VauFXkphqHbU8R",
+    "sessionID": "ses_f3428b1bfffeXns58X3NBTxmya"
+   },
+   "parts": [
+    {
+     "snapshot": "c6eedd1f9bbe5fb423322631f36e0b550eb472b6",
+     "type": "step-start",
+     "id": "prt_0cbd75dd2001fDHffX0YxdXcOm",
+     "sessionID": "ses_f3428b1bfffeXns58X3NBTxmya",
+     "messageID": "msg_0cbd74f90001VauFXkphqHbU8R"
+    },
+    {
+     "type": "reasoning",
+     "text": "**Planning sequential validation steps**",
+     "time": {
+      "start": 1790126284245,
+      "end": 1790126285401
+     },
+     "metadata": {
+      "openai": {
+       "itemId": "rs_05dccfda9842918d016ab328cc756c87d2b061f9b0e4509a00",
+       "reasoningEncryptedContent": "gAAAAABqsyjN0rqHSUxoE_Xdcl_x5phFzPDSR8UXFjq6TytVfRrkgRhKz_TeUTD6Tx6E34n5FPkIHg2EQkkJKB01JuTrJzL4dflAYKNI5fEDpC50tOchGjAkHJptCJMzyOWZq7gmreQhAY2A8v5ER1Zk5gcWlYInV1DGMKPNJ_0Io1q0ZNteGknXHbjWDosoGLuRjzFzzT1A3PBVacSYF8LtLqa9ouF4EsJ4Y5Qobe1ox-8lFmXLN1u_9uqnPKAuOh-UaDLK6DgVT454bm4oPxCzJCM7iAmvgKG4ZkKKxY6cnzuzEZ1vnhckX85-wpUdT3bL4HTt8ZKZ6CSxvGw0HqPS-Urd6OHyt7qEIRumqIXl7PvJBivxZ0pvtc2QZfiVAJDkPc4OFcGN20DSq28eFUyN37JTzV3eTAHc8X_HUSlF2Qd7e_uB6ByCzkfrSrXVpHUByQOY-cvu71wgjSbOSsz3VcpBsW-oPDo7V9wm9wUcDuMK2oWQBig09PrAE5Cldc79hArmYSW24kb4U85nLB-lCm9f7aRZ8z409Unn2EBhQk7-7YvAMRga2F9p5OTlkr2CpjePcePM63EhQUE3Noxhp_5mNaJ2xghhcIJySFHgauEBWs7aA8T_-30WUOzqeaFfrX9WuS-sEBqdvq9miMLuTV3SFpc6T18GH59aiMwUyhquge2isyF0JbeC0HWUN65Xirvye0uJ6S5fyT5t1OPfJOWCOkVgL47Q6Pjdmhj127hR3CQr-GfsQ0mcNPAMKUBbCG6Yc8d7DV7pg18mrnfB0NtpUDScXS13hePPXYr585eKe4jNH1w_oVQnTdpfXUTKrWS502ODU9niDcORbPa7Fu7Yceq02jH-OJawao3Nywpsrvhffa6VSUs8d_sLVNImT38_nxgALJMm5k2yncXM9yv3cSZAyDVH80CKD7jvDbQl9hcp3tpO-Zvnz1jORwLTtS9tz8g1TI4Txrbke6XkLAd7YwIgyO0W65emG0YOtfRDGJdSsCBkA--wJ58MFPO32XiA2MphkNGZMO2G8shKwwilh71V3qMwAz2FYk4VCgpHqU8Z12wHRxNeOgJH-whteS0CiZ-tWFL0Asu3wf94Z4-ILa4LJ5Xkmm6I21sFR2mh46EonFVSfIFINVRQVDpdD08fq6kikucZXKNf1-7ktm0PQDVXbGbLcJloPtBvivzFYgndLOOYSjRAEaqJjrK3lwLV7yUcBC1kF2qRHw7xb6y5up8Gi8jq9wE6E6trTajyUr8wFnfAX9sck8ptNGBix0esXymZ-eFmtcrTBqAqUV3Vlalyc66j32ug5FRc4rOz2rAI9aJ2pge2tYOqVR6u5CHlbxvV-ODXPhH10-UVhN8n9yxa-q91ZRATdhbSIMhZe8G_AU7Hw28tG2WokVy0RRK0DVl6N4GpXWicm25QqHQNZTJzGPmgaHqUxGPOHqJhRdyklox6BE-3pKx94BUzBCkPJw-nv8bYb-XXYB1rZ8jKWM7yka16FqSWFRYdLIfmO74XT8Y="
+      }
+     },
+     "id": "prt_0cbd75dd5001ZSzATwVWur3a45",
+     "sessionID": "ses_f3428b1bfffeXns58X3NBTxmya",
+     "messageID": "msg_0cbd74f90001VauFXkphqHbU8R"
+    },
+    {
+     "type": "text",
+     "text": "Vou executar apenas as validações solicitadas, preservando o repositório: diagnóstico Flutter, verificação dos snapshots, precache/build, exportação de evidências e checagens finais de diff/status.",
+     "time": {
+      "start": 1790126285412,
+      "end": 1790126286797
+     },
+     "metadata": {
+      "openai": {
+       "itemId": "msg_05dccfda9842918d016ab328cda03c87d29e5f94cf7911a7f6",
+       "phase": "commentary"
+      }
+     },
+     "id": "prt_0cbd76264001yzJKyzqBZdN8f8",
+     "sessionID": "ses_f3428b1bfffeXns58X3NBTxmya",
+     "messageID": "msg_0cbd74f90001VauFXkphqHbU8R"
+    },
+    {
+     "type": "tool",
+     "tool": "todowrite",
+     "callID": "call_V0qgcdSKOQhVl7f0yCa3xOme",
+     "state": {
+      "status": "completed",
+      "input": {
+       "todos": [
+        {
+         "content": "Executar `flutter doctor -v` e verificar snapshots Dart web ausentes",
+         "status": "in_progress",
+         "priority": "high"
+        },
+        {
+         "content": "Tentar `flutter precache --web` e `flutter build web --release`",
+         "status": "pending",
+         "priority": "high"
+        },
+        {
+         "content": "Executar exportação de evidências e checagens finais do Git",
+         "status": "pending",
+         "priority": "high"
+        }
+       ]
+      },
+      "output": "[\n  {\n    \"content\": \"Executar `flutter doctor -v` e verificar snapshots Dart web ausentes\",\n    \"status\": \"in_progress\",\n    \"priority\": \"high\"\n  },\n  {\n    \"content\": \"Tentar `flutter precache --web` e `flutter build web --release`\",\n    \"status\": \"pending\",\n    \"priority\": \"high\"\n  },\n  {\n    \"content\": \"Executar exportação de evidências e checagens finais do Git\",\n    \"status\": \"pending\",\n    \"priority\": \"high\"\n  }\n]",
+      "metadata": {
+       "todos": [
+        {
+         "content": "Executar `flutter doctor -v` e verificar snapshots Dart web ausentes",
+         "status": "in_progress",
+         "priority": "high"
+        },
+        {
+         "content": "Tentar `flutter precache --web` e `flutter build web --release`",
+         "status": "pending",
+         "priority": "high"
+        },
+        {
+         "content": "Executar exportação de evidências e checagens finais do Git",
+         "status": "pending",
+         "priority": "high"
+        }
+       ],
+       "truncated": false
+      },
+      "title": "3 todos",
+      "time": {
+       "start": 1790126288091,
+       "end": 1790126288094
+      }
+     },
+     "metadata": {
+      "openai": {
+       "itemId": "fc_05dccfda9842918d016ab328cf05f487d28499c7f5969732b9"
+      }
+     },
+     "id": "prt_0cbd767d2001wCOPaplBOMDNIl",
+     "sessionID": "ses_f3428b1bfffeXns58X3NBTxmya",
+     "messageID": "msg_0cbd74f90001VauFXkphqHbU8R"
+    },
+    {
+     "reason": "tool-calls",
+     "snapshot": "c6eedd1f9bbe5fb423322631f36e0b550eb472b6",
+     "type": "step-finish",
+     "tokens": {
+      "total": 9183,
+      "input": 8996,
+      "output": 151,
+      "reasoning": 36,
+      "cache": {
+       "write": 0,
+       "read": 0
+      }
+     },
+     "cost": 0,
+     "id": "prt_0cbd76d67001Mq32XHJWfbHWvb",
+     "sessionID": "ses_f3428b1bfffeXns58X3NBTxmya",
+     "messageID": "msg_0cbd74f90001VauFXkphqHbU8R"
+    }
+   ]
+  },
+  {
+   "info": {
+    "parentID": "msg_0cbd74f7e001yMpEWNrwc9P8bo",
+    "role": "assistant",
+    "mode": "build",
+    "agent": "build",
+    "path": {
+     "cwd": "/Users/yasmindesouza/TrabalhoIA-WomanInTech",
+     "root": "/Users/yasmindesouza/TrabalhoIA-WomanInTech"
+    },
+    "cost": 0,
+    "tokens": {
+     "total": 9363,
+     "input": 613,
+     "output": 46,
+     "reasoning": 0,
+     "cache": {
+      "write": 0,
+      "read": 8704
+     }
+    },
+    "modelID": "gpt-5.6-luna",
+    "providerID": "openai",
+    "time": {
+     "created": 1790126288305,
+     "completed": 1790126299383
+    },
+    "finish": "tool-calls",
+    "id": "msg_0cbd76db1001pNKWZ8epxmQbhX",
+    "sessionID": "ses_f3428b1bfffeXns58X3NBTxmya"
+   },
+   "parts": [
+    {
+     "snapshot": "c6eedd1f9bbe5fb423322631f36e0b550eb472b6",
+     "type": "step-start",
+     "id": "prt_0cbd775200014GWEFx90KFfqd3",
+     "sessionID": "ses_f3428b1bfffeXns58X3NBTxmya",
+     "messageID": "msg_0cbd76db1001pNKWZ8epxmQbhX"
+    },
+    {
+     "type": "tool",
+     "tool": "bash",
+     "callID": "call_VpfNiC7D3Whdvl9ICmNzJIk1",
+     "state": {
+      "status": "completed",
+      "input": {
+       "command": "flutter doctor -v",
+       "workdir": "/Users/yasmindesouza/TrabalhoIA-WomanInTech",
+       "timeout": 120000
+      },
+      "output": "[✓] Flutter (Channel stable, 3.47.5, on macOS 26.5.2 25F84 darwin-arm64, locale pt-BR) [476ms]\n    • Flutter version 3.47.5 on channel stable at /opt/homebrew/share/flutter\n    • Upstream repository https://github.com/flutter/flutter.git\n    • Framework revision 6a19cca564 (5 days ago), 2026-09-17 14:13:22 -0400\n    • Engine revision af7e796e16\n    • Dart version 3.13.4\n    • DevTools version 2.60.0\n    • Feature flags: enable-web, enable-linux-desktop, enable-macos-desktop, enable-windows-desktop, enable-android, enable-ios, cli-animations, enable-native-assets, enable-record-use, enable-swift-package-manager, omit-legacy-version-file, enable-lldb-debugging, enable-uiscene-migration\n\n[✗] Android toolchain - develop for Android devices [393ms]\n    ✗ Unable to locate Android SDK.\n      Install Android Studio from: https://developer.android.com/studio/index.html\n      On first launch it will assist you in installing the Android SDK components.\n      (or visit https://flutter.dev/to/macos-android-setup for detailed instructions).\n      If the Android SDK has been installed to a custom location, please use\n      `flutter config --android-sdk` to update to that location.\n\n\n[!] Xcode - develop for iOS and macOS (Xcode 26.6) [579ms]\n    • Xcode at /Applications/Xcode.app/Contents/Developer\n    • Build 17F113\n    ! CocoaPods not installed.\n        CocoaPods is a package manager for iOS or macOS platform code.\n        Without CocoaPods, plugins will not work on iOS or macOS.\n        For more info, see https://flutter.dev/to/platform-plugins\n      For installation instructions, see https://guides.cocoapods.org/using/getting-started.html#installation\n\n[✓] Chrome - develop for the web [6ms]\n    • Chrome at /Applications/Google Chrome.app/Contents/MacOS/Google Chrome\n\n[✓] Connected device (2 available) [6,9s]\n    • macOS (desktop) • macos  • darwin-arm64   • macOS 26.5.2 25F84 darwin-arm64\n    • Chrome (web)    • chrome • web-javascript • Google Chrome 153.0.8010.53\n\n[✓] Network resources [347ms]\n    • All expected network resources are available.\n\n! Doctor found issues in 2 categories.\n",
+      "metadata": {
+       "output": "[✓] Flutter (Channel stable, 3.47.5, on macOS 26.5.2 25F84 darwin-arm64, locale pt-BR) [476ms]\n    • Flutter version 3.47.5 on channel stable at /opt/homebrew/share/flutter\n    • Upstream repository https://github.com/flutter/flutter.git\n    • Framework revision 6a19cca564 (5 days ago), 2026-09-17 14:13:22 -0400\n    • Engine revision af7e796e16\n    • Dart version 3.13.4\n    • DevTools version 2.60.0\n    • Feature flags: enable-web, enable-linux-desktop, enable-macos-desktop, enable-windows-desktop, enable-android, enable-ios, cli-animations, enable-native-assets, enable-record-use, enable-swift-package-manager, omit-legacy-version-file, enable-lldb-debugging, enable-uiscene-migration\n\n[✗] Android toolchain - develop for Android devices [393ms]\n    ✗ Unable to locate Android SDK.\n      Install Android Studio from: https://developer.android.com/studio/index.html\n      On first launch it will assist you in installing the Android SDK components.\n      (or visit https://flutter.dev/to/macos-android-setup for detailed instructions).\n      If the Android SDK has been installed to a custom location, please use\n      `flutter config --android-sdk` to update to that location.\n\n\n[!] Xcode - develop for iOS and macOS (Xcode 26.6) [579ms]\n    • Xcode at /Applications/Xcode.app/Contents/Developer\n    • Build 17F113\n    ! CocoaPods not installed.\n        CocoaPods is a package manager for iOS or macOS platform code.\n        Without CocoaPods, plugins will not work on iOS or macOS.\n        For more info, see https://flutter.dev/to/platform-plugins\n      For installation instructions, see https://guides.cocoapods.org/using/getting-started.html#installation\n\n[✓] Chrome - develop for the web [6ms]\n    • Chrome at /Applications/Google Chrome.app/Contents/MacOS/Google Chrome\n\n[✓] Connected device (2 available) [6,9s]\n    • macOS (desktop) • macos  • darwin-arm64   • macOS 26.5.2 25F84 darwin-arm64\n    • Chrome (web)    • chrome • web-javascript • Google Chrome 153.0.8010.53\n\n[✓] Network resources [347ms]\n    • All expected network resources are available.\n\n! Doctor found issues in 2 categories.\n",
+       "exit": 0,
+       "truncated": false
+      },
+      "title": "flutter doctor -v",
+      "time": {
+       "start": 1790126290919,
+       "end": 1790126299221
+      }
+     },
+     "metadata": {
+      "openai": {
+       "itemId": "fc_03b7e62932bf8600016ab328d2843487d28ef53de6fd80acef"
+      }
+     },
+     "id": "prt_0cbd77525001bbUmgwiiJdczN3",
+     "sessionID": "ses_f3428b1bfffeXns58X3NBTxmya",
+     "messageID": "msg_0cbd76db1001pNKWZ8epxmQbhX"
+    },
+    {
+     "reason": "tool-calls",
+     "snapshot": "c6eedd1f9bbe5fb423322631f36e0b550eb472b6",
+     "type": "step-finish",
+     "tokens": {
+      "total": 9363,
+      "input": 613,
+      "output": 46,
+      "reasoning": 0,
+      "cache": {
+       "write": 0,
+       "read": 8704
+      }
+     },
+     "cost": 0,
+     "id": "prt_0cbd798a5001r9svo1w9Fe5we7",
+     "sessionID": "ses_f3428b1bfffeXns58X3NBTxmya",
+     "messageID": "msg_0cbd76db1001pNKWZ8epxmQbhX"
+    }
+   ]
+  },
+  {
+   "info": {
+    "parentID": "msg_0cbd74f7e001yMpEWNrwc9P8bo",
+    "role": "assistant",
+    "mode": "build",
+    "agent": "build",
+    "path": {
+     "cwd": "/Users/yasmindesouza/TrabalhoIA-WomanInTech",
+     "root": "/Users/yasmindesouza/TrabalhoIA-WomanInTech"
+    },
+    "cost": 0,
+    "tokens": {
+     "total": 10157,
+     "input": 1247,
+     "output": 151,
+     "reasoning": 55,
+     "cache": {
+      "write": 0,
+      "read": 8704
+     }
+    },
+    "modelID": "gpt-5.6-luna",
+    "providerID": "openai",
+    "time": {
+     "created": 1790126299387,
+     "completed": 1790126304934
+    },
+    "finish": "tool-calls",
+    "id": "msg_0cbd798fb0016X93sNyPvA1OmV",
+    "sessionID": "ses_f3428b1bfffeXns58X3NBTxmya"
+   },
+   "parts": [
+    {
+     "snapshot": "c6eedd1f9bbe5fb423322631f36e0b550eb472b6",
+     "type": "step-start",
+     "id": "prt_0cbd79d10001NTin6EQjG18AKo",
+     "sessionID": "ses_f3428b1bfffeXns58X3NBTxmya",
+     "messageID": "msg_0cbd798fb0016X93sNyPvA1OmV"
+    },
+    {
+     "type": "reasoning",
+     "text": "**Planning snapshot file search using glob**",
+     "time": {
+      "start": 1790126300435,
+      "end": 1790126304699
+     },
+     "metadata": {
+      "openai": {
+       "itemId": "rs_0eeea622351f0a5e016ab328dcbdc087d2a9292ad4bd1ff2b0",
+       "reasoningEncryptedContent": "gAAAAABqsyjgI6l_M0D0ctklfQt0zyund9cHIu1zTj9YoBtlhC8GIeaff8tCxzvBIKpFhzeWmkI-Yy1Na0Gvfbp5IWZ9pH7-hUgtrb-JhiZ_q0rdu4Gl-Rgfbhas2z65ABTK8mdsIs0mT736aWdYVCP4npiHNo3smQ8sT_4mjjfmDncuND_G2bpUedyV7SzNu90I5urg_qds4RUJKywr7IVMWTiG3EXF9m5U1N8OW6f9c_6rox7HAnLuM8eXN1cLvcqg7jit1iZA2DgfeoE4UroSUPXA4Ii6AJ_cwRm3qZtDhOW654jofWufdpCaULKYEjH4SwupeXeKNCU2HRRWwYA8oQ2kDT-miUGGtqklswv2DLUVjz9mbpwVs45u_nE1gGGdkLrCXV8k542pCSJX32snEQuMCqVizdeDTprNdI2jL1SUqSt5xfUtXekYJk7lWJyh5SQuQ0lkNQ_RFBRIB0gSt79fdmjNr8Oz49lky3wIpGKQYQZqyyiL8zYEJmtK-DyffJXjm-fljdkelCU1ea03A0lkrViQDBiQnE3hX7SOTcYzPKa4Pp-_sECKdLRx1x1bgVimpY3MFzWJ_5Tm49eZEFHzknJWRRNXhao_3h_fcNPksXQmpAmBeRkkrJpnY3m2n6Kr7E9unjIUD4wYGxXIDGMjczB4ZOFjdMq3RhkOvydSLoaX6ihRXPcoHIXH7BdluF5WEIzDdZNS2V_TAnVcs4onISB9aNdpwpAyH_p18zV6LA11Wy2Qz7J7x18bqa75rnWKGNBZM6K00DM__QWEJmlQLaI885_hbs0nJte9Op-cBJhOJDPnFRpThL16JALxZq0rAOHkMLkxjLO_ZIWVMe4XKHP2tFHWZui6kyj5fNfAkzJ8dsYXJ14HiZ6rvqwpSZuGnkmUQmR847Vkwgn1gCSC7NjoMQM5aysGUwkQ9iq71fLtRhxdFVsiDdaGVxGg4V5fwtcETGK6zN6-XN4GoBccnqAI8jGwDT8ftd2Yq7xl3AKV94_qltEjkwQKF6lx0EyaLPKd3BOwL94lsZNpNggpwZ6PMkPUruAoQMjgue2KgdiOn0uh_jMPME0QFZWdvc_kfICeWzTl3P2JuAEdtlHcYoVk6yY7P5jSgvhuBR0apwwLj45rAQwz0-VQssK-6OTA4EC4LELUYnrnABjCRh8eAER8lSuxWakv3hCSzUUA31bciNSRd16k5poGQTSHSKt8u6SoP_iYvLOALib2IDKEPhHsoNEBJ7YBa2s5HaIFAX6nrrc2bnBN8Zx5xNDSdwhtNgwXrQFBY684X__ZyKoK7GnO1MXkTubWw6OCANvlmS0QCVmzWjWeSM8iWkBoJm3R17S2lrFuWhxjO4WkfdgoJkgHZ8AZKQvmnghjrFs8ZzM8osskl-eXvh2-Etef5mCTYhqAB2rBnTCiNAuRP69gGtITh5yWI1odOpY7i4BzKEA1uKyarUPPfRcuEH6TxAdSOKO5yPdoH7O3sWmhg4rXiI4J4AugvqUu3kxqkO_rPlpnbxkurhpLUNULqnODigPlgw5uH9KhE02CGfyYG5GgbUOsnOAdRTChSfvfvW8ooqyF6xhOFCRj9jRPwAFdLjs1K92snoJz8uFmkYzEQzoQX4IdUA=="
+      }
+     },
+     "id": "prt_0cbd79d130019ar9nK9vcO0Jr7",
+     "sessionID": "ses_f3428b1bfffeXns58X3NBTxmya",
+     "messageID": "msg_0cbd798fb0016X93sNyPvA1OmV"
+    },
+    {
+     "type": "tool",
+     "tool": "glob",
+     "callID": "call_5KyL7STx2U3nbcCfcOFCLAHu",
+     "state": {
+      "status": "error",
+      "input": {
+       "pattern": "**/*web*",
+       "path": "/opt/homebrew/share/flutter/bin/cache/dart-sdk/bin/snapshots"
+      },
+      "error": "The user rejected permission to use this specific tool call.",
+      "time": {
+       "start": 1790126304718,
+       "end": 1790126304745
+      }
+     },
+     "metadata": {
+      "openai": {
+       "itemId": "fc_0eeea622351f0a5e016ab328e0ed4087d2b5cfc1f27b6ccc7f"
+      }
+     },
+     "id": "prt_0cbd7adbf001qOByUlFVr8gMSG",
+     "sessionID": "ses_f3428b1bfffeXns58X3NBTxmya",
+     "messageID": "msg_0cbd798fb0016X93sNyPvA1OmV"
+    },
+    {
+     "type": "tool",
+     "tool": "glob",
+     "callID": "call_43gAj4T9UXdhbNWhwcaWYF6k",
+     "state": {
+      "status": "error",
+      "input": {
+       "pattern": "**/*.snapshot",
+       "path": "/opt/homebrew/share/flutter/bin/cache/dart-sdk/bin/snapshots"
+      },
+      "error": "The user rejected permission to use this specific tool call.",
+      "time": {
+       "start": 1790126304723,
+       "end": 1790126304747
+      }
+     },
+     "metadata": {
+      "openai": {
+       "itemId": "fc_0eeea622351f0a5e016ab328e0ed5887d283a1eea9711b1c7e"
+      }
+     },
+     "id": "prt_0cbd7add0001fAo3AVtiPjGOer",
+     "sessionID": "ses_f3428b1bfffeXns58X3NBTxmya",
+     "messageID": "msg_0cbd798fb0016X93sNyPvA1OmV"
+    },
+    {
+     "type": "tool",
+     "tool": "glob",
+     "callID": "call_ICjXKV6c2BwJ2fTR0wXXZQQh",
+     "state": {
+      "status": "error",
+      "input": {
+       "pattern": "**/*snapshot*",
+       "path": "/opt/homebrew/share/flutter/bin/cache"
+      },
+      "error": "The user rejected permission to use this specific tool call.",
+      "time": {
+       "start": 1790126304727,
+       "end": 1790126304748
+      }
+     },
+     "metadata": {
+      "openai": {
+       "itemId": "fc_0eeea622351f0a5e016ab328e0ed6487d2847b244544a13abe"
+      }
+     },
+     "id": "prt_0cbd7add5001PLbUD8NfW0Jfx2",
+     "sessionID": "ses_f3428b1bfffeXns58X3NBTxmya",
+     "messageID": "msg_0cbd798fb0016X93sNyPvA1OmV"
+    },
+    {
+     "type": "tool",
+     "tool": "glob",
+     "callID": "call_uxO4ol0c751RQ0VJiMjaWNyT",
+     "state": {
+      "status": "completed",
+      "input": {
+       "pattern": "**/*snapshot*",
+       "path": "/Users/yasmindesouza/TrabalhoIA-WomanInTech"
+      },
+      "output": "[14 caracteres omitidos]",
+      "title": "",
+      "time": {
+       "start": 1790126304733,
+       "end": 1790126304781
+      }
+     },
+     "metadata": {
+      "openai": {
+       "itemId": "fc_0eeea622351f0a5e016ab328e0ed6c87d28ddc87fcf6dd19ef"
+      }
+     },
+     "id": "prt_0cbd7add90017yNp347gRhhKrf",
+     "sessionID": "ses_f3428b1bfffeXns58X3NBTxmya",
+     "messageID": "msg_0cbd798fb0016X93sNyPvA1OmV"
+    },
+    {
+     "reason": "tool-calls",
+     "snapshot": "c6eedd1f9bbe5fb423322631f36e0b550eb472b6",
+     "type": "step-finish",
+     "tokens": {
+      "total": 10157,
+      "input": 1247,
+      "output": 151,
+      "reasoning": 55,
+      "cache": {
+       "write": 0,
+       "read": 8704
+      }
+     },
+     "cost": 0,
+     "id": "prt_0cbd7ae5f001uGPS3MdOmJ5I1h",
+     "sessionID": "ses_f3428b1bfffeXns58X3NBTxmya",
+     "messageID": "msg_0cbd798fb0016X93sNyPvA1OmV"
+    }
+   ]
+  }
+ ]
+}

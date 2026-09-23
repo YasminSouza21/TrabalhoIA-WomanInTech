@@ -35,7 +35,7 @@ Future<String> createActivity(String title, String day) async {
     'titulo': title,
     'tipo': 'palestra',
     'salaId': title == 'Primeira' ? 'sala-101' : 'sala-102',
-    'vagas': 2,
+    'vagas': 3,
     'encontros': [
       {
         'inicio': '${day}T09:00:00-03:00',
@@ -100,6 +100,11 @@ Future<void> main() async {
         });
     check(offline.status == 201 && offline.json['origem'] == 'qr_offline',
         'presenca offline');
+    await request('POST', '/atividades/$atividade/inscricoes', user: 'p-diego');
+    final invalid = await request('POST', '/encontros/$encontro/presencas',
+        user: 'p-diego', body: {'codigo': 'INVALIDO'});
+    check(invalid.status == 422 && invalid.json['erro'] == 'CODIGO_INVALIDO',
+        'codigo invalido nao duplicado');
     final duplicate = await request('POST', '/encontros/$encontro/presencas',
         user: 'p-carla', body: {'codigo': 'ANTIGO'});
     check(duplicate.status == 200 && duplicate.json['id'] == qr.json['id'],
@@ -174,7 +179,7 @@ Future<void> main() async {
             '2026-10-13T12:00:00Z',
         'relogio apos reset');
     stdout.writeln(
-        'SMOKE M3 OK: QR, offline/idempotencia, corpos invalidos, precedencia de cancelamento, manual/justificativa, listagem e reset');
+        'SMOKE M3 OK: GET /encontros/:id/codigo, POST /encontros/:id/presencas, POST /encontros/:id/presencas/manual, GET /encontros/:id/presencas; QR online/offline, codigo invalido nao duplicado, idempotencia, corpos invalidos, cancelamento, manual/justificativa, listagem e reset; LIMITE_DE_MANUAIS resolvido por idempotencia global antes de qualquer cota');
   } finally {
     client?.close(force: true);
     server?.kill(ProcessSignal.sigkill);

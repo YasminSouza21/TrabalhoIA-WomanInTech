@@ -9,7 +9,7 @@
 - Presenca somente para inscricao `confirmada`; ausencia elegivel retorna `NAO_INSCRITO`.
 - Duplicidade QR/manual retorna `200` com a primeira presenca preservada.
 - Justificativa manual apos `trim`, entre 10 e 500 caracteres.
-- Um registro manual por participante/encontro por organizacao, com limite compartilhado e duplicidade resolvida antes do limite.
+- Um registro manual por participante/encontro, com duplicidade global resolvida antes de qualquer limite; nao foi inventada cota de organizacao.
 - Presencas persistem fora de teste; reset limpa presencas/sequencias e restaura relogio.
 - Flutter cobre obter QR, registrar QR, registrar manual e listar presencas.
 
@@ -19,14 +19,14 @@
 |---|---|
 | Entrevista/spec | `entrevistas/M3-presenca-qr.md`; `specs/M3-presenca-qr.md` |
 | Modelo/persistencia | `api/lib/server.dart:28-64`, `api/lib/server.dart:170-313`, `api/lib/server.dart:325-379` |
-| Rotas M3 | `api/lib/server.dart:483-510` |
+| Rotas M3 | `api/lib/server.dart:482-510`: `GET /encontros/:id/codigo`, `POST /encontros/:id/presencas`, `POST /encontros/:id/presencas/manual`, `GET /encontros/:id/presencas` |
 | QR/janela/troca | `api/lib/server.dart:512-596` |
 | Registro QR/manual | `api/lib/server.dart:620-781` |
 | Listagem/serializacao | `api/lib/server.dart:783-817` |
 | ApiClient | `frontend/lib/api_client.dart:54-206` |
 | Tela Flutter | `frontend/lib/presencas_page.dart`; atalho integrado em `frontend/lib/main.dart` |
-| Testes HTTP M3 | `api/test/presenca_test.dart` |
-| Testes Flutter M3 | `frontend/test/presencas_api_client_test.dart`; `frontend/test/presencas_widget_test.dart` |
+| Testes HTTP M3 | `api/test/presenca_test.dart`; `api/test/presenca_regressao_test.dart` |
+| Testes Flutter M3 | `frontend/test/presencas_api_client_test.dart`; `frontend/test/presencas_widget_test.dart`; `frontend/test/presencas_erros_widget_test.dart` |
 | Smoke | `api/tool/smoke_m3.dart` |
 
 ## Criterios cobertos
@@ -39,7 +39,9 @@
 - Presenca manual, justificativa, duplicidade compartilhada e listagem.
 - Reset, relogio controlado, persistencia JSON e reinicio da API.
 - Retrocesso do relogio sem desfazer presenca materializada.
-- ApiClient com `X-Usuario`, quatro rotas M3, QR offline com `lidoEm` e widget com loading/vazio/erro/sucesso.
+- Transicao de bucket materializada, limites inclusivos, leitura passada tardia, inscricao nao confirmada, participante manual inexistente, justificativas em branco/500/501, manual fora da janela e timestamps.
+- Rotas GET recusam segmentos extras; combinacoes de autenticacao e papel cobertas.
+- ApiClient com `X-Usuario`, quatro rotas M3, QR online/offline com `MockClient` e widget com erros especificos em cada fluxo, loading/vazio/erro/sucesso.
 - Rastreabilidade completa R01-R24 para P-01 a P-23 em `specs/M3-presenca-qr.md`.
 - Regressao M1/M2 preservada pelas suites completas.
 
@@ -47,12 +49,13 @@
 
 | Comando | Resultado |
 |---|---|
-| `dart test test/presenca_test.dart -r compact` | OK, 15 testes |
-| `dart test` | OK, 92 testes |
+| `dart test test/presenca_test.dart test/presenca_regressao_test.dart -r compact` | OK, com os dois testes regressivos novos para `lidoEm` e envelopes 404 |
+| `dart test` | OK, 103 testes |
 | `dart analyze` | OK, sem issues |
-| `dart run tool/smoke_m3.dart` | OK: QR, offline/idempotencia, corpos invalidos, precedencia de cancelamento, manual/justificativa, listagem e reset |
-| `flutter test` | OK, 45 testes |
+| `dart run tool/smoke_m3.dart` | OK; cobre as quatro rotas exatas, QR online/offline, código inválido não duplicado, idempotência, cancelamento, manual, listagem e reset |
+| `flutter test` | OK, 50 testes com MockClient, incluindo erros dos quatro fluxos e QR online |
 | `flutter analyze` | OK, sem issues |
+| `git diff --check` | OK, sem saída |
 | `flutter build web --release` | BLOQUEADO pelo SDK local: ausentes `dart2js_aot.dart.snapshot` e `dart2wasm_product.snapshot` |
 | `node evidencias/exportar-evidencias.js` | Executado ao concluir a entrega |
 
@@ -61,10 +64,9 @@
 - O build web não pôde ser concluído neste ambiente porque a instalação local do
   Flutter 3.47.5 possui cache Dart incompleto (`dart2js_aot.dart.snapshot` e
   `dart2wasm_product.snapshot`); análise e testes Flutter passaram.
-- O contrato contém `LIMITE_DE_MANUAIS`, mas as decisões aprovadas definem a chave
-  participante/encontro e tornam tentativa duplicada idempotente, retornando `200`
-  antes do limite. O teste HTTP prova que participantes diferentes ainda podem ter
-  uma presença manual e que a duplicidade entre organizações preserva a primeira.
+- `auditorias/M3-resolucao.md` registra por que `LIMITE_DE_MANUAIS` é inatingível
+  no escopo aprovado: P13/P17/P18/P19 tornam a duplicidade global idempotente antes
+  do limite e `Presenca` não carrega organização na chave. Não foi inventada cota.
 - A tela recebe o texto do QR; leitura por câmera não foi solicitada nem faz parte do
   contrato.
 

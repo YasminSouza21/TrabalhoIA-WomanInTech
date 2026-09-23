@@ -395,7 +395,7 @@ class ApiServer {
       if (path.startsWith('/inscricoes/'))
         return await _inscricaoRoute(request);
       if (path.startsWith('/encontros/')) return await _meetingRoute(request);
-      _finish(request, 404);
+      _error(request, 404, 'NAO_ENCONTRADO');
     } catch (_) {
       _json(request, 500, ApiError('ERRO_INTERNO').toJson());
     }
@@ -482,15 +482,19 @@ class ApiServer {
   Future<void> _meetingRoute(HttpRequest request) async {
     final parts =
         request.uri.path.split('/').where((part) => part.isNotEmpty).toList();
-    if (parts.length < 3 || parts.length > 4) return _finish(request, 404);
+    if (parts.length < 3 || parts.length > 4) {
+      return _error(request, 404, 'NAO_ENCONTRADO');
+    }
     final meetingId = parts[1];
     final context = _meetingContext(meetingId);
-    if (parts[2] == 'codigo' && request.method == 'GET') {
+    if (parts.length == 3 && parts[2] == 'codigo' && request.method == 'GET') {
       if (!_authorized(request, 'organizacao')) return;
       if (context == null) return _error(request, 404, 'NAO_ENCONTRADO');
       return _meetingCode(request, context.activity, context.meeting);
     }
-    if (parts[2] == 'presencas' && request.method == 'GET') {
+    if (parts.length == 3 &&
+        parts[2] == 'presencas' &&
+        request.method == 'GET') {
       if (!_authorized(request, 'organizacao')) return;
       if (context == null) return _error(request, 404, 'NAO_ENCONTRADO');
       return _listAttendances(request, meetingId);
@@ -506,7 +510,7 @@ class ApiServer {
         request.method == 'POST') {
       return _registerManual(request, context);
     }
-    return _finish(request, 404);
+    return _error(request, 404, 'NAO_ENCONTRADO');
   }
 
   ({Activity activity, Meeting meeting})? _meetingContext(String id) {
@@ -601,7 +605,7 @@ class ApiServer {
       return _error(request, 403, 'NAO_INSCRITO');
     }
     final readAt =
-        body['lidoEm'] == null ? clock : _parseOptionalDate(body['lidoEm']);
+        body.containsKey('lidoEm') ? _parseOptionalDate(body['lidoEm']) : clock;
     if (readAt == null) return _error(request, 422, 'DADOS_INVALIDOS');
     if (body['lidoEm'] != null &&
         (readAt.isAfter(clock) ||
