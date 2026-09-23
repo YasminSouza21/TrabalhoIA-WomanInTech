@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'api_client.dart';
 import 'inscricoes_page.dart';
+import 'presencas_page.dart';
 
 void main() => runApp(GradeApp(client: ApiClient()));
 
@@ -83,8 +84,20 @@ class _GradePageState extends State<GradePage> {
           icon: const Icon(Icons.event_note),
           tooltip: 'Inscrições',
         ),
+        IconButton(
+          onPressed: () async {
+            await Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (_) => PresencasPage(client: widget.client),
+              ),
+            );
+            if (mounted) _load();
+          },
+          icon: const Icon(Icons.fact_check),
+          tooltip: 'Presenças',
+        ),
         Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16),
+          padding: const EdgeInsets.symmetric(horizontal: 8),
           child: DropdownButton<String>(
             value: selectedUser,
             dropdownColor: Theme.of(context).colorScheme.surface,
@@ -516,18 +529,23 @@ class _ActivityInscricaoSectionState extends State<_ActivityInscricaoSection> {
         atividadeId: widget.activity.id,
       );
       final ativas = todas
-          .where((ins) =>
-              ins.atividadeId == widget.activity.id &&
-              const {'confirmada', 'em_espera', 'convocada'}.contains(ins.status))
+          .where(
+            (ins) =>
+                ins.atividadeId == widget.activity.id &&
+                const {
+                  'confirmada',
+                  'em_espera',
+                  'convocada',
+                }.contains(ins.status),
+          )
           .toList();
       Inscricao? minha;
       if (ativas.isNotEmpty) {
         minha = ativas.first;
       } else {
-        final historicas = todas
-            .where((ins) => ins.atividadeId == widget.activity.id)
-            .toList()
-          ..sort((a, b) => b.criadaEm.compareTo(a.criadaEm));
+        final historicas =
+            todas.where((ins) => ins.atividadeId == widget.activity.id).toList()
+              ..sort((a, b) => b.criadaEm.compareTo(a.criadaEm));
         if (historicas.isNotEmpty) minha = historicas.first;
       }
       if (!mounted) return;
@@ -570,9 +588,8 @@ class _ActivityInscricaoSectionState extends State<_ActivityInscricaoSection> {
     try {
       await operacao();
       if (!mounted) return;
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text(feedback)));
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text(feedback)));
       await _load();
     } on ApiFailure catch (e) {
       if (mounted) setState(() => error = e.code);
@@ -635,7 +652,11 @@ class _ActivityInscricaoSectionState extends State<_ActivityInscricaoSection> {
           Text('Posição na espera: ${ins.posicaoNaEspera}'),
         const SizedBox(height: 8),
         if (ins.status == 'confirmada' || ins.status == 'em_espera')
-          _acao(label: 'Cancelar inscrição', onPressed: _cancelar, chave: ins.id)
+          _acao(
+            label: 'Cancelar inscrição',
+            onPressed: _cancelar,
+            chave: ins.id,
+          )
         else
           _acao(primary: true, label: 'Inscrever', onPressed: _inscrever),
       ],
@@ -659,13 +680,7 @@ class _ActivityInscricaoSectionState extends State<_ActivityInscricaoSection> {
     final disabled = mutatingId != null;
     final child = Text(label);
     return primary
-        ? FilledButton(
-            onPressed: disabled ? null : onPressed,
-            child: child,
-          )
-        : OutlinedButton(
-            onPressed: disabled ? null : onPressed,
-            child: child,
-          );
+        ? FilledButton(onPressed: disabled ? null : onPressed, child: child)
+        : OutlinedButton(onPressed: disabled ? null : onPressed, child: child);
   }
 }

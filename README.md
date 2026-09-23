@@ -37,6 +37,26 @@ O documento de requisitos é para vocês consultarem na rodada 2 da entrevista, 
 
 ---
 
+## Módulo M3 — Presença por QR (implementado)
+
+O M3 integra os encontros do M1 e as inscrições confirmadas do M2. A organização
+obtém um QR por encontro, participantes registram presença online/offline, e a
+organização pode registrar manualmente e consultar presenças.
+
+- Janela: 15 minutos antes do início até 15 minutos depois do fim, inclusiva.
+- Troca do código: a cada 5 minutos; o código anterior é invalidado na troca.
+- Offline: `lidoEm` é o instante da regra, com tolerância de 10 minutos e sem futuro.
+- Idempotência: uma presença por participante/encontro; repetição retorna `200`.
+- Manual: justificativa de 10 a 500 caracteres após `trim`, com limite compartilhado.
+- Verificação: `dart test`, `dart analyze` e `dart run tool/smoke_m3.dart` em `api/`.
+- Frontend: `PresencasPage` e métodos M3 do `ApiClient`, testados com `MockClient`.
+
+Artefatos: `entrevistas/M3-presenca-qr.md`, `specs/M3-presenca-qr.md`,
+`api/test/presenca_test.dart`, `api/tool/smoke_m3.dart` e
+`evidencias/ENTREGA-M3.md`.
+
+---
+
 ## Módulo M2 — Inscrições e lista de espera (implementado)
 
 Backend em `api/` (Dart 3 + `dart:io`, sem banco ou serviço externo) e frontend em `frontend/` (Flutter web). Requer SDK Dart e Flutter instalados.

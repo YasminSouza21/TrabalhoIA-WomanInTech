@@ -44,6 +44,27 @@ class Room {
   int get capacity => json['capacidade'] as int;
 }
 
+class MeetingCode {
+  MeetingCode(this.json);
+  final Map<String, dynamic> json;
+  String get meetingId => json['encontroId'] as String;
+  String get code => json['codigo'] as String;
+  String get changesAt => json['trocaEm'] as String;
+  String get validUntil => json['validoAte'] as String;
+}
+
+class Attendance {
+  Attendance(this.json);
+  final Map<String, dynamic> json;
+  String get id => json['id'] as String;
+  String get meetingId => json['encontroId'] as String;
+  String get participantId => json['participanteId'] as String;
+  String get origin => json['origem'] as String;
+  String get readAt => json['lidoEm'] as String;
+  String get recordedAt => json['registradaEm'] as String;
+  String? get justification => json['justificativa'] as String?;
+}
+
 class AppUser {
   const AppUser(this.id, this.name, this.role);
   final String id;
@@ -131,17 +152,22 @@ class ApiClient {
         .map((json) => Inscricao(json))
         .toList();
   }
-  Future<Inscricao> inscricaoDetalhe(String id) async =>
-      Inscricao(await _request('GET', '/inscricoes/$id') as Map<String, dynamic>);
+
+  Future<Inscricao> inscricaoDetalhe(String id) async => Inscricao(
+    await _request('GET', '/inscricoes/$id') as Map<String, dynamic>,
+  );
   Future<Inscricao> inscrever(String atividadeId) async => Inscricao(
-      await _request('POST', '/atividades/$atividadeId/inscricoes')
-          as Map<String, dynamic>);
+    await _request('POST', '/atividades/$atividadeId/inscricoes')
+        as Map<String, dynamic>,
+  );
   Future<Inscricao> cancelarInscricao(String id) async => Inscricao(
-      await _request('POST', '/inscricoes/$id/cancelamento')
-          as Map<String, dynamic>);
+    await _request('POST', '/inscricoes/$id/cancelamento')
+        as Map<String, dynamic>,
+  );
   Future<Inscricao> confirmarConvocacao(String id) async => Inscricao(
-      await _request('POST', '/inscricoes/$id/confirmacao')
-          as Map<String, dynamic>);
+    await _request('POST', '/inscricoes/$id/confirmacao')
+        as Map<String, dynamic>,
+  );
   Future<Map<String, dynamic>> activity(String id) async =>
       await _request('GET', '/atividades/$id') as Map<String, dynamic>;
   Future<Map<String, dynamic>> create(Map<String, dynamic> body) async =>
@@ -155,4 +181,42 @@ class ApiClient {
   Future<Map<String, dynamic>> cancel(String id) async =>
       await _request('POST', '/atividades/$id/cancelamento', body: {})
           as Map<String, dynamic>;
+
+  Future<MeetingCode> meetingCode(String meetingId) async => MeetingCode(
+    await _request('GET', '/encontros/$meetingId/codigo')
+        as Map<String, dynamic>,
+  );
+
+  Future<Attendance> registerQr(
+    String meetingId,
+    String code, {
+    String? readAt,
+  }) async {
+    final body = <String, dynamic>{'codigo': code};
+    if (readAt != null && readAt.isNotEmpty) body['lidoEm'] = readAt;
+    return Attendance(
+      await _request('POST', '/encontros/$meetingId/presencas', body: body)
+          as Map<String, dynamic>,
+    );
+  }
+
+  Future<Attendance> registerManual(
+    String meetingId,
+    String participantId,
+    String justification,
+  ) async {
+    return Attendance(
+      await _request(
+        'POST',
+        '/encontros/$meetingId/presencas/manual',
+        body: {'participanteId': participantId, 'justificativa': justification},
+      ) as Map<String, dynamic>,
+    );
+  }
+
+  Future<List<Attendance>> attendances(String meetingId) async {
+    final data =
+        await _request('GET', '/encontros/$meetingId/presencas') as List;
+    return data.cast<Map<String, dynamic>>().map(Attendance.new).toList();
+  }
 }

@@ -46,6 +46,27 @@ class Enrollment {
   String? expiryCause;
 }
 
+class Attendance {
+  Attendance({
+    required this.id,
+    required this.meetingId,
+    required this.participantId,
+    required this.origin,
+    required this.readAt,
+    required this.recordedAt,
+    this.justification,
+    this.manualOrganizationId,
+  });
+  final String id;
+  final String meetingId;
+  final String participantId;
+  final String origin;
+  final DateTime readAt;
+  final DateTime recordedAt;
+  final String? justification;
+  final String? manualOrganizationId;
+}
+
 class Activity {
   Activity(
       {required this.id,
@@ -99,14 +120,17 @@ class ApiServer {
   final rooms = <String, Room>{};
   final activities = <String, Activity>{};
   final enrollments = <Enrollment>[];
+  final attendances = <Attendance>[];
   late DateTime clock;
   int _enrollmentSequence = 0;
+  int _attendanceSequence = 0;
 
   void reset() {
     _dirty = false;
     clock =
         modoTeste ? DateTime.utc(2026, 10, 13, 12) : _clockProvider().toUtc();
     _enrollmentSequence = 0;
+    _attendanceSequence = 0;
     users
       ..clear()
       ..addAll({
@@ -133,6 +157,7 @@ class ApiServer {
       });
     activities.clear();
     enrollments.clear();
+    attendances.clear();
   }
 
   void _load() {
@@ -170,6 +195,16 @@ class ApiServer {
           maxSequencia = inscricao.sequenceNumber;
         }
         enrollments.add(inscricao);
+      }
+      final rawAttendances = decoded['presencas'];
+      if (rawAttendances is List) {
+        for (final raw in rawAttendances) {
+          attendances.add(_attendanceFromJson(raw));
+        }
+      }
+      final sequenciaPresencas = decoded['sequenciaPresencas'];
+      if (sequenciaPresencas is int && sequenciaPresencas >= 0) {
+        _attendanceSequence = sequenciaPresencas;
       }
       _enrollmentSequence = maxSequencia;
     } catch (error) {
@@ -244,6 +279,34 @@ class ApiServer {
         expiryCause: expiryCause as String?);
   }
 
+  Attendance _attendanceFromJson(Object? raw) {
+    if (raw is! Map ||
+        raw['id'] is! String ||
+        raw['encontroId'] is! String ||
+        raw['participanteId'] is! String ||
+        raw['origem'] is! String ||
+        raw['lidoEm'] is! String ||
+        raw['registradaEm'] is! String) {
+      throw const FormatException('presenca mal formada');
+    }
+    final justificativa = raw['justificativa'];
+    final organizacao = raw['organizacaoId'];
+    if ((justificativa != null && justificativa is! String) ||
+        (organizacao != null && organizacao is! String)) {
+      throw const FormatException('presenca mal formada');
+    }
+    return Attendance(
+      id: raw['id'] as String,
+      meetingId: raw['encontroId'] as String,
+      participantId: raw['participanteId'] as String,
+      origin: raw['origem'] as String,
+      readAt: _parseDate(raw['lidoEm']),
+      recordedAt: _parseDate(raw['registradaEm']),
+      justification: justificativa as String?,
+      manualOrganizationId: organizacao as String?,
+    );
+  }
+
   void _persist() {
     if (modoTeste) return;
     final target = File(_stateFilePath);
@@ -298,6 +361,19 @@ class ApiServer {
                 })
             .toList(),
         'sequencia': _enrollmentSequence,
+        'presencas': attendances
+            .map((attendance) => {
+                  'id': attendance.id,
+                  'encontroId': attendance.meetingId,
+                  'participanteId': attendance.participantId,
+                  'origem': attendance.origin,
+                  'lidoEm': _formatDate(attendance.readAt),
+                  'registradaEm': _formatDate(attendance.recordedAt),
+                  'justificativa': attendance.justification,
+                  'organizacaoId': attendance.manualOrganizationId,
+                })
+            .toList(),
+        'sequenciaPresencas': _attendanceSequence,
       };
 
   Future<void> handle(HttpRequest request) async {
@@ -316,7 +392,9 @@ class ApiServer {
       if (path == '/atividades') return await _activitiesRoute(request);
       if (path.startsWith('/atividades/')) return await _activityRoute(request);
       if (path == '/inscricoes') return await _inscricoesRoute(request);
-      if (path.startsWith('/inscricoes/')) return await _inscricaoRoute(request);
+      if (path.startsWith('/inscricoes/'))
+        return await _inscricaoRoute(request);
+      if (path.startsWith('/encontros/')) return await _meetingRoute(request);
       _finish(request, 404);
     } catch (_) {
       _json(request, 500, ApiError('ERRO_INTERNO').toJson());
@@ -400,6 +478,228 @@ class ApiServer {
     if (request.method == 'PATCH') return _patch(request, id);
     _finish(request, 405);
   }
+
+  Future<void> _meetingRoute(HttpRequest request) async {
+    final parts =
+        request.uri.path.split('/').where((part) => part.isNotEmpty).toList();
+    if (parts.length < 3 || parts.length > 4) return _finish(request, 404);
+    final meetingId = parts[1];
+    final context = _meetingContext(meetingId);
+    if (parts[2] == 'codigo' && request.method == 'GET') {
+      if (!_authorized(request, 'organizacao')) return;
+      if (context == null) return _error(request, 404, 'NAO_ENCONTRADO');
+      return _meetingCode(request, context.activity, context.meeting);
+    }
+    if (parts[2] == 'presencas' && request.method == 'GET') {
+      if (!_authorized(request, 'organizacao')) return;
+      if (context == null) return _error(request, 404, 'NAO_ENCONTRADO');
+      return _listAttendances(request, meetingId);
+    }
+    if (parts[2] == 'presencas' &&
+        parts.length == 3 &&
+        request.method == 'POST') {
+      return _registerQr(request, context);
+    }
+    if (parts[2] == 'presencas' &&
+        parts.length == 4 &&
+        parts[3] == 'manual' &&
+        request.method == 'POST') {
+      return _registerManual(request, context);
+    }
+    return _finish(request, 404);
+  }
+
+  ({Activity activity, Meeting meeting})? _meetingContext(String id) {
+    for (final activity in activities.values) {
+      for (final meeting in activity.meetings) {
+        if (meeting.id == id) return (activity: activity, meeting: meeting);
+      }
+    }
+    return null;
+  }
+
+  DateTime _windowStart(Meeting meeting) =>
+      meeting.start.subtract(const Duration(minutes: 15));
+  DateTime _windowEnd(Meeting meeting) =>
+      meeting.end.add(const Duration(minutes: 15));
+
+  bool _inWindow(DateTime instant, Meeting meeting) =>
+      !instant.isBefore(_windowStart(meeting)) &&
+      !instant.isAfter(_windowEnd(meeting));
+
+  int _codeBucket(DateTime instant, Meeting meeting) =>
+      instant.difference(_windowStart(meeting)).inMinutes ~/ 5;
+
+  String _meetingCodeValue(Meeting meeting, int bucket) {
+    var value = 2166136261;
+    for (final byte in utf8.encode('${meeting.id}:$bucket')) {
+      value = ((value ^ byte) * 16777619) & 0xffffffff;
+    }
+    const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+    final result = StringBuffer();
+    for (var index = 0; index < 6; index++) {
+      result.write(alphabet[(value >> (index * 5)) & 31]);
+    }
+    return result.toString();
+  }
+
+  Future<void> _meetingCode(
+      HttpRequest request, Activity activity, Meeting meeting) async {
+    if (activity.cancelled) {
+      return _error(request, 422, 'ATIVIDADE_CANCELADA');
+    }
+    if (!_inWindow(clock, meeting)) {
+      return _error(request, 422, 'FORA_DA_JANELA');
+    }
+    final bucket = _codeBucket(clock, meeting);
+    final troca =
+        _windowStart(meeting).add(Duration(minutes: (bucket + 1) * 5));
+    return _json(request, 200, {
+      'encontroId': meeting.id,
+      'codigo': _meetingCodeValue(meeting, bucket),
+      'trocaEm': _formatDate(troca),
+      'validoAte': _formatDate(troca),
+    });
+  }
+
+  Attendance? _attendanceFor(String meetingId, String participantId) {
+    for (final attendance in attendances) {
+      if (attendance.meetingId == meetingId &&
+          attendance.participantId == participantId) return attendance;
+    }
+    return null;
+  }
+
+  Enrollment? _confirmedEnrollment(String activityId, String participantId) {
+    for (final enrollment in enrollments) {
+      if (enrollment.activityId == activityId &&
+          enrollment.participantId == participantId &&
+          enrollment.status == 'confirmada') return enrollment;
+    }
+    return null;
+  }
+
+  Future<void> _registerQr(HttpRequest request,
+      ({Activity activity, Meeting meeting})? context) async {
+    if (!_authorized(request, 'participante',
+        roleError: 'SOMENTE_PARTICIPANTE')) {
+      return;
+    }
+    if (context == null) return _error(request, 404, 'NAO_ENCONTRADO');
+    final body = await _body(request);
+    if (body is! Map || body['codigo'] is! String) {
+      return _error(request, 422, 'DADOS_INVALIDOS');
+    }
+    final participant = _user(request)!;
+    final duplicate = _attendanceFor(context.meeting.id, participant.id);
+    if (duplicate != null)
+      return _json(request, 200, _attendanceJson(duplicate));
+    if (context.activity.cancelled) {
+      return _error(request, 422, 'ATIVIDADE_CANCELADA');
+    }
+    if (_confirmedEnrollment(context.activity.id, participant.id) == null) {
+      return _error(request, 403, 'NAO_INSCRITO');
+    }
+    final readAt =
+        body['lidoEm'] == null ? clock : _parseOptionalDate(body['lidoEm']);
+    if (readAt == null) return _error(request, 422, 'DADOS_INVALIDOS');
+    if (body['lidoEm'] != null &&
+        (readAt.isAfter(clock) ||
+            clock.difference(readAt).abs() > const Duration(minutes: 10))) {
+      return _error(request, 422, 'SINCRONIZACAO_TARDIA');
+    }
+    if (!_inWindow(readAt, context.meeting)) {
+      return _error(request, 422, 'FORA_DA_JANELA');
+    }
+    final bucket = _codeBucket(readAt, context.meeting);
+    if (body['codigo'] != _meetingCodeValue(context.meeting, bucket)) {
+      return _error(request, 422, 'CODIGO_INVALIDO');
+    }
+    final attendance = Attendance(
+      id: _id('pre_'),
+      meetingId: context.meeting.id,
+      participantId: participant.id,
+      origin: body['lidoEm'] == null ? 'qr' : 'qr_offline',
+      readAt: readAt,
+      recordedAt: clock,
+    );
+    attendances.add(attendance);
+    _attendanceSequence++;
+    _dirty = true;
+    await _commit();
+    return _json(request, 201, _attendanceJson(attendance));
+  }
+
+  DateTime? _parseOptionalDate(Object? value) {
+    if (value is! String) return null;
+    try {
+      return _parseDate(value);
+    } catch (_) {
+      return null;
+    }
+  }
+
+  Future<void> _registerManual(HttpRequest request,
+      ({Activity activity, Meeting meeting})? context) async {
+    if (!_authorized(request, 'organizacao')) return;
+    if (context == null) return _error(request, 404, 'NAO_ENCONTRADO');
+    final body = await _body(request);
+    if (body is! Map ||
+        body['participanteId'] is! String ||
+        body['justificativa'] is! String) {
+      return _error(request, 422, 'DADOS_INVALIDOS');
+    }
+    final participantId = body['participanteId'] as String;
+    final duplicate = _attendanceFor(context.meeting.id, participantId);
+    if (duplicate != null)
+      return _json(request, 200, _attendanceJson(duplicate));
+    if (context.activity.cancelled) {
+      return _error(request, 422, 'ATIVIDADE_CANCELADA');
+    }
+    if (_confirmedEnrollment(context.activity.id, participantId) == null) {
+      return _error(request, 403, 'NAO_INSCRITO');
+    }
+    final justification = (body['justificativa'] as String).trim();
+    if (justification.length < 10 || justification.length > 500) {
+      return _error(request, 422, 'JUSTIFICATIVA_OBRIGATORIA');
+    }
+    if (!_inWindow(clock, context.meeting)) {
+      return _error(request, 422, 'FORA_DA_JANELA');
+    }
+    final attendance = Attendance(
+      id: _id('pre_'),
+      meetingId: context.meeting.id,
+      participantId: participantId,
+      origin: 'manual',
+      readAt: clock,
+      recordedAt: clock,
+      justification: justification,
+      manualOrganizationId: _user(request)!.id,
+    );
+    attendances.add(attendance);
+    _attendanceSequence++;
+    _dirty = true;
+    await _commit();
+    return _json(request, 201, _attendanceJson(attendance));
+  }
+
+  Future<void> _listAttendances(HttpRequest request, String meetingId) async {
+    final result = attendances
+        .where((item) => item.meetingId == meetingId)
+        .toList()
+      ..sort((a, b) => a.recordedAt.compareTo(b.recordedAt));
+    return _json(request, 200, result.map(_attendanceJson).toList());
+  }
+
+  Map<String, Object?> _attendanceJson(Attendance attendance) => {
+        'id': attendance.id,
+        'encontroId': attendance.meetingId,
+        'participanteId': attendance.participantId,
+        'origem': attendance.origin,
+        'lidoEm': _formatDate(attendance.readAt),
+        'registradaEm': _formatDate(attendance.recordedAt),
+        'justificativa': attendance.justification,
+      };
 
   Future<void> _create(HttpRequest request) async {
     if (!_authorized(request, 'organizacao')) return;
@@ -657,16 +957,13 @@ class ApiServer {
       HttpRequest request, String activityId) async {
     if (request.method != 'POST') return _finish(request, 405);
     if (!_authorized(request, 'participante',
-        roleError: 'SOMENTE_PARTICIPANTE'))
-      return;
+        roleError: 'SOMENTE_PARTICIPANTE')) return;
     final activity = activities[activityId];
-    if (activity == null)
-      return _error(request, 404, 'NAO_ENCONTRADO');
+    if (activity == null) return _error(request, 404, 'NAO_ENCONTRADO');
     if (await _readMutationBody(request) == _BodyParse.invalid)
       return _error(request, 422, 'DADOS_INVALIDOS');
     await _refreshClockAndReconcile();
-    if (activity.cancelled)
-      return _error(request, 422, 'ATIVIDADE_CANCELADA');
+    if (activity.cancelled) return _error(request, 422, 'ATIVIDADE_CANCELADA');
     if (!clock.isBefore(activity.meetings.first.start))
       return _error(request, 422, 'INSCRICOES_ENCERRADAS');
     final user = _user(request)!;
@@ -692,11 +989,9 @@ class ApiServer {
 
   Future<void> _inscricaoMutation(HttpRequest request, String id) async {
     if (!_authorized(request, 'participante',
-        roleError: 'SOMENTE_PARTICIPANTE'))
-      return;
+        roleError: 'SOMENTE_PARTICIPANTE')) return;
     final enrollment = _findEnrollment(id);
-    if (enrollment == null)
-      return _error(request, 404, 'NAO_ENCONTRADO');
+    if (enrollment == null) return _error(request, 404, 'NAO_ENCONTRADO');
     if (_user(request)!.id != enrollment.participantId)
       return _error(request, 404, 'NAO_ENCONTRADO');
     if (await _readMutationBody(request) == _BodyParse.invalid)
@@ -708,8 +1003,7 @@ class ApiServer {
       final activity = activities[enrollment.activityId]!;
       if (!clock.isBefore(activity.meetings.first.start))
         return _error(request, 422, 'ATIVIDADE_JA_INICIADA');
-      if (enrollment.status == 'cancelada' ||
-          enrollment.status == 'expirada')
+      if (enrollment.status == 'cancelada' || enrollment.status == 'expirada')
         return _error(request, 422, 'INSCRICAO_INATIVA');
       enrollment.status = 'cancelada';
       enrollment.convocationDeadline = null;
@@ -749,12 +1043,10 @@ class ApiServer {
   bool _hasActiveEnrollment(String participantId, String activityId) {
     for (final enrollment in enrollments) {
       if (enrollment.participantId != participantId ||
-          enrollment.activityId != activityId)
-        continue;
+          enrollment.activityId != activityId) continue;
       if (enrollment.status == 'confirmada' ||
           enrollment.status == 'em_espera' ||
-          enrollment.status == 'convocada')
-        return true;
+          enrollment.status == 'convocada') return true;
     }
     return false;
   }
@@ -764,8 +1056,7 @@ class ApiServer {
     for (final enrollment in enrollments) {
       if (enrollment.participantId != participantId ||
           enrollment.status != 'confirmada' ||
-          enrollment.activityId == activityId)
-        continue;
+          enrollment.activityId == activityId) continue;
       final other = activities[enrollment.activityId]!;
       for (final a in candidate.meetings)
         for (final b in other.meetings)
@@ -778,8 +1069,7 @@ class ApiServer {
     var count = 0;
     for (final enrollment in enrollments) {
       if (enrollment.participantId != participantId ||
-          enrollment.status != 'confirmada')
-        continue;
+          enrollment.status != 'confirmada') continue;
       if (activities[enrollment.activityId]!.type == 'minicurso') count++;
     }
     return count;
@@ -797,11 +1087,9 @@ class ApiServer {
       Enrollment? vencida;
       for (final enrollment in enrollments) {
         if (enrollment.activityId != activity.id ||
-            enrollment.status != 'convocada')
-          continue;
+            enrollment.status != 'convocada') continue;
         final deadline = enrollment.convocationDeadline!;
-        if (vencida == null ||
-            deadline.isBefore(vencida.convocationDeadline!))
+        if (vencida == null || deadline.isBefore(vencida.convocationDeadline!))
           vencida = enrollment;
       }
       if (vencida == null) {
@@ -843,10 +1131,8 @@ class ApiServer {
       Enrollment? next;
       for (final enrollment in enrollments) {
         if (enrollment.activityId != activityId ||
-            enrollment.status != 'em_espera')
-          continue;
-        if (next == null ||
-            enrollment.sequenceNumber < next.sequenceNumber)
+            enrollment.status != 'em_espera') continue;
+        if (next == null || enrollment.sequenceNumber < next.sequenceNumber)
           next = enrollment;
       }
       if (next == null) return;
@@ -863,11 +1149,9 @@ class ApiServer {
     var position = 1;
     for (final other in enrollments) {
       if (other.activityId != enrollment.activityId ||
-          other.status != 'em_espera')
-        continue;
+          other.status != 'em_espera') continue;
       if (other.id != enrollment.id &&
-          other.sequenceNumber < enrollment.sequenceNumber)
-        position++;
+          other.sequenceNumber < enrollment.sequenceNumber) position++;
     }
     return position;
   }
