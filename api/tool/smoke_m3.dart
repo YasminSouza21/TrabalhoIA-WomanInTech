@@ -104,6 +104,20 @@ Future<void> main() async {
         user: 'p-carla', body: {'codigo': 'ANTIGO'});
     check(duplicate.status == 200 && duplicate.json['id'] == qr.json['id'],
         'idempotencia QR');
+    final malformed = await request('POST', '/encontros/$encontro/presencas',
+        user: 'p-elisa', body: '[');
+    check(
+        malformed.status == 422 && malformed.json['erro'] == 'DADOS_INVALIDOS',
+        'corpo QR malformado');
+    await request('POST', '/atividades/$atividade/cancelamento',
+        user: 'org-ana', body: {});
+    final cancelledDuplicate = await request(
+        'POST', '/encontros/$encontro/presencas',
+        user: 'p-carla', body: {'codigo': 'INVALIDO'});
+    check(
+        cancelledDuplicate.status == 422 &&
+            cancelledDuplicate.json['erro'] == 'ATIVIDADE_CANCELADA',
+        'cancelamento antes da idempotencia');
     final listed =
         await request('GET', '/encontros/$encontro/presencas', user: 'org-ana');
     check(
@@ -116,6 +130,13 @@ Future<void> main() async {
         (segundaDetalhe.json['encontros'] as List).single['id'] as String;
     await setClock('2026-10-20T08:45:00-03:00');
     await request('POST', '/atividades/$segunda/inscricoes', user: 'p-diego');
+    final missingJustification = await request(
+        'POST', '/encontros/$segundoEncontro/presencas/manual',
+        user: 'org-ana', body: {'participanteId': 'p-diego'});
+    check(
+        missingJustification.status == 422 &&
+            missingJustification.json['erro'] == 'JUSTIFICATIVA_OBRIGATORIA',
+        'justificativa manual ausente');
     final manual = await request(
         'POST', '/encontros/$segundoEncontro/presencas/manual',
         user: 'org-ana',
@@ -153,7 +174,7 @@ Future<void> main() async {
             '2026-10-13T12:00:00Z',
         'relogio apos reset');
     stdout.writeln(
-        'SMOKE M3 OK: QR, offline/idempotencia, manual, listagem, cancelamento e reset');
+        'SMOKE M3 OK: QR, offline/idempotencia, corpos invalidos, precedencia de cancelamento, manual/justificativa, listagem e reset');
   } finally {
     client?.close(force: true);
     server?.kill(ProcessSignal.sigkill);

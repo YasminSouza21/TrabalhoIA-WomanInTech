@@ -12,7 +12,8 @@ O backend é implementado em Dart com `dart:io`, mantendo estado em memória (mo
 
 - **M1 — grade de atividades** (histórico preservado: specs e entrevistas do M1 não são alteradas pelo M2, apenas consumidas).
 - **M2 — inscrições e lista de espera**: inscrever, cancelar, confirmar convocação, FIFO, expiração em cascata, contagens `ocupadas`/`vagasRestantes`/`emEspera`, persistência JSON (P-30) e modo de teste isolado (P-31).
-- M3, M4 e M5 não são implementados.
+- M3 — presença por QR: código por encontro, presença QR/manual, idempotência e listagem.
+- M4 e M5 não são implementados.
 
 ## Modo de Teste
 

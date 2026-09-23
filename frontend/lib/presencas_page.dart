@@ -17,8 +17,10 @@ class _PresencasPageState extends State<PresencasPage> {
   MeetingCode? code;
   List<Attendance> attendances = const [];
   String? error;
+  String? success;
   bool loading = false;
   final qrCode = TextEditingController();
+  final readAt = TextEditingController();
   final participantId = TextEditingController();
   final justification = TextEditingController();
 
@@ -32,6 +34,7 @@ class _PresencasPageState extends State<PresencasPage> {
   @override
   void dispose() {
     qrCode.dispose();
+    readAt.dispose();
     participantId.dispose();
     justification.dispose();
     super.dispose();
@@ -54,6 +57,7 @@ class _PresencasPageState extends State<PresencasPage> {
     setState(() {
       loading = true;
       error = null;
+      success = null;
     });
     widget.client.user = selectedUser;
     try {
@@ -108,6 +112,7 @@ class _PresencasPageState extends State<PresencasPage> {
           code = loaded;
           loading = false;
           error = null;
+          success = null;
         });
       }
     } on ApiFailure catch (e) {
@@ -131,11 +136,16 @@ class _PresencasPageState extends State<PresencasPage> {
     if (meetingId == null) return;
     setState(() => loading = true);
     try {
-      await widget.client.registerQr(meetingId!, qrCode.text.trim());
+      await widget.client.registerQr(
+        meetingId!,
+        qrCode.text.trim(),
+        readAt: readAt.text.trim().isEmpty ? null : readAt.text.trim(),
+      );
       if (mounted) {
         setState(() {
           loading = false;
           error = null;
+          success = 'Presença registrada.';
         });
       }
     } on ApiFailure catch (e) {
@@ -168,6 +178,7 @@ class _PresencasPageState extends State<PresencasPage> {
         setState(() {
           loading = false;
           error = null;
+          success = 'Presença manual registrada.';
         });
         await _loadAttendances();
       }
@@ -229,6 +240,8 @@ class _PresencasPageState extends State<PresencasPage> {
                   child: Text(error!, key: const ValueKey('presenca-erro')),
                 ),
               ),
+            if (success != null)
+              Text(success!, key: const ValueKey('presenca-sucesso')),
             if (!loading && meetings.isEmpty && error == null)
               const Text(
                 'Nenhum encontro disponível.',
@@ -313,6 +326,12 @@ class _PresencasPageState extends State<PresencasPage> {
       TextField(
         controller: qrCode,
         decoration: const InputDecoration(labelText: 'Código do QR'),
+      ),
+      TextField(
+        controller: readAt,
+        decoration: const InputDecoration(
+          labelText: 'lidoEm (opcional, offline)',
+        ),
       ),
       FilledButton(
         onPressed: loading ? null : _registerQr,

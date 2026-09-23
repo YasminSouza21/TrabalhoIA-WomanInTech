@@ -4,10 +4,10 @@
 |---|---|
 | Sessão | `ses_f3465c1f2ffemfPF8NB2zix838` |
 | Pasta | yasmindesouza/TrabalhoIA-WomanInTech |
-| Período | 22/09 21:11 → 22/09 21:32 |
+| Período | 22/09 21:11 → 22/09 21:33 |
 | Modelo | openai/gpt-5.6-luna |
-| Requisições ao modelo | 59 |
-| Tokens de entrada / saída | 832.221 / 36.211 |
+| Requisições ao modelo | 62 |
+| Tokens de entrada / saída | 836.311 / 37.379 |
 | Skills | grilling, to-spec, tdd |
 | Subagentes | — |
 | Execuções de teste | 4 vermelhas, 12 verdes |

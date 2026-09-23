@@ -218,6 +218,167 @@ void main() {
     expect(code.json['erro'], 'ATIVIDADE_CANCELADA');
   });
 
+  test('atividade cancelada precede duplicidade em QR e manual', () async {
+    final ids = await createActivity(api);
+    await call(api, 'PUT', '/_teste/relogio', body: {
+      'agora': '2026-10-19T08:45:00-03:00',
+    });
+    await call(api, 'POST', '/atividades/${ids.atividade}/inscricoes',
+        user: 'p-carla');
+    final code = await call(api, 'GET', '/encontros/${ids.encontro}/codigo',
+        user: 'org-ana');
+    final first = await call(
+        api, 'POST', '/encontros/${ids.encontro}/presencas',
+        user: 'p-carla', body: {'codigo': code.json['codigo']});
+    expect(first.status, 201);
+    final manual = await call(
+        api, 'POST', '/encontros/${ids.encontro}/presencas/manual',
+        user: 'org-ana',
+        body: {
+          'participanteId': 'p-carla',
+          'justificativa': 'Tentativa manual posterior',
+        });
+    expect(manual.status, 200);
+
+    await call(api, 'POST', '/atividades/${ids.atividade}/cancelamento',
+        user: 'org-ana', body: {});
+    final repeatedQr = await call(
+        api, 'POST', '/encontros/${ids.encontro}/presencas',
+        user: 'p-carla', body: {'codigo': 'INVALIDO'});
+    final repeatedManual = await call(
+        api, 'POST', '/encontros/${ids.encontro}/presencas/manual',
+        user: 'org-ana',
+        body: {
+          'participanteId': 'p-carla',
+          'justificativa': 'Outra justificativa valida',
+        });
+    expect(repeatedQr.json['erro'], 'ATIVIDADE_CANCELADA');
+    expect(repeatedManual.json['erro'], 'ATIVIDADE_CANCELADA');
+  });
+
+  test('corpo manual sem justificativa retorna JUSTIFICATIVA_OBRIGATORIA',
+      () async {
+    final ids = await createActivity(api);
+    await call(api, 'PUT', '/_teste/relogio', body: {
+      'agora': '2026-10-19T08:45:00-03:00',
+    });
+    await call(api, 'POST', '/atividades/${ids.atividade}/inscricoes',
+        user: 'p-carla');
+    final missing = await call(
+        api, 'POST', '/encontros/${ids.encontro}/presencas/manual',
+        user: 'org-ana', body: {'participanteId': 'p-carla'});
+    expect(missing.status, 422);
+    expect(missing.json['erro'], 'JUSTIFICATIVA_OBRIGATORIA');
+    final wrongType = await call(
+        api, 'POST', '/encontros/${ids.encontro}/presencas/manual',
+        user: 'org-ana',
+        body: {'participanteId': 'p-carla', 'justificativa': 10});
+    expect(wrongType.status, 422);
+    expect(wrongType.json['erro'], 'DADOS_INVALIDOS');
+  });
+
+  test(
+      'rotas M3 rejeitam corpos malformados, timestamps e codigo fora da regra',
+      () async {
+    final ids = await createActivity(api);
+    final malformed = await call(
+        api, 'POST', '/encontros/${ids.encontro}/presencas',
+        user: 'p-carla', body: '[');
+    expect(malformed.status, 422);
+    expect(malformed.json['erro'], 'DADOS_INVALIDOS');
+
+    await call(api, 'PUT', '/_teste/relogio', body: {
+      'agora': '2026-10-19T08:45:00-03:00',
+    });
+    final code = await call(api, 'GET', '/encontros/${ids.encontro}/codigo',
+        user: 'org-ana');
+    await call(api, 'POST', '/atividades/${ids.atividade}/inscricoes',
+        user: 'p-carla');
+    final invalidTimestamp = await call(
+        api, 'POST', '/encontros/${ids.encontro}/presencas',
+        user: 'p-carla',
+        body: {'codigo': code.json['codigo'], 'lidoEm': 'not-a-date'});
+    expect(invalidTimestamp.json['erro'], 'DADOS_INVALIDOS');
+
+    final oldCode = await call(
+        api, 'POST', '/encontros/${ids.encontro}/presencas',
+        user: 'p-carla',
+        body: {
+          'codigo': code.json['codigo'],
+          'lidoEm': '2026-10-19T09:00:01-03:00',
+        });
+    expect(oldCode.json['erro'], 'SINCRONIZACAO_TARDIA');
+
+    await call(api, 'PUT', '/_teste/relogio', body: {
+      'agora': '2026-10-19T10:15:01-03:00',
+    });
+    final outside = await call(
+        api, 'POST', '/encontros/${ids.encontro}/presencas',
+        user: 'p-carla', body: {'codigo': code.json['codigo']});
+    expect(outside.json['erro'], 'FORA_DA_JANELA');
+  });
+
+  test('limite manual e por participante e duplicidade compartilhada',
+      () async {
+    final ids = await createActivity(api);
+    await call(api, 'PUT', '/_teste/relogio', body: {
+      'agora': '2026-10-19T08:45:00-03:00',
+    });
+    for (final participant in ['p-carla', 'p-diego']) {
+      await call(api, 'POST', '/atividades/${ids.atividade}/inscricoes',
+          user: participant);
+    }
+    final carla = await call(
+        api, 'POST', '/encontros/${ids.encontro}/presencas/manual',
+        user: 'org-ana',
+        body: {
+          'participanteId': 'p-carla',
+          'justificativa': 'Registro de Carla',
+        });
+    final carlaAgain = await call(
+        api, 'POST', '/encontros/${ids.encontro}/presencas/manual',
+        user: 'org-bruno',
+        body: {
+          'participanteId': 'p-carla',
+          'justificativa': 'Registro duplicado de Carla',
+        });
+    final diego = await call(
+        api, 'POST', '/encontros/${ids.encontro}/presencas/manual',
+        user: 'org-ana',
+        body: {
+          'participanteId': 'p-diego',
+          'justificativa': 'Registro de Diego',
+        });
+    expect(carla.status, 201);
+    expect(carlaAgain.status, 200);
+    expect(carlaAgain.json, carla.json);
+    expect(diego.status, 201);
+    expect(diego.json['participanteId'], 'p-diego');
+    expect(diego.json['erro'], isNull);
+  });
+
+  test('retroceder o relogio nao desfaz presenca ja materializada', () async {
+    final ids = await createActivity(api);
+    await call(api, 'PUT', '/_teste/relogio', body: {
+      'agora': '2026-10-19T08:45:00-03:00',
+    });
+    await call(api, 'POST', '/atividades/${ids.atividade}/inscricoes',
+        user: 'p-carla');
+    final code = await call(api, 'GET', '/encontros/${ids.encontro}/codigo',
+        user: 'org-ana');
+    final created = await call(
+        api, 'POST', '/encontros/${ids.encontro}/presencas',
+        user: 'p-carla', body: {'codigo': code.json['codigo']});
+    await call(api, 'PUT', '/_teste/relogio', body: {
+      'agora': '2026-10-19T08:44:00-03:00',
+    });
+    final listed = await call(
+        api, 'GET', '/encontros/${ids.encontro}/presencas',
+        user: 'org-ana');
+    expect(listed.status, 200);
+    expect((listed.json as List).single['id'], created.json['id']);
+  });
+
   test('aplica autenticacao, papel e existencia antes das regras M3', () async {
     final semUsuario =
         await call(api, 'GET', '/encontros/enc_inexistente/codigo');

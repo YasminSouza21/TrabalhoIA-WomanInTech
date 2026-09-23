@@ -591,12 +591,12 @@ class ApiServer {
       return _error(request, 422, 'DADOS_INVALIDOS');
     }
     final participant = _user(request)!;
-    final duplicate = _attendanceFor(context.meeting.id, participant.id);
-    if (duplicate != null)
-      return _json(request, 200, _attendanceJson(duplicate));
     if (context.activity.cancelled) {
       return _error(request, 422, 'ATIVIDADE_CANCELADA');
     }
+    final duplicate = _attendanceFor(context.meeting.id, participant.id);
+    if (duplicate != null)
+      return _json(request, 200, _attendanceJson(duplicate));
     if (_confirmedEnrollment(context.activity.id, participant.id) == null) {
       return _error(request, 403, 'NAO_INSCRITO');
     }
@@ -644,20 +644,24 @@ class ApiServer {
     if (!_authorized(request, 'organizacao')) return;
     if (context == null) return _error(request, 404, 'NAO_ENCONTRADO');
     final body = await _body(request);
-    if (body is! Map ||
-        body['participanteId'] is! String ||
-        body['justificativa'] is! String) {
+    if (body is! Map || body['participanteId'] is! String) {
       return _error(request, 422, 'DADOS_INVALIDOS');
     }
     final participantId = body['participanteId'] as String;
-    final duplicate = _attendanceFor(context.meeting.id, participantId);
-    if (duplicate != null)
-      return _json(request, 200, _attendanceJson(duplicate));
     if (context.activity.cancelled) {
       return _error(request, 422, 'ATIVIDADE_CANCELADA');
     }
+    final duplicate = _attendanceFor(context.meeting.id, participantId);
+    if (duplicate != null)
+      return _json(request, 200, _attendanceJson(duplicate));
     if (_confirmedEnrollment(context.activity.id, participantId) == null) {
       return _error(request, 403, 'NAO_INSCRITO');
+    }
+    if (!body.containsKey('justificativa')) {
+      return _error(request, 422, 'JUSTIFICATIVA_OBRIGATORIA');
+    }
+    if (body['justificativa'] is! String) {
+      return _error(request, 422, 'DADOS_INVALIDOS');
     }
     final justification = (body['justificativa'] as String).trim();
     if (justification.length < 10 || justification.length > 500) {

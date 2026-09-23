@@ -1,0 +1,759 @@
+{
+ "info": {
+  "id": "ses_f344b96b2ffeS126oN7olcixs6",
+  "slug": "eager-lagoon",
+  "projectID": "5ec1c46d9cd3888456c10ad574c60d609ed0d0a9",
+  "directory": "/Users/yasmindesouza/TrabalhoIA-WomanInTech",
+  "path": "",
+  "title": "Auditoria somente leitura do M3 Presença QR",
+  "agent": "build",
+  "model": {
+   "id": "gpt-5.6-luna",
+   "providerID": "openai",
+   "variant": "default"
+  },
+  "version": "1.18.32",
+  "summary": {
+   "additions": 0,
+   "deletions": 0,
+   "files": 0
+  },
+  "cost": 0,
+  "tokens": {
+   "input": 20472,
+   "output": 1618,
+   "reasoning": 917,
+   "cache": {
+    "read": 32256,
+    "write": 0
+   }
+  },
+  "permission": [
+   {
+    "permission": "question",
+    "pattern": "*",
+    "action": "deny"
+   },
+   {
+    "permission": "plan_enter",
+    "pattern": "*",
+    "action": "deny"
+   },
+   {
+    "permission": "plan_exit",
+    "pattern": "*",
+    "action": "deny"
+   }
+  ],
+  "time": {
+   "created": 1790123993421,
+   "updated": 1790124269517
+  }
+ },
+ "messages": [
+  {
+   "info": {
+    "role": "user",
+    "time": {
+     "created": 1790123993731
+    },
+    "agent": "build",
+    "model": {
+     "providerID": "openai",
+     "modelID": "gpt-5.6-luna"
+    },
+    "summary": {
+     "diffs": []
+    },
+    "id": "msg_0cbb46a83001wxCn3N3TwFMenY",
+    "sessionID": "ses_f344b96b2ffeS126oN7olcixs6"
+   },
+   "parts": [
+    {
+     "type": "text",
+     "text": "\"Faça uma auditoria somente leitura do M3 já commitado neste repositório. Compare contrato-api.md, specs/M3-presenca-qr.md, entrevistas/M3-presenca-qr.md, implementação Dart/Flutter, testes, smoke e evidências. Não altere nenhum arquivo, não crie relatório e não faça commit. Responda apenas com: (1) itens completos, (2) pendências reais classificadas em bloqueadoras e não bloqueadoras, (3) comandos/resultados que comprovam cada ponto. Considere também a limitação do flutter build web e verifique se há lacunas de contrato ou integração M1/M2.\"",
+     "id": "prt_0cbb46a890010DZpDwUlUL7Sfo",
+     "sessionID": "ses_f344b96b2ffeS126oN7olcixs6",
+     "messageID": "msg_0cbb46a83001wxCn3N3TwFMenY"
+    }
+   ]
+  },
+  {
+   "info": {
+    "parentID": "msg_0cbb46a83001wxCn3N3TwFMenY",
+    "role": "assistant",
+    "mode": "build",
+    "agent": "build",
+    "path": {
+     "cwd": "/Users/yasmindesouza/TrabalhoIA-WomanInTech",
+     "root": "/Users/yasmindesouza/TrabalhoIA-WomanInTech"
+    },
+    "cost": 0,
+    "tokens": {
+     "total": 9254,
+     "input": 8938,
+     "output": 239,
+     "reasoning": 77,
+     "cache": {
+      "write": 0,
+      "read": 0
+     }
+    },
+    "modelID": "gpt-5.6-luna",
+    "providerID": "openai",
+    "time": {
+     "created": 1790123993748,
+     "completed": 1790124117476
+    },
+    "finish": "tool-calls",
+    "id": "msg_0cbb46a94001QC9PQlN0Gmbcv7",
+    "sessionID": "ses_f344b96b2ffeS126oN7olcixs6"
+   },
+   "parts": [
+    {
+     "snapshot": "628620da1f26ce4f41205bdf003a3e92092df189",
+     "type": "step-start",
+     "id": "prt_0cbb478760010ciPaH3k3Z043R",
+     "sessionID": "ses_f344b96b2ffeS126oN7olcixs6",
+     "messageID": "msg_0cbb46a94001QC9PQlN0Gmbcv7"
+    },
+    {
+     "type": "reasoning",
+     "text": "**Planning auditor and reviewer agents**",
+     "time": {
+      "start": 1790123997306,
+      "end": 1790123998599
+     },
+     "metadata": {
+      "openai": {
+       "itemId": "rs_096a3e6c9b323b88016ab31fdd923487d2bd8cb905d7239416",
+       "reasoningEncryptedContent": "gAAAAABqsx_eo0t11rmXtZNKT3x4XPGzbMY8ZSL1unXw4HuMhhd8MCnM_WCNk_OjqEMV2Qx8CQngPfoDN9rDjJDLx5Vya1yhrHoGoMAOFfJHmgXJfbZKEXXgZDRoeWUl8Fy-wXgCtmaoJvW7L8bFzIO1Ewv4BsYzKgUctlr8TqxWsAXjFGu9X2Rw86lLu9m_2zdVSk-t2dA4EntLeSyKQB4AiNVMvhfhePfCWLKUqV-mYVeEfJUAKBFZ-hVDNgRkPKdtHlz139R4bcG3xB_F1wPI60CBmMf_Yo6tL53bAxX1C737546heN5q4qeLAOTC6FxhMy0xS-zpuPOf-vhbye10r_9TMuktyCfGxkGzaSd4KA8dp1EeEnhOpi4DOlu7Zc6H0tkEteCvdVP42vGM9owRxMENs5dx2vn0FUhN8lXas6D8q7E7JO3TUTVN6hsZC42y4aOMEFUhdr3nTw81HXNvug0wk5fJ1A7EAnzzDDs1_3TMZnfInrGBIuG8h61XD80ymFqkoE2CD9yIcGmRQ-7BQyB4iqfKqo8PdZkoSUcUItiZPc2BZInnS0KoqFvuuSln3Q0iAQkuy1dgu_FO-Ok08Y8V6rKR5MAcRjLWWH7QP9L0QISVuo6C8VDKx7oJg6TSIrrr_FE7weLeB-X5_-ZxzeUx00wB_8DVS36UzoyjMCkoj_igELOg-55FpoMJhKpp51IGayb3VTz6A1dpfJrkx-xghIuNxGIR8vk33SMthLuNqczMrlj9ODt_e79K-BRai0DyFmI8xoTovJeOAX3_DzykPslhiD9GOkx3QzYD_k9JcvK7_2f_Zr0nVdhlYHeTRsNz4c1hpqVFdMVRhhIgv4jKnKHDEi0drNIGbEdBAKek0sZoosrM59obYv_BkF0CjPCXk58e1KLZcxZAdRignVvStQWdYERpbbMNDbPlFRY7KVZ0DIFuWxJFuhxKY6k-CFPa9Exc2VfTY-B0lht6vVfXjAn9H9MJtS1eh9yW6oWy06qYWNjEE2zFnPxTV1VhZQkvNDmnOMgrshZugptA2i3VoEiD_OL_i25QarrDuFlvt0tV-7mL6WyR9WEE_yt4CYPEdur8gwf-fpBjDpytNOQgK_zFfeXu48dfNzdYBBIpdwUJJ2hm31Mwg5K-9pArImaG-sL1rlVKQ_Jwtb58D4evOus5Mf9G8csHmlxSmbZwYaPOZRLI6FmnvlFMoGVXscOvCgIY7z5TFUSTlUqKinK9NiYJwhd84WC0YGzsgvOHeLAgq5nTwvfdorJfY-A56q5SMWBz7O_WDylICGSllrthbwXgi8aT1eAnZkZ1u-aZPtkfM7bJg9rRi4jRCH4Xbz6H6ZMfLeaAzi95-kwBdFZk-8LlUVfAOn09Vmqk96cqq3AAK-7WYiuFZlsuGw12DtuTJ1YY8JQOrzxYhMzeIm4xOxZWf5vtOZd1zWkuqmx6A8MfzlhRRwGKHtxBmNmQR3IEtoXQygYf65AqJ3pOh-bz0RQyHzTw81e0oFPyLKj73BC4a0uUpEng3JfgUL2J4pdHhRIhAzvAq7aEpxpBl8IqRQJmG3d0QzcEcL6PFdVht8iC5SoinCR_yMF5zosqKPJ2QYbIfzzf-wcsXlrZtOYSNEfVuu9j_n2XkBc320oLenITYluJY_VhHBv_r-3zA1f51luOZCUrxisibrpZXPui2eCzfHfSkCL_DEUa59nUakNMQKWiZczAINHjLTD4DzdognQwTfKYHuUZjMS4BDrJZsUvE2d6DXHEaCBtWSetws1Uf9ZraycZdeEa2swhCihtLhjfI1OFlimEa5hAwuYeOB0cbcLtIXfQYgjmRMW1CyaiQBM="
+      }
+     },
+     "id": "prt_0cbb4787a0018MvWBaKHYmr5zg",
+     "sessionID": "ses_f344b96b2ffeS126oN7olcixs6",
+     "messageID": "msg_0cbb46a94001QC9PQlN0Gmbcv7"
+    },
+    {
+     "type": "text",
+     "text": "Vou cruzar a especificação, entrevista, contrato, implementação, testes, smoke e evidências sem modificar o worktree. Também vou verificar explicitamente a integração M1/M2 e a limitação conhecida do `flutter build web`.",
+     "time": {
+      "start": 1790123998611,
+      "end": 1790123999456
+     },
+     "metadata": {
+      "openai": {
+       "itemId": "msg_096a3e6c9b323b88016ab31fdee65087d282a28730c0e79c23",
+       "phase": "commentary"
+      }
+     },
+     "id": "prt_0cbb47d93001pvdBLNGDbTYGC1",
+     "sessionID": "ses_f344b96b2ffeS126oN7olcixs6",
+     "messageID": "msg_0cbb46a94001QC9PQlN0Gmbcv7"
+    },
+    {
+     "type": "tool",
+     "tool": "task",
+     "callID": "call_Vp4qrUxK37gSwtewHCB3hQOQ",
+     "state": {
+      "status": "completed",
+      "input": {
+       "description": "Auditar módulo M3",
+       "prompt": "Faça uma auditoria estritamente somente leitura do M3 já commitado neste repositório. Compare contrato-api.md, specs/M3-presenca-qr.md, entrevistas/M3-presenca-qr.md, implementação Dart/Flutter, testes, smoke e evidências. Verifique para cada regra se há origem na entrevista e teste/evidência correspondente; classifique pendências reais em bloqueadoras e não bloqueadoras. Inclua lacunas de contrato, integração M1/M2, e a limitação do flutter build web. Execute comandos de inspeção/testes quando seguro, sem editar arquivos, sem criar relatório e sem commit. Retorne achados com caminhos/linhas e comandos/resultados concretos, além de itens completos. Não altere nada.",
+       "subagent_type": "auditor"
+      },
+      "output": "<task id=\"ses_f344b6c3efferHadNOSO5SXHY3\" state=\"completed\">\n<task_result>\n## Matriz de rastreabilidade\n\nA spec contém 24 regras, mas nenhuma delas cita explicitamente uma pergunta `P-xx`; portanto, não há origem formal rastreável na entrevista.\n\n| Regra | Origem | Teste/evidência | Veredito |\n|---|---|---|---|\n| R01 | — | `api/test/presenca_test.dart:221-235` testa apenas GET de código | SEM ORIGEM, PROVA PARCIAL |\n| R02 | — | `api/test/presenca_test.dart:221-235` cobre apenas papel da rota de código | SEM ORIGEM, PROVA PARCIAL |\n| R03 | — | `api/test/presenca_test.dart:230-235` | SEM ORIGEM, PROVA PARCIAL |\n| R04 | — | Nenhum teste M3 cobre corpo inválido nas quatro rotas | SEM ORIGEM, SEM PROVA |\n| R05 | — | `api/test/presenca_test.dart:61-105` cobre janela do código, não registro de presença | SEM ORIGEM, PROVA FRACA |\n| R06 | — | `api/test/presenca_test.dart:81-90` verifica novo `trocaEm`, mas não mudança do código nem invalidação do anterior | SEM ORIGEM, PROVA FRACA |\n| R07 | — | `api/test/presenca_test.dart:73-79` verifica formato e repetição no bucket | SEM ORIGEM, PROVA PARCIAL |\n| R08 | — | `api/test/presenca_test.dart:208-219` cobre cancelamento no GET de código | SEM ORIGEM, PROVA PARCIAL |\n| R09 | — | `api/test/presenca_test.dart:136-170` cobre QR online/offline e futuro | SEM ORIGEM, PROVA PARCIAL |\n| R10 | — | `api/test/presenca_test.dart:161-170` cobre futuro, mas não sincronização tardia de 10 minutos excedidos | SEM ORIGEM, PROVA FRACA |\n| R11 | — | Não há teste M3 para QR fora da janela ou código inválido não duplicado | SEM ORIGEM, SEM PROVA |\n| R12 | — | `api/test/presenca_test.dart:107-134` cobre ausência e confirmado | SEM ORIGEM, PROVA PARCIAL |\n| R13 | — | `api/test/presenca_test.dart:120-134` e `172-206` verificam status e objeto integral | SEM ORIGEM, COMPROVAÇÃO |\n| R14 | — | `api/test/presenca_test.dart:172-206` cobre apenas participante confirmado | SEM ORIGEM, PROVA PARCIAL |\n| R15 | — | `api/test/presenca_test.dart:180-185` cobre apenas justificativa curta | SEM ORIGEM, PROVA FRACA |\n| R16 | — | Não verifica `lidoEm`, `registradaEm` nem janela manual fora dos limites | SEM ORIGEM, SEM PROVA |\n| R17 | — | `api/test/presenca_test.dart:187-206` cobre duplicidade entre organizações, não limite efetivo | SEM ORIGEM, PROVA FRACA |\n| R18 | — | `api/test/presenca_test.dart:208-219` cobre somente obtenção de código cancelado | SEM ORIGEM, PROVA FRACA |\n| R19 | — | Não há teste sistemático da precedência completa | SEM ORIGEM, SEM PROVA |\n| R20 | — | `api/test/presenca_test.dart:237-253` lista apenas um registro | SEM ORIGEM, PROVA FRACA |\n| R21 | — | `api/test/presenca_test.dart:254-260` verifica reset e relógio | SEM ORIGEM, PROVA PARCIAL |\n| R22 | — | `api/test/presenca_test.dart:263-294` verifica reinício com arquivo temporário | SEM ORIGEM, COMPROVAÇÃO |\n| R23 | — | Nenhum teste verifica retrocesso sem desfazer transição de bucket | SEM ORIGEM, SEM PROVA |\n| R24 | — | `frontend/test/presencas_api_client_test.dart:20-66` cobre chamadas; widget cobre apenas organização, código e vazio em `presencas_widget_test.dart:12-55` | SEM ORIGEM, PROVA FRACA |\n\n## Suíte\n\n- `cd api && dart test` → `All tests passed!` — 87 testes.\n- `cd frontend && flutter test` → `All tests passed!` — 42 testes.\n- `cd api && dart analyze` → `No issues found!`\n- `cd frontend && flutter analyze` → `No issues found!`\n- `dart run tool/smoke_m3.dart` → evidência registrada como `OK: QR, offline/idempotencia, manual, listagem, cancelamento e reset` em `evidencias/ENTREGA-M3.md:50`.\n- `flutter build web --release` → evidência registrada como bloqueada por `dart2js_aot.dart.snapshot` e `dart2wasm_product.snapshot` ausentes em `evidencias/ENTREGA-M3.md:53-55`.\n\n## Achados\n\n### Bloqueadores\n\n1. **[SEM ORIGEM] R01–R24** — `specs/M3-presenca-qr.md:52-77` não associa nenhuma regra a `P-xx`, embora a entrevista contenha `P1`–`P23` em `entrevistas/M3-presenca-qr.md:8-32`. A matriz formal de rastreabilidade não pode ser aceita.\n\n2. **[SEM PROVA] R04** — Não há teste M3 para corpo malformado, raiz não objeto ou tipos inválidos nas rotas de código, QR, manual e listagem. A implementação valida esses corpos em `api/lib/server.dart:589-605` e `642-650`, mas implementação não substitui teste.\n\n3. **[SEM PROVA] R11** — Não há cenário que registre QR fora da janela nem código inválido para participante ainda sem presença. A lógica existe em `api/lib/server.dart:611-616`, mas não está exercitada.\n\n4. **[SEM PROVA] R16** — Não há teste dos valores de `lidoEm` e `registradaEm` da presença manual nem da rejeição fora da janela. A implementação está em `api/lib/server.dart:662-675`.\n\n5. **[SEM PROVA] R19** — A precedência completa exigida pela spec em `specs/M3-presenca-qr.md:72` não é testada. O código implementa uma ordem específica em `api/lib/server.dart:594-616` e `653-667`, mas não há matriz de cenários conflitantes.\n\n6. **[SEM PROVA] R23** — Não há teste de retrocesso do relógio após transição materializada. O relógio controlado e as transições estão implementados em `api/lib/server.dart:521-562`, mas não há evidência correspondente.\n\n7. **[PROVA FRACA] R24** — O teste de widget M3 cobre somente organização, obtenção de QR e estado vazio (`frontend/test/presencas_widget_test.dart:12-55`). Não cobre tela de participante, registro QR, registro manual, estados de erro/loading/sucesso ou atualização da listagem. O `ApiClient` cobre as quatro rotas apenas em resposta feliz (`frontend/test/presencas_api_client_test.dart:20-66`).\n\n8. **[LACUNA DE CONTRATO] Limite de manuais** — O contrato lista `LIMITE_DE_MANUAIS` em `contrato-api.md:287-288`, mas a spec/intervista não define um número global claro; R17 fala em limite por participante/encontro/organização e compartilhamento entre organizações (`specs/M3-presenca-qr.md:70`). O próprio documento de evidências reconhece a ambiguidade em `evidencias/ENTREGA-M3.md:62-64`. Não há teste de rejeição com `LIMITE_DE_MANUAIS`.\n\n### Não bloqueadores\n\n1. **[LIMITAÇÃO DE AMBIENTE] Build web** — `flutter test` e `flutter analyze` passam, mas `flutter build web --release` continua bloqueado pelos snapshots ausentes, conforme `evidencias/ENTREGA-M3.md:53-61`. É uma limitação do SDK local, não uma falha demonstrada do código.\n\n2. **[INTEGRAÇÃO M1/M2] Cobertura indireta** — Os testes M3 criam atividades e inscrições via rotas M1/M2 (`api/test/presenca_test.dart:33-53`, `107-126`), e a suíte completa passou com 87 testes. Porém, não existe um teste de integração explícito que combine persistência/reinício M1/M2 com presença no mesmo cenário; a persistência M3 isolada está coberta em `api/test/presenca_test.dart:263-294`.\n\n3. **[FRONTEND] Fluxo offline não exposto na tela** — `ApiClient.registerQr` aceita `readAt` em `frontend/lib/api_client.dart:190-200`, mas a tela envia apenas o texto do QR em `frontend/lib/presencas_page.dart:130-135`; não há controle visual para informar `lidoEm`. A spec exige o cliente registrar QR e não scanner nativo, mas não explicita a interface de leitura offline.\n\n4. **[EVIDÊNCIA] Smoke parcial** — O smoke registrado cobre os fluxos felizes principais (`evidencias/ENTREGA-M3.md:43-50`), mas não demonstra bordas como corpo inválido, código antigo, sincronização tardia, retrocesso ou ordenação com múltiplos registros.\n\n## Itens completos\n\n- Persistência de presença após reinício está testada em `api/test/presenca_test.dart:263-294`.\n- Idempotência QR/manual com preservação integral está testada em `api/test/presenca_test.dart:120-134` e `187-206`.\n- Janela básica, confirmação, QR offline, cancelamento no código e reset têm testes correspondentes.\n- As suítes Dart e Flutter passaram integralmente.\n- Análise estática Dart e Flutter passou sem issues.\n- O commit auditado é `83e625d feat(m3): implement presenca por QR e evidencias`; `git status --short` não mostrou alterações.\n\n## Veredito\n\n**Não pode ser aceito ainda: faltam as origens P-xx em todas as regras e provas para R04, R11, R16, R19, R23 e o critério completo de frontend R24, além da definição verificável de `LIMITE_DE_MANUAIS`.**\n</task_result>\n</task>",
+      "metadata": {
+       "parentSessionId": "ses_f344b96b2ffeS126oN7olcixs6",
+       "sessionId": "ses_f344b6c3efferHadNOSO5SXHY3",
+       "model": {
+        "modelID": "gpt-5.6-luna",
+        "providerID": "openai"
+       },
+       "truncated": false
+      },
+      "title": "Auditar módulo M3",
+      "time": {
+       "start": 1790124004292,
+       "end": 1790124117309
+      }
+     },
+     "metadata": {
+      "openai": {
+       "itemId": "fc_096a3e6c9b323b88016ab31fdfa52087d2b791614dcc0ee596"
+      }
+     },
+     "id": "prt_0cbb48108001mYfqPxZ73hgMGi",
+     "sessionID": "ses_f344b96b2ffeS126oN7olcixs6",
+     "messageID": "msg_0cbb46a94001QC9PQlN0Gmbcv7"
+    },
+    {
+     "reason": "tool-calls",
+     "snapshot": "628620da1f26ce4f41205bdf003a3e92092df189",
+     "type": "step-finish",
+     "tokens": {
+      "total": 9254,
+      "input": 8938,
+      "output": 239,
+      "reasoning": 77,
+      "cache": {
+       "write": 0,
+       "read": 0
+      }
+     },
+     "cost": 0,
+     "id": "prt_0cbb64d9f001wSD6cuzvHN8isS",
+     "sessionID": "ses_f344b96b2ffeS126oN7olcixs6",
+     "messageID": "msg_0cbb46a94001QC9PQlN0Gmbcv7"
+    }
+   ]
+  },
+  {
+   "info": {
+    "parentID": "msg_0cbb46a83001wxCn3N3TwFMenY",
+    "role": "assistant",
+    "mode": "build",
+    "agent": "build",
+    "path": {
+     "cwd": "/Users/yasmindesouza/TrabalhoIA-WomanInTech",
+     "root": "/Users/yasmindesouza/TrabalhoIA-WomanInTech"
+    },
+    "cost": 0,
+    "tokens": {
+     "total": 11940,
+     "input": 2931,
+     "output": 235,
+     "reasoning": 70,
+     "cache": {
+      "write": 0,
+      "read": 8704
+     }
+    },
+    "modelID": "gpt-5.6-luna",
+    "providerID": "openai",
+    "time": {
+     "created": 1790124117479,
+     "completed": 1790124231069
+    },
+    "finish": "tool-calls",
+    "id": "msg_0cbb64de7001o7Nlr1IUQVK81p",
+    "sessionID": "ses_f344b96b2ffeS126oN7olcixs6"
+   },
+   "parts": [
+    {
+     "snapshot": "628620da1f26ce4f41205bdf003a3e92092df189",
+     "type": "step-start",
+     "id": "prt_0cbb652a4001NDQ4LCdL2lbL4p",
+     "sessionID": "ses_f344b96b2ffeS126oN7olcixs6",
+     "messageID": "msg_0cbb64de7001o7Nlr1IUQVK81p"
+    },
+    {
+     "type": "reasoning",
+     "text": "**Planning contract verification and repository inspection**",
+     "time": {
+      "start": 1790124118696,
+      "end": 1790124124213
+     },
+     "metadata": {
+      "openai": {
+       "itemId": "rs_0bdde4674285e685016ab32057084087d2be66fd59714ccfa7",
+       "reasoningEncryptedContent": "gAAAAABqsyBcNVI9u0YtC904OzgC3HwHaN0H9uwgJXkCt0rAqzHS0124B5kx1VYghxTxA5VKP0Ye4ra7rFEkjYpCtaVAV0oz7EyWaF3ufvKwkO3vC2B36CWhZkturOMjE-vPaRY2BPZmfYsqu104_Fop0FR5uVMjTf0H0QukHnZ2ek-lSXtvw7_pGXpgTRmtSzGGlj02gSbz8pgKBRlO5X2QuV_C-6dvoSyGzlha2cRConWWolqKyLPgV7AeSEhrEs9jBp0No_sUV2w8hM3siMvPlxkFOcOFwxfRxFWt0aSUAVfwxWGgAwCxWNKItarY3TZLgxvFeuxzgDYA5102LuXio_6UyW2vvSI2cEINLjHoxBVOGhf_5616FqA3TH-BQycxhGse6BEkAi-aDVFBUztHoGcyAz-RQDwfqDKqb78AGwm3cHg-_ZwgrKrr71ejPdudNpVpBxP0R1Qb-cTe4GAjT_mIREnKteUd-7a60UMiqsD3zZPwyq_i5Fof0uOtz44KCz_0BhPHSu7T1QgfL5iQy2GG2bUkc2jyiho6pPqDrX8PWD6xTQ-Y9P3AF_757YD90IW8C_Px21XrkoaE4HrNuZSdrdMeqlHLOhhm9Cj2oj-c6fxMYtdc07pB-tE6ODUirRUkFg7QEfzA3qhXF4DEsQmcVdBtIwYT24KCLtqS1NJhn0fadpNMKO9ZsBNk1gHeL-amjFC0fhhSGMcRKjOjo8RgKyaaA6dpTa1_UH-APmD-6t7FXk-q5PL0EJJ0kHI_c-wCjMMEZE89fI-0lfLVuSpbUjEzQSr8VSJzpwTKEI_3bA-aBZ42C4aEs5hTUlCn1v__5cCQkDe2k9cXopxbFOddeBGZNDgzAR0RKzWPjIagvWY77he7xJ-umuTSE0nWqZzpZr_THVwnck782sWfbXCpgjTjc0WAthuaW_s6bgqlEEKdJuEM-4d1Ya727sPcUeFhjFGNPy6opo_Fq3b8yfFZ7zw1Q3R-mJUVay7aLclNi5N_GSGQBlGag9LotVjlqXjL1j-xckgEKBS7YSJAfba0xYFz22Ijtu192ULcsF08gL-lwlu4Hi4N8PmW3everfyexB8tzdB1He5Ge99Gnp-6J2sYg5y1D3I7d7TK_FneKmwv82-xulVU_PK5yagRXXUS0-4fk9xgjEEVZAhZzloFPD61HsD2m9PxMJf_vGLb0DhO4OWIFTuemrg8z0n_umwTaO1PWEWKp68zKSUgDeMv1RDnbcG3rVOo4bNV_RXrIYLRjPDyqYy4SJcMiUKc3xnQclBUief-jmtAsq4Zp0hPwxDB4dAJJ1xUnG4uJZXhlHwpa_Rfv536m15DzOfpI3hV2TQ9SHMc8HAFUtCHXw0taJMuoyV9Zw45SJZws_o3PM9c3ubcQg-Bzzwx-_T5p2ZXiBGkyhkEy3cVwPv-hsmtSKWO-F6swIufwgkDmnpZTrWKUskyogGYd1qa2IAAsiXeiEx6ZQAqrN0KMZ4ZJ1rW1fhaQR1f_MkSUneNv3kCDe2G8t3w0f6KgQt8qG5ysjaH9WbxXE2j3KSUqTsqMs7FhcmCXoatkPKzw6MWq8LnJqBUMaQGDfsbUe2gefDz3o5nxF5ej9mqvjCXE09ygkk78V2YK1urigEaTOo5s19JSz0A8DKOEKjeBGUZILURpy4_RJWcN-NcaAAowYhopJx-TLIBjtwvKn1TA4vAOxYv_uavYljfbNqVV0U6zNgfnBZBZQw-xLphjLDeyWEGuJvoTdMSh_tRDnewkvRfAZw0bSqURncmr9CLUuGwtWMBY3u-vcOGWAGDwymlUR8Ynk3WNNN1CA=="
+      }
+     },
+     "id": "prt_0cbb652a8001fOwJl27R1Hq0Yy",
+     "sessionID": "ses_f344b96b2ffeS126oN7olcixs6",
+     "messageID": "msg_0cbb64de7001o7Nlr1IUQVK81p"
+    },
+    {
+     "type": "tool",
+     "tool": "task",
+     "callID": "call_kybZKPlrBawsQHxZ4D0LFfu3",
+     "state": {
+      "status": "completed",
+      "input": {
+       "description": "Revisar contrato M3",
+       "prompt": "Faça revisão somente leitura da conformidade da implementação M3 com contrato-api.md: rotas, métodos, campos, envelopes, códigos de erro e integração M1/M2. Compare também specs/M3-presenca-qr.md. Não edite nada, não crie relatório, não faça commit. Retorne apenas divergências reais ou diga que não encontrou, sempre com caminhos/linhas e comandos/resultados verificáveis.",
+       "subagent_type": "revisor-de-contrato"
+      },
+      "output": "<task id=\"ses_f344997b7ffeObimxzIWgbjm1n\" state=\"completed\">\n<task_result>\n## Divergências\n\n1. **[CÓDIGO/PRECEDÊNCIA]** Em atividade cancelada com presença já registrada, `POST /encontros/:id/presencas` e `/manual` retorna `200` pela duplicidade antes de verificar cancelamento (`api/lib/server.dart:594-599` e `api/lib/server.dart:653-658`). A spec exige `ATIVIDADE_CANCELADA` antes da duplicidade (`specs/M3-presenca-qr.md:71-72`).\n\n2. **[CÓDIGO]** Justificativa manual ausente retorna `422 DADOS_INVALIDOS` (`api/lib/server.dart:647-650`), mas o contrato e a spec exigem `422 JUSTIFICATIVA_OBRIGATORIA` (`contrato-api.md:173-174`; `specs/M3-presenca-qr.md:68`).\n\n## Verificação\n\n- `rg` confirmou as rotas e códigos em `api/lib/server.dart`.\n- `dart test`: `87` testes passaram.\n- `flutter test`: `42` testes passaram.\n</task_result>\n</task>",
+      "metadata": {
+       "parentSessionId": "ses_f344b96b2ffeS126oN7olcixs6",
+       "sessionId": "ses_f344997b7ffeObimxzIWgbjm1n",
+       "model": {
+        "modelID": "gpt-5.6-luna",
+        "providerID": "openai"
+       },
+       "truncated": false
+      },
+      "title": "Revisar contrato M3",
+      "time": {
+       "start": 1790124124236,
+       "end": 1790124214805
+      }
+     },
+     "metadata": {
+      "openai": {
+       "itemId": "fc_0bdde4674285e685016ab3205c876887d29babf112d979555e"
+      }
+     },
+     "id": "prt_0cbb6683b001fdyEWUuXWT5UVi",
+     "sessionID": "ses_f344b96b2ffeS126oN7olcixs6",
+     "messageID": "msg_0cbb64de7001o7Nlr1IUQVK81p"
+    },
+    {
+     "type": "tool",
+     "tool": "task",
+     "callID": "call_y5u7NIAaWCJxCykNs0DbQ1Bg",
+     "state": {
+      "status": "completed",
+      "input": {
+       "description": "Verificar evidências M3",
+       "prompt": "Faça uma verificação somente leitura independente de testes, smoke, evidências e estado do commit do M3. Confira a limitação do flutter build web e cobertura de integração M1/M2. Não edite nada nem crie relatório/commit. Retorne comandos executados e resultados, apontando eventuais achados com caminhos/linhas.",
+       "subagent_type": "explore"
+      },
+      "output": "<task id=\"ses_f344997a8ffeklr4k9Si2jQpa7\" state=\"completed\">\n<task_result>\n## Verificação somente leitura\n\n### Comandos executados\n\n- `git status --short --branch`\n  - `main...origin/main [ahead 2]`\n  - árvore limpa; nenhum arquivo modificado ou não rastreado.\n\n- `git log --oneline --decorate --graph origin/main..HEAD`\n  - `83e625d feat(m3): implement presenca por QR e evidencias`\n  - `b669adc docs(auditoria): registra auditoria do M2`\n\n- `git diff --check` / `git diff --quiet`\n  - sem diferenças ou erros de whitespace.\n\n- `dart analyze` em `/Users/yasmindesouza/TrabalhoIA-WomanInTech/api`\n  - `No issues found!`\n\n- `flutter analyze` em `/Users/yasmindesouza/TrabalhoIA-WomanInTech/frontend`\n  - `No issues found!`\n\n- Verificação de versões:\n  - Flutter `3.47.5`\n  - Dart `3.13.4`\n\n- Verificação dos snapshots:\n  - ausentes:\n    - `/opt/homebrew/share/flutter/bin/cache/dart-sdk/bin/snapshots/dart2js_aot.dart.snapshot`\n    - `/opt/homebrew/share/flutter/bin/cache/dart-sdk/bin/snapshots/dart2wasm_product.snapshot`\n\n- Contagem estática:\n  - M3 API: 9 testes.\n  - M3 frontend: 1 teste de cliente e 1 widget.\n  - Não existe diretório `integration_test`.\n\nNão executei testes, smoke ou `flutter build web`, para preservar a verificação estritamente somente leitura.\n\n## Resultados\n\n- M3 está presente no commit `83e625d`, atualmente dois commits à frente de `origin/main`.\n- A limitação do build web é confirmada estaticamente pelos snapshots ausentes. A evidência registra o mesmo bloqueio em `/Users/yasmindesouza/TrabalhoIA-WomanInTech/evidencias/ENTREGA-M3.md:53-61`.\n- A cobertura backend integra:\n  - M1: criação de atividade/encontro.\n  - M2: inscrição confirmada.\n  - Referências: `/Users/yasmindesouza/TrabalhoIA-WomanInTech/api/test/presenca_test.dart:33-54,107-134`.\n  - Smoke equivalente: `/Users/yasmindesouza/TrabalhoIA-WomanInTech/api/tool/smoke_m3.dart:33-48,77-106`.\n- A regressão M1/M2 é declarada como coberta por `87` testes API e `42` testes Flutter em `/Users/yasmindesouza/TrabalhoIA-WomanInTech/evidencias/ENTREGA-M3.md:47-52`, mas não há integração real frontend→API; os testes Flutter usam `MockClient`.\n\n## Achados\n\n1. **Inconsistência documental:** a entrega M3 afirma “Nenhum commit foi criado” em `/Users/yasmindesouza/TrabalhoIA-WomanInTech/evidencias/ENTREGA-M3.md:68-71`, porém existe o commit M3 `83e625d`.\n\n2. **Documentação M2 desatualizada:** o README declara a auditoria M2 como pendente em `/Users/yasmindesouza/TrabalhoIA-WomanInTech/README.md:108`, embora exista auditoria final aprovada em `/Users/yasmindesouza/TrabalhoIA-WomanInTech/auditorias/M2-inscricoes-final.md:101-105`.\n\n3. **Cobertura de integração limitada:** M1/M2 são exercitados pelo backend M3, mas não há teste de integração do frontend contra servidor real; os testes frontend M3 são exclusivamente mocks em `/Users/yasmindesouza/TrabalhoIA-WomanInTech/frontend/test/presencas_api_client_test.dart:20-67` e `/Users/yasmindesouza/TrabalhoIA-WomanInTech/frontend/test/presencas_widget_test.dart:15-55`.\n</task_result>\n</task>",
+      "metadata": {
+       "parentSessionId": "ses_f344b96b2ffeS126oN7olcixs6",
+       "sessionId": "ses_f344997a8ffeklr4k9Si2jQpa7",
+       "model": {
+        "modelID": "gpt-5.6-luna",
+        "providerID": "openai"
+       },
+       "truncated": false
+      },
+      "title": "Verificar evidências M3",
+      "time": {
+       "start": 1790124124249,
+       "end": 1790124230868
+      }
+     },
+     "metadata": {
+      "openai": {
+       "itemId": "fc_0bdde4674285e685016ab3205c877c87d2b9911266be6f5cdf"
+      }
+     },
+     "id": "prt_0cbb66855001dZ8s9z41aICinC",
+     "sessionID": "ses_f344b96b2ffeS126oN7olcixs6",
+     "messageID": "msg_0cbb64de7001o7Nlr1IUQVK81p"
+    },
+    {
+     "reason": "tool-calls",
+     "snapshot": "628620da1f26ce4f41205bdf003a3e92092df189",
+     "type": "step-finish",
+     "tokens": {
+      "total": 11940,
+      "input": 2931,
+      "output": 235,
+      "reasoning": 70,
+      "cache": {
+       "write": 0,
+       "read": 8704
+      }
+     },
+     "cost": 0,
+     "id": "prt_0cbb80941001YADNN3wJECv0T3",
+     "sessionID": "ses_f344b96b2ffeS126oN7olcixs6",
+     "messageID": "msg_0cbb64de7001o7Nlr1IUQVK81p"
+    }
+   ]
+  },
+  {
+   "info": {
+    "parentID": "msg_0cbb46a83001wxCn3N3TwFMenY",
+    "role": "assistant",
+    "mode": "build",
+    "agent": "build",
+    "path": {
+     "cwd": "/Users/yasmindesouza/TrabalhoIA-WomanInTech",
+     "root": "/Users/yasmindesouza/TrabalhoIA-WomanInTech"
+    },
+    "cost": 0,
+    "tokens": {
+     "total": 13735,
+     "input": 2371,
+     "output": 358,
+     "reasoning": 254,
+     "cache": {
+      "write": 0,
+      "read": 10752
+     }
+    },
+    "modelID": "gpt-5.6-luna",
+    "providerID": "openai",
+    "time": {
+     "created": 1790124231073,
+     "completed": 1790124243595
+    },
+    "finish": "tool-calls",
+    "id": "msg_0cbb809a1001Cchgt264s9Bcua",
+    "sessionID": "ses_f344b96b2ffeS126oN7olcixs6"
+   },
+   "parts": [
+    {
+     "snapshot": "628620da1f26ce4f41205bdf003a3e92092df189",
+     "type": "step-start",
+     "id": "prt_0cbb80e050017RxXSHpCkUDvbQ",
+     "sessionID": "ses_f344b96b2ffeS126oN7olcixs6",
+     "messageID": "msg_0cbb809a1001Cchgt264s9Bcua"
+    },
+    {
+     "type": "reasoning",
+     "text": "**Planning test runs to verify contract divergences**",
+     "time": {
+      "start": 1790124232200,
+      "end": 1790124237162
+     },
+     "metadata": {
+      "openai": {
+       "itemId": "rs_0669ccfe48eebb66016ab320c896f887d297dc18ef7122d772"
+      }
+     },
+     "id": "prt_0cbb80e08001X4Y18LVSbarVtO",
+     "sessionID": "ses_f344b96b2ffeS126oN7olcixs6",
+     "messageID": "msg_0cbb809a1001Cchgt264s9Bcua"
+    },
+    {
+     "type": "reasoning",
+     "text": "**Inspecting contract lines and git status without modifications**",
+     "time": {
+      "start": 1790124237165,
+      "end": 1790124237218
+     },
+     "metadata": {
+      "openai": {
+       "itemId": "rs_0669ccfe48eebb66016ab320c896f887d297dc18ef7122d772",
+       "reasoningEncryptedContent": "gAAAAABqsyDNsZwVzt5I90Fu7V_HMYEfKc30fN5Lohlb2x201Awz_XRnf39Ik_nwG2qyXV0VJSBlFCDWU4_8UErgfqFI6nvnJp1evv2brin_8kG9jzmupCgEstfi-KG5klXR2GPbbELQQYfJ-2x2irgNAsOHlUSEJE9Mmq6GAVLrl87x7ZitNKJysnlaCTqgT7pqJDW9QpArb2h2bhXuJcJU1rLexQrLyphUo1qGqrZ2B2u84rrsKcb7h02FfrPOKwxeneVcXIlXjuO3SXIDNQQerIPmbTe1uCISiY40nRzHbXWe56tdrrwHw5gixTMhs10C4r4Q-7FlBZQwmVaLcBsDj_3aeQnAz-0eCAc196gsJ4ifL79yp9AoDweKaPS1WnSOcBuxb90iuboHoqzsurdoW79x98ZRD2CPxjLqDxC8M0YAUMfbouqBP29cV4DvDC8Zn3S_Y_q-rtHc0K0H5vOx_m7A_Fq0NC4kF-YQdUsmCd2KcvM0DsL8bN_qOBRnKs9ssyjnBoGDzVVSq7s-uJJDY8Mj_HxZkT4Z8xOZibv3dGPQSi8gF0akUj2ULbO2PhocOqSpYQ2Cqsu81EjYBK5pRd8BjHmxSlFexaqhrGt86j_a9FJ0KhOP_oY7efY-w7ZWg-CN6bibW97ZMX7GmWCBApSQB4gXg7AKX9ZWAhSSCwJx2Wvs11geh49hWJCLeqxGexDwZDutMTpqfMh4j-gUGhqYaJohZbaspJX_IxIfBXjtx67vIVuXeOu0f-HzGrfdjLvQ-VRvobX8mqdviCjeSfCetAIiVZkcppvdizf8hL5Sk7YWkyZwtwkk8slgNqABeXTTDkPwVmVLa7POe1zXMykHfS9vvVjV-clqaeUneN83haOCurKXPlegi8xacgv0ua3AgZ7TPCvSKWROCCpp87BQrq3XuS2Iypt8ksnd-qv2ufDa8a6K4ET3ViDuL8p7S1YPuUJt9-MMYjjFAh_PF1Zjb-58GOxAgk9HK9FmoODIoOwpMYQ1U-hWIIriotkfFQGnaNsUDqH-9Kuw1uIUdnWC5D7tQoCRWhJXYKPJu3iREnhaNclIUil8P0F1p4wTAGC4YBsEQi2D1Mt_TkhfHE5eAQ9NEJ_d_5lwmjm_K4JmteobKalnF9DK037_hwjZHxv7cxT8ZLSHs69DufKqZryKvcZCizCrsw0aZmV81ISdsJi4Ksw_8CVjf-ywvpUbdtxuIq7nY3SKrgPKVYDh6SrUe36ntBlSB2K1F9KDb29EThqDiTRbiJiugzm8_ARM02JS8SBlF4uJ_mLerfpBMrak-mvBkecE2EuFArjWhJ1hjBJJcUzVtpD8wQNZ3e8YxnuFY3ZDKXXP77PpP9d74dpvHAnXW95nXpYRgdgFPKPFzHH8Vyd3pEssYCTX7DtYRWWQmZzwLHjXqP0dKlx6BC8x2tTqEAS3rdLsgBYdOjGgqSZnTIqWfaUIiBeYYlTnQWZQbRxI-nJMdzGSTTqhKhzS3FRkeslTZnFyzDNhosNdTcksbU85GSCy8a6Hu28IDV1SPUL8LfHU3G01pw0_P34k_o22vq87n0g33Xh6mXLFGo-cW3mASty-6lmhMc2zEoFVy4mwdePxfzoYlf3nv5Rnrw3vcmcqRD0UVjzEdKpRYaBDnyOB-2dX1tPIohnrDeZSlcFsJmZpTalpyn19YrPwFIv_7Lw8eYgmsi370Fb2o-RyOiNWNixgqDz9aSZOnZRsqV8qonv_13yie9h7a3cFuTlFsQas_Yd4jnM2vHMC1LVSEvcQfCD9CAQtVS0ocui3XDaR18BqJEbMSgxi3mxZ66evkttVxdc-0QnS_txuiBJfHuwNyxmGsvYK8q1F9Rtt7Q_rrskD_jBS8qsu_er5LtgXX7seHhUERERgBtWj8Z6QKt51QG7sPmyMWOTwXxHTnl4ir-QVsnss4HhGvmldHnEgOtnWpuw8zKQ-lTsv6gu7ObpnezBcxfPgttUm8jthlk2QhTK1FFG6dSC8xfijUg9IkUAVOB-7rCadA_JDee7nWeLNEEC95I6q9_kotEHhC8dQrPx3M8BBTP5F2x8QZKMSBik9TtN-FIC8BhuICfXywNWFcGskjx7p4HHRTqTT1s5KmHkHvjKC13Y8nV8oJ97aMy9cHfUVK8A5hAPLs0YOsqkpgdzlvLPAjBCTrrTZyxvyHRzWWWUZOAaJsawmh9UPdjCjNEsYwFXQwdJRyP3XGlMAlf7Q57-iUvOd8l2jtd97CzSHTcwYBEIbixWv2lVYGmsIuKlWFXyic2wuZlZh6jzpjXWq4XqlVjSgbAXS21gNlBAgcce30pAYfeX2EHI0HDd9dMZdmotF2d-YFwILmmzVSetSVFjWUqd3d8xntLkALVbKKBxxF0mcM7_BzFPoaRXTePFYwX6wDOmYwAwj4Hl1b0KG6O0byJ5OWPQPDxRnYmngFobAO6kbtX2S2CxA_e06kXkCuW79eAiNO9BWeeGZvHBdkhELE3JExEKKGuFXn_8J8Y8LImJL4MLaIxGrVl-8bEaFw90XixSa7Jm26ffsy0fOIwzzy2C9IOJw0oMI0Jswm-vvD4wdj5ghDBvBY8DxXyj24eoJXyEwM68c56QfqmqnKt9Q90ruw5rt4Z9Mr7E_OUBVySHDt_fAVeS5mgXP4wwMFtlp1eljdQtgnEEwv2ubw4uydL8m0xi1CgQJcBHNlED_3IygyaznJlEfJcoX21_D-vlxKSF2rEY8w4vJNQMwWW4wApwe0_nbAsbtgJUdOvFUyJcTwRedBglYxbvftGSpMPMbdGbjSPD8cRuKVMXwgrbpQ7RKVDfVEJcLZ3e7GB4tKhFepkuiNEfGKGDJd5fniuFcNjqZxHIygUim3MTsWA_IeefuqGloIHoKLOMBV-DBdw7Z_uf3K07lSm35xxlwOd8-5ucikd0vKe_-RtfBkeT_zoNRlIrkgaQ1N0GbRHpu6GKdcISKMZEJ8Fx1sPt_AdEnNPuG_KwLEr6NMuXGUSyv2h0DG6RLDAHU6Q9YVcImSK5IY0y3JBHnkIBuQf9QdM-KzsnWXDl1eKbHUY6Fsb9KnYKtI-fyUYEb"
+      }
+     },
+     "id": "prt_0cbb8216d001m1XjQVipFQbTAH",
+     "sessionID": "ses_f344b96b2ffeS126oN7olcixs6",
+     "messageID": "msg_0cbb809a1001Cchgt264s9Bcua"
+    },
+    {
+     "type": "text",
+     "text": "A revisão encontrou duas divergências contratuais concretas além das lacunas de cobertura: precedência incorreta em atividade cancelada com presença duplicada e código de erro incorreto para justificativa ausente. Vou confirmar os trechos e consolidar a resposta separando falhas reais de limitações/documentação.",
+     "time": {
+      "start": 1790124237220,
+      "end": 1790124243406
+     },
+     "metadata": {
+      "openai": {
+       "itemId": "msg_0669ccfe48eebb66016ab320cd902487d2994990836197912a",
+       "phase": "commentary"
+      }
+     },
+     "id": "prt_0cbb821a4001UHWTduyTOIdYKU",
+     "sessionID": "ses_f344b96b2ffeS126oN7olcixs6",
+     "messageID": "msg_0cbb809a1001Cchgt264s9Bcua"
+    },
+    {
+     "type": "tool",
+     "tool": "read",
+     "callID": "call_jDwk5VLjhTzosZ1HFdGVUUrQ",
+     "state": {
+      "status": "completed",
+      "input": {
+       "filePath": "/Users/yasmindesouza/TrabalhoIA-WomanInTech/contrato-api.md",
+       "offset": 160,
+       "limit": 35
+      },
+      "output": "[1643 caracteres omitidos]",
+      "title": "contrato-api.md",
+      "time": {
+       "start": 1790124243420,
+       "end": 1790124243450
+      }
+     },
+     "metadata": {
+      "openai": {
+       "itemId": "fc_0669ccfe48eebb66016ab320d39aa087d2bcb4e1ea08c37ed5"
+      }
+     },
+     "id": "prt_0cbb839d6001ZbWYtmIthPgASs",
+     "sessionID": "ses_f344b96b2ffeS126oN7olcixs6",
+     "messageID": "msg_0cbb809a1001Cchgt264s9Bcua"
+    },
+    {
+     "type": "tool",
+     "tool": "read",
+     "callID": "call_SA6GZopFaHko4NyPSBmOMx6U",
+     "state": {
+      "status": "completed",
+      "input": {
+       "filePath": "/Users/yasmindesouza/TrabalhoIA-WomanInTech/specs/M3-presenca-qr.md",
+       "offset": 45,
+       "limit": 40
+      },
+      "output": "[4672 caracteres omitidos]",
+      "title": "specs/M3-presenca-qr.md",
+      "time": {
+       "start": 1790124243425,
+       "end": 1790124243454
+      }
+     },
+     "metadata": {
+      "openai": {
+       "itemId": "fc_0669ccfe48eebb66016ab320d39ab087d2b9e005fb10c20319"
+      }
+     },
+     "id": "prt_0cbb839de001s4R3Bv3ORhOeXD",
+     "sessionID": "ses_f344b96b2ffeS126oN7olcixs6",
+     "messageID": "msg_0cbb809a1001Cchgt264s9Bcua"
+    },
+    {
+     "type": "tool",
+     "tool": "read",
+     "callID": "call_9X9tWgpS7HGRQ28iFIn7BLk5",
+     "state": {
+      "status": "completed",
+      "input": {
+       "filePath": "/Users/yasmindesouza/TrabalhoIA-WomanInTech/evidencias/ENTREGA-M3.md",
+       "offset": 40,
+       "limit": 35
+      },
+      "output": "[1873 caracteres omitidos]",
+      "title": "evidencias/ENTREGA-M3.md",
+      "time": {
+       "start": 1790124243430,
+       "end": 1790124243452
+      }
+     },
+     "metadata": {
+      "openai": {
+       "itemId": "fc_0669ccfe48eebb66016ab320d39abc87d2afcd6564c7a8f0d1"
+      }
+     },
+     "id": "prt_0cbb839e3001NiIypi3tpXehPT",
+     "sessionID": "ses_f344b96b2ffeS126oN7olcixs6",
+     "messageID": "msg_0cbb809a1001Cchgt264s9Bcua"
+    },
+    {
+     "type": "tool",
+     "tool": "read",
+     "callID": "call_euTu9NsPyaLVjyff4cnFJtjh",
+     "state": {
+      "status": "completed",
+      "input": {
+       "filePath": "/Users/yasmindesouza/TrabalhoIA-WomanInTech/api/lib/server.dart",
+       "offset": 585,
+       "limit": 90
+      },
+      "output": "[5307 caracteres omitidos]",
+      "title": "api/lib/server.dart",
+      "time": {
+       "start": 1790124243434,
+       "end": 1790124243461
+      }
+     },
+     "metadata": {
+      "openai": {
+       "itemId": "fc_0669ccfe48eebb66016ab320d39ac887d283f6ce13ca86dc68"
+      }
+     },
+     "id": "prt_0cbb839e7001AltTj18cbgap2t",
+     "sessionID": "ses_f344b96b2ffeS126oN7olcixs6",
+     "messageID": "msg_0cbb809a1001Cchgt264s9Bcua"
+    },
+    {
+     "type": "tool",
+     "tool": "read",
+     "callID": "call_xLV2NJLyQYRHarTz3XAhjodh",
+     "state": {
+      "status": "completed",
+      "input": {
+       "filePath": "/Users/yasmindesouza/TrabalhoIA-WomanInTech/api/test/presenca_test.dart",
+       "offset": 1,
+       "limit": 30
+      },
+      "output": "[1335 caracteres omitidos]",
+      "title": "api/test/presenca_test.dart",
+      "time": {
+       "start": 1790124243438,
+       "end": 1790124243455
+      }
+     },
+     "metadata": {
+      "openai": {
+       "itemId": "fc_0669ccfe48eebb66016ab320d39ad487d28c40b85d3594b872"
+      }
+     },
+     "id": "prt_0cbb839ec001aULsYDLYuY9lNr",
+     "sessionID": "ses_f344b96b2ffeS126oN7olcixs6",
+     "messageID": "msg_0cbb809a1001Cchgt264s9Bcua"
+    },
+    {
+     "type": "tool",
+     "tool": "read",
+     "callID": "call_WEAcT6cWr3jyvs5zUm3fNsJ8",
+     "state": {
+      "status": "completed",
+      "input": {
+       "filePath": "/Users/yasmindesouza/TrabalhoIA-WomanInTech/frontend/test/presencas_widget_test.dart",
+       "offset": 1,
+       "limit": 70
+      },
+      "output": "[3309 caracteres omitidos]",
+      "title": "frontend/test/presencas_widget_test.dart",
+      "time": {
+       "start": 1790124243442,
+       "end": 1790124243459
+      }
+     },
+     "metadata": {
+      "openai": {
+       "itemId": "fc_0669ccfe48eebb66016ab320d39adc87d28977d3ff358c2119"
+      }
+     },
+     "id": "prt_0cbb839ef001VCoehTOUi7xeX8",
+     "sessionID": "ses_f344b96b2ffeS126oN7olcixs6",
+     "messageID": "msg_0cbb809a1001Cchgt264s9Bcua"
+    },
+    {
+     "reason": "tool-calls",
+     "snapshot": "628620da1f26ce4f41205bdf003a3e92092df189",
+     "type": "step-finish",
+     "tokens": {
+      "total": 13735,
+      "input": 2371,
+      "output": 358,
+      "reasoning": 254,
+      "cache": {
+       "write": 0,
+       "read": 10752
+      }
+     },
+     "cost": 0,
+     "id": "prt_0cbb83a470013BrXUp4rj5QVXv",
+     "sessionID": "ses_f344b96b2ffeS126oN7olcixs6",
+     "messageID": "msg_0cbb809a1001Cchgt264s9Bcua"
+    }
+   ]
+  },
+  {
+   "info": {
+    "parentID": "msg_0cbb46a83001wxCn3N3TwFMenY",
+    "role": "assistant",
+    "mode": "build",
+    "agent": "build",
+    "path": {
+     "cwd": "/Users/yasmindesouza/TrabalhoIA-WomanInTech",
+     "root": "/Users/yasmindesouza/TrabalhoIA-WomanInTech"
+    },
+    "cost": 0,
+    "tokens": {
+     "total": 20334,
+     "input": 6232,
+     "output": 786,
+     "reasoning": 516,
+     "cache": {
+      "write": 0,
+      "read": 12800
+     }
+    },
+    "modelID": "gpt-5.6-luna",
+    "providerID": "openai",
+    "time": {
+     "created": 1790124243598,
+     "completed": 1790124269509
+    },
+    "finish": "stop",
+    "id": "msg_0cbb83a8e001PLPUaXzK97J6FK",
+    "sessionID": "ses_f344b96b2ffeS126oN7olcixs6"
+   },
+   "parts": [
+    {
+     "snapshot": "628620da1f26ce4f41205bdf003a3e92092df189",
+     "type": "step-start",
+     "id": "prt_0cbb84302001w2L96uSYt4FA3v",
+     "sessionID": "ses_f344b96b2ffeS126oN7olcixs6",
+     "messageID": "msg_0cbb83a8e001PLPUaXzK97J6FK"
+    },
+    {
+     "type": "reasoning",
+     "text": "**Assessing contract justification handling**",
+     "time": {
+      "start": 1790124245768,
+      "end": 1790124253971
+     },
+     "metadata": {
+      "openai": {
+       "itemId": "rs_067ef3aaf0abb226016ab320d61cc487d2ac9efc57bc9b71ca"
+      }
+     },
+     "id": "prt_0cbb84308001IumXsGFc66rC4K",
+     "sessionID": "ses_f344b96b2ffeS126oN7olcixs6",
+     "messageID": "msg_0cbb83a8e001PLPUaXzK97J6FK"
+    },
+    {
+     "type": "reasoning",
+     "text": "**Structuring audit evidence summary**",
+     "time": {
+      "start": 1790124253977,
+      "end": 1790124255392
+     },
+     "metadata": {
+      "openai": {
+       "itemId": "rs_067ef3aaf0abb226016ab320d61cc487d2ac9efc57bc9b71ca"
+      }
+     },
+     "id": "prt_0cbb86319001E6Xi4uZndwRqwm",
+     "sessionID": "ses_f344b96b2ffeS126oN7olcixs6",
+     "messageID": "msg_0cbb83a8e001PLPUaXzK97J6FK"
+    },
+    {
+     "type": "reasoning",
+     "text": "**Clarifying build limitation impact**",
+     "time": {
+      "start": 1790124255395,
+      "end": 1790124255693
+     },
+     "metadata": {
+      "openai": {
+       "itemId": "rs_067ef3aaf0abb226016ab320d61cc487d2ac9efc57bc9b71ca",
+       "reasoningEncryptedContent": "gAAAAABqsyDffOvM4DSaXEag0ixcOnmMCwe7itQMjVuNDeEEDJ7UM7yA-13XlwUuOQSxukMXzznZpBU4So0WAFxConnukLQAY7TY3Ux-RYqb0USdirdf58YmfjeH_Jeep5DfgSVEcu0A1vgoXmWV5Vdkk3Chq_uU-8d1-RrT9V4f6_dg9yzSyyQ-HqFU0sV1KWEGcE0K0Kclvu521D2t14mFM1NLOljFDIfLFXAYFT15FrONghrPnHUXgSyYOvfjX9vAGGbRMP9lR_pqSDf7pt2xhuK2tQ4hKHSQDIzY9amVkxte_rmAxkXpdoeQX2eTBoO0w69QJtgPmjNg6WEpjew5u11uaHlWECrP25AeXtsf7kUK9JKHw1bSQXD3UbkGsAHSeieaCZvFrUquScnYId-5dPgkQ8E4hUKilcZ0-HrsZRFnwsPZWxXzDH8mxwJ98u--D5PDJf2txWw4TPVYGwlV4WXrDyx1fupEMQg_12dDlkLu6xnu4gxUBQuDREgpLUf3xW2ndo246nOSMIg7D66uY-jha5BEMnOlsZL2WDcGsJHV5548TDDsQb3k9c9KutJzwkz2ZAdbGEVBTMf5EXlkSieD6xJDkUFy9eM_UkjsoL29hG_Ma1RAvo7cxqFphyUKoNrjq3qGqTv6pSVGtxc9Ry3-50ueOss6Xa3gR0QqXnHswd-FvxinilXYby7-LWOnMLLIO2VV6-N-7WqrB1KehQs6aydo3etjV7QfFGldqdtIGrLQgFPbYwO96uxjQ28cY3cc5ZZQrJ4xuW3_h78f9Ew48F4InXMCyTNU5mxMVBGCddbH7U8WbUvdDQ6W3QkfNQ4zNbb9HvGIR5p7CPll3Zrnb6xCXpIjIbBcezxAi_S57Psj-Ra-OyxG07jJn-zcxJXC33FJQi_gF5twQWJBaTeuoShu-JnQrU-_U7wPGsr1i8xuinBYx0IatsxQMQEF-dRnEg4_cOTVW2cEr_96IvjTPxNxhpYm26Girbdek1wdogfjawou0sNI-siK_yehvQUBLUb2n6nmXpbzq6N4pofB2C5TPF3bx7QDaafPe9rn0t92CrvU7kaGffjd6JfjYjfjbogMo4TEVOs6DJRqKv-j4D7VojlObtEvQkECA-B8wGGKTFTofZFNMjauUl58DIV_28e4Ye5sribkN5B0xEfNIfeYgbBe_hqtnjobeWtfOIaH_y3qhBpVxpCrcysG0LWUML8X3ODSV0eaYyiMGA4425ORUQPmtzb6EMLWuYO368BZb7vYs3StquS-c0PtfB2zrVatsVpdnQsUOE8EWOcjqUZRjTfJk0n3TdCcOvSmCSziweG0nQpW0qZ3PviDPsAJiQ6EdqzXTej8wVG8LHj1e7J9Mwd8LkFBA2OH9m8_hfukYUKsUkV6c8wyLgiUiRPUjACFWgcRYIcbcWOgxWL_FDpD70vJvD9gxGgs2hYGdJPqY1r7POUg3prL73Q3RfrTMkPYsrmtqVBLlp1TkQ06YO0O4SRe1bS2vbuPV97lpJslF3nmi7WfcT9hZt3GXVcEPscdrZCSr37EtaPSx9LDYLs9FEs0V3wqD-d-CM3U2PlVDazG3PJCrBG_D79dmN0BVa_Ept5jDmH95yy7-su6mXPPGWSAhCoXeq4xEwXUWCJ1bIHCsQ4G2bcMj_iwMM-1vQ7bfkze9_fjlPPBeMXO448e1zwElJ9-Z8-wNQIlVYuATYwdiwoGED-BthK1Xn5B0Qj6pRkXi6hjDvNpoQBxWYnH7GYNfbTrbj3r-vH_5wpNXXmhTJYf9jVwlxAxOycS-hic-IhPxWbF4FqospzRfHZ5d1Q-fZp5cohfyn95PfKa4w7g7kUeG3fQE93p2gx4jqHNFfso20ktaOIoIZeBPtcR-d4a7FDwf108QkZD5jGMgbvn_9pRE7n6CzLAELnDvM0GUfZOdRgGPE1hj9wEcE6miAE6KK8ArKbtDKfLsjXa07SAjKYKIJ_ZlVUaSMDCIA_cEutNeOAVDe-gOH2dR7sBEvJGPPxMg1wxY_kMSjMDe_OImvkU_cvkvJyrT2-x_ig_4cUuvPDblB1k_JcXpIl7d9H3HGMgMmSH1-9mt9acVlqDPJWRztQEjgTuB1pwC5fTkBRMmroLuCpoK--Na2UyIsErf_ScCbZiX8q4qhAMJxpfPqNLaVOrZta3VSnFPsuVyJpfBEB5DK9a4pXhh0aaX-SDiYNYDxw3PLZXhdiDnZgWyDVhK6_0DdlrWQbQQndgQSlW7EJ7f2LVUNKfDBtnjoL9Asal3D2IkGidEgEHqPxc5iQzX-51OPnkWelct5ysruN0MU91KWd5xtnrNe4-0KUErN-R5CyS4v2mIqvyzOJFEj3HOwMYlA8sJL8SlO-1o8UBlkPSg9Sx2akj232c3-xyiv0YWrV7h_7KgFtpMe_VdnPlSCM4M7B-T6mHY4oejvd6JN15-b4YuzPbLbphXFk2_HU2tE6nzZejItKKxAYNRxFqyYKJOuZIBpI5zDvonUWxfe2k40x0vtjakkHTSh3TAJXLxZ7Yz8hSYbNpBI2rm1bsFOITu_A5vuoGNgsPwn1vQcQl0f072W2jDB33X9WZYwg1QA2x_nY02WdtuPstjiKy757WI0nI_7HMXnjVfNwy8ZsXTOJyjr-qz1owj-4MGFny1nzTZQSm-3Z-PBxLb-iOZCrBhkYXeuf6xIE_pvbzKl3AvUPhjIbNWmrKjNwtAPHYKjSFn82qAHakZap_S79C0ickI6AKAeqmZoarQVr_REH-3S6cvbCdvICgfpthn5tuUAnpO6Yu3Wgk_JGS0gG_pTLXHNQ7CeGh6ZvbvARqeNEjpf6TubwLl_xCYZe2Imd4MZrDnnqQLalsq82b8yUw48JcJCIAbT9Z9rPpr1IvRoWagEd3jcWTV1h6QboXDEPVGmJO_SyDU7mvCVI4AwoL5Lu-4xan2Ln5nkWQ9D8-kTeQT8isXoHy3_Q-WEuuwbOTltvkjfMr6_U6t8c02-6GGUXpymzcZNjKP1jvuAIO6Q9AStFNgnMNcvRSace8zyF7pgdXqEHPMhMVNtSk8ydtcqAH8_J-znGqjeQrzF6aU0oWBhVmR1QQ6lyq6lL35uZh-VfRjWuidDd4ZkxJGDViXfoE6lL0wJdSMmNRdDB1QjNcAxieVdqXikhz87jtGYtVZ-tYVL4TsLSPdEau1TtPh4nUEX9mzihHsseBskSMeuio_zpFHR9cLPe1qVZGazsOU9FmDpkkgq4w9pOxrrMztwGkcDSLtlqudbCxD31BWskqZe-fYfZQ262l3HQZ9RE1cD1FVetCumAKOkRJhQehHIuGLKgTT9bxFrWvLxuaZTIeeOkjbvNzkQRpvWu3OVnfZRwi54eFeTIhV4S6ywLobfKaGPtwx0T8EPsvDrVJqFZhceJFmmSP-k_f3X1tUJdyGv-o2Pp2lWL9JLfp7ABURdr8VViD_KJmXL2oGgmhMk5LW3pd2D2r4Ase8NAqmZbbWsPjsG3gUc5FlnI_cMAR_0bYqwWILDUY_KvS9MKw35cv7PfU__5NYBQFK4AZ-gXd9T9XkePIaNPRBWKParN0QrZg6J1HAXGHhfc2VMmXy-3-z6GybFQ8Hn27RV8fgixE68C0Xz0twA35W80AlJbAIsJ5QdSrnM6D8KHXKwSOyvPgSCmuVlC4UxxfAASfLa_CSjoymu7efEALSnBCMbdJ6tX6EOvMqtz0QHjF9xhf6QB0c3pX0RaDCewLZ6o1eoKLj9zR56CRrPxza0vor-QmawN1oY5ESyuOOZxjwRtBqVlMXfVYB8CdXRgm41ObJutakg6j9YWFgsa5XfvJ6gUbzRkgp-yjBEw377L5lfZNWdPFIbAl3pwHROSoctKN0xoJl9IlFFsb3ytDmJo5ybSl2W1Fzx79QtS0FPqfB1jBVrjx-T-uwnBGRvL2tNUvq0tYw7JAxndO_mWCVFvq0s7E55PJO8CFSCDgSKkJoVorQRBCvJKNQg7qznLHCo5nZVucaYmN4NE5jiXaG9cO-ZFwbe7CmN-mB3e5GKqQ4qJxtkhnZ7WyVyXv6JqE69BITu_C2psO0reFlVdrARtl1M3EKdrC_e0LoRuSvVwGna_ZvABhryL5A5_zQe3xQ-GO42_yR_fEj7u47PmJR4rUT0vWGuxH_k3OQiGiaWic-uJu_ddtuXpaAFeRbehKOiS0Fj_tY9lHzTvKwajrEncKu0tQVjKycpHXMCZRbBhJwUMsClwIqt3f3Felrw7hvSsf1FrvLWB0VhcIDS34-nkVYKRCUrZrD0WrOmqv3wGSUNWY7NRcq9Ie_FB8XzipvxknhlgNHE-2svm0bO_zKFKEi6fMBk2Yzr1qWwAwJuN07RCjm4uwKj8GL2Ue83Aboyu-OUGbiem0EHBTYi6MHIXKBWNv97iXP0xgLYNDSksWCXqYHNziHXTr22qqXnK88OMaMq369ZNmfeKA2NpiO2qZIETuZec-rFHNmjjBOCf6ZfsamfgEP9yPz-LSOs3kqNnguanur_oVRPP0Rehcfa_kVRHezPV8ILWJbpQtQmYqa0vsyLtfIcWiWfARlvn20--R3BnL5lxrgI1wR8qH1QxzS1x7wdAtGagQisFoZzXI36ZbmetHGtk9L0nTAZXiPj3YdCWaMDughMIxpkJeR4U="
+      }
+     },
+     "id": "prt_0cbb868a3001svUlNPh1nkbcU2",
+     "sessionID": "ses_f344b96b2ffeS126oN7olcixs6",
+     "messageID": "msg_0cbb83a8e001PLPUaXzK97J6FK"
+    },
+    {
+     "type": "text",
+     "text": "1. **Itens completos**\n- Commit M3 identificado: `83e625d`.\n- Persistência após reinício, reset, idempotência QR/manual e integração backend com atividade M1 e inscrição M2.\n- Testes API: `87` aprovados.\n- Testes Flutter: `42` aprovados.\n- `dart analyze` e `flutter analyze`: sem problemas.\n- Smoke cobre QR, offline/idempotência, manual, listagem, cancelamento e reset.\n- Build web bloqueado por snapshots ausentes do SDK local, não por erro demonstrado no código.\n\n2. **Pendências reais**\n- **Bloqueadoras**\n  - **Divergência de precedência:** em atividade cancelada com presença existente, a implementação retorna `200` por duplicidade antes de `ATIVIDADE_CANCELADA`; a spec exige cancelamento primeiro (`api/lib/server.dart:594-599`, `specs/M3-presenca-qr.md:71-72`).\n  - **Código de erro incorreto:** justificativa manual ausente retorna `DADOS_INVALIDOS`, mas o contrato exige `JUSTIFICATIVA_OBRIGATORIA` (`api/lib/server.dart:647-650`, `contrato-api.md:173-174`).\n  - **Sem testes para R04, R11, R16, R19 e R23:** corpos inválidos, QR/código inválido ou fora da janela, timestamps manuais, precedência completa e retrocesso do relógio.\n  - **R24 incompleto:** widget testa apenas organização, código e lista vazia; não cobre participante, registro QR/manual, loading, erro, sucesso e atualização.\n  - **Rastreabilidade incompleta:** as 24 regras da spec não possuem associação explícita às perguntas `P-xx` da entrevista.\n  - **Limite de manuais indefinido/testado de forma insuficiente:** `LIMITE_DE_MANUAIS` aparece no contrato, mas não há número verificável nem teste de rejeição.\n- **Não bloqueadoras**\n  - Não há teste de integração Flutter contra API real; frontend usa `MockClient`.\n  - Smoke não cobre as bordas acima.\n  - Tela não expõe `lidoEm` para sincronização offline, embora o `ApiClient` aceite o campo.\n  - Evidência diz “Nenhum commit foi criado”, contradizendo o commit existente.\n  - README ainda marca auditoria M2 como pendente.\n  - `flutter build web --release` permanece indisponível neste SDK local.\n\n3. **Comandos e resultados**\n- `git status --short --branch` → árvore limpa; `main...origin/main [ahead 2]`.\n- `git log --oneline origin/main..HEAD` → `83e625d feat(m3): implement presenca por QR e evidencias`.\n- `cd api && dart test` → `All tests passed!`, 87 testes.\n- `cd frontend && flutter test` → `All tests passed!`, 42 testes.\n- `cd api && dart analyze` → `No issues found!`.\n- `cd frontend && flutter analyze` → `No issues found!`.\n- `dart run tool/smoke_m3.dart` → OK para QR, offline/idempotência, manual, listagem, cancelamento e reset.\n- `flutter build web --release` → bloqueado por `dart2js_aot.dart.snapshot` e `dart2wasm_product.snapshot` ausentes.\n- `rg`/inspeção de `api/lib/server.dart` → confirmou as duas divergências de contrato citadas.\n- Inspeção de testes → ausência dos cenários R04, R11, R16, R19, R23 e cobertura limitada do widget M3.",
+     "time": {
+      "start": 1790124255696,
+      "end": 1790124269284
+     },
+     "metadata": {
+      "openai": {
+       "itemId": "msg_067ef3aaf0abb226016ab320dff1ac87d2af22b1d3d88489cb",
+       "phase": "final_answer"
+      }
+     },
+     "id": "prt_0cbb869d00012kT74Im3O816az",
+     "sessionID": "ses_f344b96b2ffeS126oN7olcixs6",
+     "messageID": "msg_0cbb83a8e001PLPUaXzK97J6FK"
+    },
+    {
+     "reason": "stop",
+     "snapshot": "628620da1f26ce4f41205bdf003a3e92092df189",
+     "type": "step-finish",
+     "tokens": {
+      "total": 20334,
+      "input": 6232,
+      "output": 786,
+      "reasoning": 516,
+      "cache": {
+       "write": 0,
+       "read": 12800
+      }
+     },
+     "cost": 0,
+     "id": "prt_0cbb89f81001H5RdJyJMZXLhWe",
+     "sessionID": "ses_f344b96b2ffeS126oN7olcixs6",
+     "messageID": "msg_0cbb83a8e001PLPUaXzK97J6FK"
+    }
+   ]
+  }
+ ]
+}

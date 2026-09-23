@@ -9,7 +9,7 @@
 - Presenca somente para inscricao `confirmada`; ausencia elegivel retorna `NAO_INSCRITO`.
 - Duplicidade QR/manual retorna `200` com a primeira presenca preservada.
 - Justificativa manual apos `trim`, entre 10 e 500 caracteres.
-- Um registro manual por participante/encontro por organizacao, com limite compartilhado.
+- Um registro manual por participante/encontro por organizacao, com limite compartilhado e duplicidade resolvida antes do limite.
 - Presencas persistem fora de teste; reset limpa presencas/sequencias e restaura relogio.
 - Flutter cobre obter QR, registrar QR, registrar manual e listar presencas.
 
@@ -32,40 +32,45 @@
 ## Criterios cobertos
 
 - Autenticacao, papel, encontro inexistente e envelope de erro.
+- Corpos JSON malformados, tipos invalidos, timestamps invalidos, janela e codigo fora da regra.
 - Janela inclusiva, troca de bucket e codigo deterministico de 6 caracteres.
 - QR online, QR offline dentro da tolerancia, leitura futura e fora da janela.
 - Inscricao confirmada, `NAO_INSCRITO`, atividade cancelada e idempotencia.
 - Presenca manual, justificativa, duplicidade compartilhada e listagem.
 - Reset, relogio controlado, persistencia JSON e reinicio da API.
-- ApiClient com `X-Usuario`, quatro rotas M3 e widget com loading/vazio/sucesso.
+- Retrocesso do relogio sem desfazer presenca materializada.
+- ApiClient com `X-Usuario`, quatro rotas M3, QR offline com `lidoEm` e widget com loading/vazio/erro/sucesso.
+- Rastreabilidade completa R01-R24 para P-01 a P-23 em `specs/M3-presenca-qr.md`.
 - Regressao M1/M2 preservada pelas suites completas.
 
 ## Comandos e resultados
 
 | Comando | Resultado |
 |---|---|
-| `dart test test/presenca_test.dart -r compact` | OK, 9 testes |
-| `dart test` | OK, 87 testes |
+| `dart test test/presenca_test.dart -r compact` | OK, 15 testes |
+| `dart test` | OK, 92 testes |
 | `dart analyze` | OK, sem issues |
-| `dart run tool/smoke_m3.dart` | OK: QR, offline/idempotencia, manual, listagem, cancelamento e reset |
-| `flutter test` | OK, 42 testes |
+| `dart run tool/smoke_m3.dart` | OK: QR, offline/idempotencia, corpos invalidos, precedencia de cancelamento, manual/justificativa, listagem e reset |
+| `flutter test` | OK, 45 testes |
 | `flutter analyze` | OK, sem issues |
-| `flutter build web --release` | BLOQUEADO pelo SDK local: ausente `dart2js_aot.dart.snapshot` e `dart2wasm_product.snapshot` |
-| `flutter precache --web` | Executado, sem reparar os snapshots ausentes |
-| `flutter build web --release --no-wasm-dry-run` | BLOQUEADO pelo mesmo `dart2js_aot.dart.snapshot` ausente |
+| `flutter build web --release` | BLOQUEADO pelo SDK local: ausentes `dart2js_aot.dart.snapshot` e `dart2wasm_product.snapshot` |
 | `node evidencias/exportar-evidencias.js` | Executado ao concluir a entrega |
 
 ## Limitações conhecidas
 
 - O build web não pôde ser concluído neste ambiente porque a instalação local do
-  Flutter 3.47.5 possui cache Dart incompleto; análise e testes Flutter passaram.
-- O contrato contém `LIMITE_DE_MANUAIS`, mas as decisões aprovadas tornam a tentativa
-  duplicada idempotente e retornam `200` antes do limite. Assim, uma segunda tentativa
-  válida não produz esse erro; o smoke prova a proteção pelo resultado idempotente.
+  Flutter 3.47.5 possui cache Dart incompleto (`dart2js_aot.dart.snapshot` e
+  `dart2wasm_product.snapshot`); análise e testes Flutter passaram.
+- O contrato contém `LIMITE_DE_MANUAIS`, mas as decisões aprovadas definem a chave
+  participante/encontro e tornam tentativa duplicada idempotente, retornando `200`
+  antes do limite. O teste HTTP prova que participantes diferentes ainda podem ter
+  uma presença manual e que a duplicidade entre organizações preserva a primeira.
 - A tela recebe o texto do QR; leitura por câmera não foi solicitada nem faz parte do
   contrato.
 
 ## Integridade do escopo
 
-`contrato-api.md`, specs, entrevistas e auditorias históricas de M1/M2 não foram
-alterados. Nenhum commit foi criado.
+`contrato-api.md`, entrevistas e auditorias históricas de M1/M2 não foram
+alterados. A spec do M3 recebeu apenas a matriz explícita de rastreabilidade
+solicitada. Nenhum novo commit foi criado nesta etapa; o commit-base `83e625d`
+já existia.

@@ -105,7 +105,7 @@ O nome real da variável no `ApiClient` é `API_BASE_URL` (padrão `http://local
 - Dono/equipe: `EQUIPE.md` — M2 é de Clara L Peretti (`claraperetti`).
 - Evidências: `evidencias/sessoes/clara-l-peretti/`.
 - Rastreabilidade: as decisões P-01 a P-29 da Rodada 2 são regras locais delegadas pela usuária em 22/09/2026 com base no `contrato-api.md` e na spec do M1. **Não foram validadas contra requisitos externos do professor** e não há fonte externa inventada.
-- Auditoria: a auditoria final do M2 será registrada em `auditorias/M2-inscricoes-final.md` — **ainda pendente**, não concluída.
+- Auditoria: a auditoria final do M2 está registrada em `auditorias/M2-inscricoes-final.md` e foi concluída com veredito PASSOU.
 
 ---
 

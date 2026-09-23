@@ -76,6 +76,36 @@ Entradas:
 - R23. Relogio controlado pode ser usado nos testes; transicoes ja materializadas nao sao desfeitas por retrocesso.
 - R24. O frontend implementa os quatro fluxos via `ApiClient`: obter QR, registrar QR, registrar manual e listar presencas, com loading, vazio, erro e sucesso, sem replicar regras.
 
+### Rastreabilidade das regras
+
+Os identificadores `P-01` a `P-23` abaixo correspondem, respectivamente, a `P1` a
+`P23` da entrevista `entrevistas/M3-presenca-qr.md`. As regras de formato e ordem
+do contrato foram fechadas pela pergunta de precedencia (P-12), enquanto as
+decisoes de fluxo foram fechadas pelas perguntas especificas indicadas.
+
+| Regra | Pergunta(s) de origem |
+|---|---|
+| R01-R04 | P-12 |
+| R05 | P-01, P-02 |
+| R06 | P-03, P-04 |
+| R07 | P-03 |
+| R08 | P-11, P-12 |
+| R09 | P-06, P-08 |
+| R10 | P-07 |
+| R11 | P-08, P-11 |
+| R12 | P-09, P-10 |
+| R13 | P-13, P-14 |
+| R14 | P-15 |
+| R15 | P-16 |
+| R16 | P-02, P-05, P-11 |
+| R17 | P-17, P-18, P-19 |
+| R18 | P-11, P-12 |
+| R19 | P-12, P-13, P-16, P-19 |
+| R20 | P-22 |
+| R21-R22 | P-20 |
+| R23 | P-21 |
+| R24 | P-22 |
+
 ## 6. Criterios de aceite
 
 1. (R01-R04) Cada rota responde autenticacao, papel, existencia e corpo na ordem do contrato.

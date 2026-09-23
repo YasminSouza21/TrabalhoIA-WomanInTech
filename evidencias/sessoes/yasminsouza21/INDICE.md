@@ -26,5 +26,8 @@ Requisições são chamadas ao modelo: cada passo do agente é uma. Skills conta
 | 22/09 07:48 | [Auditoria final do Módulo 1 em Dart e Flutter](ses_f37448d0bffeasRT1Cf8TIJxMA.md) | 10 | — | auditor | 0 / 2 | 0 | 0 | 0 | — |
 | 22/09 07:56 | [Correção completa do Módulo 1 Dart/Flutter](ses_f373d903fffecpVnrKTRcQ5sQV.md) | 28 | tdd | auditor (2) | 1 / 6 | 0 | 0 | 0 | — |
 | 22/09 20:57 | [Auditoria do Módulo 2: Inscrições e Lista de Espera](ses_f34725ab5ffe7WJthhXz5Dhsip.md) | 17 | — | auditor (2) | 0 / 2 | 0 | 0 | 0 | — |
-| 22/09 21:11 | [Entrevista M3: perguntas sobre QR, presença e integrações](ses_f3465c1f2ffemfPF8NB2zix838.md) | 59 | grilling, to-spec, tdd | — | 4 / 12 | 0 | 0 | 0 | — |
-| | **Total: 15 sessões** | 350 | grilling (3), to-spec (2), tdd (5) | auditor (7) | 18 / 54 | 0 | 0 | 1 | — |
+| 22/09 21:11 | [Entrevista M3: perguntas sobre QR, presença e integrações](ses_f3465c1f2ffemfPF8NB2zix838.md) | 62 | grilling, to-spec, tdd | — | 4 / 12 | 0 | 0 | 0 | — |
+| 22/09 21:39 | [Auditoria somente leitura do M3 Presença QR](ses_f344b96b2ffeS126oN7olcixs6.md) | 4 | — | auditor, revisor-de-contrato, explore | 0 / 0 | 0 | 0 | 0 | — |
+| 22/09 21:46 | [Correção completa das pendências da auditoria M3](ses_f3445ba41ffeO0SM4kFIcfgplC.md) | 46 | tdd | — | 2 / 8 | 0 | 0 | 0 | — |
+| 22/09 21:55 | [Correção documental final do M3 sem alterar código](ses_f343d1a05ffeOik2CCZwbhtrDf.md) | 7 | — | — | 0 / 0 | 0 | 0 | 0 | — |
+| | **Total: 18 sessões** | 410 | grilling (3), to-spec (2), tdd (6) | auditor (8), revisor-de-contrato, explore | 20 / 62 | 0 | 0 | 1 | — |
