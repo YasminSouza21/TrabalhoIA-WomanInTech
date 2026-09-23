@@ -1,0 +1,1791 @@
+{
+ "info": {
+  "id": "ses_f38e0c288ffeDitumIH6beGSrE",
+  "slug": "gentle-rocket",
+  "projectID": "5ec1c46d9cd3888456c10ad574c60d609ed0d0a9",
+  "directory": "/Users/yasmindesouza/TrabalhoIA-WomanInTech",
+  "path": "",
+  "title": "Auditoria pós-correção do M1 — Grade de Atividades",
+  "agent": "build",
+  "model": {
+   "id": "gpt-5.6-luna",
+   "providerID": "openai",
+   "variant": "medium"
+  },
+  "version": "1.18.32",
+  "summary": {
+   "additions": 0,
+   "deletions": 0,
+   "files": 0
+  },
+  "cost": 0,
+  "tokens": {
+   "input": 73537,
+   "output": 6540,
+   "reasoning": 628,
+   "cache": {
+    "read": 355840,
+    "write": 0
+   }
+  },
+  "time": {
+   "created": 1790047108471,
+   "updated": 1790047391503
+  }
+ },
+ "messages": [
+  {
+   "info": {
+    "role": "user",
+    "time": {
+     "created": 1790047108486
+    },
+    "agent": "build",
+    "model": {
+     "providerID": "openai",
+     "modelID": "gpt-5.6-luna",
+     "variant": "medium"
+    },
+    "summary": {
+     "diffs": [
+      {
+       "file": "auditorias/M1-grade-atividades-pos-correcao.md",
+       "patch": "Index: auditorias/M1-grade-atividades-pos-correcao.md\n===================================================================\n--- auditorias/M1-grade-atividades-pos-correcao.md\t\n+++ auditorias/M1-grade-atividades-pos-correcao.md\t\n@@ -0,0 +1,207 @@\n+# Parecer de auditoria pos-correcao - M1 Grade de Atividades\n+\n+## Veredito\n+\n+**NAO PASSOU**\n+\n+A correcao do defeito de aceitar JSON valido seguido de conteudo extra foi\n+confirmada em POST e PATCH, com testes dedicados para os dois caminhos. A\n+suíte passa. O M1 ainda nao tem prova suficiente para todas as regras\n+contratadas: permanecem sem teste dedicado R12, R24 e R31, alem de provas\n+fracas para R09, R11, R36 e R59. Essas lacunas sao do M1; a ausencia dos\n+fluxos completos de M2, M3 e M4 nao foi considerada falha deste modulo.\n+\n+## Escopo e fontes\n+\n+Foram considerados somente os artefatos solicitados:\n+\n+- `specs/M1-grade-atividades.md`\n+- `entrevistas/M1-grade-atividades.md`\n+- `contrato-api.md`\n+- todos os arquivos de implementacao e testes em `api/`\n+- `auditorias/M1-grade-atividades.md`, apenas para comparar a situacao anterior\n+\n+Nenhum documento externo de requisitos foi usado. A auditoria anterior foi\n+preservada intacta.\n+\n+## Correcao auditada: JSON com conteudo extra\n+\n+### POST\n+\n+- `api/atividades_handlers.go:124-134` decodifica o primeiro valor JSON e faz\n+  um segundo `Decode`; somente `io.EOF` e aceito. Qualquer segundo valor,\n+  texto ou outro conteudo gera `422 DADOS_INVALIDOS`.\n+- `api/atividades_test.go:76-83`,\n+  `TestPOSTAtividadesRejeitaConteudoExtraAposJSON`, envia um objeto valido\n+  seguido de `{}` e verifica `422 DADOS_INVALIDOS`.\n+\n+### PATCH\n+\n+- `api/atividades_handlers.go:423-432` aplica a mesma verificacao ao corpo de\n+  PATCH, antes das regras de edicao.\n+- `api/atividades_test.go:85-93`,\n+  `TestPATCHAtividadesRejeitaConteudoExtraAposJSON`, cria uma atividade,\n+  envia `{\"titulo\":\"Novo titulo\"} {}` e verifica `422 DADOS_INVALIDOS`.\n+\n+Conclusao especifica: o defeito apontado em\n+`auditorias/M1-grade-atividades.md:142-154` foi corrigido nos dois endpoints e\n+passou a ter cobertura automatizada nos dois endpoints.\n+\n+## Matriz de rastreabilidade\n+\n+| Regra | Origem | Implementacao | Evidencia de teste | Status |\n+|---|---|---|---|---|\n+| R01 | P-01/P-02 | `api/main.go:21-23` | `api/atividades_test.go:95-178,318-348` | COMPROVADA |\n+| R02 | P-04 | `api/store.go:57-90` | `api/main_test.go:77-120`, `api/atividades_test.go:350-367` | COMPROVADA |\n+| R03 | contrato, rotas M1 | `api/atividades_handlers.go:96-117,359-408` | `api/atividades_test.go:185-223,318-347` | COMPROVADA |\n+| R04 | contrato, rotas M1 | `api/atividades_handlers.go:120-122,411-414,488-490` | `api/atividades_test.go:129-134,225-244,270-294` | COMPROVADA |\n+| R05 | P-02/R2-P24 | Escopo M1 em `api/main.go:21-23` | Sem integracao M2/M3/M4 | DEPENDENCIA FUTURA, NAO FALHA M1 |\n+| R06 | contrato | `api/atividades_handlers.go:311-318` | `api/atividades_test.go:129-134,185-188,205-223,270-276` | COMPROVADA |\n+| R07 | contrato | `api/atividades_handlers.go:320-323` | `api/atividades_test.go:129-134,225-230,270-276` | COMPROVADA |\n+| R08 | contrato | `api/atividades_handlers.go:394-403,415-420,492-497` | `api/atividades_test.go:205-223,225-230,270-276` | COMPROVADA |\n+| R09 | contrato | `api/atividades_handlers.go:124-134,423-432` | JSON invalido `136-141`; extra `76-93` | PROVA PARCIAL |\n+| R10 | P-03/R2-P01 | `api/atividades_handlers.go:159-162` | `api/atividades_test.go:99-127,143-152` | COMPROVADA |\n+| R11 | R2-P01 | Validacao comum `169-189` | Casos validos `99-127` | PROVA FRACA |\n+| R12 | contrato | Ordenacao em `208,266-269` | Nenhum teste com entrada fora de ordem | SEM PROVA |\n+| R13 | contrato | `api/atividades_handlers.go:141-156` | `api/atividades_test.go:67-74,99-127` | COMPROVADA |\n+| R14 | P-05/R2-P02/R2-P38 | `api/atividades_handlers.go:163-165` | `api/atividades_test.go:143-148` | COMPROVADA |\n+| R15 | P-05/R2-P02/R2-P38 | `api/atividades_handlers.go:166-168` | `api/atividades_test.go:149-152` | COMPROVADA |\n+| R16 | P-07/R2-P05/R2-P37 | `api/atividades_handlers.go:220-224` | `api/atividades_test.go:155-166` | COMPROVADA |\n+| R17 | P-31/R2-P35 | Nao ha precedencia exigida; spec: `specs/M1-grade-atividades.md:79,223` | Criterio de aceitacao | COMPROVADA COMO NAO-EXIGENCIA |\n+| R18 | P-06/R2-P03/R2-P37 | `api/atividades_handlers.go:226-228` | `api/atividades_test.go:155-166` | COMPROVADA |\n+| R19 | R2-P37/R2-P40 | `api/atividades_handlers.go:214-219` | `api/atividades_test.go:155-166` | COMPROVADA |\n+| R20 | R2-P37 | `api/atividades_handlers.go:230-232` | `api/atividades_test.go:161-166` | COMPROVADA |\n+| R21 | P-10/R2-P09 | `api/atividades_handlers.go:237-249` | `api/atividades_test.go:174-175` | COMPROVADA |\n+| R22 | P-11/R2-P09/R2-P10 | `api/atividades_handlers.go:253-262` | `api/atividades_test.go:174-177` | COMPROVADA |\n+| R23 | R2-P12/R2-P40 | `api/atividades_handlers.go:253-262` | `api/atividades_test.go:176-177` | COMPROVADA |\n+| R24 | R2-P12 | `api/atividades_handlers.go:253-262` | Nenhum caso `fim == inicio` | SEM PROVA |\n+| R25 | P-12/R2-P11 | `api/atividades_handlers.go:237-240` | `api/atividades_test.go:270-287` | COMPROVADA |\n+| R26 | P-13/P-14/R2-P08/R2-P13 | `api/atividades_handlers.go:172-185,459-470` | `api/atividades_test.go:169-177,231-243` | COMPROVADA |\n+| R27 | R2-P08/contrato | `api/atividades_handlers.go:182-185,469-471` | `api/atividades_test.go:172,242` | COMPROVADA |\n+| R28 | P-15/R2-P14 | `api/atividades_handlers.go:473-475` | `api/atividades_test.go:246-266` | COMPROVADA |\n+| R29 | R2-P16 | `api/atividades_handlers.go:301-305` | `api/atividades_test.go:250-266` | COMPROVADA |\n+| R30 | R2-P16 | `api/atividades_handlers.go:301-306` | `api/atividades_test.go:250-266` | COMPROVADA |\n+| R31 | R2-P15 | `api/atividades_handlers.go:459-478` | Nenhum teste de aumento de vagas | SEM PROVA |\n+| R32 | P-06/R2-P04 | `api/atividades_handlers.go:270-275` | `api/atividades_test.go:99-127` | COMPROVADA |\n+| R33 | R2-P04 | `api/atividades_handlers.go:24-30,266-275` | `api/atividades_test.go:99-108,231-237` | COMPROVADA |\n+| R34 | contrato | `api/atividades_handlers.go:480-485` | `api/atividades_test.go:231-237` | COMPROVADA |\n+| R35 | P-16/R2-P17 | `api/atividades_handlers.go:451-478` | `api/atividades_test.go:225-244` | COMPROVADA |\n+| R36 | P-17/R2-P18 | `api/atividades_handlers.go:434-444` | `api/atividades_test.go:239-241` | PROVA FRACA |\n+| R37 | R2-P20 | `api/atividades_handlers.go:446-448` | `api/atividades_test.go:284-285` | COMPROVADA |\n+| R38 | P-31/R2-P36 | Precedencia nao exigida; spec: `specs/M1-grade-atividades.md:125,223` | Criterio de aceitacao | COMPROVADA COMO NAO-EXIGENCIA |\n+| R39 | P-18/R2-P21/contrato | `api/atividades_handlers.go:504-514` | `api/atividades_test.go:270-287` | COMPROVADA |\n+| R40 | P-18/R2-P21 | `api/atividades_handlers.go:504-508` | `api/atividades_test.go:288-294` | COMPROVADA |\n+| R41 | P-19/R2-P22 | `api/atividades_handlers.go:499-511` | `api/atividades_test.go:284-287,310-315` | COMPROVADA |\n+| R42 | P-20/R2-P23 | `api/atividades_handlers.go:499-502` | `api/atividades_test.go:284` | COMPROVADA |\n+| R43 | P-31/R2-P36 | Precedencia nao exigida; spec: `specs/M1-grade-atividades.md:135,223` | Criterio de aceitacao | COMPROVADA COMO NAO-EXIGENCIA |\n+| R44 | P-22/R2-P25 | `api/atividades_handlers.go:278-291` | `api/atividades_test.go:296-315` | COMPROVADA |\n+| R45 | P-23/R2-P26 | `api/atividades_handlers.go:284-285` | `api/atividades_test.go:301-307` | COMPROVADA |\n+| R46 | P-23/R2-P26 | `api/atividades_handlers.go:284-291` | `api/atividades_test.go:301-307` | COMPROVADA |\n+| R47 | P-23/R2-P26 | `api/atividades_handlers.go:287-289` | `api/atividades_test.go:301-307` | COMPROVADA |\n+| R48 | P-19/P-22/P-23/R2-P28 | `api/atividades_handlers.go:278-281` | `api/atividades_test.go:310-315` | COMPROVADA |\n+| R49 | P-25/R2-P29 | `api/atividades_handlers.go:377-384` | `api/atividades_test.go:324-331` | COMPROVADA |\n+| R50 | P-25/R2-P29 | `api/atividades_handlers.go:380-382` | `api/atividades_test.go:324-331` | COMPROVADA |\n+| R51 | P-26/R2-P30 | `api/atividades_handlers.go:365-376` | `api/atividades_test.go:327-334` | COMPROVADA |\n+| R52 | P-26/R2-P31/contrato | `api/atividades_handlers.go:394-408` | `api/atividades_test.go:205-223` | COMPROVADA para detalhe existente |\n+| R53 | P-27/R2-P32 | `api/atividades_handlers.go:530-537` | `api/atividades_test.go:324-347` | COMPROVADA |\n+| R54 | P-28/contrato | `api/atividades_handlers.go:363-371` | `api/atividades_test.go:336-337` | COMPROVADA |\n+| R55 | P-29/R2-P32 | `api/atividades_handlers.go:369-374` | `api/atividades_test.go:342-343` | COMPROVADA |\n+| R56 | P-30/contrato | `api/store.go:44,66,92-101`; handlers `366,405` | `api/atividades_test.go:296-315`, `api/main_test.go:16-57` | COMPROVADA |\n+| R57 | P-24/R2-P27/R2-P40 | `api/atividades_handlers.go:284-291` | `api/atividades_test.go:301-307` | COMPROVADA |\n+| R58 | P-24/R2-P27/R2-P40 | `api/atividades_handlers.go:287-289` | `api/atividades_test.go:301-307` | COMPROVADA |\n+| R59 | P-07/R2-P05 | `api/atividades_handlers.go:220-224` | Testa 19/10 e rejeita 24/10 em `155-166`; nao testa 23/10 | PROVA FRACA |\n+| R60 | R2-P15/R2-P24/contrato | `api/atividades_handlers.go:266-275,294-308` | `api/atividades_test.go:99-108,231-266` | COMPROVADA para exposicao M1 |\n+\n+## Achados e lacunas remanescentes\n+\n+1. **R12 - sem prova:** a implementacao ordena os encontros em\n+   `api/atividades_handlers.go:208` e `266-269`, mas nenhum teste envia\n+   encontros fora de ordem e verifica a ordem retornada.\n+2. **R24 - sem prova:** `encontrosConflitam` trata `fim == inicio` como\n+   conflito em `api/atividades_handlers.go:253-262`, mas nao existe cenario\n+   dedicado em `api/atividades_test.go`.\n+3. **R31 - sem prova:** o PATCH permite aumento de vagas em\n+   `api/atividades_handlers.go:459-478`, mas nao ha teste que aumente vagas e\n+   confira o resultado.\n+4. **R09 - prova parcial:** a nova cobertura confirma conteudo extra no POST e\n+   PATCH, mas nao cobre de forma explicita campo obrigatorio ausente e todas as\n+   combinacoes de tipos errados.\n+5. **R11 - prova fraca:** ha casos validos de palestra e minicurso, mas nao ha\n+   teste demonstrando que duracao, capacidade e sala seguem as mesmas regras\n+   para os dois tipos.\n+6. **R36 - prova fraca:** o teste tenta alterar `salaId`, `tipo` e `encontros`\n+   sempre com o valor string `\"x\"` (`api/atividades_test.go:239-241`). Isso\n+   prova a recusa pelo nome do campo, mas nao com valores estruturalmente\n+   validos para cada campo do contrato.\n+7. **R59 - prova fraca:** a implementacao aceita dias 19 a 23 em\n+   `api/atividades_handlers.go:220-224`, mas os testes nao exercitam\n+   explicitamente o limite superior inclusivo de 23/10/2026.\n+8. **R52 - risco de cobertura:** a spec nao define comportamento especial para\n+   detalhe de atividade cancelada (N05). O teste comprova detalhe existente,\n+   mas nao consulta uma atividade cancelada; isso nao e uma falha contratual\n+   comprovada.\n+9. **Filtros invalidos e `vagas < 1`:** a implementacao escolhe\n+   comportamentos para pontos que a spec marca como nao especificados em\n+   `specs/M1-grade-atividades.md:184-197`. Sao riscos de comportamento nao\n+   contratado, nao falhas classificadas do M1.\n+\n+## Dependencias futuras, separadas de falhas M1\n+\n+Nao foram classificadas como falha do M1:\n+\n+- inscricoes, lista de espera e convocacao automatica, que pertencem ao M2;\n+- atualizacao de inscricoes ativas ao cancelar, que pertence ao M2;\n+- codigo de presenca, que pertence ao M3;\n+- certificados, que pertencem ao M4.\n+\n+A spec explicita essas fronteiras em `specs/M1-grade-atividades.md:28-38` e\n+`173-182`. O M1 apenas expoe os campos calculados necessarios ao consumo\n+futuro, usando o modelo minimo de inscricoes em `api/store.go:36-49` e\n+`api/atividades_handlers.go:294-308`.\n+\n+As falhas de aceite deste parecer sao exclusivamente as lacunas de prova do\n+M1 listadas em R12, R24, R31, R09, R11, R36 e R59.\n+\n+## Testes executados\n+\n+Comando executado em `api/`, conforme a configuracao do repositorio:\n+\n+```text\n+go test ./...\n+```\n+\n+Resultado:\n+\n+```text\n+ok    semana-academica    (cached)\n+```\n+\n+Os testes novos de conteudo extra estao em\n+`api/atividades_test.go:76-93` e foram incluidos na execucao da suíte.\n+Nao foram encontrados testes de interface Flutter no repositorio auditado.\n+\n+## Status do Git\n+\n+Status observado durante a auditoria, antes da criacao deste relatorio:\n+\n+```text\n+ M api/atividades_handlers.go\n+ M api/atividades_test.go\n+ M evidencias/sessoes/yasminsouza21/INDICE.md\n+?? evidencias/sessoes/yasminsouza21/ses_f38e23ff3ffe2wolkCb2kbRKaw.json\n+?? evidencias/sessoes/yasminsouza21/ses_f38e23ff3ffe2wolkCb2kbRKaw.md\n+?? evidencias/sessoes/yasminsouza21/ses_f38e4e25fffeSovqi8CuDkig5k.json\n+?? evidencias/sessoes/yasminsouza21/ses_f38e4e25fffeSovqi8CuDkig5k.md\n+?? evidencias/sessoes/yasminsouza21/ses_f38f4949effeMH4U268gEv13a2.json\n+?? evidencias/sessoes/yasminsouza21/ses_f38f4949effeMH4U268gEv13a2.md\n+```\n+\n+Essas alteracoes ja estavam presentes e nao foram modificadas pela auditoria.\n+O novo arquivo `auditorias/M1-grade-atividades-pos-correcao.md` foi o unico\n+arquivo criado nesta auditoria. Nenhum commit foi feito.\n+\n+## Conclusao\n+\n+**NAO PASSOU.** A correcao solicitada esta correta e comprovada em POST e\n+PATCH, e a suíte passa. O aceite integral do M1 continua impedido pelas\n+lacunas de cobertura listadas acima, especialmente R12, R24 e R31.\n",
+       "additions": 207,
+       "deletions": 0,
+       "status": "added"
+      }
+     ]
+    },
+    "id": "msg_0c71f3d86001DFuaQvTYeIjpn3",
+    "sessionID": "ses_f38e0c288ffeDitumIH6beGSrE"
+   },
+   "parts": [
+    {
+     "type": "text",
+     "text": "<system-reminder>Note: The user selected #6 from \"/Users/yasmindesouza/TrabalhoIA-WomanInTech/EQUIPE.md\". ```| M1 — Grade de atividades | Yasmin | |```\n\n This may or may not be relevant to the current task.</system-reminder>\n",
+     "synthetic": true,
+     "metadata": {
+      "kind": "editor_context",
+      "source": "websocket",
+      "filePath": "/Users/yasmindesouza/TrabalhoIA-WomanInTech/EQUIPE.md",
+      "ranges": [
+       {
+        "text": "| M1 — Grade de atividades | Yasmin | |",
+        "selection": {
+         "start": {
+          "line": 6,
+          "character": 0
+         },
+         "end": {
+          "line": 6,
+          "character": 39
+         }
+        }
+       }
+      ]
+     },
+     "id": "prt_0c71f3d880017Zq1ugUvF5lFnv",
+     "sessionID": "ses_f38e0c288ffeDitumIH6beGSrE",
+     "messageID": "msg_0c71f3d86001DFuaQvTYeIjpn3"
+    },
+    {
+     "type": "text",
+     "text": "Atue explicitamente como @auditor, em modo somente leitura para código, testes, especificações e contrato, no repositório /Users/yasmindesouza/TrabalhoIA-WomanInTech. Faça a auditoria pós-correção do M1 — Grade de Atividades comparando a spec em specs/, entrevistas/, contrato-api.md, api/ e os testes existentes. Não leia nenhum documento externo de requisitos. Preserve intacto auditorias/M1-grade-atividades.md, que é a auditoria anterior. Verifique especialmente se o defeito de aceitar JSON válido seguido de conteúdo extra foi corrigido em POST e PATCH, se os testes cobrem isso e se a suíte passa. Registre o relatório completo em auditorias/M1-grade-atividades-pos-correcao.md, sem alterar qualquer outro arquivo de código, teste, spec ou contrato, e sem fazer commit. No relatório, dê veredito claro (PASSOU ou NÃO PASSOU), liste evidências com caminhos/linhas, riscos e lacunas remanescentes de cobertura, distinguindo dependências futuras de M2/M4 de falhas do M1. Ao final, informe os testes executados e o status do git.",
+     "id": "prt_0c71f3d88002DRzvqAlAoITEf7",
+     "sessionID": "ses_f38e0c288ffeDitumIH6beGSrE",
+     "messageID": "msg_0c71f3d86001DFuaQvTYeIjpn3"
+    }
+   ]
+  },
+  {
+   "info": {
+    "parentID": "msg_0c71f3d86001DFuaQvTYeIjpn3",
+    "role": "assistant",
+    "mode": "build",
+    "agent": "build",
+    "variant": "medium",
+    "path": {
+     "cwd": "/Users/yasmindesouza/TrabalhoIA-WomanInTech",
+     "root": "/Users/yasmindesouza/TrabalhoIA-WomanInTech"
+    },
+    "cost": 0,
+    "tokens": {
+     "total": 9394,
+     "input": 9123,
+     "output": 169,
+     "reasoning": 102,
+     "cache": {
+      "write": 0,
+      "read": 0
+     }
+    },
+    "modelID": "gpt-5.6-luna",
+    "providerID": "openai",
+    "time": {
+     "created": 1790047108502,
+     "completed": 1790047116406
+    },
+    "finish": "tool-calls",
+    "id": "msg_0c71f3d96001yM05Ck0vW1pFST",
+    "sessionID": "ses_f38e0c288ffeDitumIH6beGSrE"
+   },
+   "parts": [
+    {
+     "snapshot": "f3d92db75a32591b03aa2131ef525aae1b492959",
+     "type": "step-start",
+     "id": "prt_0c71f467e001UO6Ud0LbOo14Er",
+     "sessionID": "ses_f38e0c288ffeDitumIH6beGSrE",
+     "messageID": "msg_0c71f3d96001yM05Ck0vW1pFST"
+    },
+    {
+     "type": "reasoning",
+     "text": "**Delegating code inspection to auditor**",
+     "time": {
+      "start": 1790047110784,
+      "end": 1790047113733
+     },
+     "metadata": {
+      "openai": {
+       "itemId": "rs_0a98dd56826073fb016ab1f386c44087d2badeaa1cd3af9d4e",
+       "reasoningEncryptedContent": "gAAAAABqsfOJnalGU3MYPp4AAzzHzioZdB4mztQAkxFRVkNOUK0WI-eiLOYhH-nDrvSQNOQka0VHcEtwu_1Z7JqHVVjEpR-SS1rncBInu5uac4C7rp4UBvh0KE9AXiPhMunYlRMfwemmRe7u7AyLqMUnThCAn1zsi_epWgccdzbBg0U6gub-Elq94lauMDd5vAt2QK2-VPIxtHJpGKDz-ApZaFUIT2DTDZOSb88XaztHqKquaaDvUJCjseNhPLU_6oNdetJnHKNasi6huMrt5kSr25UJrSqRG_hXAqEr99C8gW6MAEfBXyFITvSnPVKqsnHPQAGwmbva1IEg_7v4llV6e4V7duAPZ7CTI4kUoqqJ0HC8Y8yXNkQ70wSfGvbLEsrCrjbhXpdVVrNtMyxDiu_h7h1ZSox187SKIoJSdbKfacVGzOYYD9qDDfJmne7BLrnpwMrtlXKQnD6m7R3c4QPbg1a3vBQtLdlmqH5o6cFbYR_4CJx-6gQgei44w68OidmWJOzLjS4JhyfzugaeJK_l6HqiKm-P64OUVSVjV_LdrvKZ3k7fvIpAg7J7BdU75yJlcTuCNhgEFdvvL6zcwX4NWE5bDBwOT8sHJ6fxrFsEDAwrWOL8kTp2W7fW9PQPbSe0tE8meK5iGEyjttZN-QzG--ozOgYW8UC4-lIHeaBmo1J3N_M8z4b3nFrd-8kQPrxCmHTQrPUcId9X6OBFCUEe_v1Tm-A4F2cQYbWvB5_LhuZ71aCMlabIJx61f6ITUTjsd-26R8N-v1wzKMwz2puiQ2Nu3KDRD0VPRXPwlvBJWAmwwJgDUmi0bTAx5kzP1WC_juUqziFHkVZeHLjHgq_IhLC_aNi2i3IKY3Y9RF52jEn_os3502tn7qtF4Rhs2LjimsMxXTgi-VoE7Yt_RsfV3IiuoZAgdlgEx3qse0eN54ALiYq8gSrdFdFShQ5I_5Nn8ahgY-AS7_WRTTZD2LA3zOcIQyN8e3ZAo0w0OxfSLC_Zi4OrqTIMkeoOpqswRP5yzHYMGsvFKYuvtKk9fm6rvQvvldGm1z_wbjG4ySAzpKmWLzE6dUEXDrEldxm0-rJh42rihXXvq5ol4_CypnOE4H01ad0_k5bEqirUOGR3-pO7DiI-l-6ZEpoz1ZpHE4H7jCTqOyF4FqaSgQdU9R61PV_vES4rhpVbY_O3l9BApHqs9wSF79rb3X9tMoh9vr7gTAqjyeMSlA45HhMnxM5V8aRxBzUfuG7TwpEyQDDMj0JH0fG5C7H4SedQvij5M_Zt7OSb9J75wv38NgliXuLNve8U1xe507ZcRWPphaNKOD0DGSjegr85CkZSTQtQDpSmGryKEvSvOoBRij09ZF4QdtDFriGVRQtdI66gIT63EXT1oG7KLg7XLE1j5WonZy6EBdnmbcz8XN8YYHEJI4Ni-c5w35uk7xrwbaieAsFkiKluClGVVofFncDUgQ3xrYWrCE_EdsXo5rdze7J1TIiXxLXLL3RVj_mwPw89zSfIa9mAbPknYXlnAZ0C5sJdT-HBUsKbKiOTUUzGR4z9GstzRoQ5hdPCT84LqV17jnPjjw0UPjtCzkEwZlvrKwx8xiwBu-7K_bOi-Zf7G-IxeyKXcwSN5VX8MD_fC5_MSieZD90GGgST10Lga6DvrWB-nd927QvrxiwZf52kE8rVtpr5OHI8RLzUxrnUV0-gJ8UaVdXOZ9FIMZsxSfFvkYUB9n3kKSE9wiSDFXUjclEXQTWIIdzQw9OJ4zgrQPBv6kSnz18QQMlLRRwAz-YEHY3Hxye4xc7yF3AlqHitIOdJS7Pc5ZwIqjfI5WXlF1CNpNsMPYrnwi2VGEH-sYhGqN4Lp1QMoiLchqqGGx6xOYah558WxN6RV94Y1dGVtU1S48J4281SJF9j44v05JwPZ26ktiExQMiqOLLvDYi-X24EL1jR_eEwIX3pzpejBnyiDJad3DYiwwaVb_m3PxsxJpFaCrqYdNlLQgyj"
+      }
+     },
+     "id": "prt_0c71f4680001DsSmepuTXzMZxC",
+     "sessionID": "ses_f38e0c288ffeDitumIH6beGSrE",
+     "messageID": "msg_0c71f3d96001yM05Ck0vW1pFST"
+    },
+    {
+     "type": "text",
+     "text": "Vou auditar a implementação, a cobertura e o contrato do M1 sem tocar nos arquivos existentes, preservando a auditoria anterior; ao final, gravarei somente o novo relatório e verificarei a suíte e o status do Git.",
+     "time": {
+      "start": 1790047113738,
+      "end": 1790047114665
+     },
+     "metadata": {
+      "openai": {
+       "itemId": "msg_0a98dd56826073fb016ab1f389bafc87d28bd1d5d2ef50b791",
+       "phase": "commentary"
+      }
+     },
+     "id": "prt_0c71f520a001RCEV9KStSRWRtT",
+     "sessionID": "ses_f38e0c288ffeDitumIH6beGSrE",
+     "messageID": "msg_0c71f3d96001yM05Ck0vW1pFST"
+    },
+    {
+     "type": "tool",
+     "tool": "todowrite",
+     "callID": "call_LxIRcZuYQwPgTZYBBeA5vHsD",
+     "state": {
+      "status": "completed",
+      "input": {
+       "todos": [
+        {
+         "content": "Auditar spec, entrevistas, contrato, API, testes e correção POST/PATCH",
+         "status": "in_progress",
+         "priority": "high"
+        },
+        {
+         "content": "Executar suíte e testes específicos sem alterar arquivos",
+         "status": "pending",
+         "priority": "high"
+        },
+        {
+         "content": "Escrever relatório pós-correção preservando demais arquivos",
+         "status": "pending",
+         "priority": "high"
+        },
+        {
+         "content": "Verificar status final do Git e concluir veredito",
+         "status": "pending",
+         "priority": "high"
+        }
+       ]
+      },
+      "output": "[\n  {\n    \"content\": \"Auditar spec, entrevistas, contrato, API, testes e correção POST/PATCH\",\n    \"status\": \"in_progress\",\n    \"priority\": \"high\"\n  },\n  {\n    \"content\": \"Executar suíte e testes específicos sem alterar arquivos\",\n    \"status\": \"pending\",\n    \"priority\": \"high\"\n  },\n  {\n    \"content\": \"Escrever relatório pós-correção preservando demais arquivos\",\n    \"status\": \"pending\",\n    \"priority\": \"high\"\n  },\n  {\n    \"content\": \"Verificar status final do Git e concluir veredito\",\n    \"status\": \"pending\",\n    \"priority\": \"high\"\n  }\n]",
+      "metadata": {
+       "todos": [
+        {
+         "content": "Auditar spec, entrevistas, contrato, API, testes e correção POST/PATCH",
+         "status": "in_progress",
+         "priority": "high"
+        },
+        {
+         "content": "Executar suíte e testes específicos sem alterar arquivos",
+         "status": "pending",
+         "priority": "high"
+        },
+        {
+         "content": "Escrever relatório pós-correção preservando demais arquivos",
+         "status": "pending",
+         "priority": "high"
+        },
+        {
+         "content": "Verificar status final do Git e concluir veredito",
+         "status": "pending",
+         "priority": "high"
+        }
+       ],
+       "truncated": false
+      },
+      "title": "4 todos",
+      "time": {
+       "start": 1790047116237,
+       "end": 1790047116241
+      }
+     },
+     "metadata": {
+      "openai": {
+       "itemId": "fc_0a98dd56826073fb016ab1f38aa16c87d2898dad257fb2c268"
+      }
+     },
+     "id": "prt_0c71f55ae001YKX5Wr8M1Rf7lV",
+     "sessionID": "ses_f38e0c288ffeDitumIH6beGSrE",
+     "messageID": "msg_0c71f3d96001yM05Ck0vW1pFST"
+    },
+    {
+     "reason": "tool-calls",
+     "snapshot": "f3d92db75a32591b03aa2131ef525aae1b492959",
+     "type": "step-finish",
+     "tokens": {
+      "total": 9394,
+      "input": 9123,
+      "output": 169,
+      "reasoning": 102,
+      "cache": {
+       "write": 0,
+       "read": 0
+      }
+     },
+     "cost": 0,
+     "id": "prt_0c71f5c43001bczsTDaC67u4lv",
+     "sessionID": "ses_f38e0c288ffeDitumIH6beGSrE",
+     "messageID": "msg_0c71f3d96001yM05Ck0vW1pFST"
+    }
+   ]
+  },
+  {
+   "info": {
+    "parentID": "msg_0c71f3d86001DFuaQvTYeIjpn3",
+    "role": "assistant",
+    "mode": "build",
+    "agent": "build",
+    "variant": "medium",
+    "path": {
+     "cwd": "/Users/yasmindesouza/TrabalhoIA-WomanInTech",
+     "root": "/Users/yasmindesouza/TrabalhoIA-WomanInTech"
+    },
+    "cost": 0,
+    "tokens": {
+     "total": 9760,
+     "input": 850,
+     "output": 206,
+     "reasoning": 0,
+     "cache": {
+      "write": 0,
+      "read": 8704
+     }
+    },
+    "modelID": "gpt-5.6-luna",
+    "providerID": "openai",
+    "time": {
+     "created": 1790047116409,
+     "completed": 1790047252981
+    },
+    "finish": "tool-calls",
+    "id": "msg_0c71f5c790015NgsLlz780rxR7",
+    "sessionID": "ses_f38e0c288ffeDitumIH6beGSrE"
+   },
+   "parts": [
+    {
+     "snapshot": "f3d92db75a32591b03aa2131ef525aae1b492959",
+     "type": "step-start",
+     "id": "prt_0c71f6276001qvZ8p7LvBeY5el",
+     "sessionID": "ses_f38e0c288ffeDitumIH6beGSrE",
+     "messageID": "msg_0c71f5c790015NgsLlz780rxR7"
+    },
+    {
+     "type": "tool",
+     "tool": "task",
+     "callID": "call_2b0xuXj6QdmYso2SgE6fvkWb",
+     "state": {
+      "status": "completed",
+      "input": {
+       "description": "Auditar módulo M1",
+       "prompt": "Atue como auditor somente leitura no repositório /Users/yasmindesouza/TrabalhoIA-WomanInTech. Audite pós-correção o M1 — Grade de Atividades comparando exclusivamente specs/, entrevistas/, contrato-api.md, api/ e testes existentes. Não leia documentos externos de requisitos. Não altere arquivos. Preserve auditorias/M1-grade-atividades.md. Verifique especialmente se POST e PATCH rejeitam JSON válido seguido de conteúdo extra, se há testes disso e se a suíte passa (pode executar testes). Liste regras da spec, origem nas entrevistas, implementação, testes, evidências com caminhos e linhas, riscos/lacunas e dependências futuras M2/M4 versus falhas M1. Retorne uma análise detalhada para eu consolidar no relatório auditorias/M1-grade-atividades-pos-correcao.md.",
+       "subagent_type": "auditor"
+      },
+      "output": "<task id=\"ses_f38e08f99ffeeplTfuf3fCj0Ci\" state=\"completed\">\n<task_result>\n# Parecer de auditoria pós-correção — M1 Grade de Atividades\n\nAuditoria somente leitura. O arquivo `auditorias/M1-grade-atividades.md` foi preservado.\n\n## Matriz de rastreabilidade\n\n| Regra | Origem | Implementação | Teste/evidência | Veredito |\n|---|---|---|---|---|\n| R01 | P-01, P-02 | Rotas M1 em `api/main.go:21-23` | `api/atividades_test.go:95-178` | COMPROVADA |\n| R02 | P-04 | Reset inicial em `api/store.go:57-90` | `api/main_test.go:77-120`, `api/atividades_test.go:318-367` | COMPROVADA |\n| R03 | contrato-api.md | Autorização de leitura em `api/atividades_handlers.go:96-117,359-361,394-397` | `api/atividades_test.go:185-223,318-347` | COMPROVADA |\n| R04 | contrato-api.md | Autorização de organização em `api/atividades_handlers.go:120-122,411-414,488-490` | `api/atividades_test.go:129-134,225-244,270-294` | COMPROVADA |\n| R05 | P-02, R2-P24 | M1 expõe somente rotas próprias em `api/main.go:21-23` | Não há testes de integração M2/M3/M4 | DEPENDÊNCIA EXTERNA, não falha M1 |\n| R06 | contrato-api.md | `autorizar` retorna `401` em `api/atividades_handlers.go:311-318` | `api/atividades_test.go:129-134,185-188,205-223,270-276` | COMPROVADA |\n| R07 | contrato-api.md | Perfil é validado em `api/atividades_handlers.go:320-323` | `api/atividades_test.go:129-134,225-230,270-276` | COMPROVADA |\n| R08 | contrato-api.md | Existência validada antes do corpo em `api/atividades_handlers.go:415-420,394-403,492-497` | `api/atividades_test.go:205-223,225-230,270-276` | COMPROVADA |\n| R09 | contrato-api.md | POST/PATCH rejeitam erro de decode e conteúdo extra em `api/atividades_handlers.go:124-134,423-432` | JSON inválido em `api/atividades_test.go:136-141`; conteúdo extra em `api/atividades_test.go:76-93` | PROVA PARCIAL |\n| R10 | P-03/R2-P01 | Tipos aceitos em `api/atividades_handlers.go:159-162` | Criação e quantidades em `api/atividades_test.go:99-127,143-152` | COMPROVADA |\n| R11 | R2-P01 | Validações comuns em `api/atividades_handlers.go:169-189` | Há casos válidos dos dois tipos em `api/atividades_test.go:99-127` | PROVA FRACA |\n| R12 | contrato-api.md | Ordenação em `api/atividades_handlers.go:208,266-269` | Nenhum teste envia encontros fora de ordem | SEM PROVA |\n| R13 | contrato-api.md | Criação e status `201` em `api/atividades_handlers.go:141-156` | `api/atividades_test.go:67-74,99-127` | COMPROVADA |\n| R14 | P-05/R2-P02/R2-P38 | Exatamente um encontro em `api/atividades_handlers.go:163-165` | `api/atividades_test.go:143-148` | COMPROVADA |\n| R15 | P-05/R2-P02/R2-P38 | Limites 2–5 em `api/atividades_handlers.go:166-168` | `api/atividades_test.go:149-152` | COMPROVADA |\n| R16 | P-07/R2-P05/R2-P37 | Período validado em `api/atividades_handlers.go:220-224` | `api/atividades_test.go:155-166` | COMPROVADA |\n| R17 | P-31/R2-P35 | Spec não exige precedência entre erros | Critério de aceite em `specs/M1-grade-atividades.md:223` | COMPROVADA como não exigência |\n| R18 | P-06/R2-P03/R2-P37 | Duração em `api/atividades_handlers.go:226-228` | `api/atividades_test.go:155-166` | COMPROVADA |\n| R19 | R2-P37/R2-P40 | Mesmo dia em `api/atividades_handlers.go:214-219` | `api/atividades_test.go:155-166` | COMPROVADA |\n| R20 | R2-P37 | Sobreposição interna em `api/atividades_handlers.go:230-232` | `api/atividades_test.go:161-166` | COMPROVADA |\n| R21 | P-10/R2-P09 | Conflito entre atividades em `api/atividades_handlers.go:237-249,253-255` | `api/atividades_test.go:174-175` | COMPROVADA |\n| R22 | P-11/R2-P09/R2-P10 | Tolerância de 15 minutos em `api/atividades_handlers.go:257-262` | `api/atividades_test.go:174-177` | COMPROVADA |\n| R23 | R2-P12/R2-P40 | 14 minutos conflita, 15 permite | `api/atividades_test.go:176-177` | COMPROVADA |\n| R24 | R2-P12 | Condição implementada em `api/atividades_handlers.go:253-262` | Não há cenário `fim == início` | SEM PROVA |\n| R25 | P-12/R2-P11 | Canceladas ignoradas em `api/atividades_handlers.go:237-240` | `api/atividades_test.go:270-287` | COMPROVADA |\n| R26 | P-13/P-14/R2-P08/R2-P13 | Limites em `api/atividades_handlers.go:172-185,459-470` | `api/atividades_test.go:169-177,231-243` | COMPROVADA |\n| R27 | R2-P08/contrato-api.md | Erro acima da capacidade em `api/atividades_handlers.go:182-185,469-471` | `api/atividades_test.go:172,242` | COMPROVADA |\n| R28 | P-15/R2-P14 | Redução abaixo das ocupadas em `api/atividades_handlers.go:473-475` | `api/atividades_test.go:246-266` | COMPROVADA |\n| R29 | R2-P16 | `confirmada` e `convocada` contam em `api/atividades_handlers.go:301-305` | `api/atividades_test.go:250-266` | COMPROVADA |\n| R30 | R2-P16 | Estados não ocupantes ignorados em `api/atividades_handlers.go:301-306` | `api/atividades_test.go:250-266` | COMPROVADA |\n| R31 | R2-P15 | PATCH permite aumento em `api/atividades_handlers.go:459-478` | Não há teste específico de aumento | SEM PROVA |\n| R32 | P-06/R2-P04 | Soma calculada em `api/atividades_handlers.go:270-275` | `api/atividades_test.go:99-127` | COMPROVADA |\n| R33 | R2-P04 | Campo não está no modelo e carga é recalculada em `api/atividades_handlers.go:24-30,266-275` | POST/PATCH em `api/atividades_test.go:99-108,231-237` | COMPROVADA |\n| R34 | contrato-api.md | PATCH retorna `200` em `api/atividades_handlers.go:480-485` | `api/atividades_test.go:231-237` | COMPROVADA |\n| R35 | P-16/R2-P17 | Apenas título e vagas tratados em `api/atividades_handlers.go:451-478` | `api/atividades_test.go:225-244` | COMPROVADA |\n| R36 | P-17/R2-P18 | Campos imutáveis recusados em `api/atividades_handlers.go:434-444` | `api/atividades_test.go:239-241` | PROVA FRACA |\n| R37 | R2-P20 | Cancelada não editável em `api/atividades_handlers.go:446-448` | `api/atividades_test.go:284-285` | COMPROVADA |\n| R38 | P-31/R2-P36 | Precedência não exigida pela spec | `specs/M1-grade-atividades.md:223` | COMPROVADA como não exigência |\n| R39 | P-18/R2-P21/contrato-api.md | Cancelamento antes do início em `api/atividades_handlers.go:504-514` | `api/atividades_test.go:270-287` | COMPROVADA |\n| R40 | P-18/R2-P21 | Bloqueio após início em `api/atividades_handlers.go:504-508` | `api/atividades_test.go:288-294` | COMPROVADA |\n| R41 | P-19/R2-P22/R2-P28 | Flag definitiva em `api/atividades_handlers.go:499-511` | `api/atividades_test.go:284-287,310-315` | COMPROVADA |\n| R42 | P-20/R2-P23 | Segundo cancelamento recusado em `api/atividades_handlers.go:499-502` | `api/atividades_test.go:284` | COMPROVADA |\n| R43 | P-31/R2-P36 | Precedência não exigida pela spec | `specs/M1-grade-atividades.md:223` | COMPROVADA como não exigência |\n| R44 | P-22/R2-P25 | Estados em `api/atividades_handlers.go:278-291` | `api/atividades_test.go:296-315` | COMPROVADA |\n| R45 | P-23/R2-P26 | Prevista antes do início em `api/atividades_handlers.go:284-285` | `api/atividades_test.go:301-307` | COMPROVADA |\n| R46 | P-23/R2-P26 | Em andamento no início em `api/atividades_handlers.go:284-291` | `api/atividades_test.go:301-307` | COMPROVADA |\n| R47 | P-23/R2-P26 | Encerrada no fim em `api/atividades_handlers.go:287-289` | `api/atividades_test.go:301-307` | COMPROVADA |\n| R48 | P-19/P-22/P-23/R2-P28 | Cancelada prevalece em `api/atividades_handlers.go:278-281` | `api/atividades_test.go:310-315` | COMPROVADA |\n| R49 | P-25/R2-P29 | Ordenação da lista em `api/atividades_handlers.go:377-384` | `api/atividades_test.go:324-331` | COMPROVADA |\n| R50 | P-25/R2-P29 | Desempate por título em `api/atividades_handlers.go:380-382` | `api/atividades_test.go:324-331` | COMPROVADA |\n| R51 | P-26/R2-P30 | Canceladas não são removidas em `api/atividades_handlers.go:365-376` | `api/atividades_test.go:327-334` | COMPROVADA |\n| R52 | P-26/R2-P31/contrato-api.md | Detalhe existente em `api/atividades_handlers.go:394-408` | `api/atividades_test.go:205-223` | COMPROVADA |\n| R53 | P-27/R2-P32 | Conversão para Brasília em `api/atividades_handlers.go:530-537` | `api/atividades_test.go:324-347` | COMPROVADA |\n| R54 | P-28/contrato-api.md | Filtro textual por tipo em `api/atividades_handlers.go:363-371` | `api/atividades_test.go:336-337` | COMPROVADA |\n| R55 | P-29/R2-P32 | Ambos os filtros são aplicados em `api/atividades_handlers.go:369-374` | `api/atividades_test.go:342-343` | COMPROVADA |\n| R56 | P-30/contrato-api.md | Relógio armazenado e usado em `api/store.go:44,66,92-101`; `api/atividades_handlers.go:366,405` | `api/atividades_test.go:296-315`, `api/main_test.go:16-57` | COMPROVADA |\n| R57 | P-24/R2-P27/R2-P40 | Comparação inclusiva em `api/atividades_handlers.go:284-291` | `api/atividades_test.go:301-307` | COMPROVADA |\n| R58 | P-24/R2-P27/R2-P40 | Fim inclusivo em `api/atividades_handlers.go:287-289` | `api/atividades_test.go:301-307` | COMPROVADA |\n| R59 | P-07/R2-P05 | Limites de data em `api/atividades_handlers.go:220-224` | Testa 19/10 e rejeita 24/10 em `api/atividades_test.go:155-166`; não testa 23/10 | PROVA FRACA |\n| R60 | R2-P15/R2-P24/contrato-api.md | Campos calculados em `api/atividades_handlers.go:266-275,294-308` | `api/atividades_test.go:99-108,231-266` | COMPROVADA para a exposição M1 |\n\nAs origens estão presentes na entrevista. Quando a pergunta da rodada 1 aparece como `PENDENTE`, a origem confirmatória é a correspondente `R2-Pxx`, cuja resposta não está pendente. Não identifiquei regra R01–R60 sem origem válida.\n\n## POST e PATCH com conteúdo extra\n\nA correção está presente:\n\n- POST faz um segundo `Decode` e exige `io.EOF` em `api/atividades_handlers.go:124-134`.\n- PATCH aplica a mesma verificação em `api/atividades_handlers.go:423-432`.\n- POST é exercitado por `TestPOSTAtividadesRejeitaConteudoExtraAposJSON`, em `api/atividades_test.go:76-83`.\n- PATCH é exercitado por `TestPATCHAtividadesRejeitaConteudoExtraAposJSON`, em `api/atividades_test.go:85-93`.\n\nAmbos verificam `422 DADOS_INVALIDOS`. Essa lacuna do parecer anterior está coberta.\n\n## Suíte\n\n```text\ngo test ./...\n```\n\nResultado observado:\n\n```text\nok  \tsemana-academica\t0.330s\n```\n\nO comando foi executado em `api/`, conforme `projeto.json:3-9`.\n\nNão existem arquivos de teste da interface Flutter no repositório localizado; os testes encontrados estão em `api/main_test.go` e `api/atividades_test.go`.\n\n## Achados\n\n1. **[SEM PROVA] R12** — a implementação ordena encontros em `api/atividades_handlers.go:208` e `api/atividades_handlers.go:266-269`, mas nenhum teste envia encontros fora de ordem e confere a ordem retornada.\n\n2. **[SEM PROVA] R24** — a implementação trata `fim == início` como conflito potencial em `api/atividades_handlers.go:253-262`, mas não há cenário específico em `api/atividades_test.go`.\n\n3. **[SEM PROVA] R31** — o PATCH aceita atribuir vagas maiores em `api/atividades_handlers.go:459-478`, porém não há teste que aumente vagas e verifique o resultado.\n\n4. **[PROVA FRACA] R09** — há testes de corpo não JSON e conteúdo extra, mas não há cobertura explícita de campo obrigatório ausente ou de todas as combinações de tipos inválidos. A implementação trata esses casos por decodificação em `api/atividades_handlers.go:124-128` e `api/atividades_handlers.go:451-463`.\n\n5. **[PROVA FRACA] R11** — existem criações válidas de palestra e minicurso, mas não há teste demonstrando que duração, capacidade e sala são aplicadas igualmente aos dois tipos. As validações compartilhadas estão em `api/atividades_handlers.go:169-189`.\n\n6. **[PROVA FRACA] R36** — o teste tenta alterar `salaId`, `tipo` e `encontros` usando sempre o valor string `\"x\"` em `api/atividades_test.go:239-241`. Isso prova a recusa pelo nome do campo, mas não com valores estruturalmente válidos conforme os tipos do contrato.\n\n7. **[PROVA FRACA] R59** — a implementação aceita dias 19 a 23 em `api/atividades_handlers.go:220-224`, mas os testes verificam apenas 19/10 e rejeição de 24/10 em `api/atividades_test.go:155-166`. Falta testar explicitamente o limite superior inclusivo de 23/10.\n\n8. **[NÃO CONTRATADO/RISCO] Filtros inválidos** — a implementação compara valores textualmente e pode retornar lista vazia para `tipo` inválido ou `dia` em formato não especificado, em `api/atividades_handlers.go:363-374` e `api/atividades_handlers.go:530-537`. A spec classifica esses comportamentos como não especificados em `specs/M1-grade-atividades.md:193-196`; portanto, não é falha contratual comprovada.\n\n9. **[NÃO CONTRATADO/RISCO] `vagas < 1`** — a implementação retorna `DADOS_INVALIDOS` em `api/atividades_handlers.go:178-180` e `api/atividades_handlers.go:459-463`. A spec preserva o código específico desse caso como não especificado em `specs/M1-grade-atividades.md:197`.\n\n## Dependências futuras versus falhas M1\n\n### Dependências legítimas\n\n- Inscrições, lista de espera, convocação automática e atualização de inscrições ao cancelar pertencem ao M2, conforme `specs/M1-grade-atividades.md:173-178`.\n- Código de presença pertence ao M3.\n- Certificados pertencem ao M4.\n- O M1 mantém apenas dados mínimos de inscrições para calcular ocupação em `api/store.go:36-49` e `api/atividades_handlers.go:294-308`.\n\nA ausência de rotas completas de M2/M3/M4 não foi tratada como falha M1.\n\n### Falhas/lacunas próprias do M1\n\nAs lacunas que permanecem dentro do escopo M1 são R12, R24, R31, R09 parcial, R11 parcial, R36 parcial e R59 parcial. A rejeição de JSON válido seguido de conteúdo extra, especificamente solicitada nesta auditoria, está corrigida e testada tanto no POST quanto no PATCH.\n\n## Veredito\n\n**NÃO PASSOU ainda:** a correção de JSON extra foi comprovada, mas faltam provas para R12, R24 e R31, além de reforço para R09, R11, R36 e R59.\n</task_result>\n</task>",
+      "metadata": {
+       "parentSessionId": "ses_f38e0c288ffeDitumIH6beGSrE",
+       "sessionId": "ses_f38e08f99ffeeplTfuf3fCj0Ci",
+       "model": {
+        "modelID": "gpt-5.6-luna",
+        "providerID": "openai"
+       },
+       "truncated": false
+      },
+      "title": "Auditar módulo M1",
+      "time": {
+       "start": 1790047121514,
+       "end": 1790047252830
+      }
+     },
+     "metadata": {
+      "openai": {
+       "itemId": "fc_0fea2fecb6116ec7016ab1f38de9e087d2b9c0bafe31b2ecd4"
+      }
+     },
+     "id": "prt_0c71f6278001wlxGNSgo1QBQtn",
+     "sessionID": "ses_f38e0c288ffeDitumIH6beGSrE",
+     "messageID": "msg_0c71f5c790015NgsLlz780rxR7"
+    },
+    {
+     "reason": "tool-calls",
+     "snapshot": "f3d92db75a32591b03aa2131ef525aae1b492959",
+     "type": "step-finish",
+     "tokens": {
+      "total": 9760,
+      "input": 850,
+      "output": 206,
+      "reasoning": 0,
+      "cache": {
+       "write": 0,
+       "read": 8704
+      }
+     },
+     "cost": 0,
+     "id": "prt_0c72171bc001kAJEgAtnHeD003",
+     "sessionID": "ses_f38e0c288ffeDitumIH6beGSrE",
+     "messageID": "msg_0c71f5c790015NgsLlz780rxR7"
+    }
+   ]
+  },
+  {
+   "info": {
+    "parentID": "msg_0c71f3d86001DFuaQvTYeIjpn3",
+    "role": "assistant",
+    "mode": "build",
+    "agent": "build",
+    "variant": "medium",
+    "path": {
+     "cwd": "/Users/yasmindesouza/TrabalhoIA-WomanInTech",
+     "root": "/Users/yasmindesouza/TrabalhoIA-WomanInTech"
+    },
+    "cost": 0,
+    "tokens": {
+     "total": 14409,
+     "input": 5505,
+     "output": 175,
+     "reasoning": 25,
+     "cache": {
+      "write": 0,
+      "read": 8704
+     }
+    },
+    "modelID": "gpt-5.6-luna",
+    "providerID": "openai",
+    "time": {
+     "created": 1790047252984,
+     "completed": 1790047258663
+    },
+    "finish": "tool-calls",
+    "id": "msg_0c72171f8001CV5vx7U1dxyUEd",
+    "sessionID": "ses_f38e0c288ffeDitumIH6beGSrE"
+   },
+   "parts": [
+    {
+     "snapshot": "f3d92db75a32591b03aa2131ef525aae1b492959",
+     "type": "step-start",
+     "id": "prt_0c7217862001Mra4UhQpmlTHE0",
+     "sessionID": "ses_f38e0c288ffeDitumIH6beGSrE",
+     "messageID": "msg_0c72171f8001CV5vx7U1dxyUEd"
+    },
+    {
+     "type": "reasoning",
+     "text": "**Planning parallel file inspection**",
+     "time": {
+      "start": 1790047254629,
+      "end": 1790047258363
+     },
+     "metadata": {
+      "openai": {
+       "itemId": "rs_08f6931d2f379026016ab1f416a7a487d28f3d1ad0b7e0f85f",
+       "reasoningEncryptedContent": "gAAAAABqsfQaPoFcJV7N5XvInmHjxoC9_DYikfA-0hcViJnLc2qXh3-pC4ha0QqgPU8kiuHNfxx2dIvgrdibhKp4x8zFa69OylVXeq6kk6LjRRWF9S40FDlYT3NSr6Jse06xieJIb05IctN-H-gu3kXvoNrdIt68N8NwCRdhE4DHVtpoEup_-TelAmjomBKf05NmeiYCzjgOYw0hApEyM5liulR4_g1OfmqztaNv2QaaA54tscGXMvIdZGA4SJ3Bq_g6RvNAawyHtoyy8EiljiPYSYRtgNHe-suxBiOo0juof5KTXmVlPf3FWjgANSPGTu1L5Y3QnD_LTX2_SFoNAe0uAQ9MRC-GzTQFZt-YZJ1c173C6RfXNgirjCUDm65dIsHHEQf9T22d5L22J2VXOU_5YQYqUOuGO-b61pUHeUvCpK_EPtXcsCymh9BIfi5PHFLI7L7jYroDP_z1Z6vuRgsaz3S3w1jV4NuTn5RkOTiUOSf52FYuSG_FYIcssknRcHpHEHnpDlj-ULzvxXKz0cYRV8VaUlOIKssMZOgUEZ9O9nWIYXzAh92FQeF2QUe0_bnAwR6OVZH0EK_ZoCGQFqIAkd8Hdch960yTpzUqb6_oKFk4bT-Xo9aYickgOjhpW_EU6CEXx089-is384XRqQZJMI0dhsNVjGmnvexMZcffMF0yQo1jRVC2VbrRg5BQj4GDERcCFiS-Bn4qjPazHyHbTaC0TXaGAuZ0Mf2eY8kMfQSBjqX2VXrM54aepv1LehSKmvW1sIOjgM0v4oDA_WpF-rpESDY11TkasmfEr_3_OvfHmiN3qM2Q2bAjWUnHuF5iNUoupuD8KGDe91OSQPg3sfTZLE3ZKYCQg4twDP6rC3QSPVtkDjUHvfwB7bEpH75RJmfGBjx3xtF4WuNVi_l2Z9x2lFKRi7fTY-Yf2Rd975EM5c-Dq-Ug_s4AGK4mTOeiy8-7xg1o34OCDeGKTfPMwRNDwpwsVqzAgdULnTLMEr3keTB69hgQ8JQPHDzl4yT5ycJlwtgKYe46_aynOEu0iAYh6q_svBRIDm7BHo7AX6Vhf13LHEE3DOdcO_hxeqceu1qcaLXp8Crbmn7Bqu0bn57RIF7ADZBiz8Z1FPnhDUZMLKuaSJxn8MYW_GBwXwi92wt4NCKJAiAKHefvz1GLUUfKaRLeLXR2yY1ivSNzLiWAQwZwlPW5HwgqCQSTjE_C9k_K6h9hwhDKLZYETv9hJEX9Y4IjTZzFmSVqBTdO8J18ZW6TrcX1N3vQ7ChR4GvOx7IKVTWI_jA7eABQn67d67uE6VVmNo2B_64AJDN-1Nb4Z8fmdUNjcmdhHEc5LJCIYLNgU6Ur-Td_3ZSLhfI5rcsfboUV_NVrpuaM4stz_4cZxxrl07u6RA620pOww9cpxA89Z0RVCNL_znu6w8NobM-c9IWyGg=="
+      }
+     },
+     "id": "prt_0c7217865001O3FCtRTfGTu2Wc",
+     "sessionID": "ses_f38e0c288ffeDitumIH6beGSrE",
+     "messageID": "msg_0c72171f8001CV5vx7U1dxyUEd"
+    },
+    {
+     "type": "tool",
+     "tool": "glob",
+     "callID": "call_ITmPSwxlX8P57eCWjMC5eYwv",
+     "state": {
+      "status": "completed",
+      "input": {
+       "pattern": "specs/**"
+      },
+      "output": "[131 caracteres omitidos]",
+      "title": "",
+      "time": {
+       "start": 1790047258372,
+       "end": 1790047258462
+      }
+     },
+     "metadata": {
+      "openai": {
+       "itemId": "fc_08f6931d2f379026016ab1f41a441087d2ae5aa53c9f3b5d19"
+      }
+     },
+     "id": "prt_0c72186ff001i45bTT8PmvoL1P",
+     "sessionID": "ses_f38e0c288ffeDitumIH6beGSrE",
+     "messageID": "msg_0c72171f8001CV5vx7U1dxyUEd"
+    },
+    {
+     "type": "tool",
+     "tool": "glob",
+     "callID": "call_Cv5j0Vt6UdM3ySkjDdv82yOQ",
+     "state": {
+      "status": "completed",
+      "input": {
+       "pattern": "entrevistas/**"
+      },
+      "output": "[143 caracteres omitidos]",
+      "title": "",
+      "time": {
+       "start": 1790047258377,
+       "end": 1790047258466
+      }
+     },
+     "metadata": {
+      "openai": {
+       "itemId": "fc_08f6931d2f379026016ab1f41a442487d2abdbc27cf8d83b5d"
+      }
+     },
+     "id": "prt_0c7218705001dnE1Acp47y1tBh",
+     "sessionID": "ses_f38e0c288ffeDitumIH6beGSrE",
+     "messageID": "msg_0c72171f8001CV5vx7U1dxyUEd"
+    },
+    {
+     "type": "tool",
+     "tool": "glob",
+     "callID": "call_kwNVqRDEcNFM3FOBwgi8duTg",
+     "state": {
+      "status": "completed",
+      "input": {
+       "pattern": "api/**"
+      },
+      "output": "[490 caracteres omitidos]",
+      "title": "",
+      "time": {
+       "start": 1790047258382,
+       "end": 1790047258456
+      }
+     },
+     "metadata": {
+      "openai": {
+       "itemId": "fc_08f6931d2f379026016ab1f41a443087d288cc9c3359a60cb0"
+      }
+     },
+     "id": "prt_0c721870b001U0McitkwvI2MRC",
+     "sessionID": "ses_f38e0c288ffeDitumIH6beGSrE",
+     "messageID": "msg_0c72171f8001CV5vx7U1dxyUEd"
+    },
+    {
+     "type": "tool",
+     "tool": "glob",
+     "callID": "call_EzL3DFTqVE9daYSE8pLXkVmP",
+     "state": {
+      "status": "completed",
+      "input": {
+       "pattern": "auditorias/M1-grade-atividades.md"
+      },
+      "output": "[77 caracteres omitidos]",
+      "title": "",
+      "time": {
+       "start": 1790047258385,
+       "end": 1790047258471
+      }
+     },
+     "metadata": {
+      "openai": {
+       "itemId": "fc_08f6931d2f379026016ab1f41a455887d2937db9d341a32d9f"
+      }
+     },
+     "id": "prt_0c721870f001qEPNZevLBBLI1E",
+     "sessionID": "ses_f38e0c288ffeDitumIH6beGSrE",
+     "messageID": "msg_0c72171f8001CV5vx7U1dxyUEd"
+    },
+    {
+     "type": "tool",
+     "tool": "grep",
+     "callID": "call_v2icLC03YQAcf3I6GB775BuB",
+     "state": {
+      "status": "completed",
+      "input": {
+       "pattern": "ConteudoExtra|Decode\\(|io\\.EOF|extra",
+       "path": "/Users/yasmindesouza/TrabalhoIA-WomanInTech",
+       "include": "*.go"
+      },
+      "output": "[1044 caracteres omitidos]",
+      "title": "ConteudoExtra|Decode\\(|io\\.EOF|extra",
+      "time": {
+       "start": 1790047258390,
+       "end": 1790047258435
+      }
+     },
+     "metadata": {
+      "openai": {
+       "itemId": "fc_08f6931d2f379026016ab1f41a456487d2a1ab13e82d49d94d"
+      }
+     },
+     "id": "prt_0c72187120013tiOsl6zxinlYs",
+     "sessionID": "ses_f38e0c288ffeDitumIH6beGSrE",
+     "messageID": "msg_0c72171f8001CV5vx7U1dxyUEd"
+    },
+    {
+     "type": "tool",
+     "tool": "bash",
+     "callID": "call_bc8nbLohOHGOSrxNokxARTgs",
+     "state": {
+      "status": "completed",
+      "input": {
+       "command": "git status --short",
+       "workdir": "/Users/yasmindesouza/TrabalhoIA-WomanInTech"
+      },
+      "output": " M api/atividades_handlers.go\n M api/atividades_test.go\n M evidencias/sessoes/yasminsouza21/INDICE.md\n?? evidencias/sessoes/yasminsouza21/ses_f38e23ff3ffe2wolkCb2kbRKaw.json\n?? evidencias/sessoes/yasminsouza21/ses_f38e23ff3ffe2wolkCb2kbRKaw.md\n?? evidencias/sessoes/yasminsouza21/ses_f38e4e25fffeSovqi8CuDkig5k.json\n?? evidencias/sessoes/yasminsouza21/ses_f38e4e25fffeSovqi8CuDkig5k.md\n?? evidencias/sessoes/yasminsouza21/ses_f38f4949effeMH4U268gEv13a2.json\n?? evidencias/sessoes/yasminsouza21/ses_f38f4949effeMH4U268gEv13a2.md\n",
+      "metadata": {
+       "output": " M api/atividades_handlers.go\n M api/atividades_test.go\n M evidencias/sessoes/yasminsouza21/INDICE.md\n?? evidencias/sessoes/yasminsouza21/ses_f38e23ff3ffe2wolkCb2kbRKaw.json\n?? evidencias/sessoes/yasminsouza21/ses_f38e23ff3ffe2wolkCb2kbRKaw.md\n?? evidencias/sessoes/yasminsouza21/ses_f38e4e25fffeSovqi8CuDkig5k.json\n?? evidencias/sessoes/yasminsouza21/ses_f38e4e25fffeSovqi8CuDkig5k.md\n?? evidencias/sessoes/yasminsouza21/ses_f38f4949effeMH4U268gEv13a2.json\n?? evidencias/sessoes/yasminsouza21/ses_f38f4949effeMH4U268gEv13a2.md\n",
+       "exit": 0,
+       "truncated": false
+      },
+      "title": "git status --short",
+      "time": {
+       "start": 1790047258398,
+       "end": 1790047258476
+      }
+     },
+     "metadata": {
+      "openai": {
+       "itemId": "fc_08f6931d2f379026016ab1f41a456c87d2a66bdf739bb476ec"
+      }
+     },
+     "id": "prt_0c7218718001QqG8bkKBYYm0ge",
+     "sessionID": "ses_f38e0c288ffeDitumIH6beGSrE",
+     "messageID": "msg_0c72171f8001CV5vx7U1dxyUEd"
+    },
+    {
+     "reason": "tool-calls",
+     "snapshot": "f3d92db75a32591b03aa2131ef525aae1b492959",
+     "type": "step-finish",
+     "tokens": {
+      "total": 14409,
+      "input": 5505,
+      "output": 175,
+      "reasoning": 25,
+      "cache": {
+       "write": 0,
+       "read": 8704
+      }
+     },
+     "cost": 0,
+     "id": "prt_0c72187eb0019pVU97u3NY5rJO",
+     "sessionID": "ses_f38e0c288ffeDitumIH6beGSrE",
+     "messageID": "msg_0c72171f8001CV5vx7U1dxyUEd"
+    }
+   ]
+  },
+  {
+   "info": {
+    "parentID": "msg_0c71f3d86001DFuaQvTYeIjpn3",
+    "role": "assistant",
+    "mode": "build",
+    "agent": "build",
+    "variant": "medium",
+    "path": {
+     "cwd": "/Users/yasmindesouza/TrabalhoIA-WomanInTech",
+     "root": "/Users/yasmindesouza/TrabalhoIA-WomanInTech"
+    },
+    "cost": 0,
+    "tokens": {
+     "total": 15549,
+     "input": 1483,
+     "output": 220,
+     "reasoning": 22,
+     "cache": {
+      "write": 0,
+      "read": 13824
+     }
+    },
+    "modelID": "gpt-5.6-luna",
+    "providerID": "openai",
+    "time": {
+     "created": 1790047258666,
+     "completed": 1790047264877
+    },
+    "finish": "tool-calls",
+    "id": "msg_0c721882a001QTj0SEqfeDofqM",
+    "sessionID": "ses_f38e0c288ffeDitumIH6beGSrE"
+   },
+   "parts": [
+    {
+     "snapshot": "f3d92db75a32591b03aa2131ef525aae1b492959",
+     "type": "step-start",
+     "id": "prt_0c7218e4d001cHiExAfkImQ7Re",
+     "sessionID": "ses_f38e0c288ffeDitumIH6beGSrE",
+     "messageID": "msg_0c721882a001QTj0SEqfeDofqM"
+    },
+    {
+     "type": "reasoning",
+     "text": "**Inspecting changed contract files**",
+     "time": {
+      "start": 1790047260239,
+      "end": 1790047264707
+     },
+     "metadata": {
+      "openai": {
+       "itemId": "rs_00ab99704e58db17016ab1f41c42ec87d293ed5f7446d6bb60",
+       "reasoningEncryptedContent": "gAAAAABqsfQgZ4kPRKy2dm943z9HNwL947aBwKvZ8geLE7OAKWo295APUYl2s3CIVA9n7IQwspananFd5Hr-JjVrfifPJY8r0H8-dh7X_5P_rBuXaJTH7MaEMv1GUaw7UKtK8ka3nfGzIJ6GIjuC18-IEc08RxRzk8uFv3M40TAd0x7lr5ML6BMRgelfLr56gHoHfEyiV6eTZRqRDVu2CnKaYayg_XuSSEMhN6HqOCy53jBG7Jln40iRPyCDoBeN4XyhS7u09HiCHf4Qu9br77hfQXMBhTinAq0O9KM9SIn-OkkG4gvFErEMOo63rOHMJ-af3PuuH60MlAzoegRjbT4kgygohJXkSnFrjn2eW0eWInYmAierPKAK3ObcOY_H47jF1je9mPBNtAd2ll-Sc1uiNs7FyJ8Ap91rLSExc2qgVDTiUD---w6Ruf8avClhIq-QxCXj_G3K3Q1Bkozcrn17quCyeORM26aQJO5eOdt5sVQ-nJIvE7HjBZyJmcTzVx2z5jz9CP4v7IBeoSlgWWnGbMrR6l8sxywhCLWimypI6usqC9-tPSv2Amjs8Tcf3L7xlaeX6T-yRA9Nk0lCGRkrBti6gOzZA795jIkqfMHzZjezoZ_hP_H73vM-8EYvErhhWJxRfQ0s6r4CFbdCkBtjK95OxYw2-EHPR-2MVWiiJlsgH2oJo9dJ5PzK2LT-YGSXMuaxMD1yi2uvFelZPX19aJUVaeNl3z_zzZdIDaeQd0zsGd87JssAEFV07lsJ9kZtXPBCAgKTujg0o53slGYOztlg_gVgodo1u_NZGQm8OhMyTVm6t_tXCyX41WUIQQ5-q5GJGdP9KiZg4J1Z7IxEmBL1DhtTJhrR4uqZQyWfxXQuysYXXrEBNandhZ9AAXwcAddj3TueeBAqEYlhh82SK5hNrXs5zSetTWRvowUa7jUO2FDzvkfoAIAIrlTPDf3D_-6VaHBI8hpO-WR7H3qooYMIhTFB6NL2mV_LHnXZkSoAtiASlG2sJ1fRD7iJwNGv5PNAe7GMDo1yFUX7pWgETnxyY_Z3v0fzPo_Pcaqud20O6SnM3vrbAQFk-n4T2YSE5b6wOC30yC8Tpx5XHxpyJX0jW1Pv3B2JQ9OEi5Hf_cizc5eJmIxZn9s0GFBKSAys5IS3EZdVPkzBUpmBZr7aVxjKnao9Xp6gscmbe-x7jAlddoxQaCsX7bgoAFJbg4q1J-IzYHRvLd-qW6wEu_u8hkc0wXM4ZTkI8tC6Gtrydtcc7NvmwWetLJp-pyXsRgo6wkEKVoeFjnmyo1A7qhE8kW6GhOJVsX3LGucW54Vf0SBjZiVNK_NoUvjzGqjD9CRg9pI8SJtFQVkeyumJmdZnsry4DYfa7BqgwRFjA6Iyo8Zgn-rKVAKcDECLeBamKmEdVNX121ehsfqQUOAJhDpyMg0yfiMnTQ=="
+      }
+     },
+     "id": "prt_0c7218e4f001pWBhLU3HbIsIMJ",
+     "sessionID": "ses_f38e0c288ffeDitumIH6beGSrE",
+     "messageID": "msg_0c721882a001QTj0SEqfeDofqM"
+    },
+    {
+     "type": "tool",
+     "tool": "glob",
+     "callID": "call_U5vPF7fd1bFTruFiqzN4jnd8",
+     "state": {
+      "status": "completed",
+      "input": {
+       "pattern": "**/contrato-api.md"
+      },
+      "output": "[59 caracteres omitidos]",
+      "title": "",
+      "time": {
+       "start": 1790047264717,
+       "end": 1790047264767
+      }
+     },
+     "metadata": {
+      "openai": {
+       "itemId": "fc_00ab99704e58db17016ab1f4209ffc87d291c2fcd58c8b4373"
+      }
+     },
+     "id": "prt_0c7219fc9001jYu3OzVfzTCKWQ",
+     "sessionID": "ses_f38e0c288ffeDitumIH6beGSrE",
+     "messageID": "msg_0c721882a001QTj0SEqfeDofqM"
+    },
+    {
+     "type": "tool",
+     "tool": "read",
+     "callID": "call_wTFWfmh0qvqUbNZcH52i1f8l",
+     "state": {
+      "status": "completed",
+      "input": {
+       "filePath": "/Users/yasmindesouza/TrabalhoIA-WomanInTech/specs/M1-grade-atividades.md"
+      },
+      "output": "[23654 caracteres omitidos]",
+      "title": "specs/M1-grade-atividades.md",
+      "time": {
+       "start": 1790047264722,
+       "end": 1790047264763
+      }
+     },
+     "metadata": {
+      "openai": {
+       "itemId": "fc_00ab99704e58db17016ab1f420a00c87d294be3010df053c34"
+      }
+     },
+     "id": "prt_0c7219fcf001raoXJn27WAcYsw",
+     "sessionID": "ses_f38e0c288ffeDitumIH6beGSrE",
+     "messageID": "msg_0c721882a001QTj0SEqfeDofqM"
+    },
+    {
+     "type": "tool",
+     "tool": "read",
+     "callID": "call_l1nqQQH35hdR4eLV9E51BFMv",
+     "state": {
+      "status": "completed",
+      "input": {
+       "filePath": "/Users/yasmindesouza/TrabalhoIA-WomanInTech/entrevistas/M1-grade-atividades.md"
+      },
+      "output": "[37472 caracteres omitidos]",
+      "title": "entrevistas/M1-grade-atividades.md",
+      "time": {
+       "start": 1790047264725,
+       "end": 1790047264758
+      }
+     },
+     "metadata": {
+      "openai": {
+       "itemId": "fc_00ab99704e58db17016ab1f420a01487d282574c2167028c96"
+      }
+     },
+     "id": "prt_0c7219fd3001KOYNJQ8fqk6kQr",
+     "sessionID": "ses_f38e0c288ffeDitumIH6beGSrE",
+     "messageID": "msg_0c721882a001QTj0SEqfeDofqM"
+    },
+    {
+     "type": "tool",
+     "tool": "read",
+     "callID": "call_Scovl8GrEpedyPVEUNxdUYfr",
+     "state": {
+      "status": "completed",
+      "input": {
+       "filePath": "/Users/yasmindesouza/TrabalhoIA-WomanInTech/api/atividades_handlers.go"
+      },
+      "output": "[18249 caracteres omitidos]",
+      "title": "api/atividades_handlers.go",
+      "time": {
+       "start": 1790047264729,
+       "end": 1790047264755
+      }
+     },
+     "metadata": {
+      "openai": {
+       "itemId": "fc_00ab99704e58db17016ab1f420a01c87d282e24b7b05a00cb1"
+      }
+     },
+     "id": "prt_0c7219fd6001jg9GdCnmnJn3V7",
+     "sessionID": "ses_f38e0c288ffeDitumIH6beGSrE",
+     "messageID": "msg_0c721882a001QTj0SEqfeDofqM"
+    },
+    {
+     "type": "tool",
+     "tool": "read",
+     "callID": "call_Fn5RAKLv13kijV3IVZsGtXQz",
+     "state": {
+      "status": "completed",
+      "input": {
+       "filePath": "/Users/yasmindesouza/TrabalhoIA-WomanInTech/api/atividades_test.go"
+      },
+      "output": "[24047 caracteres omitidos]",
+      "title": "api/atividades_test.go",
+      "time": {
+       "start": 1790047264733,
+       "end": 1790047264750
+      }
+     },
+     "metadata": {
+      "openai": {
+       "itemId": "fc_00ab99704e58db17016ab1f420a02087d2b491c2f37dcc3405"
+      }
+     },
+     "id": "prt_0c7219fdb001ctq30n3B0gOSjz",
+     "sessionID": "ses_f38e0c288ffeDitumIH6beGSrE",
+     "messageID": "msg_0c721882a001QTj0SEqfeDofqM"
+    },
+    {
+     "type": "tool",
+     "tool": "read",
+     "callID": "call_y31bwvhl1Ln3Fg73v3MG7dm7",
+     "state": {
+      "status": "completed",
+      "input": {
+       "filePath": "/Users/yasmindesouza/TrabalhoIA-WomanInTech/api/main.go"
+      },
+      "output": "[1177 caracteres omitidos]",
+      "title": "api/main.go",
+      "time": {
+       "start": 1790047264737,
+       "end": 1790047264753
+      }
+     },
+     "metadata": {
+      "openai": {
+       "itemId": "fc_00ab99704e58db17016ab1f420a02487d2b6aadda232b2a46a"
+      }
+     },
+     "id": "prt_0c7219fde001Rs2ghV7OxWFtJ9",
+     "sessionID": "ses_f38e0c288ffeDitumIH6beGSrE",
+     "messageID": "msg_0c721882a001QTj0SEqfeDofqM"
+    },
+    {
+     "reason": "tool-calls",
+     "snapshot": "f3d92db75a32591b03aa2131ef525aae1b492959",
+     "type": "step-finish",
+     "tokens": {
+      "total": 15549,
+      "input": 1483,
+      "output": 220,
+      "reasoning": 22,
+      "cache": {
+       "write": 0,
+       "read": 13824
+      }
+     },
+     "cost": 0,
+     "id": "prt_0c721a03c0012tKyeG2MPFlCWV",
+     "sessionID": "ses_f38e0c288ffeDitumIH6beGSrE",
+     "messageID": "msg_0c721882a001QTj0SEqfeDofqM"
+    }
+   ]
+  },
+  {
+   "info": {
+    "parentID": "msg_0c71f3d86001DFuaQvTYeIjpn3",
+    "role": "assistant",
+    "mode": "build",
+    "agent": "build",
+    "variant": "medium",
+    "path": {
+     "cwd": "/Users/yasmindesouza/TrabalhoIA-WomanInTech",
+     "root": "/Users/yasmindesouza/TrabalhoIA-WomanInTech"
+    },
+    "cost": 0,
+    "tokens": {
+     "total": 48436,
+     "input": 33238,
+     "output": 315,
+     "reasoning": 35,
+     "cache": {
+      "write": 0,
+      "read": 14848
+     }
+    },
+    "modelID": "gpt-5.6-luna",
+    "providerID": "openai",
+    "time": {
+     "created": 1790047264881,
+     "completed": 1790047273999
+    },
+    "finish": "tool-calls",
+    "id": "msg_0c721a0710013bCJMzt5fK34yN",
+    "sessionID": "ses_f38e0c288ffeDitumIH6beGSrE"
+   },
+   "parts": [
+    {
+     "snapshot": "f3d92db75a32591b03aa2131ef525aae1b492959",
+     "type": "step-start",
+     "id": "prt_0c721a924001DUvl3bXZ7s30J3",
+     "sessionID": "ses_f38e0c288ffeDitumIH6beGSrE",
+     "messageID": "msg_0c721a0710013bCJMzt5fK34yN"
+    },
+    {
+     "type": "reasoning",
+     "text": "**Preparing contract review and test execution**",
+     "time": {
+      "start": 1790047267110,
+      "end": 1790047268100
+     },
+     "metadata": {
+      "openai": {
+       "itemId": "rs_0249a29fc8c10ee8016ab1f42317e087d2bd88bc8c04f074bf",
+       "reasoningEncryptedContent": "gAAAAABqsfQkqDo9-HRW_uC2qsnpbT23qgftGrwPmXbzYhq8jDtE2zeQa8l0Td0BPOuGiTDLXR5XUeQE6s3J2_KE54IDqOCmP04HxbFAmZUenEmzbRf6hsDWpTHKWH1PdLfQXrvL08LIA7BMY3M3b7GDAu2sul50tuaF8oykt1zGfJ_91qQ4akAD6VL835fHu-m1E2eT1QsD1n6bbkHIhfpCSD98ZBghLVrcnWTOPWXwt-Hyd3Ccib_B4FcFfK4nUQf-Nt0WIN6bdC2reIzgSgove1-_KITSM9SSk8c0E7x8TEddU05wrmxFI5VU4z5UdJlVuidx2EbkLbPreCjSMVV6vkl6pz2e2vhq3DBr-T5zJwmsrNyzIyPGduEPC9pszBSKdPbOCTjKhsrVzSKsRv72qKFvyt9oKz5pilnF9ad26tdTmjj542z3TYcGg2JQ0ya8lyvqk7byLf1WniPmsnIACBW9aZCzrOnHF6_MQ0keRu4pDVZpN43IpTtLTKWJLGpWxNLZIrehRrcSpzV2qOgBazIpxo8fENAqq26im8RzblXQxc38Seuaqr1ic4sDQHUIRgiM2MOMaS7RzNrbyxiBschhGi82mlMSpUZfO29lxFVtKZjUkeCE0cqR1KjD6rb1DH2dsNjUHbinAggUb_2QwcrMTRU22HvIrXZPfSgUmbUqUkvUwxW8UK_0GTP8Z2yqLlPGmsJ5TQRj0W0v6xQGj0KPI5-1Nb87dONBV9Pzn--ieQBje-LeqGf6wPHW5AUMWucwhkp4lgxGRaykt48rcdGr2cltpiW7pEdEVPJJYaRqEekTjEVjcgo6y5ncMSk98Nkl1PgobUD-8GFSZH5_tRS7TQPMWGpmL4CcZRruMu7Sy64USjhxjUkuZo3cif8aOktlbgB__u4Bt6KUkwc5wxMZg1Rw-BlJvsLy6ubWG2fzhuMNJ3242Y4nDz0uMoe1lpcoMwc6jHqHo8HGeNt29Ztf9oWfZMDl-w79hY76o5qGBBiuvoK3uoAgY4NV6y5YnFZpErpAa4KcPJnEFSnmZc_AFjxViXrhLWfCH6wWEL0KWChG3JCH_VdkTzcegsHhpRB1LJtQZwUMzvPKtCrALucnCsdIxMGVBGs9XCs7S2rELyzarGr_SkkPRv3kJMILjWc5m57sFQDGKrRIgZLZo3fdy1_apmLXxE1qgKAXlIssC4K3D2KQNoOHRTbirNrwqe8NWhg5R4AMO_EU84jIed4UZjwuf8vUYwozo2N3uxvcXUk7kEJp8cU2iVcpwsiWBh_janzekRSNgbC_ED_8bZVyNLxv_EheRvHLq8syrdDkhUGv1W1mmQw7W-Mk3X4TCotAE9e7MjoCK0_gf_qm16GXxm8Dqy0kQ0birHa6V8VBtjUVkPoeuFAR26KXy8ZTCmJqpPISLroycIKYyRByTckLz9ttUIvxjYMWWcFOBJ1oNTJ3wYFAYO-R65D6mtQYepPhzZ-s1Zk2tgsJUZEmyibAgKrtDg=="
+      }
+     },
+     "id": "prt_0c721a926001uRG9N3WNML4fRv",
+     "sessionID": "ses_f38e0c288ffeDitumIH6beGSrE",
+     "messageID": "msg_0c721a0710013bCJMzt5fK34yN"
+    },
+    {
+     "type": "text",
+     "text": "A correção está presente nos dois handlers e há testes separados para POST e PATCH. A auditoria, porém, precisa distinguir a correção específica de conteúdo extra das lacunas de aceitação restantes; vou confirmar o contrato e executar a suíte antes de registrar o veredito.",
+     "time": {
+      "start": 1790047268101,
+      "end": 1790047273494
+     },
+     "metadata": {
+      "openai": {
+       "itemId": "msg_0249a29fc8c10ee8016ab1f424150887d29328998d97263575",
+       "phase": "commentary"
+      }
+     },
+     "id": "prt_0c721ad05001xpnH5KCwhd6zaW",
+     "sessionID": "ses_f38e0c288ffeDitumIH6beGSrE",
+     "messageID": "msg_0c721a0710013bCJMzt5fK34yN"
+    },
+    {
+     "type": "tool",
+     "tool": "read",
+     "callID": "call_mK6laRowNq0iqoVJ1pbfpkuu",
+     "state": {
+      "status": "completed",
+      "input": {
+       "filePath": "/Users/yasmindesouza/TrabalhoIA-WomanInTech/contrato-api.md"
+      },
+      "output": "[13890 caracteres omitidos]",
+      "title": "contrato-api.md",
+      "time": {
+       "start": 1790047273512,
+       "end": 1790047273544
+      }
+     },
+     "metadata": {
+      "openai": {
+       "itemId": "fc_0249a29fc8c10ee8016ab1f429677887d286c9279b746f3ca5"
+      }
+     },
+     "id": "prt_0c721c21c0012ojPBPQFqLWZpF",
+     "sessionID": "ses_f38e0c288ffeDitumIH6beGSrE",
+     "messageID": "msg_0c721a0710013bCJMzt5fK34yN"
+    },
+    {
+     "type": "tool",
+     "tool": "read",
+     "callID": "call_j81262m3WltKl8N3ASgQS4nZ",
+     "state": {
+      "status": "completed",
+      "input": {
+       "filePath": "/Users/yasmindesouza/TrabalhoIA-WomanInTech/auditorias/M1-grade-atividades.md"
+      },
+      "output": "[18075 caracteres omitidos]",
+      "title": "auditorias/M1-grade-atividades.md",
+      "time": {
+       "start": 1790047273517,
+       "end": 1790047273550
+      }
+     },
+     "metadata": {
+      "openai": {
+       "itemId": "fc_0249a29fc8c10ee8016ab1f429678c87d2839eaa6caa83258c"
+      }
+     },
+     "id": "prt_0c721c22a001nQ3cspRjEB6oLY",
+     "sessionID": "ses_f38e0c288ffeDitumIH6beGSrE",
+     "messageID": "msg_0c721a0710013bCJMzt5fK34yN"
+    },
+    {
+     "type": "tool",
+     "tool": "read",
+     "callID": "call_x0cWmZVGMeSkTAj2XNj6ct8h",
+     "state": {
+      "status": "completed",
+      "input": {
+       "filePath": "/Users/yasmindesouza/TrabalhoIA-WomanInTech/api/store.go"
+      },
+      "output": "[2923 caracteres omitidos]",
+      "title": "api/store.go",
+      "time": {
+       "start": 1790047273522,
+       "end": 1790047273548
+      }
+     },
+     "metadata": {
+      "openai": {
+       "itemId": "fc_0249a29fc8c10ee8016ab1f429679487d29791176e18a8187a"
+      }
+     },
+     "id": "prt_0c721c22f001WckX8zaj2Kx8zV",
+     "sessionID": "ses_f38e0c288ffeDitumIH6beGSrE",
+     "messageID": "msg_0c721a0710013bCJMzt5fK34yN"
+    },
+    {
+     "type": "tool",
+     "tool": "read",
+     "callID": "call_IwlvnuHWJmfIBHFytwg5mp9z",
+     "state": {
+      "status": "completed",
+      "input": {
+       "filePath": "/Users/yasmindesouza/TrabalhoIA-WomanInTech/api/main_test.go"
+      },
+      "output": "[4878 caracteres omitidos]",
+      "title": "api/main_test.go",
+      "time": {
+       "start": 1790047273526,
+       "end": 1790047273560
+      }
+     },
+     "metadata": {
+      "openai": {
+       "itemId": "fc_0249a29fc8c10ee8016ab1f429679c87d2b70caf4210a24e0f"
+      }
+     },
+     "id": "prt_0c721c234001f5HChd5eU7S77w",
+     "sessionID": "ses_f38e0c288ffeDitumIH6beGSrE",
+     "messageID": "msg_0c721a0710013bCJMzt5fK34yN"
+    },
+    {
+     "type": "tool",
+     "tool": "bash",
+     "callID": "call_5oDbovN6Tsb1NxILfl579TYh",
+     "state": {
+      "status": "completed",
+      "input": {
+       "command": "go test ./...",
+       "workdir": "/Users/yasmindesouza/TrabalhoIA-WomanInTech/api",
+       "timeout": 120000
+      },
+      "output": "ok  \tsemana-academica\t(cached)\n",
+      "metadata": {
+       "output": "ok  \tsemana-academica\t(cached)\n",
+       "exit": 0,
+       "truncated": false
+      },
+      "title": "go test ./...",
+      "time": {
+       "start": 1790047273533,
+       "end": 1790047273885
+      }
+     },
+     "metadata": {
+      "openai": {
+       "itemId": "fc_0249a29fc8c10ee8016ab1f42967a487d2844773876372e6d7"
+      }
+     },
+     "id": "prt_0c721c237001R4b7kpmhRfE1dC",
+     "sessionID": "ses_f38e0c288ffeDitumIH6beGSrE",
+     "messageID": "msg_0c721a0710013bCJMzt5fK34yN"
+    },
+    {
+     "type": "tool",
+     "tool": "bash",
+     "callID": "call_CwfFdWWQYxwcKBZUv1ZUB57W",
+     "state": {
+      "status": "completed",
+      "input": {
+       "command": "git diff -- api/atividades_handlers.go api/atividades_test.go",
+       "workdir": "/Users/yasmindesouza/TrabalhoIA-WomanInTech"
+      },
+      "output": "diff --git a/api/atividades_handlers.go b/api/atividades_handlers.go\nindex 4951121..de43ab8 100644\n--- a/api/atividades_handlers.go\n+++ b/api/atividades_handlers.go\n@@ -4,6 +4,7 @@ import (\n \t\"crypto/rand\"\n \t\"encoding/hex\"\n \t\"encoding/json\"\n+\t\"io\"\n \t\"net/http\"\n \t\"sort\"\n \t\"strings\"\n@@ -126,6 +127,11 @@ func criarAtividade(w http.ResponseWriter, r *http.Request, s *Store) {\n \t\tresponderErro(w, http.StatusUnprocessableEntity, \"DADOS_INVALIDOS\")\n \t\treturn\n \t}\n+\tvar extra any\n+\tif err := dec.Decode(&extra); err != io.EOF {\n+\t\tresponderErro(w, http.StatusUnprocessableEntity, \"DADOS_INVALIDOS\")\n+\t\treturn\n+\t}\n \n \tencontros, ok := montarEncontros(*entrada.Encontros, true)\n \tif !ok {\n@@ -415,7 +421,13 @@ func editarAtividade(w http.ResponseWriter, r *http.Request, s *Store, id string\n \t}\n \n \tvar bruto map[string]json.RawMessage\n-\tif err := json.NewDecoder(r.Body).Decode(&bruto); err != nil {\n+\tdec := json.NewDecoder(r.Body)\n+\tif err := dec.Decode(&bruto); err != nil {\n+\t\tresponderErro(w, http.StatusUnprocessableEntity, \"DADOS_INVALIDOS\")\n+\t\treturn\n+\t}\n+\tvar extra any\n+\tif err := dec.Decode(&extra); err != io.EOF {\n \t\tresponderErro(w, http.StatusUnprocessableEntity, \"DADOS_INVALIDOS\")\n \t\treturn\n \t}\ndiff --git a/api/atividades_test.go b/api/atividades_test.go\nindex debc624..325bbc0 100644\n--- a/api/atividades_test.go\n+++ b/api/atividades_test.go\n@@ -73,6 +73,25 @@ func criarAtividadeTeste(t *testing.T, handler http.Handler, corpo string) map[s\n \treturn decodificar(t, rec)\n }\n \n+func TestPOSTAtividadesRejeitaConteudoExtraAposJSON(t *testing.T) {\n+\tstore := NewStore()\n+\thandler := newServer(true, store)\n+\texecutar(handler, http.MethodPost, \"/_teste/reset\", \"\", \"\")\n+\n+\tcorpo := palestraPadrao(\"Conteudo extra\") + \" {}\"\n+\terro(t, executar(handler, http.MethodPost, \"/atividades\", \"org-ana\", corpo), http.StatusUnprocessableEntity, \"DADOS_INVALIDOS\")\n+}\n+\n+func TestPATCHAtividadesRejeitaConteudoExtraAposJSON(t *testing.T) {\n+\tstore := NewStore()\n+\thandler := newServer(true, store)\n+\texecutar(handler, http.MethodPost, \"/_teste/reset\", \"\", \"\")\n+\tatividade := criarAtividadeTeste(t, handler, palestraPadrao(\"Conteudo extra no patch\"))\n+\n+\tcorpo := `{\"titulo\":\"Novo titulo\"} {}`\n+\terro(t, executar(handler, http.MethodPatch, \"/atividades/\"+atividade[\"id\"].(string), \"org-ana\", corpo), http.StatusUnprocessableEntity, \"DADOS_INVALIDOS\")\n+}\n+\n func TestM1Fatia1CriacaoDeAtividades(t *testing.T) {\n \tstore := NewStore()\n \thandler := newServer(true, store)\n",
+      "metadata": {
+       "output": "diff --git a/api/atividades_handlers.go b/api/atividades_handlers.go\nindex 4951121..de43ab8 100644\n--- a/api/atividades_handlers.go\n+++ b/api/atividades_handlers.go\n@@ -4,6 +4,7 @@ import (\n \t\"crypto/rand\"\n \t\"encoding/hex\"\n \t\"encoding/json\"\n+\t\"io\"\n \t\"net/http\"\n \t\"sort\"\n \t\"strings\"\n@@ -126,6 +127,11 @@ func criarAtividade(w http.ResponseWriter, r *http.Request, s *Store) {\n \t\tresponderErro(w, http.StatusUnprocessableEntity, \"DADOS_INVALIDOS\")\n \t\treturn\n \t}\n+\tvar extra any\n+\tif err := dec.Decode(&extra); err != io.EOF {\n+\t\tresponderErro(w, http.StatusUnprocessableEntity, \"DADOS_INVALIDOS\")\n+\t\treturn\n+\t}\n \n \tencontros, ok := montarEncontros(*entrada.Encontros, true)\n \tif !ok {\n@@ -415,7 +421,13 @@ func editarAtividade(w http.ResponseWriter, r *http.Request, s *Store, id string\n \t}\n \n \tvar bruto map[string]json.RawMessage\n-\tif err := json.NewDecoder(r.Body).Decode(&bruto); err != nil {\n+\tdec := json.NewDecoder(r.Body)\n+\tif err := dec.Decode(&bruto); err != nil {\n+\t\tresponderErro(w, http.StatusUnprocessableEntity, \"DADOS_INVALIDOS\")\n+\t\treturn\n+\t}\n+\tvar extra any\n+\tif err := dec.Decode(&extra); err != io.EOF {\n \t\tresponderErro(w, http.StatusUnprocessableEntity, \"DADOS_INVALIDOS\")\n \t\treturn\n \t}\ndiff --git a/api/atividades_test.go b/api/atividades_test.go\nindex debc624..325bbc0 100644\n--- a/api/atividades_test.go\n+++ b/api/atividades_test.go\n@@ -73,6 +73,25 @@ func criarAtividadeTeste(t *testing.T, handler http.Handler, corpo string) map[s\n \treturn decodificar(t, rec)\n }\n \n+func TestPOSTAtividadesRejeitaConteudoExtraAposJSON(t *testing.T) {\n+\tstore := NewStore()\n+\thandler := newServer(true, store)\n+\texecutar(handler, http.MethodPost, \"/_teste/reset\", \"\", \"\")\n+\n+\tcorpo := palestraPadrao(\"Conteudo extra\") + \" {}\"\n+\terro(t, executar(handler, http.MethodPost, \"/atividades\", \"org-ana\", corpo), http.StatusUnprocessableEntity, \"DADOS_INVALIDOS\")\n+}\n+\n+func TestPATCHAtividadesRejeitaConteudoExtraAposJSON(t *testing.T) {\n+\tstore := NewStore()\n+\thandler := newServer(true, store)\n+\texecutar(handler, http.MethodPost, \"/_teste/reset\", \"\", \"\")\n+\tatividade := criarAtividadeTeste(t, handler, palestraPadrao(\"Conteudo extra no patch\"))\n+\n+\tcorpo := `{\"titulo\":\"Novo titulo\"} {}`\n+\terro(t, executar(handler, http.MethodPatch, \"/atividades/\"+atividade[\"id\"].(string), \"org-ana\", corpo), http.StatusUnprocessableEntity, \"DADOS_INVALIDOS\")\n+}\n+\n func TestM1Fatia1CriacaoDeAtividades(t *testing.T) {\n \tstore := NewStore()\n \thandler := newServer(true, store)\n",
+       "exit": 0,
+       "truncated": false
+      },
+      "title": "git diff -- api/atividades_handlers.go api/atividades_test.go",
+      "time": {
+       "start": 1790047273563,
+       "end": 1790047273593
+      }
+     },
+     "metadata": {
+      "openai": {
+       "itemId": "fc_0249a29fc8c10ee8016ab1f42967a887d287dc1ab642b268bf"
+      }
+     },
+     "id": "prt_0c721c242001JeEM014vIq3PHY",
+     "sessionID": "ses_f38e0c288ffeDitumIH6beGSrE",
+     "messageID": "msg_0c721a0710013bCJMzt5fK34yN"
+    },
+    {
+     "reason": "tool-calls",
+     "snapshot": "f3d92db75a32591b03aa2131ef525aae1b492959",
+     "type": "step-finish",
+     "tokens": {
+      "total": 48436,
+      "input": 33238,
+      "output": 315,
+      "reasoning": 35,
+      "cache": {
+       "write": 0,
+       "read": 14848
+      }
+     },
+     "cost": 0,
+     "id": "prt_0c721c3d5001vEuT4Clii1RE82",
+     "sessionID": "ses_f38e0c288ffeDitumIH6beGSrE",
+     "messageID": "msg_0c721a0710013bCJMzt5fK34yN"
+    }
+   ]
+  },
+  {
+   "info": {
+    "parentID": "msg_0c71f3d86001DFuaQvTYeIjpn3",
+    "role": "assistant",
+    "mode": "build",
+    "agent": "build",
+    "variant": "medium",
+    "path": {
+     "cwd": "/Users/yasmindesouza/TrabalhoIA-WomanInTech",
+     "root": "/Users/yasmindesouza/TrabalhoIA-WomanInTech"
+    },
+    "cost": 0,
+    "tokens": {
+     "total": 63060,
+     "input": 15047,
+     "output": 115,
+     "reasoning": 282,
+     "cache": {
+      "write": 0,
+      "read": 47616
+     }
+    },
+    "modelID": "gpt-5.6-luna",
+    "providerID": "openai",
+    "time": {
+     "created": 1790047274005,
+     "completed": 1790047283173
+    },
+    "finish": "tool-calls",
+    "id": "msg_0c721c415001Kjm46qzDLZOKS4",
+    "sessionID": "ses_f38e0c288ffeDitumIH6beGSrE"
+   },
+   "parts": [
+    {
+     "snapshot": "f3d92db75a32591b03aa2131ef525aae1b492959",
+     "type": "step-start",
+     "id": "prt_0c721c8ec0017JmcM6dKOK0XHK",
+     "sessionID": "ses_f38e0c288ffeDitumIH6beGSrE",
+     "messageID": "msg_0c721c415001Kjm46qzDLZOKS4"
+    },
+    {
+     "type": "reasoning",
+     "text": "**Deciding audit verdict and report scope**",
+     "time": {
+      "start": 1790047275246,
+      "end": 1790047281987
+     },
+     "metadata": {
+      "openai": {
+       "itemId": "rs_00cc1de4887229e6016ab1f42b463c87d2866d52bfafbaf8bb"
+      }
+     },
+     "id": "prt_0c721c8ee001yThV77pCSSFdqs",
+     "sessionID": "ses_f38e0c288ffeDitumIH6beGSrE",
+     "messageID": "msg_0c721c415001Kjm46qzDLZOKS4"
+    },
+    {
+     "type": "reasoning",
+     "text": "**Planning comprehensive audit report content**",
+     "time": {
+      "start": 1790047281994,
+      "end": 1790047282027
+     },
+     "metadata": {
+      "openai": {
+       "itemId": "rs_00cc1de4887229e6016ab1f42b463c87d2866d52bfafbaf8bb",
+       "reasoningEncryptedContent": "gAAAAABqsfQy5kmGLz3OPeqQRseOx0jNx-uBvQkdSoUaxehJQUEfpol9EarHo7qoToMZD84rHr0Lix5JguEmGjCx-Y-7aSNpOSyx_MjWrD4T3xChpN8BtAAnZp-EcRm8lW0RzFWSeK-TQ2d73GMqW1kmqrlmFSs1BMvylGZ6_ClAON___KlQYNw0Y9lVsq6vFScRRAFbdYp1iHpMrd0horgpA--zjKx5Nr4khcHeFeJza8whVKpRpI_wM4kOLRzPjzm_zUAWGh5xbO85EY_Hjg3jPlAMp01Ihqe6I0DIZvrkRPzyORTq9sXDcA9e_1E-p1Ks2xtyQuSH2rakhLxbtr3SxOBZT_5T-E8gV_Bg-nytXLu9rQVsBR5rQ2POZx_KX5HCB9h5hZm5BnCwAMCWYcOCjh_sZioOG8L-FJaNZkAgCNAXe97iXvum9NsNaB3ESn4oMYEDnESljuydUhndz7qRb2J4RclBAKfNwPt9quA0jcVqNLtMvqQKPr7_bf1hDiuMLBidbcRePNt7Q9DWvCNWqM78F8DPHCXhvH53u-pqvIt1hYupkqkM1hgM5ymOEka7NCWj-tgKHeIdWDW1XNoAElEpVmS-FItGJXcTnM0Pz8Uw0QbxMHUgbKVyesLZ1wg3MdBIu1Q6uJ0aYWh_HxbbkagQh6Uqp_thz7P0hws58FX2OOIGrvlLvcE2vZ5FFOUZUhyG-LDrhlvzde5iFuuROY0rVDx6TK9lzuMKzxcEFlTl5X2gkSXdF-1NbvVMuhxC90sjlBJ2cKOmhKNIpcXLRVJqgejea62rlPaapf4r3X13F9FlC5ElBthfUlO0BiGMEMYB_zhrF_fKiX2zyuK3ftBucRKB1kyvTPv_K6rVwnqgmJME15j6XAG1Z7q8r4Jqjt9TOuXt0PcQ1DIAW6NDzKfgYyJmkpdRoqL4VwCT7p3Pa2LIbAaawTtdnT5aDYe_p9utH6gB1I0rtBmAWurnjgJwYStaeaB9A5kxcqVqSwJOU7KneOynU8deqSUPGutIwYf5-RGrdNsqo_FT6kRk7U7s--PYi3_B0xtgKphuuSQMVoQGk1dOTTVfhix-CQyAtfLEuBWAfgLd8TCAK9GKWxdsLbp8sQkqfZ-nr5KVBiv9hPVDklO0_nAsHZBZMQa_QLSFVgvuyEc7N6JFlfTGmjNcgNAzAT2D65XXbhCTfmplu80dHncr6Te97134ZBkoUOHrQJ4CZ2RgS645E4myC3MoPmh3oCbrJFxd3C1bpALR4c2quBhl-dYStZKt4DDTb2i5wZea1gEiOogHt_07f98KcBh2VYb2XX6rYM3812YnQKjGSwmUbetEuk2JlCzrz8XyAtaW6HdINi9ZQjYhoJHfktSlQDa0P7B643PnE2wBKOk3a3_427gOAzpOrZltVEurZ_4vFW3sunZvLSkOvWV319p4WzSt0RRD2WBctd1HELfsqzurDIi0ZJg2ByN77TVIyL3yRuVKasupCGAvmzMDhXqQGqvIgKgaq_Fjls83RIDr8DaVYnsE1ILQTy6Q6wvadTbsbqSUplyp3JX28TjYDq7xzxLufLI2dY-DKwx6dXxPiqB_mR_-W78UHhIc1GzSZI3xqV2x4TO7fpMcpiVFebZcANxVk36I7o6IPCJUHUMO3vrY_LAgnb1qCthzhMea3YuRnqxdaLd0riHx7yrxG6jXsZycVglqEa3NE1zMMHzDjBRd2EoD8AUPnMQkSeIDunG__NRJUsAlIak-x6LVN8S_hFavkhgakybzrIGSWTTs1M8C4wtTsBEpZlSE2Hir1Wg2qI74HTFiN0u_9R9x7uWZxjPa4pkpMCNs95ZMJyIPKlcyeKshpWRdFhMS6ajN_z_iRcCDcy159JRrXPbiyaLaHETMnJARUsPJfpWa0oBp1dBlfF5oHwKnjCtJVhJMf8J8-nBS1SHkXmO9fdZg_9JYgYrQjNZplkTfmSBfDJisTDUGirhZE6nY8CPVpp_QL-XmqQfQpD_H62mZJwCdL70t2hb0QXVywhDdra4obq4-IpX4gHT6C2XzvfHljb0ageYmgyJJrhciivYKxMOr4hoKJoe9WJzqVMYbEqCClVvNO3w5HXzzSdQ6YNJHs7bI3C0VXlObMExwGbaD-2VbF_wUk83WHYQPlvpjT9YtD20DwcjB9qkefVeku0LCIiT4hZLUUUtgnHbEJuvMuWkKAHm10MEf614PvMaRboDuJfHuYzgb5WixJTx-4Y0zwv01vX58Ru5YAeGxXW_X-HYqK_I67sRbyEBKyjkSQR1vdnIqb4_MBZzklmijGzG7TWXuOwYhjzWvsEzWEo5wjyl4MNbmso7kFNHsg7GsHckmzwH7biC4IrcaanZxXeQhI-N92CSBjw2Hm2tRfooO1wM4T6tBMHqcNhGxnGH1HO804YOpp2NQHMve0DB7PQCcY2aXjoHVgSbAEB-1CVjfpmttcVF-_YULDdaVMdGs9Rm8b3Wigtq08glxUxOELhhjIbx6FChg06gA71de4jJFsAY-QjPdl3hixEhICTODfHfQQX2D6rTx8t7aVCD9bfW6OWK3-Lb4owL6_qxZJOV1e6-Zl2Bgtm_qDli-9CtPvH0z-jT8KMHVbmeA5-uragrN99mjD1qtwSC4G9V0WMo4YDo3nLk-HdfD60AMMP-T8F4mA8QqNRIPzTtwUn991xJgaeXxRtXUx6cXCQkoUA2ECezxaW2gH62vJ_JJ2H4chLJgYpIdHZMnMefP-5sMGbKkdceaTQZVmxCfufigTBmx7Nxi-1mu4mm4YUIxUEjcuTxR8XMT3FeGqffeJn1aHPS0PDqynCJ_c8b99Y3riXU5X2Lzh6f-Ir-x3E82A8JIjJ1SQ95wqNBTWgStXOg-QKLFKuIsquHijAjZZJ8_UdQb27MRu7OvRTOF9KOyl0ZFwEECW0zYDVluSpsengiOFHFS-b75SUFC2amRACBO1Qlg7eyxWULpMmNi9OgnVbdk5rO3NtKypnxZzaDvvBG__fTWmibP9dFqV0XXMHqhHI_T0PkxnJBjbZ_Uw5OPH23-qN1Wy_Un55VoMYPaYCIrCxn0H7xbtKD29b3X7I9eX8dXhpoD2eLFOtqIj6cYfEUSe878NM45pxk1c7T1ujOCMHFESfB0iktt3UyMLiIQM2PRAMusEEv_wlQnHNjLIV0sWSKQJ1dO5LeogvzOK6KfvSCpJR7sbd6pTMX7755S_NpeWL_M-EbowA=="
+      }
+     },
+     "id": "prt_0c721e34a001uCwvsRCPcButyd",
+     "sessionID": "ses_f38e0c288ffeDitumIH6beGSrE",
+     "messageID": "msg_0c721c415001Kjm46qzDLZOKS4"
+    },
+    {
+     "type": "tool",
+     "tool": "todowrite",
+     "callID": "call_nUfpo69Df4u2CS0A8sJjZIwR",
+     "state": {
+      "status": "completed",
+      "input": {
+       "todos": [
+        {
+         "content": "Auditar spec, entrevistas, contrato, API, testes e correção POST/PATCH",
+         "status": "completed",
+         "priority": "high"
+        },
+        {
+         "content": "Executar suíte e testes específicos sem alterar arquivos",
+         "status": "completed",
+         "priority": "high"
+        },
+        {
+         "content": "Escrever relatório pós-correção preservando demais arquivos",
+         "status": "in_progress",
+         "priority": "high"
+        },
+        {
+         "content": "Verificar status final do Git e concluir veredito",
+         "status": "pending",
+         "priority": "high"
+        }
+       ]
+      },
+      "output": "[\n  {\n    \"content\": \"Auditar spec, entrevistas, contrato, API, testes e correção POST/PATCH\",\n    \"status\": \"completed\",\n    \"priority\": \"high\"\n  },\n  {\n    \"content\": \"Executar suíte e testes específicos sem alterar arquivos\",\n    \"status\": \"completed\",\n    \"priority\": \"high\"\n  },\n  {\n    \"content\": \"Escrever relatório pós-correção preservando demais arquivos\",\n    \"status\": \"in_progress\",\n    \"priority\": \"high\"\n  },\n  {\n    \"content\": \"Verificar status final do Git e concluir veredito\",\n    \"status\": \"pending\",\n    \"priority\": \"high\"\n  }\n]",
+      "metadata": {
+       "todos": [
+        {
+         "content": "Auditar spec, entrevistas, contrato, API, testes e correção POST/PATCH",
+         "status": "completed",
+         "priority": "high"
+        },
+        {
+         "content": "Executar suíte e testes específicos sem alterar arquivos",
+         "status": "completed",
+         "priority": "high"
+        },
+        {
+         "content": "Escrever relatório pós-correção preservando demais arquivos",
+         "status": "in_progress",
+         "priority": "high"
+        },
+        {
+         "content": "Verificar status final do Git e concluir veredito",
+         "status": "pending",
+         "priority": "high"
+        }
+       ],
+       "truncated": false
+      },
+      "title": "2 todos",
+      "time": {
+       "start": 1790047282969,
+       "end": 1790047282972
+      }
+     },
+     "metadata": {
+      "openai": {
+       "itemId": "fc_00cc1de4887229e6016ab1f43200f087d2826eb5b5730bbe4f"
+      }
+     },
+     "id": "prt_0c721e36e001ThyH9tlp9gl8w0",
+     "sessionID": "ses_f38e0c288ffeDitumIH6beGSrE",
+     "messageID": "msg_0c721c415001Kjm46qzDLZOKS4"
+    },
+    {
+     "reason": "tool-calls",
+     "snapshot": "f3d92db75a32591b03aa2131ef525aae1b492959",
+     "type": "step-finish",
+     "tokens": {
+      "total": 63060,
+      "input": 15047,
+      "output": 115,
+      "reasoning": 282,
+      "cache": {
+       "write": 0,
+       "read": 47616
+      }
+     },
+     "cost": 0,
+     "id": "prt_0c721e7ae001qLR6GXhDFyDkxk",
+     "sessionID": "ses_f38e0c288ffeDitumIH6beGSrE",
+     "messageID": "msg_0c721c415001Kjm46qzDLZOKS4"
+    }
+   ]
+  },
+  {
+   "info": {
+    "parentID": "msg_0c71f3d86001DFuaQvTYeIjpn3",
+    "role": "assistant",
+    "mode": "build",
+    "agent": "build",
+    "variant": "medium",
+    "path": {
+     "cwd": "/Users/yasmindesouza/TrabalhoIA-WomanInTech",
+     "root": "/Users/yasmindesouza/TrabalhoIA-WomanInTech"
+    },
+    "cost": 0,
+    "tokens": {
+     "total": 68225,
+     "input": 1268,
+     "output": 4965,
+     "reasoning": 40,
+     "cache": {
+      "write": 0,
+      "read": 61952
+     }
+    },
+    "modelID": "gpt-5.6-luna",
+    "providerID": "openai",
+    "time": {
+     "created": 1790047283180,
+     "completed": 1790047375544
+    },
+    "finish": "tool-calls",
+    "id": "msg_0c721e7ec001mfsM33yxKJmOsj",
+    "sessionID": "ses_f38e0c288ffeDitumIH6beGSrE"
+   },
+   "parts": [
+    {
+     "snapshot": "f3d92db75a32591b03aa2131ef525aae1b492959",
+     "type": "step-start",
+     "id": "prt_0c721ee96001gNr65X4mCsf7SV",
+     "sessionID": "ses_f38e0c288ffeDitumIH6beGSrE",
+     "messageID": "msg_0c721e7ec001mfsM33yxKJmOsj"
+    },
+    {
+     "type": "text",
+     "text": "A suíte `go test ./...` passou. O defeito solicitado foi corrigido e coberto em ambos os métodos, mas permanecem lacunas de prova do M1 já identificadas na auditoria anterior; por isso o veredito pós-correção será `NÃO PASSOU`, não por dependências de M2/M4. Vou registrar a matriz e as evidências no novo arquivo בלבד.",
+     "time": {
+      "start": 1790047284888,
+      "end": 1790047287208
+     },
+     "metadata": {
+      "openai": {
+       "itemId": "msg_074668c1666254c8016ab1f434e7b487d287afc5f85e7ec935",
+       "phase": "commentary"
+      }
+     },
+     "id": "prt_0c721ee98001q66lWbGsaIdb0x",
+     "sessionID": "ses_f38e0c288ffeDitumIH6beGSrE",
+     "messageID": "msg_0c721e7ec001mfsM33yxKJmOsj"
+    },
+    {
+     "type": "reasoning",
+     "text": "**Planning patch for Hebrew text issue**",
+     "time": {
+      "start": 1790047287209,
+      "end": 1790047288744
+     },
+     "metadata": {
+      "openai": {
+       "itemId": "rs_074668c1666254c8016ab1f43724f487d2915c7b42376e10a2",
+       "reasoningEncryptedContent": "gAAAAABqsfQ4sWyNg1_D-sEHM9Fs-_esceahwta5u7plGro0CL8dnvlzDtyCADwAo6AxD12bvthyHRD7Egnvd1bJfaP3HqIKN88PiUN4w1LybJCWnZtHJhufdyEnA7s7J31Del7hN-BQFJshTs1iVr-a9NlYuwYeAA476j0F5V1eR3fbGO9rk86Y1D_TIz2GX0DCeYP7G8zMQh5P5_zmONVd-JxmIpHqPSE-Q9sqk7B-a4i_h4GNfFdZfTNUbMYP3T_GNZ3iLOjybTMe17Ew8U-HQMNYYgX9TNW4O6NImhIJxqxrP24G0QnhkiAxjE6CNSvVygXC-ouJHQFKlp-qA4dPXgosKxPj7rShe98CID-FpwNsYT-mIj_NDVu85DzfwXpI0PQ6LGj9OyQb_RX0VvTDUqs1-EiuNvIgOf1RZe27pRBIPxbadTzLiKRpQdaU0Yrcfl46fIX10uWA6Q4g8pibiKn5Jw9QSYtOWDxPbNhBhBjGwKNY47YJ8hc6HOLz1NfffeqZhJEhDUQPNa_C6dqaGFfW2G4vOae317PsudS2iIaikoB2TVe2rGtI6WO5U_dAmAXiMGVf5l3w55oo1VKH_SxA7mJfk8tItoGG6vmO4tGK2NNnE-NjudsOjLbpFUotvUOS_DZYzy1vAIlHVSc4y36bOm3XB980q_W4Krc6BFoXcv-dDa-wj82irT4T8JFIfZZ5TolTIlT5orN-pT195pQxM2TdzGPctrh3TURvcKSnTcufBbeKhdvCtA61bjdvCMpKkkrkLktMPQIxTkGzYYc8q4ggwwlG76kArQpA5V0cyFkbDNTgG5zO433SZ2CzDB0zO73qOC4YezGFJZLIVwOYZbqapmiMl6lg0BW44w2f2re5Onp7mIPuKYbfzKe_Phx_fqNef0Nzj0r57CbZ8pfd5fyy_sDxKHPE5R-VUUwKDFO9RJVyBTiWoGet3hSUxgaPQGeHZmIkTOPjcqfVH9PK8VxiKmhbU86XBSsreLpNAst2auLMhRzxChLgxtzjOjkLFSznSNj7Eo1b3r-dyp0Ai773iyzsSYSKRER-Efed-cTufWpzdv74Tb46tKJWzb7eNHraeAri8fPe-xWvZorZUfwMM00GQmKaZUCn5P0lFOgHdi4v1VZpWRZKG1WN2Ow_3G-IHK8teVpTl0npVz2Q3vNQDVUuzWd0s1Y2pcoJhjll77Z3yZwpBUOMKEzRyYVo1H3VxrlqxgaZsoPxOk-jn2NWSjGuzQJ9e1wSrZUZAXNNiVDkhBhABRdxkcxTlXup7Xe4sqiEjFTNkkEn27_tcJGUHhvotsdFYfoSLLP_QaLCJWeO_0IZMhdzTvBvZzf4UxKom6lST51b2xrN4nv6FLwxX7PJtuXT1XSWPDybEbYVnEbVZPuv7ABfqEdk8qMFH7mDx50jCfLYKuWRY4TfPvcQXzhufv7iw3_qhcw1HGRR03ZHr6ypd_v6fUIeUDnh4lkgmcHUiFhUDQNpHsEM8q5oZp3sQDbLZ9N5DEUwkvLkS8M="
+      }
+     },
+     "id": "prt_0c721f7a9001A7cRp7Ri1aLUcO",
+     "sessionID": "ses_f38e0c288ffeDitumIH6beGSrE",
+     "messageID": "msg_0c721e7ec001mfsM33yxKJmOsj"
+    },
+    {
+     "type": "tool",
+     "tool": "apply_patch",
+     "callID": "call_DDFDh87b4g1cOOqZ8SfJk2Vb",
+     "state": {
+      "status": "completed",
+      "input": {
+       "patchText": "*** Begin Patch\n*** Add File: /Users/yasmindesouza/TrabalhoIA-WomanInTech/auditorias/M1-grade-atividades-pos-correcao.md\n+# Parecer de auditoria pos-correcao - M1 Grade de Atividades\n+\n+## Veredito\n+\n+**NAO PASSOU**\n+\n+A correcao do defeito de aceitar JSON valido seguido de conteudo extra foi\n+confirmada em POST e PATCH, com testes dedicados para os dois caminhos. A\n+suíte passa. O M1 ainda nao tem prova suficiente para todas as regras\n+contratadas: permanecem sem teste dedicado R12, R24 e R31, alem de provas\n+fracas para R09, R11, R36 e R59. Essas lacunas sao do M1; a ausencia dos\n+fluxos completos de M2, M3 e M4 nao foi considerada falha deste modulo.\n+\n+## Escopo e fontes\n+\n+Foram considerados somente os artefatos solicitados:\n+\n+- `specs/M1-grade-atividades.md`\n+- `entrevistas/M1-grade-atividades.md`\n+- `contrato-api.md`\n+- todos os arquivos de implementacao e testes em `api/`\n+- `auditorias/M1-grade-atividades.md`, apenas para comparar a situacao anterior\n+\n+Nenhum documento externo de requisitos foi usado. A auditoria anterior foi\n+preservada intacta.\n+\n+## Correcao auditada: JSON com conteudo extra\n+\n+### POST\n+\n+- `api/atividades_handlers.go:124-134` decodifica o primeiro valor JSON e faz\n+  um segundo `Decode`; somente `io.EOF` e aceito. Qualquer segundo valor,\n+  texto ou outro conteudo gera `422 DADOS_INVALIDOS`.\n+- `api/atividades_test.go:76-83`,\n+  `TestPOSTAtividadesRejeitaConteudoExtraAposJSON`, envia um objeto valido\n+  seguido de `{}` e verifica `422 DADOS_INVALIDOS`.\n+\n+### PATCH\n+\n+- `api/atividades_handlers.go:423-432` aplica a mesma verificacao ao corpo de\n+  PATCH, antes das regras de edicao.\n+- `api/atividades_test.go:85-93`,\n+  `TestPATCHAtividadesRejeitaConteudoExtraAposJSON`, cria uma atividade,\n+  envia `{\"titulo\":\"Novo titulo\"} {}` e verifica `422 DADOS_INVALIDOS`.\n+\n+Conclusao especifica: o defeito apontado em\n+`auditorias/M1-grade-atividades.md:142-154` foi corrigido nos dois endpoints e\n+passou a ter cobertura automatizada nos dois endpoints.\n+\n+## Matriz de rastreabilidade\n+\n+| Regra | Origem | Implementacao | Evidencia de teste | Status |\n+|---|---|---|---|---|\n+| R01 | P-01/P-02 | `api/main.go:21-23` | `api/atividades_test.go:95-178,318-348` | COMPROVADA |\n+| R02 | P-04 | `api/store.go:57-90` | `api/main_test.go:77-120`, `api/atividades_test.go:350-367` | COMPROVADA |\n+| R03 | contrato, rotas M1 | `api/atividades_handlers.go:96-117,359-408` | `api/atividades_test.go:185-223,318-347` | COMPROVADA |\n+| R04 | contrato, rotas M1 | `api/atividades_handlers.go:120-122,411-414,488-490` | `api/atividades_test.go:129-134,225-244,270-294` | COMPROVADA |\n+| R05 | P-02/R2-P24 | Escopo M1 em `api/main.go:21-23` | Sem integracao M2/M3/M4 | DEPENDENCIA FUTURA, NAO FALHA M1 |\n+| R06 | contrato | `api/atividades_handlers.go:311-318` | `api/atividades_test.go:129-134,185-188,205-223,270-276` | COMPROVADA |\n+| R07 | contrato | `api/atividades_handlers.go:320-323` | `api/atividades_test.go:129-134,225-230,270-276` | COMPROVADA |\n+| R08 | contrato | `api/atividades_handlers.go:394-403,415-420,492-497` | `api/atividades_test.go:205-223,225-230,270-276` | COMPROVADA |\n+| R09 | contrato | `api/atividades_handlers.go:124-134,423-432` | JSON invalido `136-141`; extra `76-93` | PROVA PARCIAL |\n+| R10 | P-03/R2-P01 | `api/atividades_handlers.go:159-162` | `api/atividades_test.go:99-127,143-152` | COMPROVADA |\n+| R11 | R2-P01 | Validacao comum `169-189` | Casos validos `99-127` | PROVA FRACA |\n+| R12 | contrato | Ordenacao em `208,266-269` | Nenhum teste com entrada fora de ordem | SEM PROVA |\n+| R13 | contrato | `api/atividades_handlers.go:141-156` | `api/atividades_test.go:67-74,99-127` | COMPROVADA |\n+| R14 | P-05/R2-P02/R2-P38 | `api/atividades_handlers.go:163-165` | `api/atividades_test.go:143-148` | COMPROVADA |\n+| R15 | P-05/R2-P02/R2-P38 | `api/atividades_handlers.go:166-168` | `api/atividades_test.go:149-152` | COMPROVADA |\n+| R16 | P-07/R2-P05/R2-P37 | `api/atividades_handlers.go:220-224` | `api/atividades_test.go:155-166` | COMPROVADA |\n+| R17 | P-31/R2-P35 | Nao ha precedencia exigida; spec: `specs/M1-grade-atividades.md:79,223` | Criterio de aceitacao | COMPROVADA COMO NAO-EXIGENCIA |\n+| R18 | P-06/R2-P03/R2-P37 | `api/atividades_handlers.go:226-228` | `api/atividades_test.go:155-166` | COMPROVADA |\n+| R19 | R2-P37/R2-P40 | `api/atividades_handlers.go:214-219` | `api/atividades_test.go:155-166` | COMPROVADA |\n+| R20 | R2-P37 | `api/atividades_handlers.go:230-232` | `api/atividades_test.go:161-166` | COMPROVADA |\n+| R21 | P-10/R2-P09 | `api/atividades_handlers.go:237-249` | `api/atividades_test.go:174-175` | COMPROVADA |\n+| R22 | P-11/R2-P09/R2-P10 | `api/atividades_handlers.go:253-262` | `api/atividades_test.go:174-177` | COMPROVADA |\n+| R23 | R2-P12/R2-P40 | `api/atividades_handlers.go:253-262` | `api/atividades_test.go:176-177` | COMPROVADA |\n+| R24 | R2-P12 | `api/atividades_handlers.go:253-262` | Nenhum caso `fim == inicio` | SEM PROVA |\n+| R25 | P-12/R2-P11 | `api/atividades_handlers.go:237-240` | `api/atividades_test.go:270-287` | COMPROVADA |\n+| R26 | P-13/P-14/R2-P08/R2-P13 | `api/atividades_handlers.go:172-185,459-470` | `api/atividades_test.go:169-177,231-243` | COMPROVADA |\n+| R27 | R2-P08/contrato | `api/atividades_handlers.go:182-185,469-471` | `api/atividades_test.go:172,242` | COMPROVADA |\n+| R28 | P-15/R2-P14 | `api/atividades_handlers.go:473-475` | `api/atividades_test.go:246-266` | COMPROVADA |\n+| R29 | R2-P16 | `api/atividades_handlers.go:301-305` | `api/atividades_test.go:250-266` | COMPROVADA |\n+| R30 | R2-P16 | `api/atividades_handlers.go:301-306` | `api/atividades_test.go:250-266` | COMPROVADA |\n+| R31 | R2-P15 | `api/atividades_handlers.go:459-478` | Nenhum teste de aumento de vagas | SEM PROVA |\n+| R32 | P-06/R2-P04 | `api/atividades_handlers.go:270-275` | `api/atividades_test.go:99-127` | COMPROVADA |\n+| R33 | R2-P04 | `api/atividades_handlers.go:24-30,266-275` | `api/atividades_test.go:99-108,231-237` | COMPROVADA |\n+| R34 | contrato | `api/atividades_handlers.go:480-485` | `api/atividades_test.go:231-237` | COMPROVADA |\n+| R35 | P-16/R2-P17 | `api/atividades_handlers.go:451-478` | `api/atividades_test.go:225-244` | COMPROVADA |\n+| R36 | P-17/R2-P18 | `api/atividades_handlers.go:434-444` | `api/atividades_test.go:239-241` | PROVA FRACA |\n+| R37 | R2-P20 | `api/atividades_handlers.go:446-448` | `api/atividades_test.go:284-285` | COMPROVADA |\n+| R38 | P-31/R2-P36 | Precedencia nao exigida; spec: `specs/M1-grade-atividades.md:125,223` | Criterio de aceitacao | COMPROVADA COMO NAO-EXIGENCIA |\n+| R39 | P-18/R2-P21/contrato | `api/atividades_handlers.go:504-514` | `api/atividades_test.go:270-287` | COMPROVADA |\n+| R40 | P-18/R2-P21 | `api/atividades_handlers.go:504-508` | `api/atividades_test.go:288-294` | COMPROVADA |\n+| R41 | P-19/R2-P22 | `api/atividades_handlers.go:499-511` | `api/atividades_test.go:284-287,310-315` | COMPROVADA |\n+| R42 | P-20/R2-P23 | `api/atividades_handlers.go:499-502` | `api/atividades_test.go:284` | COMPROVADA |\n+| R43 | P-31/R2-P36 | Precedencia nao exigida; spec: `specs/M1-grade-atividades.md:135,223` | Criterio de aceitacao | COMPROVADA COMO NAO-EXIGENCIA |\n+| R44 | P-22/R2-P25 | `api/atividades_handlers.go:278-291` | `api/atividades_test.go:296-315` | COMPROVADA |\n+| R45 | P-23/R2-P26 | `api/atividades_handlers.go:284-285` | `api/atividades_test.go:301-307` | COMPROVADA |\n+| R46 | P-23/R2-P26 | `api/atividades_handlers.go:284-291` | `api/atividades_test.go:301-307` | COMPROVADA |\n+| R47 | P-23/R2-P26 | `api/atividades_handlers.go:287-289` | `api/atividades_test.go:301-307` | COMPROVADA |\n+| R48 | P-19/P-22/P-23/R2-P28 | `api/atividades_handlers.go:278-281` | `api/atividades_test.go:310-315` | COMPROVADA |\n+| R49 | P-25/R2-P29 | `api/atividades_handlers.go:377-384` | `api/atividades_test.go:324-331` | COMPROVADA |\n+| R50 | P-25/R2-P29 | `api/atividades_handlers.go:380-382` | `api/atividades_test.go:324-331` | COMPROVADA |\n+| R51 | P-26/R2-P30 | `api/atividades_handlers.go:365-376` | `api/atividades_test.go:327-334` | COMPROVADA |\n+| R52 | P-26/R2-P31/contrato | `api/atividades_handlers.go:394-408` | `api/atividades_test.go:205-223` | COMPROVADA para detalhe existente |\n+| R53 | P-27/R2-P32 | `api/atividades_handlers.go:530-537` | `api/atividades_test.go:324-347` | COMPROVADA |\n+| R54 | P-28/contrato | `api/atividades_handlers.go:363-371` | `api/atividades_test.go:336-337` | COMPROVADA |\n+| R55 | P-29/R2-P32 | `api/atividades_handlers.go:369-374` | `api/atividades_test.go:342-343` | COMPROVADA |\n+| R56 | P-30/contrato | `api/store.go:44,66,92-101`; handlers `366,405` | `api/atividades_test.go:296-315`, `api/main_test.go:16-57` | COMPROVADA |\n+| R57 | P-24/R2-P27/R2-P40 | `api/atividades_handlers.go:284-291` | `api/atividades_test.go:301-307` | COMPROVADA |\n+| R58 | P-24/R2-P27/R2-P40 | `api/atividades_handlers.go:287-289` | `api/atividades_test.go:301-307` | COMPROVADA |\n+| R59 | P-07/R2-P05 | `api/atividades_handlers.go:220-224` | Testa 19/10 e rejeita 24/10 em `155-166`; nao testa 23/10 | PROVA FRACA |\n+| R60 | R2-P15/R2-P24/contrato | `api/atividades_handlers.go:266-275,294-308` | `api/atividades_test.go:99-108,231-266` | COMPROVADA para exposicao M1 |\n+\n+## Achados e lacunas remanescentes\n+\n+1. **R12 - sem prova:** a implementacao ordena os encontros em\n+   `api/atividades_handlers.go:208` e `266-269`, mas nenhum teste envia\n+   encontros fora de ordem e verifica a ordem retornada.\n+2. **R24 - sem prova:** `encontrosConflitam` trata `fim == inicio` como\n+   conflito em `api/atividades_handlers.go:253-262`, mas nao existe cenario\n+   dedicado em `api/atividades_test.go`.\n+3. **R31 - sem prova:** o PATCH permite aumento de vagas em\n+   `api/atividades_handlers.go:459-478`, mas nao ha teste que aumente vagas e\n+   confira o resultado.\n+4. **R09 - prova parcial:** a nova cobertura confirma conteudo extra no POST e\n+   PATCH, mas nao cobre de forma explicita campo obrigatorio ausente e todas as\n+   combinacoes de tipos errados.\n+5. **R11 - prova fraca:** ha casos validos de palestra e minicurso, mas nao ha\n+   teste demonstrando que duracao, capacidade e sala seguem as mesmas regras\n+   para os dois tipos.\n+6. **R36 - prova fraca:** o teste tenta alterar `salaId`, `tipo` e `encontros`\n+   sempre com o valor string `\"x\"` (`api/atividades_test.go:239-241`). Isso\n+   prova a recusa pelo nome do campo, mas nao com valores estruturalmente\n+   validos para cada campo do contrato.\n+7. **R59 - prova fraca:** a implementacao aceita dias 19 a 23 em\n+   `api/atividades_handlers.go:220-224`, mas os testes nao exercitam\n+   explicitamente o limite superior inclusivo de 23/10/2026.\n+8. **R52 - risco de cobertura:** a spec nao define comportamento especial para\n+   detalhe de atividade cancelada (N05). O teste comprova detalhe existente,\n+   mas nao consulta uma atividade cancelada; isso nao e uma falha contratual\n+   comprovada.\n+9. **Filtros invalidos e `vagas < 1`:** a implementacao escolhe\n+   comportamentos para pontos que a spec marca como nao especificados em\n+   `specs/M1-grade-atividades.md:184-197`. Sao riscos de comportamento nao\n+   contratado, nao falhas classificadas do M1.\n+\n+## Dependencias futuras, separadas de falhas M1\n+\n+Nao foram classificadas como falha do M1:\n+\n+- inscricoes, lista de espera e convocacao automatica, que pertencem ao M2;\n+- atualizacao de inscricoes ativas ao cancelar, que pertence ao M2;\n+- codigo de presenca, que pertence ao M3;\n+- certificados, que pertencem ao M4.\n+\n+A spec explicita essas fronteiras em `specs/M1-grade-atividades.md:28-38` e\n+`173-182`. O M1 apenas expoe os campos calculados necessarios ao consumo\n+futuro, usando o modelo minimo de inscricoes em `api/store.go:36-49` e\n+`api/atividades_handlers.go:294-308`.\n+\n+As falhas de aceite deste parecer sao exclusivamente as lacunas de prova do\n+M1 listadas em R12, R24, R31, R09, R11, R36 e R59.\n+\n+## Testes executados\n+\n+Comando executado em `api/`, conforme a configuracao do repositorio:\n+\n+```text\n+go test ./...\n+```\n+\n+Resultado:\n+\n+```text\n+ok    semana-academica    (cached)\n+```\n+\n+Os testes novos de conteudo extra estao em\n+`api/atividades_test.go:76-93` e foram incluidos na execucao da suíte.\n+Nao foram encontrados testes de interface Flutter no repositorio auditado.\n+\n+## Status do Git\n+\n+Status observado durante a auditoria, antes da criacao deste relatorio:\n+\n+```text\n+ M api/atividades_handlers.go\n+ M api/atividades_test.go\n+ M evidencias/sessoes/yasminsouza21/INDICE.md\n+?? evidencias/sessoes/yasminsouza21/ses_f38e23ff3ffe2wolkCb2kbRKaw.json\n+?? evidencias/sessoes/yasminsouza21/ses_f38e23ff3ffe2wolkCb2kbRKaw.md\n+?? evidencias/sessoes/yasminsouza21/ses_f38e4e25fffeSovqi8CuDkig5k.json\n+?? evidencias/sessoes/yasminsouza21/ses_f38e4e25fffeSovqi8CuDkig5k.md\n+?? evidencias/sessoes/yasminsouza21/ses_f38f4949effeMH4U268gEv13a2.json\n+?? evidencias/sessoes/yasminsouza21/ses_f38f4949effeMH4U268gEv13a2.md\n+```\n+\n+Essas alteracoes ja estavam presentes e nao foram modificadas pela auditoria.\n+O novo arquivo `auditorias/M1-grade-atividades-pos-correcao.md` foi o unico\n+arquivo criado nesta auditoria. Nenhum commit foi feito.\n+\n+## Conclusao\n+\n+**NAO PASSOU.** A correcao solicitada esta correta e comprovada em POST e\n+PATCH, e a suíte passa. O aceite integral do M1 continua impedido pelas\n+lacunas de cobertura listadas acima, especialmente R12, R24 e R31.\n*** End Patch"
+      },
+      "output": "Success. Updated the following files:\nA auditorias/M1-grade-atividades-pos-correcao.md",
+      "metadata": {
+       "diff": "Index: /Users/yasmindesouza/TrabalhoIA-WomanInTech/auditorias/M1-grade-atividades-pos-correcao.md\n===================================================================\n--- /Users/yasmindesouza/TrabalhoIA-WomanInTech/auditorias/M1-grade-atividades-pos-correcao.md\n+++ /Users/yasmindesouza/TrabalhoIA-WomanInTech/auditorias/M1-grade-atividades-pos-correcao.md\n@@ -0,0 +1,207 @@\n+# Parecer de auditoria pos-correcao - M1 Grade de Atividades\n+\n+## Veredito\n+\n+**NAO PASSOU**\n+\n+A correcao do defeito de aceitar JSON valido seguido de conteudo extra foi\n+confirmada em POST e PATCH, com testes dedicados para os dois caminhos. A\n+suíte passa. O M1 ainda nao tem prova suficiente para todas as regras\n+contratadas: permanecem sem teste dedicado R12, R24 e R31, alem de provas\n+fracas para R09, R11, R36 e R59. Essas lacunas sao do M1; a ausencia dos\n+fluxos completos de M2, M3 e M4 nao foi considerada falha deste modulo.\n+\n+## Escopo e fontes\n+\n+Foram considerados somente os artefatos solicitados:\n+\n+- `specs/M1-grade-atividades.md`\n+- `entrevistas/M1-grade-atividades.md`\n+- `contrato-api.md`\n+- todos os arquivos de implementacao e testes em `api/`\n+- `auditorias/M1-grade-atividades.md`, apenas para comparar a situacao anterior\n+\n+Nenhum documento externo de requisitos foi usado. A auditoria anterior foi\n+preservada intacta.\n+\n+## Correcao auditada: JSON com conteudo extra\n+\n+### POST\n+\n+- `api/atividades_handlers.go:124-134` decodifica o primeiro valor JSON e faz\n+  um segundo `Decode`; somente `io.EOF` e aceito. Qualquer segundo valor,\n+  texto ou outro conteudo gera `422 DADOS_INVALIDOS`.\n+- `api/atividades_test.go:76-83`,\n+  `TestPOSTAtividadesRejeitaConteudoExtraAposJSON`, envia um objeto valido\n+  seguido de `{}` e verifica `422 DADOS_INVALIDOS`.\n+\n+### PATCH\n+\n+- `api/atividades_handlers.go:423-432` aplica a mesma verificacao ao corpo de\n+  PATCH, antes das regras de edicao.\n+- `api/atividades_test.go:85-93`,\n+  `TestPATCHAtividadesRejeitaConteudoExtraAposJSON`, cria uma atividade,\n+  envia `{\"titulo\":\"Novo titulo\"} {}` e verifica `422 DADOS_INVALIDOS`.\n+\n+Conclusao especifica: o defeito apontado em\n+`auditorias/M1-grade-atividades.md:142-154` foi corrigido nos dois endpoints e\n+passou a ter cobertura automatizada nos dois endpoints.\n+\n+## Matriz de rastreabilidade\n+\n+| Regra | Origem | Implementacao | Evidencia de teste | Status |\n+|---|---|---|---|---|\n+| R01 | P-01/P-02 | `api/main.go:21-23` | `api/atividades_test.go:95-178,318-348` | COMPROVADA |\n+| R02 | P-04 | `api/store.go:57-90` | `api/main_test.go:77-120`, `api/atividades_test.go:350-367` | COMPROVADA |\n+| R03 | contrato, rotas M1 | `api/atividades_handlers.go:96-117,359-408` | `api/atividades_test.go:185-223,318-347` | COMPROVADA |\n+| R04 | contrato, rotas M1 | `api/atividades_handlers.go:120-122,411-414,488-490` | `api/atividades_test.go:129-134,225-244,270-294` | COMPROVADA |\n+| R05 | P-02/R2-P24 | Escopo M1 em `api/main.go:21-23` | Sem integracao M2/M3/M4 | DEPENDENCIA FUTURA, NAO FALHA M1 |\n+| R06 | contrato | `api/atividades_handlers.go:311-318` | `api/atividades_test.go:129-134,185-188,205-223,270-276` | COMPROVADA |\n+| R07 | contrato | `api/atividades_handlers.go:320-323` | `api/atividades_test.go:129-134,225-230,270-276` | COMPROVADA |\n+| R08 | contrato | `api/atividades_handlers.go:394-403,415-420,492-497` | `api/atividades_test.go:205-223,225-230,270-276` | COMPROVADA |\n+| R09 | contrato | `api/atividades_handlers.go:124-134,423-432` | JSON invalido `136-141`; extra `76-93` | PROVA PARCIAL |\n+| R10 | P-03/R2-P01 | `api/atividades_handlers.go:159-162` | `api/atividades_test.go:99-127,143-152` | COMPROVADA |\n+| R11 | R2-P01 | Validacao comum `169-189` | Casos validos `99-127` | PROVA FRACA |\n+| R12 | contrato | Ordenacao em `208,266-269` | Nenhum teste com entrada fora de ordem | SEM PROVA |\n+| R13 | contrato | `api/atividades_handlers.go:141-156` | `api/atividades_test.go:67-74,99-127` | COMPROVADA |\n+| R14 | P-05/R2-P02/R2-P38 | `api/atividades_handlers.go:163-165` | `api/atividades_test.go:143-148` | COMPROVADA |\n+| R15 | P-05/R2-P02/R2-P38 | `api/atividades_handlers.go:166-168` | `api/atividades_test.go:149-152` | COMPROVADA |\n+| R16 | P-07/R2-P05/R2-P37 | `api/atividades_handlers.go:220-224` | `api/atividades_test.go:155-166` | COMPROVADA |\n+| R17 | P-31/R2-P35 | Nao ha precedencia exigida; spec: `specs/M1-grade-atividades.md:79,223` | Criterio de aceitacao | COMPROVADA COMO NAO-EXIGENCIA |\n+| R18 | P-06/R2-P03/R2-P37 | `api/atividades_handlers.go:226-228` | `api/atividades_test.go:155-166` | COMPROVADA |\n+| R19 | R2-P37/R2-P40 | `api/atividades_handlers.go:214-219` | `api/atividades_test.go:155-166` | COMPROVADA |\n+| R20 | R2-P37 | `api/atividades_handlers.go:230-232` | `api/atividades_test.go:161-166` | COMPROVADA |\n+| R21 | P-10/R2-P09 | `api/atividades_handlers.go:237-249` | `api/atividades_test.go:174-175` | COMPROVADA |\n+| R22 | P-11/R2-P09/R2-P10 | `api/atividades_handlers.go:253-262` | `api/atividades_test.go:174-177` | COMPROVADA |\n+| R23 | R2-P12/R2-P40 | `api/atividades_handlers.go:253-262` | `api/atividades_test.go:176-177` | COMPROVADA |\n+| R24 | R2-P12 | `api/atividades_handlers.go:253-262` | Nenhum caso `fim == inicio` | SEM PROVA |\n+| R25 | P-12/R2-P11 | `api/atividades_handlers.go:237-240` | `api/atividades_test.go:270-287` | COMPROVADA |\n+| R26 | P-13/P-14/R2-P08/R2-P13 | `api/atividades_handlers.go:172-185,459-470` | `api/atividades_test.go:169-177,231-243` | COMPROVADA |\n+| R27 | R2-P08/contrato | `api/atividades_handlers.go:182-185,469-471` | `api/atividades_test.go:172,242` | COMPROVADA |\n+| R28 | P-15/R2-P14 | `api/atividades_handlers.go:473-475` | `api/atividades_test.go:246-266` | COMPROVADA |\n+| R29 | R2-P16 | `api/atividades_handlers.go:301-305` | `api/atividades_test.go:250-266` | COMPROVADA |\n+| R30 | R2-P16 | `api/atividades_handlers.go:301-306` | `api/atividades_test.go:250-266` | COMPROVADA |\n+| R31 | R2-P15 | `api/atividades_handlers.go:459-478` | Nenhum teste de aumento de vagas | SEM PROVA |\n+| R32 | P-06/R2-P04 | `api/atividades_handlers.go:270-275` | `api/atividades_test.go:99-127` | COMPROVADA |\n+| R33 | R2-P04 | `api/atividades_handlers.go:24-30,266-275` | `api/atividades_test.go:99-108,231-237` | COMPROVADA |\n+| R34 | contrato | `api/atividades_handlers.go:480-485` | `api/atividades_test.go:231-237` | COMPROVADA |\n+| R35 | P-16/R2-P17 | `api/atividades_handlers.go:451-478` | `api/atividades_test.go:225-244` | COMPROVADA |\n+| R36 | P-17/R2-P18 | `api/atividades_handlers.go:434-444` | `api/atividades_test.go:239-241` | PROVA FRACA |\n+| R37 | R2-P20 | `api/atividades_handlers.go:446-448` | `api/atividades_test.go:284-285` | COMPROVADA |\n+| R38 | P-31/R2-P36 | Precedencia nao exigida; spec: `specs/M1-grade-atividades.md:125,223` | Criterio de aceitacao | COMPROVADA COMO NAO-EXIGENCIA |\n+| R39 | P-18/R2-P21/contrato | `api/atividades_handlers.go:504-514` | `api/atividades_test.go:270-287` | COMPROVADA |\n+| R40 | P-18/R2-P21 | `api/atividades_handlers.go:504-508` | `api/atividades_test.go:288-294` | COMPROVADA |\n+| R41 | P-19/R2-P22 | `api/atividades_handlers.go:499-511` | `api/atividades_test.go:284-287,310-315` | COMPROVADA |\n+| R42 | P-20/R2-P23 | `api/atividades_handlers.go:499-502` | `api/atividades_test.go:284` | COMPROVADA |\n+| R43 | P-31/R2-P36 | Precedencia nao exigida; spec: `specs/M1-grade-atividades.md:135,223` | Criterio de aceitacao | COMPROVADA COMO NAO-EXIGENCIA |\n+| R44 | P-22/R2-P25 | `api/atividades_handlers.go:278-291` | `api/atividades_test.go:296-315` | COMPROVADA |\n+| R45 | P-23/R2-P26 | `api/atividades_handlers.go:284-285` | `api/atividades_test.go:301-307` | COMPROVADA |\n+| R46 | P-23/R2-P26 | `api/atividades_handlers.go:284-291` | `api/atividades_test.go:301-307` | COMPROVADA |\n+| R47 | P-23/R2-P26 | `api/atividades_handlers.go:287-289` | `api/atividades_test.go:301-307` | COMPROVADA |\n+| R48 | P-19/P-22/P-23/R2-P28 | `api/atividades_handlers.go:278-281` | `api/atividades_test.go:310-315` | COMPROVADA |\n+| R49 | P-25/R2-P29 | `api/atividades_handlers.go:377-384` | `api/atividades_test.go:324-331` | COMPROVADA |\n+| R50 | P-25/R2-P29 | `api/atividades_handlers.go:380-382` | `api/atividades_test.go:324-331` | COMPROVADA |\n+| R51 | P-26/R2-P30 | `api/atividades_handlers.go:365-376` | `api/atividades_test.go:327-334` | COMPROVADA |\n+| R52 | P-26/R2-P31/contrato | `api/atividades_handlers.go:394-408` | `api/atividades_test.go:205-223` | COMPROVADA para detalhe existente |\n+| R53 | P-27/R2-P32 | `api/atividades_handlers.go:530-537` | `api/atividades_test.go:324-347` | COMPROVADA |\n+| R54 | P-28/contrato | `api/atividades_handlers.go:363-371` | `api/atividades_test.go:336-337` | COMPROVADA |\n+| R55 | P-29/R2-P32 | `api/atividades_handlers.go:369-374` | `api/atividades_test.go:342-343` | COMPROVADA |\n+| R56 | P-30/contrato | `api/store.go:44,66,92-101`; handlers `366,405` | `api/atividades_test.go:296-315`, `api/main_test.go:16-57` | COMPROVADA |\n+| R57 | P-24/R2-P27/R2-P40 | `api/atividades_handlers.go:284-291` | `api/atividades_test.go:301-307` | COMPROVADA |\n+| R58 | P-24/R2-P27/R2-P40 | `api/atividades_handlers.go:287-289` | `api/atividades_test.go:301-307` | COMPROVADA |\n+| R59 | P-07/R2-P05 | `api/atividades_handlers.go:220-224` | Testa 19/10 e rejeita 24/10 em `155-166`; nao testa 23/10 | PROVA FRACA |\n+| R60 | R2-P15/R2-P24/contrato | `api/atividades_handlers.go:266-275,294-308` | `api/atividades_test.go:99-108,231-266` | COMPROVADA para exposicao M1 |\n+\n+## Achados e lacunas remanescentes\n+\n+1. **R12 - sem prova:** a implementacao ordena os encontros em\n+   `api/atividades_handlers.go:208` e `266-269`, mas nenhum teste envia\n+   encontros fora de ordem e verifica a ordem retornada.\n+2. **R24 - sem prova:** `encontrosConflitam` trata `fim == inicio` como\n+   conflito em `api/atividades_handlers.go:253-262`, mas nao existe cenario\n+   dedicado em `api/atividades_test.go`.\n+3. **R31 - sem prova:** o PATCH permite aumento de vagas em\n+   `api/atividades_handlers.go:459-478`, mas nao ha teste que aumente vagas e\n+   confira o resultado.\n+4. **R09 - prova parcial:** a nova cobertura confirma conteudo extra no POST e\n+   PATCH, mas nao cobre de forma explicita campo obrigatorio ausente e todas as\n+   combinacoes de tipos errados.\n+5. **R11 - prova fraca:** ha casos validos de palestra e minicurso, mas nao ha\n+   teste demonstrando que duracao, capacidade e sala seguem as mesmas regras\n+   para os dois tipos.\n+6. **R36 - prova fraca:** o teste tenta alterar `salaId`, `tipo` e `encontros`\n+   sempre com o valor string `\"x\"` (`api/atividades_test.go:239-241`). Isso\n+   prova a recusa pelo nome do campo, mas nao com valores estruturalmente\n+   validos para cada campo do contrato.\n+7. **R59 - prova fraca:** a implementacao aceita dias 19 a 23 em\n+   `api/atividades_handlers.go:220-224`, mas os testes nao exercitam\n+   explicitamente o limite superior inclusivo de 23/10/2026.\n+8. **R52 - risco de cobertura:** a spec nao define comportamento especial para\n+   detalhe de atividade cancelada (N05). O teste comprova detalhe existente,\n+   mas nao consulta uma atividade cancelada; isso nao e uma falha contratual\n+   comprovada.\n+9. **Filtros invalidos e `vagas < 1`:** a implementacao escolhe\n+   comportamentos para pontos que a spec marca como nao especificados em\n+   `specs/M1-grade-atividades.md:184-197`. Sao riscos de comportamento nao\n+   contratado, nao falhas classificadas do M1.\n+\n+## Dependencias futuras, separadas de falhas M1\n+\n+Nao foram classificadas como falha do M1:\n+\n+- inscricoes, lista de espera e convocacao automatica, que pertencem ao M2;\n+- atualizacao de inscricoes ativas ao cancelar, que pertence ao M2;\n+- codigo de presenca, que pertence ao M3;\n+- certificados, que pertencem ao M4.\n+\n+A spec explicita essas fronteiras em `specs/M1-grade-atividades.md:28-38` e\n+`173-182`. O M1 apenas expoe os campos calculados necessarios ao consumo\n+futuro, usando o modelo minimo de inscricoes em `api/store.go:36-49` e\n+`api/atividades_handlers.go:294-308`.\n+\n+As falhas de aceite deste parecer sao exclusivamente as lacunas de prova do\n+M1 listadas em R12, R24, R31, R09, R11, R36 e R59.\n+\n+## Testes executados\n+\n+Comando executado em `api/`, conforme a configuracao do repositorio:\n+\n+```text\n+go test ./...\n+```\n+\n+Resultado:\n+\n+```text\n+ok    semana-academica    (cached)\n+```\n+\n+Os testes novos de conteudo extra estao em\n+`api/atividades_test.go:76-93` e foram incluidos na execucao da suíte.\n+Nao foram encontrados testes de interface Flutter no repositorio auditado.\n+\n+## Status do Git\n+\n+Status observado durante a auditoria, antes da criacao deste relatorio:\n+\n+```text\n+ M api/atividades_handlers.go\n+ M api/atividades_test.go\n+ M evidencias/sessoes/yasminsouza21/INDICE.md\n+?? evidencias/sessoes/yasminsouza21/ses_f38e23ff3ffe2wolkCb2kbRKaw.json\n+?? evidencias/sessoes/yasminsouza21/ses_f38e23ff3ffe2wolkCb2kbRKaw.md\n+?? evidencias/sessoes/yasminsouza21/ses_f38e4e25fffeSovqi8CuDkig5k.json\n+?? evidencias/sessoes/yasminsouza21/ses_f38e4e25fffeSovqi8CuDkig5k.md\n+?? evidencias/sessoes/yasminsouza21/ses_f38f4949effeMH4U268gEv13a2.json\n+?? evidencias/sessoes/yasminsouza21/ses_f38f4949effeMH4U268gEv13a2.md\n+```\n+\n+Essas alteracoes ja estavam presentes e nao foram modificadas pela auditoria.\n+O novo arquivo `auditorias/M1-grade-atividades-pos-correcao.md` foi o unico\n+arquivo criado nesta auditoria. Nenhum commit foi feito.\n+\n+## Conclusao\n+\n+**NAO PASSOU.** A correcao solicitada esta correta e comprovada em POST e\n+PATCH, e a suíte passa. O aceite integral do M1 continua impedido pelas\n+lacunas de cobertura listadas acima, especialmente R12, R24 e R31.\n\n",
+       "files": [
+        {
+         "filePath": "/Users/yasmindesouza/TrabalhoIA-WomanInTech/auditorias/M1-grade-atividades-pos-correcao.md",
+         "relativePath": "auditorias/M1-grade-atividades-pos-correcao.md",
+         "type": "add",
+         "patch": "Index: /Users/yasmindesouza/TrabalhoIA-WomanInTech/auditorias/M1-grade-atividades-pos-correcao.md\n===================================================================\n--- /Users/yasmindesouza/TrabalhoIA-WomanInTech/auditorias/M1-grade-atividades-pos-correcao.md\n+++ /Users/yasmindesouza/TrabalhoIA-WomanInTech/auditorias/M1-grade-atividades-pos-correcao.md\n@@ -0,0 +1,207 @@\n+# Parecer de auditoria pos-correcao - M1 Grade de Atividades\n+\n+## Veredito\n+\n+**NAO PASSOU**\n+\n+A correcao do defeito de aceitar JSON valido seguido de conteudo extra foi\n+confirmada em POST e PATCH, com testes dedicados para os dois caminhos. A\n+suíte passa. O M1 ainda nao tem prova suficiente para todas as regras\n+contratadas: permanecem sem teste dedicado R12, R24 e R31, alem de provas\n+fracas para R09, R11, R36 e R59. Essas lacunas sao do M1; a ausencia dos\n+fluxos completos de M2, M3 e M4 nao foi considerada falha deste modulo.\n+\n+## Escopo e fontes\n+\n+Foram considerados somente os artefatos solicitados:\n+\n+- `specs/M1-grade-atividades.md`\n+- `entrevistas/M1-grade-atividades.md`\n+- `contrato-api.md`\n+- todos os arquivos de implementacao e testes em `api/`\n+- `auditorias/M1-grade-atividades.md`, apenas para comparar a situacao anterior\n+\n+Nenhum documento externo de requisitos foi usado. A auditoria anterior foi\n+preservada intacta.\n+\n+## Correcao auditada: JSON com conteudo extra\n+\n+### POST\n+\n+- `api/atividades_handlers.go:124-134` decodifica o primeiro valor JSON e faz\n+  um segundo `Decode`; somente `io.EOF` e aceito. Qualquer segundo valor,\n+  texto ou outro conteudo gera `422 DADOS_INVALIDOS`.\n+- `api/atividades_test.go:76-83`,\n+  `TestPOSTAtividadesRejeitaConteudoExtraAposJSON`, envia um objeto valido\n+  seguido de `{}` e verifica `422 DADOS_INVALIDOS`.\n+\n+### PATCH\n+\n+- `api/atividades_handlers.go:423-432` aplica a mesma verificacao ao corpo de\n+  PATCH, antes das regras de edicao.\n+- `api/atividades_test.go:85-93`,\n+  `TestPATCHAtividadesRejeitaConteudoExtraAposJSON`, cria uma atividade,\n+  envia `{\"titulo\":\"Novo titulo\"} {}` e verifica `422 DADOS_INVALIDOS`.\n+\n+Conclusao especifica: o defeito apontado em\n+`auditorias/M1-grade-atividades.md:142-154` foi corrigido nos dois endpoints e\n+passou a ter cobertura automatizada nos dois endpoints.\n+\n+## Matriz de rastreabilidade\n+\n+| Regra | Origem | Implementacao | Evidencia de teste | Status |\n+|---|---|---|---|---|\n+| R01 | P-01/P-02 | `api/main.go:21-23` | `api/atividades_test.go:95-178,318-348` | COMPROVADA |\n+| R02 | P-04 | `api/store.go:57-90` | `api/main_test.go:77-120`, `api/atividades_test.go:350-367` | COMPROVADA |\n+| R03 | contrato, rotas M1 | `api/atividades_handlers.go:96-117,359-408` | `api/atividades_test.go:185-223,318-347` | COMPROVADA |\n+| R04 | contrato, rotas M1 | `api/atividades_handlers.go:120-122,411-414,488-490` | `api/atividades_test.go:129-134,225-244,270-294` | COMPROVADA |\n+| R05 | P-02/R2-P24 | Escopo M1 em `api/main.go:21-23` | Sem integracao M2/M3/M4 | DEPENDENCIA FUTURA, NAO FALHA M1 |\n+| R06 | contrato | `api/atividades_handlers.go:311-318` | `api/atividades_test.go:129-134,185-188,205-223,270-276` | COMPROVADA |\n+| R07 | contrato | `api/atividades_handlers.go:320-323` | `api/atividades_test.go:129-134,225-230,270-276` | COMPROVADA |\n+| R08 | contrato | `api/atividades_handlers.go:394-403,415-420,492-497` | `api/atividades_test.go:205-223,225-230,270-276` | COMPROVADA |\n+| R09 | contrato | `api/atividades_handlers.go:124-134,423-432` | JSON invalido `136-141`; extra `76-93` | PROVA PARCIAL |\n+| R10 | P-03/R2-P01 | `api/atividades_handlers.go:159-162` | `api/atividades_test.go:99-127,143-152` | COMPROVADA |\n+| R11 | R2-P01 | Validacao comum `169-189` | Casos validos `99-127` | PROVA FRACA |\n+| R12 | contrato | Ordenacao em `208,266-269` | Nenhum teste com entrada fora de ordem | SEM PROVA |\n+| R13 | contrato | `api/atividades_handlers.go:141-156` | `api/atividades_test.go:67-74,99-127` | COMPROVADA |\n+| R14 | P-05/R2-P02/R2-P38 | `api/atividades_handlers.go:163-165` | `api/atividades_test.go:143-148` | COMPROVADA |\n+| R15 | P-05/R2-P02/R2-P38 | `api/atividades_handlers.go:166-168` | `api/atividades_test.go:149-152` | COMPROVADA |\n+| R16 | P-07/R2-P05/R2-P37 | `api/atividades_handlers.go:220-224` | `api/atividades_test.go:155-166` | COMPROVADA |\n+| R17 | P-31/R2-P35 | Nao ha precedencia exigida; spec: `specs/M1-grade-atividades.md:79,223` | Criterio de aceitacao | COMPROVADA COMO NAO-EXIGENCIA |\n+| R18 | P-06/R2-P03/R2-P37 | `api/atividades_handlers.go:226-228` | `api/atividades_test.go:155-166` | COMPROVADA |\n+| R19 | R2-P37/R2-P40 | `api/atividades_handlers.go:214-219` | `api/atividades_test.go:155-166` | COMPROVADA |\n+| R20 | R2-P37 | `api/atividades_handlers.go:230-232` | `api/atividades_test.go:161-166` | COMPROVADA |\n+| R21 | P-10/R2-P09 | `api/atividades_handlers.go:237-249` | `api/atividades_test.go:174-175` | COMPROVADA |\n+| R22 | P-11/R2-P09/R2-P10 | `api/atividades_handlers.go:253-262` | `api/atividades_test.go:174-177` | COMPROVADA |\n+| R23 | R2-P12/R2-P40 | `api/atividades_handlers.go:253-262` | `api/atividades_test.go:176-177` | COMPROVADA |\n+| R24 | R2-P12 | `api/atividades_handlers.go:253-262` | Nenhum caso `fim == inicio` | SEM PROVA |\n+| R25 | P-12/R2-P11 | `api/atividades_handlers.go:237-240` | `api/atividades_test.go:270-287` | COMPROVADA |\n+| R26 | P-13/P-14/R2-P08/R2-P13 | `api/atividades_handlers.go:172-185,459-470` | `api/atividades_test.go:169-177,231-243` | COMPROVADA |\n+| R27 | R2-P08/contrato | `api/atividades_handlers.go:182-185,469-471` | `api/atividades_test.go:172,242` | COMPROVADA |\n+| R28 | P-15/R2-P14 | `api/atividades_handlers.go:473-475` | `api/atividades_test.go:246-266` | COMPROVADA |\n+| R29 | R2-P16 | `api/atividades_handlers.go:301-305` | `api/atividades_test.go:250-266` | COMPROVADA |\n+| R30 | R2-P16 | `api/atividades_handlers.go:301-306` | `api/atividades_test.go:250-266` | COMPROVADA |\n+| R31 | R2-P15 | `api/atividades_handlers.go:459-478` | Nenhum teste de aumento de vagas | SEM PROVA |\n+| R32 | P-06/R2-P04 | `api/atividades_handlers.go:270-275` | `api/atividades_test.go:99-127` | COMPROVADA |\n+| R33 | R2-P04 | `api/atividades_handlers.go:24-30,266-275` | `api/atividades_test.go:99-108,231-237` | COMPROVADA |\n+| R34 | contrato | `api/atividades_handlers.go:480-485` | `api/atividades_test.go:231-237` | COMPROVADA |\n+| R35 | P-16/R2-P17 | `api/atividades_handlers.go:451-478` | `api/atividades_test.go:225-244` | COMPROVADA |\n+| R36 | P-17/R2-P18 | `api/atividades_handlers.go:434-444` | `api/atividades_test.go:239-241` | PROVA FRACA |\n+| R37 | R2-P20 | `api/atividades_handlers.go:446-448` | `api/atividades_test.go:284-285` | COMPROVADA |\n+| R38 | P-31/R2-P36 | Precedencia nao exigida; spec: `specs/M1-grade-atividades.md:125,223` | Criterio de aceitacao | COMPROVADA COMO NAO-EXIGENCIA |\n+| R39 | P-18/R2-P21/contrato | `api/atividades_handlers.go:504-514` | `api/atividades_test.go:270-287` | COMPROVADA |\n+| R40 | P-18/R2-P21 | `api/atividades_handlers.go:504-508` | `api/atividades_test.go:288-294` | COMPROVADA |\n+| R41 | P-19/R2-P22 | `api/atividades_handlers.go:499-511` | `api/atividades_test.go:284-287,310-315` | COMPROVADA |\n+| R42 | P-20/R2-P23 | `api/atividades_handlers.go:499-502` | `api/atividades_test.go:284` | COMPROVADA |\n+| R43 | P-31/R2-P36 | Precedencia nao exigida; spec: `specs/M1-grade-atividades.md:135,223` | Criterio de aceitacao | COMPROVADA COMO NAO-EXIGENCIA |\n+| R44 | P-22/R2-P25 | `api/atividades_handlers.go:278-291` | `api/atividades_test.go:296-315` | COMPROVADA |\n+| R45 | P-23/R2-P26 | `api/atividades_handlers.go:284-285` | `api/atividades_test.go:301-307` | COMPROVADA |\n+| R46 | P-23/R2-P26 | `api/atividades_handlers.go:284-291` | `api/atividades_test.go:301-307` | COMPROVADA |\n+| R47 | P-23/R2-P26 | `api/atividades_handlers.go:287-289` | `api/atividades_test.go:301-307` | COMPROVADA |\n+| R48 | P-19/P-22/P-23/R2-P28 | `api/atividades_handlers.go:278-281` | `api/atividades_test.go:310-315` | COMPROVADA |\n+| R49 | P-25/R2-P29 | `api/atividades_handlers.go:377-384` | `api/atividades_test.go:324-331` | COMPROVADA |\n+| R50 | P-25/R2-P29 | `api/atividades_handlers.go:380-382` | `api/atividades_test.go:324-331` | COMPROVADA |\n+| R51 | P-26/R2-P30 | `api/atividades_handlers.go:365-376` | `api/atividades_test.go:327-334` | COMPROVADA |\n+| R52 | P-26/R2-P31/contrato | `api/atividades_handlers.go:394-408` | `api/atividades_test.go:205-223` | COMPROVADA para detalhe existente |\n+| R53 | P-27/R2-P32 | `api/atividades_handlers.go:530-537` | `api/atividades_test.go:324-347` | COMPROVADA |\n+| R54 | P-28/contrato | `api/atividades_handlers.go:363-371` | `api/atividades_test.go:336-337` | COMPROVADA |\n+| R55 | P-29/R2-P32 | `api/atividades_handlers.go:369-374` | `api/atividades_test.go:342-343` | COMPROVADA |\n+| R56 | P-30/contrato | `api/store.go:44,66,92-101`; handlers `366,405` | `api/atividades_test.go:296-315`, `api/main_test.go:16-57` | COMPROVADA |\n+| R57 | P-24/R2-P27/R2-P40 | `api/atividades_handlers.go:284-291` | `api/atividades_test.go:301-307` | COMPROVADA |\n+| R58 | P-24/R2-P27/R2-P40 | `api/atividades_handlers.go:287-289` | `api/atividades_test.go:301-307` | COMPROVADA |\n+| R59 | P-07/R2-P05 | `api/atividades_handlers.go:220-224` | Testa 19/10 e rejeita 24/10 em `155-166`; nao testa 23/10 | PROVA FRACA |\n+| R60 | R2-P15/R2-P24/contrato | `api/atividades_handlers.go:266-275,294-308` | `api/atividades_test.go:99-108,231-266` | COMPROVADA para exposicao M1 |\n+\n+## Achados e lacunas remanescentes\n+\n+1. **R12 - sem prova:** a implementacao ordena os encontros em\n+   `api/atividades_handlers.go:208` e `266-269`, mas nenhum teste envia\n+   encontros fora de ordem e verifica a ordem retornada.\n+2. **R24 - sem prova:** `encontrosConflitam` trata `fim == inicio` como\n+   conflito em `api/atividades_handlers.go:253-262`, mas nao existe cenario\n+   dedicado em `api/atividades_test.go`.\n+3. **R31 - sem prova:** o PATCH permite aumento de vagas em\n+   `api/atividades_handlers.go:459-478`, mas nao ha teste que aumente vagas e\n+   confira o resultado.\n+4. **R09 - prova parcial:** a nova cobertura confirma conteudo extra no POST e\n+   PATCH, mas nao cobre de forma explicita campo obrigatorio ausente e todas as\n+   combinacoes de tipos errados.\n+5. **R11 - prova fraca:** ha casos validos de palestra e minicurso, mas nao ha\n+   teste demonstrando que duracao, capacidade e sala seguem as mesmas regras\n+   para os dois tipos.\n+6. **R36 - prova fraca:** o teste tenta alterar `salaId`, `tipo` e `encontros`\n+   sempre com o valor string `\"x\"` (`api/atividades_test.go:239-241`). Isso\n+   prova a recusa pelo nome do campo, mas nao com valores estruturalmente\n+   validos para cada campo do contrato.\n+7. **R59 - prova fraca:** a implementacao aceita dias 19 a 23 em\n+   `api/atividades_handlers.go:220-224`, mas os testes nao exercitam\n+   explicitamente o limite superior inclusivo de 23/10/2026.\n+8. **R52 - risco de cobertura:** a spec nao define comportamento especial para\n+   detalhe de atividade cancelada (N05). O teste comprova detalhe existente,\n+   mas nao consulta uma atividade cancelada; isso nao e uma falha contratual\n+   comprovada.\n+9. **Filtros invalidos e `vagas < 1`:** a implementacao escolhe\n+   comportamentos para pontos que a spec marca como nao especificados em\n+   `specs/M1-grade-atividades.md:184-197`. Sao riscos de comportamento nao\n+   contratado, nao falhas classificadas do M1.\n+\n+## Dependencias futuras, separadas de falhas M1\n+\n+Nao foram classificadas como falha do M1:\n+\n+- inscricoes, lista de espera e convocacao automatica, que pertencem ao M2;\n+- atualizacao de inscricoes ativas ao cancelar, que pertence ao M2;\n+- codigo de presenca, que pertence ao M3;\n+- certificados, que pertencem ao M4.\n+\n+A spec explicita essas fronteiras em `specs/M1-grade-atividades.md:28-38` e\n+`173-182`. O M1 apenas expoe os campos calculados necessarios ao consumo\n+futuro, usando o modelo minimo de inscricoes em `api/store.go:36-49` e\n+`api/atividades_handlers.go:294-308`.\n+\n+As falhas de aceite deste parecer sao exclusivamente as lacunas de prova do\n+M1 listadas em R12, R24, R31, R09, R11, R36 e R59.\n+\n+## Testes executados\n+\n+Comando executado em `api/`, conforme a configuracao do repositorio:\n+\n+```text\n+go test ./...\n+```\n+\n+Resultado:\n+\n+```text\n+ok    semana-academica    (cached)\n+```\n+\n+Os testes novos de conteudo extra estao em\n+`api/atividades_test.go:76-93` e foram incluidos na execucao da suíte.\n+Nao foram encontrados testes de interface Flutter no repositorio auditado.\n+\n+## Status do Git\n+\n+Status observado durante a auditoria, antes da criacao deste relatorio:\n+\n+```text\n+ M api/atividades_handlers.go\n+ M api/atividades_test.go\n+ M evidencias/sessoes/yasminsouza21/INDICE.md\n+?? evidencias/sessoes/yasminsouza21/ses_f38e23ff3ffe2wolkCb2kbRKaw.json\n+?? evidencias/sessoes/yasminsouza21/ses_f38e23ff3ffe2wolkCb2kbRKaw.md\n+?? evidencias/sessoes/yasminsouza21/ses_f38e4e25fffeSovqi8CuDkig5k.json\n+?? evidencias/sessoes/yasminsouza21/ses_f38e4e25fffeSovqi8CuDkig5k.md\n+?? evidencias/sessoes/yasminsouza21/ses_f38f4949effeMH4U268gEv13a2.json\n+?? evidencias/sessoes/yasminsouza21/ses_f38f4949effeMH4U268gEv13a2.md\n+```\n+\n+Essas alteracoes ja estavam presentes e nao foram modificadas pela auditoria.\n+O novo arquivo `auditorias/M1-grade-atividades-pos-correcao.md` foi o unico\n+arquivo criado nesta auditoria. Nenhum commit foi feito.\n+\n+## Conclusao\n+\n+**NAO PASSOU.** A correcao solicitada esta correta e comprovada em POST e\n+PATCH, e a suíte passa. O aceite integral do M1 continua impedido pelas\n+lacunas de cobertura listadas acima, especialmente R12, R24 e R31.\n",
+         "additions": 207,
+         "deletions": 0
+        }
+       ],
+       "diagnostics": {},
+       "truncated": false
+      },
+      "title": "Success. Updated the following files:\nA auditorias/M1-grade-atividades-pos-correcao.md",
+      "time": {
+       "start": 1790047375248,
+       "end": 1790047375256
+      }
+     },
+     "metadata": {
+      "openai": {
+       "itemId": "fc_074668c1666254c8016ab1f438a05c87d28645a4aa6fcc5b67"
+      }
+     },
+     "id": "prt_0c721fdaa001IVMdGnFKPLebZi",
+     "sessionID": "ses_f38e0c288ffeDitumIH6beGSrE",
+     "messageID": "msg_0c721e7ec001mfsM33yxKJmOsj"
+    },
+    {
+     "reason": "tool-calls",
+     "snapshot": "c43d8a89507651f78e9bb3091caf58b3e0c4a61b",
+     "type": "step-finish",
+     "tokens": {
+      "total": 68225,
+      "input": 1268,
+      "output": 4965,
+      "reasoning": 40,
+      "cache": {
+       "write": 0,
+       "read": 61952
+      }
+     },
+     "cost": 0,
+     "id": "prt_0c7235074001JeYrl9y5C3vMPn",
+     "sessionID": "ses_f38e0c288ffeDitumIH6beGSrE",
+     "messageID": "msg_0c721e7ec001mfsM33yxKJmOsj"
+    },
+    {
+     "type": "patch",
+     "hash": "f3d92db75a32591b03aa2131ef525aae1b492959",
+     "files": [
+      "/Users/yasmindesouza/TrabalhoIA-WomanInTech/auditorias/M1-grade-atividades-pos-correcao.md"
+     ],
+     "id": "prt_0c72350b6001fQULbgZJRU4VEP",
+     "sessionID": "ses_f38e0c288ffeDitumIH6beGSrE",
+     "messageID": "msg_0c721e7ec001mfsM33yxKJmOsj"
+    }
+   ]
+  },
+  {
+   "info": {
+    "parentID": "msg_0c71f3d86001DFuaQvTYeIjpn3",
+    "role": "assistant",
+    "mode": "build",
+    "agent": "build",
+    "variant": "medium",
+    "path": {
+     "cwd": "/Users/yasmindesouza/TrabalhoIA-WomanInTech",
+     "root": "/Users/yasmindesouza/TrabalhoIA-WomanInTech"
+    },
+    "cost": 0,
+    "tokens": {
+     "total": 68496,
+     "input": 5281,
+     "output": 148,
+     "reasoning": 91,
+     "cache": {
+      "write": 0,
+      "read": 62976
+     }
+    },
+    "modelID": "gpt-5.6-luna",
+    "providerID": "openai",
+    "time": {
+     "created": 1790047375551,
+     "completed": 1790047381538
+    },
+    "finish": "tool-calls",
+    "id": "msg_0c72350bf001zAyzXmGCakPGH1",
+    "sessionID": "ses_f38e0c288ffeDitumIH6beGSrE"
+   },
+   "parts": [
+    {
+     "snapshot": "c43d8a89507651f78e9bb3091caf58b3e0c4a61b",
+     "type": "step-start",
+     "id": "prt_0c7235679001D75lFqx8Qf0H7B",
+     "sessionID": "ses_f38e0c288ffeDitumIH6beGSrE",
+     "messageID": "msg_0c72350bf001zAyzXmGCakPGH1"
+    },
+    {
+     "type": "reasoning",
+     "text": "**Planning final git status verification**",
+     "time": {
+      "start": 1790047377019,
+      "end": 1790047381320
+     },
+     "metadata": {
+      "openai": {
+       "itemId": "rs_0e6153af1ea60b4a016ab1f490f16887d2927b743f50a6c118",
+       "reasoningEncryptedContent": "gAAAAABqsfSV1RYJzjGlSgJX-2evOB2Ms1jwkor5L7xO2d4pY7ju5WKp-DId_HIoS0L8-0UM9gNzrH1jpxqvUp5wYO_hOsXqmAN1PS1ZDseXLSWsY9V7EbGdnhn98Of0LT6cJyHuCpq5rnuEwX8B6YBhOzOVuEE0l5WKgVA8f-_9Gg0PxU24p5GjtzoI_kibLEzln992u7iFA71WGBA8HGY0f5xUZBw5joc7is1idKl3vUdYjBEMKL_pzv9fuqc6GUkUnJXf3YOQFaXUzubL1FZCO-2nQSKMB7lBTE0WRf36tKD-xNoRAYPoe0hToy9DrIzVZbTyF-WcfOwx40IouD2uM0_Ei581Ww_Igygy3pgcEUXR0H0ytXHf-ni2ncktbc-Ad0EwYiUUnn0uYpzuc_y_uzWgi5sYoH13k_PEA6G0XtONKIShGgD-BpisaAhcR-LTupe6ZlhlWmrqLNjpW2K-V3CM5dmf-821MQN2B5F4w5AmA-LN5tWR5nWEDqPDVFWQRMKdY_bj7T04kikh4Y7ltRmygWhZD1nv6MsD6mYw7hT14aAYuq4n_kWXNGraew56BmhnU7itW1T9IIDILrb1RW9tkmIOrrnwnZ_8XMu66Co25a6RiOLsL9KCpUAf85dMmKjZnAVIb0HkHreirXNxq5DJm2QQtncNmtoLb3g6wBOR05gyrxk_FTQZVvbSJfS3m1MJ8Y4VYi8oZrPG7FTlenRXAvkOmpGiNNEAezLO4zgCIMiUCSr0SscH0KOdM-MBqRLNN3cWeAKolSIGmIjetLoPnuL9M19vTYqo-LBqX7-lxf00Quq5kaBqASRM3HS3aaze3w85gbPC54pTpZ9z4B35L726HoWIHLrnwTIEPNzN0O_vhGyodzDR6FD2XcAfT3jjH6tj38Xa6LCDCZ8C2ilAjOaNawQEs6De0DjkJ3oFDv0Im4hHYv05cLcFF-rfmcpldhejuXZfjlbLf8w63PONUhYNsZx1gAeOvaLa95-DiIhoE-pR5p5WfFEhERgTD1cpJ6GyuB7JepH60ava0SDkliijphICSdTRBcxGg1DWluo_2_sInBne81S8D8b6Q-NzJ8wFL3LGQP2eZzqg4e6IucwuonTozrDA9wRKrK4bAWkNYuyfAKlQ_Sp3e3oIyMZF39ypR0z5nyCIgwS97BTEfeZ32vUMIttbn1_MQbpw-4BtobFznU-YRNykG7eFGIBuWnxlwhxxJdL_GCpdx2y0TiHzRgdI9WwnlLjidjcRD6d7S-R02VP98zvdTc9stPJ0RpB-9YdO_9RT7C3xjQhwCECmxLLpkBT90JzyStVjDEhsGGh1_oxs8IGvTVFVo4SPmD4fZ9znhRdq_wh-GXhpSKMKVotpUFAbA7tWMU-y22w5TQIxkP4OHIjrTdUEk8Izww-jAx99Zt4bJEQf4i5pAiOhdmtptuoCa6530Np9DOO1Qg8EycBh428EhDmiv5Bld3Tr9kKlcaUHf2Akylsqe9vKboSUM7c8HW8Z1v2GR0DSjUsjM0JXv62R5xSrnbJ4UheEQN-Fn66XynYdJzHIV_iR5K5jW_rluC3QfeWWDH7CrzALO20SJSAndnPvmoXnevndc0Lev3BuU3evrFvIBTw2qCDfouvV5CYzhsHhL7hnGhZ7eXlFY201ggLgaN4vrACWiEK2Sfc5iYRxHrlmsTx3ZKn7seb4SMhxutoW090_jqyvHs20AWCwyQRb8e5U3VtZQQqvfZzB13ba2Ylu6_F2jEVvGXExNc_pB_6jfQd9u_OVprHdaY624o-9H76n0-G7CEbqGdVuZvvLngskPagTBrduKeUfc6BSyN9E93c0GvJiYbH6WYPmzTU_4bycru3w"
+      }
+     },
+     "id": "prt_0c723567b001pslKvae37H7z81",
+     "sessionID": "ses_f38e0c288ffeDitumIH6beGSrE",
+     "messageID": "msg_0c72350bf001zAyzXmGCakPGH1"
+    },
+    {
+     "type": "tool",
+     "tool": "bash",
+     "callID": "call_BJJ7Cv00NlXMBYv3v39X2TKi",
+     "state": {
+      "status": "completed",
+      "input": {
+       "command": "git status --short",
+       "workdir": "/Users/yasmindesouza/TrabalhoIA-WomanInTech"
+      },
+      "output": " M api/atividades_handlers.go\n M api/atividades_test.go\n M evidencias/sessoes/yasminsouza21/INDICE.md\n?? auditorias/M1-grade-atividades-pos-correcao.md\n?? evidencias/sessoes/yasminsouza21/ses_f38e23ff3ffe2wolkCb2kbRKaw.json\n?? evidencias/sessoes/yasminsouza21/ses_f38e23ff3ffe2wolkCb2kbRKaw.md\n?? evidencias/sessoes/yasminsouza21/ses_f38e4e25fffeSovqi8CuDkig5k.json\n?? evidencias/sessoes/yasminsouza21/ses_f38e4e25fffeSovqi8CuDkig5k.md\n?? evidencias/sessoes/yasminsouza21/ses_f38f4949effeMH4U268gEv13a2.json\n?? evidencias/sessoes/yasminsouza21/ses_f38f4949effeMH4U268gEv13a2.md\n",
+      "metadata": {
+       "output": " M api/atividades_handlers.go\n M api/atividades_test.go\n M evidencias/sessoes/yasminsouza21/INDICE.md\n?? auditorias/M1-grade-atividades-pos-correcao.md\n?? evidencias/sessoes/yasminsouza21/ses_f38e23ff3ffe2wolkCb2kbRKaw.json\n?? evidencias/sessoes/yasminsouza21/ses_f38e23ff3ffe2wolkCb2kbRKaw.md\n?? evidencias/sessoes/yasminsouza21/ses_f38e4e25fffeSovqi8CuDkig5k.json\n?? evidencias/sessoes/yasminsouza21/ses_f38e4e25fffeSovqi8CuDkig5k.md\n?? evidencias/sessoes/yasminsouza21/ses_f38f4949effeMH4U268gEv13a2.json\n?? evidencias/sessoes/yasminsouza21/ses_f38f4949effeMH4U268gEv13a2.md\n",
+       "exit": 0,
+       "truncated": false
+      },
+      "title": "git status --short",
+      "time": {
+       "start": 1790047381345,
+       "end": 1790047381383
+      }
+     },
+     "metadata": {
+      "openai": {
+       "itemId": "fc_0e6153af1ea60b4a016ab1f4953c8c87d2b49e239514d77ca6"
+      }
+     },
+     "id": "prt_0c723675c001KebeJy7uGPQfO9",
+     "sessionID": "ses_f38e0c288ffeDitumIH6beGSrE",
+     "messageID": "msg_0c72350bf001zAyzXmGCakPGH1"
+    },
+    {
+     "type": "tool",
+     "tool": "bash",
+     "callID": "call_RpMHsIuQZleWDGctN3xrXntG",
+     "state": {
+      "status": "completed",
+      "input": {
+       "command": "git diff --check",
+       "workdir": "/Users/yasmindesouza/TrabalhoIA-WomanInTech"
+      },
+      "output": "(no output)",
+      "metadata": {
+       "output": "(no output)",
+       "exit": 0,
+       "truncated": false
+      },
+      "title": "git diff --check",
+      "time": {
+       "start": 1790047381350,
+       "end": 1790047381385
+      }
+     },
+     "metadata": {
+      "openai": {
+       "itemId": "fc_0e6153af1ea60b4a016ab1f4953ca087d2b88d397941f8f598"
+      }
+     },
+     "id": "prt_0c7236763001AUYfCM0yYgtx57",
+     "sessionID": "ses_f38e0c288ffeDitumIH6beGSrE",
+     "messageID": "msg_0c72350bf001zAyzXmGCakPGH1"
+    },
+    {
+     "type": "tool",
+     "tool": "read",
+     "callID": "call_TSZGgfRcmlFa9E2UJHostCy4",
+     "state": {
+      "status": "completed",
+      "input": {
+       "filePath": "/Users/yasmindesouza/TrabalhoIA-WomanInTech/auditorias/M1-grade-atividades-pos-correcao.md",
+       "offset": 1,
+       "limit": 40
+      },
+      "output": "[1793 caracteres omitidos]",
+      "title": "auditorias/M1-grade-atividades-pos-correcao.md",
+      "time": {
+       "start": 1790047381353,
+       "end": 1790047381365
+      }
+     },
+     "metadata": {
+      "openai": {
+       "itemId": "fc_0e6153af1ea60b4a016ab1f4953ca887d2b569d0781e99fde3"
+      }
+     },
+     "id": "prt_0c7236768001tCChSXtL2PFEOC",
+     "sessionID": "ses_f38e0c288ffeDitumIH6beGSrE",
+     "messageID": "msg_0c72350bf001zAyzXmGCakPGH1"
+    },
+    {
+     "reason": "tool-calls",
+     "snapshot": "c43d8a89507651f78e9bb3091caf58b3e0c4a61b",
+     "type": "step-finish",
+     "tokens": {
+      "total": 68496,
+      "input": 5281,
+      "output": 148,
+      "reasoning": 91,
+      "cache": {
+       "write": 0,
+       "read": 62976
+      }
+     },
+     "cost": 0,
+     "id": "prt_0c72367f40018Hya6oqAflps2f",
+     "sessionID": "ses_f38e0c288ffeDitumIH6beGSrE",
+     "messageID": "msg_0c72350bf001zAyzXmGCakPGH1"
+    }
+   ]
+  },
+  {
+   "info": {
+    "parentID": "msg_0c71f3d86001DFuaQvTYeIjpn3",
+    "role": "assistant",
+    "mode": "build",
+    "agent": "build",
+    "variant": "medium",
+    "path": {
+     "cwd": "/Users/yasmindesouza/TrabalhoIA-WomanInTech",
+     "root": "/Users/yasmindesouza/TrabalhoIA-WomanInTech"
+    },
+    "cost": 0,
+    "tokens": {
+     "total": 69472,
+     "input": 1231,
+     "output": 114,
+     "reasoning": 31,
+     "cache": {
+      "write": 0,
+      "read": 68096
+     }
+    },
+    "modelID": "gpt-5.6-luna",
+    "providerID": "openai",
+    "time": {
+     "created": 1790047381544,
+     "completed": 1790047386625
+    },
+    "finish": "tool-calls",
+    "id": "msg_0c72368280018iNbdv6zDTZpJg",
+    "sessionID": "ses_f38e0c288ffeDitumIH6beGSrE"
+   },
+   "parts": [
+    {
+     "snapshot": "c43d8a89507651f78e9bb3091caf58b3e0c4a61b",
+     "type": "step-start",
+     "id": "prt_0c72370ce001zkxXjK2QD11Cvb",
+     "sessionID": "ses_f38e0c288ffeDitumIH6beGSrE",
+     "messageID": "msg_0c72368280018iNbdv6zDTZpJg"
+    },
+    {
+     "type": "reasoning",
+     "text": "**Updating completed tasks and test summary**",
+     "time": {
+      "start": 1790047383761,
+      "end": 1790047385315
+     },
+     "metadata": {
+      "openai": {
+       "itemId": "rs_094bf454d519ac1f016ab1f497c50887d28c896877e6871ae8",
+       "reasoningEncryptedContent": "gAAAAABqsfSZBo4g-IDF99nAgW3GfzOZXymXIXPwsGjpErX6K3CrKQdyQa2D1JchMGdAJTKWGsICKmqeSan36c7aTdBI-VXdOker6JaArH5GR5pMjA-C6jEKvjPlwNMZ2hvdVUzSOfnyvv2ScIEWsL354GqwOm4hyrB-V7ahsMaStbUvIosTC2C9x5B8LSfFmeXHvEdAEpJ-gPFNXS1R5APnJSN8cvOx0IZQ0upytuKynxtA84MbF91npxSsvq6zE52ulK5MHVry8svFlnvLhHSjsRKwsMdmvrj3om0spsYxrqjmv1q84pNkepHWZXMDAo2D79yHWdNrtv1VOyJ_Gt_zvB93f6RqEyc39W6ja9a3_EGl0Sg2gdxwBnymHfHPS98kLo3R1rENl4LxWLskxfJ4pnWDPGzA-Q_UnV61JLKyq0r0EdEwSH-z2Eti0XqjXni_gayMoQ40-LcJZXkop6kdoEOdH25I4mxyOQkjzIdNMRWEjXrsIAuFc5fLXzWkQVIXgQ6pqndzWHF4izDregGUUtlLGmIcPjb7_3fIKsvHNriwYMkb0mhr8D3GF1mouiwg515Y01224yyRSru139Prg1u3ZdUsIj_qGQhHP_TdAMF9rx6CHDo5s6rQwsfEgFAQxYuPpX4meWVQg7gY6_7_9nwtfw-grlyoCzUm82UD81-zzoa2nOt-kTFEoC4ikQ10lNERIpVMX8oGjSaV5kKf0rTXOPZjv2xXTCcBd04_aF4_b4DvsvQpGq_-w74FOFyQkeJZJWKGd9xnUvXcw6-3sg3IhnNP4QapjsZDLUrLFVeBbfD9zxWBIuvhtoBEwOPD6BX6QlWLDL1eNAXUE8OT-aQrqdwInaUYuvG2eBw0GG6JJnMXfNFyX1kqWegNEoLxhdM3ZXKBRzJ3fMgd4qa4osVfZqHCoA7cy-0eVUnUa8gt4Aj8DeGE5WtGbA9ylhkkDePfVda9vwVWHLaTdvJmFbQJwnpTKaiTxmJMF5DiA27HGwKv8SpEE2z2bhIPeBGwVNdKb-3J5jGQPCjpK-h8RgjkJfWsXlHQ9GWGzCKVRa0E4t2uW-JQ_jw3rmmZf4Hpe3wf7WIUKs8BSE177uyrQOKPef8IziJ6whuE5rIW08ifUmGixxgSregNOnRYtJaww1BrwILgHPC18KVcE6IxPtvGkdxc2nzDvLgU9ShnqvF8Y3oMVQ61xBoMYR1bZHEdasjMqtGUQ4_JQraq4PvmhjOXjK1eiYHvf1162hMCC7SMVm92bGwM_UI9GZnKpHvp0yDiBw07qgYvahk4iSAiRSMIWvj8xCUk4XR3Vr9zk5he95kDHTAguFNV0hZfB3H7g-qM0bG0PAZ34_CmtE2b6-zHMFuD4x3P8MmTMJoh5bTzBCcafPplr7T4akCFbn1y0VFTEDeVAwOjndDTO6H_ptIqDZ2XprZkZplWZhWKP5rbb5DoMmRIu0QjDxLJmQ5C5l0xUM2f"
+      }
+     },
+     "id": "prt_0c72370d1001GdzDzkeEj7MBie",
+     "sessionID": "ses_f38e0c288ffeDitumIH6beGSrE",
+     "messageID": "msg_0c72368280018iNbdv6zDTZpJg"
+    },
+    {
+     "type": "tool",
+     "tool": "todowrite",
+     "callID": "call_K152WGFmuLdmvkIf95N80VB5",
+     "state": {
+      "status": "completed",
+      "input": {
+       "todos": [
+        {
+         "content": "Auditar spec, entrevistas, contrato, API, testes e correção POST/PATCH",
+         "status": "completed",
+         "priority": "high"
+        },
+        {
+         "content": "Executar suíte e testes específicos sem alterar arquivos",
+         "status": "completed",
+         "priority": "high"
+        },
+        {
+         "content": "Escrever relatório pós-correção preservando demais arquivos",
+         "status": "completed",
+         "priority": "high"
+        },
+        {
+         "content": "Verificar status final do Git e concluir veredito",
+         "status": "completed",
+         "priority": "high"
+        }
+       ]
+      },
+      "output": "[\n  {\n    \"content\": \"Auditar spec, entrevistas, contrato, API, testes e correção POST/PATCH\",\n    \"status\": \"completed\",\n    \"priority\": \"high\"\n  },\n  {\n    \"content\": \"Executar suíte e testes específicos sem alterar arquivos\",\n    \"status\": \"completed\",\n    \"priority\": \"high\"\n  },\n  {\n    \"content\": \"Escrever relatório pós-correção preservando demais arquivos\",\n    \"status\": \"completed\",\n    \"priority\": \"high\"\n  },\n  {\n    \"content\": \"Verificar status final do Git e concluir veredito\",\n    \"status\": \"completed\",\n    \"priority\": \"high\"\n  }\n]",
+      "metadata": {
+       "todos": [
+        {
+         "content": "Auditar spec, entrevistas, contrato, API, testes e correção POST/PATCH",
+         "status": "completed",
+         "priority": "high"
+        },
+        {
+         "content": "Executar suíte e testes específicos sem alterar arquivos",
+         "status": "completed",
+         "priority": "high"
+        },
+        {
+         "content": "Escrever relatório pós-correção preservando demais arquivos",
+         "status": "completed",
+         "priority": "high"
+        },
+        {
+         "content": "Verificar status final do Git e concluir veredito",
+         "status": "completed",
+         "priority": "high"
+        }
+       ],
+       "truncated": false
+      },
+      "title": "0 todos",
+      "time": {
+       "start": 1790047386460,
+       "end": 1790047386463
+      }
+     },
+     "metadata": {
+      "openai": {
+       "itemId": "fc_094bf454d519ac1f016ab1f4993fbc87d2b5069054f8853e70"
+      }
+     },
+     "id": "prt_0c72376e5001eL1MHLD294fpXZ",
+     "sessionID": "ses_f38e0c288ffeDitumIH6beGSrE",
+     "messageID": "msg_0c72368280018iNbdv6zDTZpJg"
+    },
+    {
+     "reason": "tool-calls",
+     "snapshot": "c43d8a89507651f78e9bb3091caf58b3e0c4a61b",
+     "type": "step-finish",
+     "tokens": {
+      "total": 69472,
+      "input": 1231,
+      "output": 114,
+      "reasoning": 31,
+      "cache": {
+       "write": 0,
+       "read": 68096
+      }
+     },
+     "cost": 0,
+     "id": "prt_0c7237bd2001elgOZi6mQN5IsV",
+     "sessionID": "ses_f38e0c288ffeDitumIH6beGSrE",
+     "messageID": "msg_0c72368280018iNbdv6zDTZpJg"
+    }
+   ]
+  },
+  {
+   "info": {
+    "parentID": "msg_0c71f3d86001DFuaQvTYeIjpn3",
+    "role": "assistant",
+    "mode": "build",
+    "agent": "build",
+    "variant": "medium",
+    "path": {
+     "cwd": "/Users/yasmindesouza/TrabalhoIA-WomanInTech",
+     "root": "/Users/yasmindesouza/TrabalhoIA-WomanInTech"
+    },
+    "cost": 0,
+    "tokens": {
+     "total": 69744,
+     "input": 511,
+     "output": 113,
+     "reasoning": 0,
+     "cache": {
+      "write": 0,
+      "read": 69120
+     }
+    },
+    "modelID": "gpt-5.6-luna",
+    "providerID": "openai",
+    "time": {
+     "created": 1790047386629,
+     "completed": 1790047391492
+    },
+    "finish": "stop",
+    "id": "msg_0c7237c05001DxKV5sFgdtK23D",
+    "sessionID": "ses_f38e0c288ffeDitumIH6beGSrE"
+   },
+   "parts": [
+    {
+     "snapshot": "c43d8a89507651f78e9bb3091caf58b3e0c4a61b",
+     "type": "step-start",
+     "id": "prt_0c72385b2001iNogDCtiCT23WQ",
+     "sessionID": "ses_f38e0c288ffeDitumIH6beGSrE",
+     "messageID": "msg_0c7237c05001DxKV5sFgdtK23D"
+    },
+    {
+     "type": "text",
+     "text": "Relatório criado em `auditorias/M1-grade-atividades-pos-correcao.md`.\n\n- Veredito: **NÃO PASSOU**\n- JSON extra corrigido e testado em POST e PATCH.\n- Teste executado: `go test ./...` em `api/` → passou.\n- `git diff --check` → passou.\n- Auditoria anterior preservada.\n- Nenhum commit realizado.\n- Status do Git registrado no relatório; havia alterações pré-existentes e o novo relatório não versionado.",
+     "time": {
+      "start": 1790047389110,
+      "end": 1790047391292
+     },
+     "metadata": {
+      "openai": {
+       "itemId": "msg_0150bd30ffc48ed8016ab1f49d218487d2861b089f1a8d3154",
+       "phase": "final_answer"
+      }
+     },
+     "id": "prt_0c72385b6001jwZrBzdWUUJIfW",
+     "sessionID": "ses_f38e0c288ffeDitumIH6beGSrE",
+     "messageID": "msg_0c7237c05001DxKV5sFgdtK23D"
+    },
+    {
+     "reason": "stop",
+     "snapshot": "c43d8a89507651f78e9bb3091caf58b3e0c4a61b",
+     "type": "step-finish",
+     "tokens": {
+      "total": 69744,
+      "input": 511,
+      "output": 113,
+      "reasoning": 0,
+      "cache": {
+       "write": 0,
+       "read": 69120
+      }
+     },
+     "cost": 0,
+     "id": "prt_0c7238ed0001YMipMTdw5bL7DL",
+     "sessionID": "ses_f38e0c288ffeDitumIH6beGSrE",
+     "messageID": "msg_0c7237c05001DxKV5sFgdtK23D"
+    }
+   ]
+  }
+ ]
+}

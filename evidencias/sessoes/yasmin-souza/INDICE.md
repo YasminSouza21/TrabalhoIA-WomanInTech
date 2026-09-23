@@ -1,0 +1,43 @@
+# Sessões — Yasmin Souza
+
+Cada execução de teste é lida pelo que mudou desde a anterior:
+
+- **Ciclo** — vermelho logo depois de mexer só em teste, e depois verde logo depois de mexer só em código. É o TDD.
+- **Nasceu verde** — verde logo depois de mexer só em teste. Ou o comportamento já existia, ou o teste não testa o que diz.
+- **Juntos** — teste e código mudaram antes da mesma execução. Não houve vermelho para ver.
+
+**Alertas:** *colou* = prompt com 10 palavras seguidas ou mais iguais às do documento de requisitos (só aparece quando o resumo é gerado com `--requisitos`); *leu* = o agente acessou um arquivo de requisitos; *anexou* = o documento foi anexado à conversa.
+
+Requisições são chamadas ao modelo: cada passo do agente é uma. Skills contam tanto a ferramenta `skill` quanto o comando `/nome`.
+
+| Início | Sessão | Requisições | Skills | Subagentes | Vermelhas / verdes | Ciclos | Nasceu verde | Juntos | Alertas |
+|---|---|---|---|---|---|---|---|---|---|
+| 19/09 19:12 | [Análise inicial e requisitos do Marco 1 em Go](ses_f44454556ffenD5ir1G15EWtyW.md) | 39 | grilling | — | 0 / 2 | 0 | 0 | 1 | — |
+| 19/09 19:52 | [Rodada 2 do M1: Grade de Atividades](ses_f442087b9ffephBjXWFQ4Sj5hM.md) | 26 | grilling | — | 0 / 0 | 0 | 0 | 0 | — |
+| 21/09 23:43 | [Verificação de rastreabilidade M1 Rodada 2](ses_f39009e72ffePa1iCYmX6DP4p4.md) | 2 | — | — | 0 / 0 | 0 | 0 | 0 | — |
+| 21/09 23:45 | [Criar spec formal do M1 grade de atividades](ses_f38ff03c4ffeSgCXrMAJBQYekK.md) | 12 | to-spec | — | 0 / 0 | 0 | 0 | 0 | — |
+| 21/09 23:48 | [Implementação TDD do M1 Grade de Atividades](ses_f38fbc23dffe7p1lwmEVGYXe0e.md) | 32 | tdd | — | 4 / 6 | 0 | 0 | 0 | — |
+| 21/09 23:56 | [Auditoria formal do módulo M1 — Grade de Atividades](ses_f38f4949effeMH4U268gEv13a2.md) | 11 | — | auditor | 0 / 0 | 0 | 0 | 0 | — |
+| 22/09 00:13 | [Correção TDD para rejeitar JSON extra em atividades](ses_f38e4e25fffeSovqi8CuDkig5k.md) | 19 | — | — | 2 / 3 | 0 | 0 | 0 | — |
+| 22/09 00:16 | [Restaurar linha original de M1 em EQUIPE.md](ses_f38e23ff3ffe2wolkCb2kbRKaw.md) | 4 | — | — | 0 / 0 | 0 | 0 | 0 | — |
+| 22/09 00:18 | [Auditoria pós-correção do M1 — Grade de Atividades](ses_f38e0c288ffeDitumIH6beGSrE.md) | 10 | — | auditor | 0 / 1 | 0 | 0 | 0 | — |
+| 22/09 06:54 | [Fechamento de lacunas da auditoria backend M1](ses_f377669ccffefG3qjwSh41RyKu.md) | 25 | tdd | — | 0 / 11 | 0 | 0 | 0 | — |
+| 22/09 06:59 | [Migração do backend Go para Dart e frontend Flutter web](ses_f3771c42dffed4lZdlkUWFnb4B.md) | 56 | tdd | — | 7 / 9 | 0 | 0 | 0 | — |
+| 22/09 07:48 | [Auditoria final do Módulo 1 em Dart e Flutter](ses_f37448d0bffeasRT1Cf8TIJxMA.md) | 10 | — | auditor | 0 / 2 | 0 | 0 | 0 | — |
+| 22/09 07:56 | [Correção completa do Módulo 1 Dart/Flutter](ses_f373d903fffecpVnrKTRcQ5sQV.md) | 28 | tdd | auditor (2) | 1 / 6 | 0 | 0 | 0 | — |
+| 22/09 20:57 | [Auditoria do Módulo 2: Inscrições e Lista de Espera](ses_f34725ab5ffe7WJthhXz5Dhsip.md) | 17 | — | auditor (2) | 0 / 2 | 0 | 0 | 0 | — |
+| 22/09 21:11 | [Entrevista M3: perguntas sobre QR, presença e integrações](ses_f3465c1f2ffemfPF8NB2zix838.md) | 62 | grilling, to-spec, tdd | — | 4 / 12 | 0 | 0 | 0 | — |
+| 22/09 21:39 | [Auditoria somente leitura do M3 Presença QR](ses_f344b96b2ffeS126oN7olcixs6.md) | 4 | — | auditor, revisor-de-contrato, explore | 0 / 0 | 0 | 0 | 0 | — |
+| 22/09 21:46 | [Correção completa das pendências da auditoria M3](ses_f3445ba41ffeO0SM4kFIcfgplC.md) | 46 | tdd | — | 2 / 8 | 0 | 0 | 0 | — |
+| 22/09 21:55 | [Correção documental final do M3 sem alterar código](ses_f343d1a05ffeOik2CCZwbhtrDf.md) | 10 | — | — | 0 / 0 | 0 | 0 | 0 | — |
+| 22/09 22:06 | [M3 — equipe e pareceres formais](ses_f3432fae1ffedPnagCGTqQlBHt.md) | 20 | — | auditor, revisor-de-contrato | 0 / 0 | 0 | 0 | 0 | — |
+| 22/09 22:14 | [M3 — Rodada 1 grilling](ses_f342bcfa4ffeqUhWNV1LOCMHLV.md) | 3 | grilling | — | 0 / 0 | 0 | 0 | 0 | — |
+| 22/09 22:15 | [M3 — Rodada 2 grilling](ses_f342b36b3ffexvWlGk2cvmNvz8.md) | 5 | grilling | — | 0 / 0 | 0 | 0 | 0 | — |
+| 22/09 22:15 | [M3 — Spec com to-spec](ses_f342a95a4ffegZNe64TSyAus0k.md) | 7 | to-spec | — | 0 / 0 | 0 | 0 | 0 | — |
+| 22/09 22:18 | [M3 — validação build Flutter e evidências](ses_f3428b1bfffeXns58X3NBTxmya.md) | 3 | — | — | 0 / 0 | 0 | 0 | 0 | — |
+| 22/09 22:21 | [M3 — remediação dos pareceres](ses_f342518fdffetcW5MICCK4xNm7.md) | 29 | tdd | — | 1 / 7 | 0 | 0 | 0 | — |
+| 22/09 22:28 | [M3 — auditoria pós-remediação](ses_f341ed569ffeClNfB0bYiyLUML.md) | 13 | — | auditor, revisor-de-contrato | 0 / 2 | 0 | 0 | 0 | — |
+| 22/09 22:36 | [M3 — corrigir achados finais do revisor](ses_f3417791dffePZCyF1BE5kzsZf.md) | 16 | tdd | — | 1 / 4 | 0 | 0 | 0 | — |
+| 22/09 22:48 | [M1 — completar identificação e pendências finais](ses_f340c8686ffezfhc9o2B2prpS9.md) | 24 | — | auditor (2) | 0 / 7 | 0 | 0 | 0 | — |
+| 22/09 23:04 | [M1/M3 — exportação final de evidências](ses_f33fe70b7ffeKI8xlNgRD5ji3i.md) | 2 | — | — | 0 / 0 | 0 | 0 | 0 | — |
+| | **Total: 28 sessões** | 535 | grilling (5), to-spec (3), tdd (8) | auditor (12), revisor-de-contrato (3), explore | 22 / 82 | 0 | 0 | 1 | — |
