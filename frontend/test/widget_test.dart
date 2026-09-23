@@ -42,7 +42,9 @@ void main() {
     expect(find.text('em_andamento'), findsOneWidget);
   });
 
-  testWidgets('mostra sala com capacidade e encontros no detalhe', (tester) async {
+  testWidgets('mostra sala com capacidade e encontros no detalhe', (
+    tester,
+  ) async {
     final activity = {
       'id': 'atv_1',
       'titulo': 'Flutter',
@@ -60,7 +62,11 @@ void main() {
       client: MockClient((request) async {
         if (request.url.path == '/salas') {
           return http.Response(
-              jsonEncode([{'id': 'lab-3', 'nome': 'Laboratório 3', 'capacidade': 20}]), 200);
+            jsonEncode([
+              {'id': 'lab-3', 'nome': 'Laboratório 3', 'capacidade': 20},
+            ]),
+            200,
+          );
         }
         return http.Response(jsonEncode([activity]), 200);
       }),
@@ -105,5 +111,47 @@ void main() {
     await tester.tap(find.text('Carla Mendes Souza (participante)'));
     await tester.pumpAndSettle();
     expect(find.text('Nova atividade'), findsNothing);
+  });
+
+  testWidgets('não oferece ações de organização para atividade cancelada', (
+    tester,
+  ) async {
+    final activity = {
+      'id': 'atv_cancelada',
+      'titulo': 'Atividade cancelada',
+      'tipo': 'palestra',
+      'salaId': 'sala-101',
+      'vagas': 10,
+      'situacao': 'cancelada',
+      'cargaHorariaMinutos': 60,
+      'vagasRestantes': 10,
+      'encontros': [
+        {'inicio': '2026-10-19T12:00:00Z', 'fim': '2026-10-19T13:00:00Z'},
+      ],
+    };
+    final client = ApiClient(
+      client: MockClient((request) async {
+        if (request.url.path == '/salas') {
+          return http.Response(
+            jsonEncode([
+              {'id': 'sala-101', 'nome': 'Sala 101', 'capacidade': 30},
+            ]),
+            200,
+          );
+        }
+        return http.Response(jsonEncode([activity]), 200);
+      }),
+    );
+    await tester.pumpWidget(GradeApp(client: client));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byType(DropdownButton<String>).last);
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Ana Beatriz Lima (organizacao)'));
+    await tester.pumpAndSettle();
+
+    expect(find.byIcon(Icons.edit), findsNothing);
+    await tester.tap(find.text('Atividade cancelada'));
+    await tester.pumpAndSettle();
+    expect(find.text('Cancelar atividade'), findsNothing);
   });
 }

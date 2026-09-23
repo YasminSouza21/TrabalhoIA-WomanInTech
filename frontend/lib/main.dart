@@ -212,7 +212,7 @@ class _GradePageState extends State<GradePage> {
           children: [
             Chip(label: Text(item.situation)),
             Text('${item.slots} vagas'),
-            if (organization)
+            if (organization && item.situation != 'cancelada')
               IconButton(
                 onPressed: () => _showEditor(item),
                 icon: const Icon(Icons.edit),
@@ -258,7 +258,7 @@ class _GradePageState extends State<GradePage> {
             onPressed: () => Navigator.pop(context),
             child: const Text('Fechar'),
           ),
-          if (organization)
+          if (organization && item.situation != 'cancelada')
             TextButton(
               onPressed: () {
                 Navigator.pop(context);

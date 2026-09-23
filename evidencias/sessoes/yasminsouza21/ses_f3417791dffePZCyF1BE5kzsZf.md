@@ -4,13 +4,13 @@
 |---|---|
 | Sessão | `ses_f3417791dffePZCyF1BE5kzsZf` |
 | Pasta | yasmindesouza/TrabalhoIA-WomanInTech |
-| Período | 22/09 22:36 → 22/09 22:38 |
+| Período | 22/09 22:36 → 22/09 22:39 |
 | Modelo | openai/gpt-5.6-luna |
-| Requisições ao modelo | 12 |
-| Tokens de entrada / saída | 43.272 / 3.299 |
+| Requisições ao modelo | 16 |
+| Tokens de entrada / saída | 59.669 / 6.198 |
 | Skills | tdd |
 | Subagentes | — |
-| Execuções de teste | 1 vermelhas, 3 verdes |
+| Execuções de teste | 1 vermelhas, 4 verdes |
 | TDD | 0 ciclo(s) vermelho → verde · 0 teste(s) que já nasceram verdes · 0 vez(es) teste e código juntos |
 | Arquivos editados | 0 de teste, 0 de código, 0 de entrevista, 0 de spec, 0 de contexto, 0 de auditoria |
 | Alertas | — |
@@ -23,4 +23,4 @@
 - `22/09 22:37` roda `dart format lib/server.dart test/presenca_regressao_test.dart` → verde
 - `22/09 22:38` roda `dart test test/presenca_regressao_test.dart -r compact` → verde (11 passaram)
 - `22/09 22:38` roda `dart test` → verde (103 passaram)
-- `22/09 22:38` roda `flutter test` → sem resultado
+- `22/09 22:38` roda `flutter test` → verde (50 passaram)

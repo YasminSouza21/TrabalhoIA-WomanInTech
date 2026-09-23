@@ -37,5 +37,6 @@ Requisições são chamadas ao modelo: cada passo do agente é uma. Skills conta
 | 22/09 22:18 | [M3 — validação build Flutter e evidências](ses_f3428b1bfffeXns58X3NBTxmya.md) | 3 | — | — | 0 / 0 | 0 | 0 | 0 | — |
 | 22/09 22:21 | [M3 — remediação dos pareceres](ses_f342518fdffetcW5MICCK4xNm7.md) | 29 | tdd | — | 1 / 7 | 0 | 0 | 0 | — |
 | 22/09 22:28 | [M3 — auditoria pós-remediação](ses_f341ed569ffeClNfB0bYiyLUML.md) | 13 | — | auditor, revisor-de-contrato | 0 / 2 | 0 | 0 | 0 | — |
-| 22/09 22:36 | [M3 — corrigir achados finais do revisor](ses_f3417791dffePZCyF1BE5kzsZf.md) | 12 | tdd | — | 1 / 3 | 0 | 0 | 0 | — |
-| | **Total: 26 sessões** | 505 | grilling (5), to-spec (3), tdd (8) | auditor (10), revisor-de-contrato (3), explore | 22 / 74 | 0 | 0 | 1 | — |
+| 22/09 22:36 | [M3 — corrigir achados finais do revisor](ses_f3417791dffePZCyF1BE5kzsZf.md) | 16 | tdd | — | 1 / 4 | 0 | 0 | 0 | — |
+| 22/09 22:48 | [M1 — completar identificação e pendências finais](ses_f340c8686ffezfhc9o2B2prpS9.md) | 18 | — | auditor (2) | 0 / 6 | 0 | 0 | 0 | — |
+| | **Total: 27 sessões** | 527 | grilling (5), to-spec (3), tdd (8) | auditor (12), revisor-de-contrato (3), explore | 22 / 81 | 0 | 0 | 1 | — |

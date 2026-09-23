@@ -4,7 +4,7 @@ Cada integrante é dono de um módulo inteiro: entrevista, spec, testes, API, te
 
 | Módulo | Dono | Usuário do GitHub |
 |---|---|---|
-| M1 — Grade de atividades | Yasmin | |
+| M1 — Grade de atividades | Yasmin | YasminSouza21 |
 | M2 — Inscrições e lista de espera | Clara L Peretti | claraperetti |
 | M3 — Presença por QR | Yasmin | YasminSouza21 |
 | M4 — Certificados (grupos de 4 e 5) | | |
