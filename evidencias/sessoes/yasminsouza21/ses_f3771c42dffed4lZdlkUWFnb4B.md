@@ -10,7 +10,7 @@
 | Tokens de entrada / saída | 247.127 / 29.843 |
 | Skills | tdd |
 | Subagentes | — |
-| Execuções de teste | 7 vermelhas, 11 verdes |
+| Execuções de teste | 7 vermelhas, 9 verdes |
 | TDD | 0 ciclo(s) vermelho → verde · 0 teste(s) que já nasceram verdes · 0 vez(es) teste e código juntos |
 | Arquivos editados | 0 de teste, 0 de código, 0 de entrevista, 0 de spec, 0 de contexto, 0 de auditoria |
 | Alertas | — |
@@ -35,6 +35,4 @@
 - `22/09 07:44` roda `dart format lib test && flutter analyze && flutter test` → **vermelho** (6 passaram, 1 falharam)
 - `22/09 07:44` roda `flutter test` → **vermelho** (6 passaram, 1 falharam)
 - `22/09 07:44` roda `flutter test test/widget_test.dart` → verde (4 passaram)
-- `22/09 07:44` roda `dart pub get && dart format lib bin test && dart test && dart analyze` → verde (14 passaram)
-- `22/09 07:44` roda `flutter pub get && dart format lib test && flutter analyze && flutter test` → verde (7 passaram)
 - `22/09 07:45` roda `dart format lib test && flutter analyze && flutter test` → verde (7 passaram)

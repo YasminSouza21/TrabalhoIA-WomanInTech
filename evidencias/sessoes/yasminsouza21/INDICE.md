@@ -22,7 +22,8 @@ Requisições são chamadas ao modelo: cada passo do agente é uma. Skills conta
 | 22/09 00:16 | [Restaurar linha original de M1 em EQUIPE.md](ses_f38e23ff3ffe2wolkCb2kbRKaw.md) | 4 | — | — | 0 / 0 | 0 | 0 | 0 | — |
 | 22/09 00:18 | [Auditoria pós-correção do M1 — Grade de Atividades](ses_f38e0c288ffeDitumIH6beGSrE.md) | 10 | — | auditor | 0 / 1 | 0 | 0 | 0 | — |
 | 22/09 06:54 | [Fechamento de lacunas da auditoria backend M1](ses_f377669ccffefG3qjwSh41RyKu.md) | 25 | tdd | — | 0 / 11 | 0 | 0 | 0 | — |
-| 22/09 06:59 | [Migração do backend Go para Dart e frontend Flutter web](ses_f3771c42dffed4lZdlkUWFnb4B.md) | 56 | tdd | — | 7 / 11 | 0 | 0 | 0 | — |
+| 22/09 06:59 | [Migração do backend Go para Dart e frontend Flutter web](ses_f3771c42dffed4lZdlkUWFnb4B.md) | 56 | tdd | — | 7 / 9 | 0 | 0 | 0 | — |
 | 22/09 07:48 | [Auditoria final do Módulo 1 em Dart e Flutter](ses_f37448d0bffeasRT1Cf8TIJxMA.md) | 10 | — | auditor | 0 / 2 | 0 | 0 | 0 | — |
 | 22/09 07:56 | [Correção completa do Módulo 1 Dart/Flutter](ses_f373d903fffecpVnrKTRcQ5sQV.md) | 28 | tdd | auditor (2) | 1 / 6 | 0 | 0 | 0 | — |
-| | **Total: 13 sessões** | 274 | grilling (2), to-spec, tdd (4) | auditor (5) | 14 / 42 | 0 | 0 | 1 | — |
+| 22/09 20:57 | [Auditoria do Módulo 2: Inscrições e Lista de Espera](ses_f34725ab5ffe7WJthhXz5Dhsip.md) | 17 | — | auditor (2) | 0 / 2 | 0 | 0 | 0 | — |
+| | **Total: 14 sessões** | 291 | grilling (2), to-spec, tdd (4) | auditor (7) | 14 / 42 | 0 | 0 | 1 | — |

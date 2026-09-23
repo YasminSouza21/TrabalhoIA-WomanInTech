@@ -1,0 +1,2764 @@
+{
+ "info": {
+  "id": "ses_f34725ab5ffe7WJthhXz5Dhsip",
+  "slug": "quiet-pixel",
+  "projectID": "5ec1c46d9cd3888456c10ad574c60d609ed0d0a9",
+  "directory": "/Users/yasmindesouza/TrabalhoIA-WomanInTech",
+  "path": "",
+  "title": "Auditoria do Módulo 2: Inscrições e Lista de Espera",
+  "agent": "build",
+  "model": {
+   "id": "gpt-5.6-luna",
+   "providerID": "openai",
+   "variant": "medium"
+  },
+  "version": "1.18.32",
+  "summary": {
+   "additions": 0,
+   "deletions": 0,
+   "files": 0
+  },
+  "cost": 0,
+  "tokens": {
+   "input": 94569,
+   "output": 6115,
+   "reasoning": 765,
+   "cache": {
+    "read": 474112,
+    "write": 0
+   }
+  },
+  "time": {
+   "created": 1790121452874,
+   "updated": 1790122001428
+  }
+ },
+ "messages": [
+  {
+   "info": {
+    "role": "user",
+    "time": {
+     "created": 1790121452903
+    },
+    "agent": "build",
+    "model": {
+     "providerID": "openai",
+     "modelID": "gpt-5.6-luna",
+     "variant": "medium"
+    },
+    "summary": {
+     "diffs": []
+    },
+    "id": "msg_0cb8da567001OAmBJy20FdsaoM",
+    "sessionID": "ses_f34725ab5ffe7WJthhXz5Dhsip"
+   },
+   "parts": [
+    {
+     "type": "text",
+     "text": "<system-reminder>Note: The user opened the file \"/Users/yasmindesouza/TrabalhoIA-WomanInTech/api/atividades_test.go\". This may or may not be relevant to the current task.</system-reminder>\n",
+     "synthetic": true,
+     "metadata": {
+      "kind": "editor_context",
+      "source": "websocket",
+      "filePath": "/Users/yasmindesouza/TrabalhoIA-WomanInTech/api/atividades_test.go",
+      "ranges": [
+       {
+        "text": "",
+        "selection": {
+         "start": {
+          "line": 93,
+          "character": 0
+         },
+         "end": {
+          "line": 93,
+          "character": 0
+         }
+        }
+       }
+      ]
+     },
+     "id": "prt_0cb8da569001NowgDYQhWB99rh",
+     "sessionID": "ses_f34725ab5ffe7WJthhXz5Dhsip",
+     "messageID": "msg_0cb8da567001OAmBJy20FdsaoM"
+    },
+    {
+     "type": "text",
+     "text": "Audite somente o Módulo 2 (Inscrições e Lista de Espera) no estado atual deste repositório. Não implemente correções e não altere código, testes, contrato, specs, entrevistas ou auditorias existentes.\n\nUse obrigatoriamente o agente @auditor, em modo somente leitura. Leia primeiro as instruções do projeto (AGENTS.md e AGENTS.md existentes em subdiretórios) e a configuração do agente. Depois compare a implementação com:\n- contrato-api.md;\n- specs/M2-inscricoes.md, cobrindo R01-R45;\n- entrevistas/M2-inscricoes.md;\n- auditorias/evidencias do M1 somente como contexto;\n- api/lib/server.dart;\n- api/test/inscricoes_test.dart e api/test/server_test.dart;\n- api/tool/smoke_m2.dart;\n- frontend/lib/inscricoes_page.dart;\n- testes Flutter relacionados ao M2;\n- evidencias/ENTREGA-M2.md;\n- projeto.json e instruções de validação.\n\nVerifique requisitos funcionais e de contrato: autenticação/autorização, rotas, status HTTP, envelopes e erros exatos, inscrição/cancelamento/confirmação, FIFO e posiçes da fila, reentrada, abertura de vagas, convocação, prazo de 24 horas, expiração, cascata cronológica, relógio/persistência, cancelamento de atividade, filtros/listagem, permissões por participante/organização, limites, conflitos de horário e campos calculados. Verifique também o R44 da UI Flutter (listar, detalhe, inscrever, cancelar, confirmar, countdown, estados loading/vazio/erro/sucesso).\n\nExecute os comandos atuais de validação documentados no projeto, incluindo, quando aplicável:\n(cd api && dart test)\n(cd api && dart analyze)\n(cd frontend && flutter analyze)\n(cd frontend && flutter test)\ne o smoke test do M2 se ele for seguro e estiver documentado. Registre o comando exato e o resultado. Se um build/validação falhar por limitação do ambiente ou SDK, diferencie isso de defeito funcional e registre a evidência; não transforme falha ambiental em PASSOU.\n\nCrie somente um novo arquivo: auditorias/M2-inscricoes-final.md. Não altere nenhum outro arquivo. O relatório deve ser autocontido e conter:\n1. escopo, commit auditado, fontes e método;\n2. matriz requisito -> evidência (arquivo e linha) -> teste/resultado para R01-R45 e R44;\n3. testes executados, comandos e resultados;\n4. defeitos, inconsistências e lacunas reais, sem inventar cobertura;\n5. separação entre problemas do M2 e itens de outros módulos;\n6. veredito final explícito exatamente como PASSOU, NÃO PASSOU ou PASSOU COM LIMITAÇÃO AMBIENTAL, com justificativa objetiva.\n\nNão faça commit. Ao terminar, mostre um resumo do veredito e dos arquivos criados/modificados.",
+     "id": "prt_0cb8da569002lntYTex7MErEQW",
+     "sessionID": "ses_f34725ab5ffe7WJthhXz5Dhsip",
+     "messageID": "msg_0cb8da567001OAmBJy20FdsaoM"
+    }
+   ]
+  },
+  {
+   "info": {
+    "parentID": "msg_0cb8da567001OAmBJy20FdsaoM",
+    "role": "assistant",
+    "mode": "build",
+    "agent": "build",
+    "variant": "medium",
+    "path": {
+     "cwd": "/Users/yasmindesouza/TrabalhoIA-WomanInTech",
+     "root": "/Users/yasmindesouza/TrabalhoIA-WomanInTech"
+    },
+    "cost": 0,
+    "tokens": {
+     "total": 10000,
+     "input": 9737,
+     "output": 203,
+     "reasoning": 60,
+     "cache": {
+      "write": 0,
+      "read": 0
+     }
+    },
+    "modelID": "gpt-5.6-luna",
+    "providerID": "openai",
+    "time": {
+     "created": 1790121452925,
+     "completed": 1790121463354
+    },
+    "finish": "tool-calls",
+    "id": "msg_0cb8da57d001hmpLYiju2uPnRl",
+    "sessionID": "ses_f34725ab5ffe7WJthhXz5Dhsip"
+   },
+   "parts": [
+    {
+     "snapshot": "1515eb5d24bec8bc072a8d67a629148cd445cd8d",
+     "type": "step-start",
+     "id": "prt_0cb8dba45001sLVewsakyqE4aa",
+     "sessionID": "ses_f34725ab5ffe7WJthhXz5Dhsip",
+     "messageID": "msg_0cb8da57d001hmpLYiju2uPnRl"
+    },
+    {
+     "type": "reasoning",
+     "text": "**Planning auditor usage and inspection steps**",
+     "time": {
+      "start": 1790121458248,
+      "end": 1790121459812
+     },
+     "metadata": {
+      "openai": {
+       "itemId": "rs_029b503c98cd09c6016ab315f280f887d2bdccc11c41a24dff",
+       "reasoningEncryptedContent": "gAAAAABqsxX0leb0NAF9aN0QhsQxrOPRzKyIYUJAlY-4TiBW018jDWJJNx9cxGsqUZeYS7jue2G5dOw1pskICZlNGsYYRHzO9sHBNc_5ak1RRodCt5XnlIiTlruHiXb4bS06-ZAMKlICBov3FMax44ck7lf8bY9oM2MmRB2oHvywwzBra11-MpxZqHkJCjmmY8W4Yv8-6XAHcyHsXfr5HfiKrNp_wWt18LPRbF7gJb8kLFjzO5nA7WBq5-jusj_tiyR8IKpKycFvREmpqxtSXzA2BjB4RJu9P5dpaQCslYK_D6FxFWjiNOGe9K4RTHKnEHbqnMKNPqf-y51bGyqGye2ZwX2AY916XZqKx7KHtn_W3zeeaK54-FXEuOh_cxGzOoq23B_fOrz5OXjS5L5D-Opsv97IOKXM7JUfIveREt9eoRGS0ziL8o8pCetexwDKjxPUYD6gH591WfNFvYld-hhaXolH15xijlfGJhVWxvMhkVSDnmv3Gp_nnN6MMjFzXJqP7om1kjFrohI9jt8KBVQfdgbONtliH9-ZUmNUxRO9S09Mwm4xvU-iLIyvkUmPKcSSPfQ1_bX4eeFJqmnxeI2Q1ojg3FA8Uzh2ygCDtWvziYIALFtL7J1lo-C4Z61kdwNZ7q1nTn8cz-cn6g8lH69yE2Q6CK-K2vOhPBcqrx6sz2og1ANIOdyWvrOOS5YoduAT14lFTOXBBAp75pmBQ7N7cJE1jlvNmPJz0ZTg8HLzDcB_qZLg6cZGJzwRmZW_lke0NU8SNzQIiezYu0DTGOhNlGD5imISlI7Oes0_BQpuGDcv72eQLZ3kzn302tUxq2FND-QNCCHixbJ-BOEPeJpgo39BKCExFIhYHgakaOxa0kXcHS0F6kEcLzV9gFwICprb3YxxJAuZdejQCKR1k-gf7OMcgWJ0PFcBgTleyelAZzonO60piDPFCavZgNVlhXiwOiZnbswklNAGahhHssJw56UjrQL5jziDX3FDpqV1RaI3TO6CTP1zdYW2Tj-kEM-z-Rn0E_MqmJsOZ8lb4ruiT-xc91rWNDVMBzvi3wXI5zZO846uDysUd-v3jnhrcnCIs9w6YAo1xXQsW4JcFTdWb0YrvdNeT7LXUNtDUpYqMewKBqkZSr-Q0YGPCo-czwTql1O3buH1IUPSapdPk2WnQTvfGDsot5V9Ct_7oNXuWIvOGAYZC6aBQTDRuaQmnJjjOk8pW09hjWdV1qW2MrTak0XAQUOeaSaxKpPUDx2YC1vCfRPw20nWbQNjDiYugu5b5fYvhjS6IHLeyjuoAqLU5HqRKfVJ43ul_nwIzxauQTO2FRKR_Gn5qz3HQMrSFndf_xJYS25Ejnpp0SP7198bWX24jJKk2J8u-b9xnxhGjuIy60WlVI4j398wbYeA_FmhMhyF0uO5dU4z4Smnyx5YvfGDQVzuzUF34kupd_HQN5l8l74anWtuNYqoHuDO1tKGiRFRtZTqiS03mhBuQIQ_1-gZgH3EO6bvmmerj4myQ3rDxA1tTVBFM6zR5LyaiUn5ZcpQ8Q7lK4mBcDRg0utEhyznTvqYbwQ5QHAF_QL917wVSgPk-V_UhIVBjglcNT6bGgLQLa8wfKiRZtM886KuWFBcnzapv7HtqZcvNJms_RYMJXEQkggVkoN1gZM6IS9DkBIdnD_X"
+      }
+     },
+     "id": "prt_0cb8dba480011siHA4cLx8GHE3",
+     "sessionID": "ses_f34725ab5ffe7WJthhXz5Dhsip",
+     "messageID": "msg_0cb8da57d001hmpLYiju2uPnRl"
+    },
+    {
+     "type": "text",
+     "text": "Vou primeiro levantar as instruções e a configuração do agente, sem tocar nos arquivos do projeto. Em seguida executarei a auditoria somente leitura, validações documentadas e criarei exclusivamente o relatório final solicitado.",
+     "time": {
+      "start": 1790121459815,
+      "end": 1790121460495
+     },
+     "metadata": {
+      "openai": {
+       "itemId": "msg_029b503c98cd09c6016ab315f4075487d2aca9633e2e3a65fc",
+       "phase": "commentary"
+      }
+     },
+     "id": "prt_0cb8dc067001VNjTcuPE3TSNDW",
+     "sessionID": "ses_f34725ab5ffe7WJthhXz5Dhsip",
+     "messageID": "msg_0cb8da57d001hmpLYiju2uPnRl"
+    },
+    {
+     "type": "tool",
+     "tool": "todowrite",
+     "callID": "call_eE70nRugO5yfBHZIkhv7bzv4",
+     "state": {
+      "status": "completed",
+      "input": {
+       "todos": [
+        {
+         "content": "Ler AGENTS.md do projeto e subdiretórios relevantes",
+         "status": "in_progress",
+         "priority": "high"
+        },
+        {
+         "content": "Ler configuração e instruções do agente auditor",
+         "status": "pending",
+         "priority": "high"
+        },
+        {
+         "content": "Auditar M2 contra contrato, specs, implementação e testes",
+         "status": "pending",
+         "priority": "high"
+        },
+        {
+         "content": "Executar validações documentadas e smoke seguro",
+         "status": "pending",
+         "priority": "high"
+        },
+        {
+         "content": "Criar somente auditorias/M2-inscricoes-final.md",
+         "status": "pending",
+         "priority": "high"
+        },
+        {
+         "content": "Verificar diff e confirmar nenhum outro arquivo alterado",
+         "status": "pending",
+         "priority": "high"
+        }
+       ]
+      },
+      "output": "[\n  {\n    \"content\": \"Ler AGENTS.md do projeto e subdiretórios relevantes\",\n    \"status\": \"in_progress\",\n    \"priority\": \"high\"\n  },\n  {\n    \"content\": \"Ler configuração e instruções do agente auditor\",\n    \"status\": \"pending\",\n    \"priority\": \"high\"\n  },\n  {\n    \"content\": \"Auditar M2 contra contrato, specs, implementação e testes\",\n    \"status\": \"pending\",\n    \"priority\": \"high\"\n  },\n  {\n    \"content\": \"Executar validações documentadas e smoke seguro\",\n    \"status\": \"pending\",\n    \"priority\": \"high\"\n  },\n  {\n    \"content\": \"Criar somente auditorias/M2-inscricoes-final.md\",\n    \"status\": \"pending\",\n    \"priority\": \"high\"\n  },\n  {\n    \"content\": \"Verificar diff e confirmar nenhum outro arquivo alterado\",\n    \"status\": \"pending\",\n    \"priority\": \"high\"\n  }\n]",
+      "metadata": {
+       "todos": [
+        {
+         "content": "Ler AGENTS.md do projeto e subdiretórios relevantes",
+         "status": "in_progress",
+         "priority": "high"
+        },
+        {
+         "content": "Ler configuração e instruções do agente auditor",
+         "status": "pending",
+         "priority": "high"
+        },
+        {
+         "content": "Auditar M2 contra contrato, specs, implementação e testes",
+         "status": "pending",
+         "priority": "high"
+        },
+        {
+         "content": "Executar validações documentadas e smoke seguro",
+         "status": "pending",
+         "priority": "high"
+        },
+        {
+         "content": "Criar somente auditorias/M2-inscricoes-final.md",
+         "status": "pending",
+         "priority": "high"
+        },
+        {
+         "content": "Verificar diff e confirmar nenhum outro arquivo alterado",
+         "status": "pending",
+         "priority": "high"
+        }
+       ],
+       "truncated": false
+      },
+      "title": "6 todos",
+      "time": {
+       "start": 1790121463168,
+       "end": 1790121463171
+      }
+     },
+     "metadata": {
+      "openai": {
+       "itemId": "fc_029b503c98cd09c6016ab315f4b1cc87d28cc66153ab0bd42a"
+      }
+     },
+     "id": "prt_0cb8dc313001C9VhAyfcGF4ig2",
+     "sessionID": "ses_f34725ab5ffe7WJthhXz5Dhsip",
+     "messageID": "msg_0cb8da57d001hmpLYiju2uPnRl"
+    },
+    {
+     "reason": "tool-calls",
+     "snapshot": "1515eb5d24bec8bc072a8d67a629148cd445cd8d",
+     "type": "step-finish",
+     "tokens": {
+      "total": 10000,
+      "input": 9737,
+      "output": 203,
+      "reasoning": 60,
+      "cache": {
+       "write": 0,
+       "read": 0
+      }
+     },
+     "cost": 0,
+     "id": "prt_0cb8dcde5001bkaxom1d70ltUM",
+     "sessionID": "ses_f34725ab5ffe7WJthhXz5Dhsip",
+     "messageID": "msg_0cb8da57d001hmpLYiju2uPnRl"
+    }
+   ]
+  },
+  {
+   "info": {
+    "parentID": "msg_0cb8da567001OAmBJy20FdsaoM",
+    "role": "assistant",
+    "mode": "build",
+    "agent": "build",
+    "variant": "medium",
+    "path": {
+     "cwd": "/Users/yasmindesouza/TrabalhoIA-WomanInTech",
+     "root": "/Users/yasmindesouza/TrabalhoIA-WomanInTech"
+    },
+    "cost": 0,
+    "tokens": {
+     "total": 10246,
+     "input": 1521,
+     "output": 21,
+     "reasoning": 0,
+     "cache": {
+      "write": 0,
+      "read": 8704
+     }
+    },
+    "modelID": "gpt-5.6-luna",
+    "providerID": "openai",
+    "time": {
+     "created": 1790121463357,
+     "completed": 1790121465658
+    },
+    "finish": "tool-calls",
+    "id": "msg_0cb8dce3d001vW36qCYNvxLbA0",
+    "sessionID": "ses_f34725ab5ffe7WJthhXz5Dhsip"
+   },
+   "parts": [
+    {
+     "snapshot": "1515eb5d24bec8bc072a8d67a629148cd445cd8d",
+     "type": "step-start",
+     "id": "prt_0cb8dd50e001Vj750rUJXdBTK9",
+     "sessionID": "ses_f34725ab5ffe7WJthhXz5Dhsip",
+     "messageID": "msg_0cb8dce3d001vW36qCYNvxLbA0"
+    },
+    {
+     "type": "tool",
+     "tool": "glob",
+     "callID": "call_oGU6N40EKLGs2Z6HLPd4aIPY",
+     "state": {
+      "status": "completed",
+      "input": {
+       "pattern": "**/AGENTS.md"
+      },
+      "output": "[174 caracteres omitidos]",
+      "title": "",
+      "time": {
+       "start": 1790121465419,
+       "end": 1790121465456
+      }
+     },
+     "metadata": {
+      "openai": {
+       "itemId": "fc_0b97d08aa5e09952016ab315f94dc087d2bc5d05c80c4d82fa"
+      }
+     },
+     "id": "prt_0cb8dd511001WEdSn3XIRWaJrw",
+     "sessionID": "ses_f34725ab5ffe7WJthhXz5Dhsip",
+     "messageID": "msg_0cb8dce3d001vW36qCYNvxLbA0"
+    },
+    {
+     "reason": "tool-calls",
+     "snapshot": "1515eb5d24bec8bc072a8d67a629148cd445cd8d",
+     "type": "step-finish",
+     "tokens": {
+      "total": 10246,
+      "input": 1521,
+      "output": 21,
+      "reasoning": 0,
+      "cache": {
+       "write": 0,
+       "read": 8704
+      }
+     },
+     "cost": 0,
+     "id": "prt_0cb8dd6e6001gTmjG721z6JLHb",
+     "sessionID": "ses_f34725ab5ffe7WJthhXz5Dhsip",
+     "messageID": "msg_0cb8dce3d001vW36qCYNvxLbA0"
+    }
+   ]
+  },
+  {
+   "info": {
+    "parentID": "msg_0cb8da567001OAmBJy20FdsaoM",
+    "role": "assistant",
+    "mode": "build",
+    "agent": "build",
+    "variant": "medium",
+    "path": {
+     "cwd": "/Users/yasmindesouza/TrabalhoIA-WomanInTech",
+     "root": "/Users/yasmindesouza/TrabalhoIA-WomanInTech"
+    },
+    "cost": 0,
+    "tokens": {
+     "total": 10476,
+     "input": 592,
+     "output": 156,
+     "reasoning": 0,
+     "cache": {
+      "write": 0,
+      "read": 9728
+     }
+    },
+    "modelID": "gpt-5.6-luna",
+    "providerID": "openai",
+    "time": {
+     "created": 1790121465660,
+     "completed": 1790121470558
+    },
+    "finish": "tool-calls",
+    "id": "msg_0cb8dd73c001rud4zL84hh08A9",
+    "sessionID": "ses_f34725ab5ffe7WJthhXz5Dhsip"
+   },
+   "parts": [
+    {
+     "snapshot": "1515eb5d24bec8bc072a8d67a629148cd445cd8d",
+     "type": "step-start",
+     "id": "prt_0cb8de916001rb8kRPaGBh36IR",
+     "sessionID": "ses_f34725ab5ffe7WJthhXz5Dhsip",
+     "messageID": "msg_0cb8dd73c001rud4zL84hh08A9"
+    },
+    {
+     "type": "tool",
+     "tool": "read",
+     "callID": "call_xQ892SDsc3yCQaVWM8N8fzj8",
+     "state": {
+      "status": "completed",
+      "input": {
+       "filePath": "/Users/yasmindesouza/TrabalhoIA-WomanInTech/AGENTS.md"
+      },
+      "output": "[1036 caracteres omitidos]",
+      "title": "AGENTS.md",
+      "time": {
+       "start": 1790121470288,
+       "end": 1790121470301
+      }
+     },
+     "metadata": {
+      "openai": {
+       "itemId": "fc_0ddfa98be4b509d3016ab315fe745c87d2947c3c4f9a2fb1a7"
+      }
+     },
+     "id": "prt_0cb8de91c001vT3J5vk3ZzO1yB",
+     "sessionID": "ses_f34725ab5ffe7WJthhXz5Dhsip",
+     "messageID": "msg_0cb8dd73c001rud4zL84hh08A9"
+    },
+    {
+     "type": "tool",
+     "tool": "read",
+     "callID": "call_KaDGsrVzxkQYToPpaeWT8RIi",
+     "state": {
+      "status": "completed",
+      "input": {
+       "filePath": "/Users/yasmindesouza/TrabalhoIA-WomanInTech/api/AGENTS.md"
+      },
+      "output": "[1384 caracteres omitidos]",
+      "title": "api/AGENTS.md",
+      "time": {
+       "start": 1790121470303,
+       "end": 1790121470325
+      }
+     },
+     "metadata": {
+      "openai": {
+       "itemId": "fc_0ddfa98be4b509d3016ab315fe746c87d290c922078496d88a"
+      }
+     },
+     "id": "prt_0cb8de953001SfJcxJrZd5g3PA",
+     "sessionID": "ses_f34725ab5ffe7WJthhXz5Dhsip",
+     "messageID": "msg_0cb8dd73c001rud4zL84hh08A9"
+    },
+    {
+     "type": "tool",
+     "tool": "read",
+     "callID": "call_30A4kpmu1rr2OSoAVBtviWjH",
+     "state": {
+      "status": "completed",
+      "input": {
+       "filePath": "/Users/yasmindesouza/TrabalhoIA-WomanInTech/frontend/AGENTS.md"
+      },
+      "output": "[1309 caracteres omitidos]",
+      "title": "frontend/AGENTS.md",
+      "time": {
+       "start": 1790121470307,
+       "end": 1790121470330
+      }
+     },
+     "metadata": {
+      "openai": {
+       "itemId": "fc_0ddfa98be4b509d3016ab315fe747487d2908a44f42600500f"
+      }
+     },
+     "id": "prt_0cb8de960001Jn3w9nRui6e7J7",
+     "sessionID": "ses_f34725ab5ffe7WJthhXz5Dhsip",
+     "messageID": "msg_0cb8dd73c001rud4zL84hh08A9"
+    },
+    {
+     "type": "tool",
+     "tool": "glob",
+     "callID": "call_QY1QHKstANWmJWEGEeBHCw3P",
+     "state": {
+      "status": "completed",
+      "input": {
+       "pattern": ".opencode/agent/*"
+      },
+      "output": "[14 caracteres omitidos]",
+      "title": "",
+      "time": {
+       "start": 1790121470312,
+       "end": 1790121470327
+      }
+     },
+     "metadata": {
+      "openai": {
+       "itemId": "fc_0ddfa98be4b509d3016ab315fe747c87d2972db81ebe8d9fe7"
+      }
+     },
+     "id": "prt_0cb8de965001mnfNsD6ZOIwr9m",
+     "sessionID": "ses_f34725ab5ffe7WJthhXz5Dhsip",
+     "messageID": "msg_0cb8dd73c001rud4zL84hh08A9"
+    },
+    {
+     "type": "tool",
+     "tool": "glob",
+     "callID": "call_IFqhlrBC6ioZ7wNNfq2nZH5E",
+     "state": {
+      "status": "completed",
+      "input": {
+       "pattern": ".opencode/**/*.md"
+      },
+      "output": "[14 caracteres omitidos]",
+      "title": "",
+      "time": {
+       "start": 1790121470315,
+       "end": 1790121470328
+      }
+     },
+     "metadata": {
+      "openai": {
+       "itemId": "fc_0ddfa98be4b509d3016ab315fe748487d294b85c4236292c3a"
+      }
+     },
+     "id": "prt_0cb8de969001ayEzAH1CuDjdrN",
+     "sessionID": "ses_f34725ab5ffe7WJthhXz5Dhsip",
+     "messageID": "msg_0cb8dd73c001rud4zL84hh08A9"
+    },
+    {
+     "reason": "tool-calls",
+     "snapshot": "1515eb5d24bec8bc072a8d67a629148cd445cd8d",
+     "type": "step-finish",
+     "tokens": {
+      "total": 10476,
+      "input": 592,
+      "output": 156,
+      "reasoning": 0,
+      "cache": {
+       "write": 0,
+       "read": 9728
+      }
+     },
+     "cost": 0,
+     "id": "prt_0cb8dea0b001gqIPwFyD62G3sv",
+     "sessionID": "ses_f34725ab5ffe7WJthhXz5Dhsip",
+     "messageID": "msg_0cb8dd73c001rud4zL84hh08A9"
+    }
+   ]
+  },
+  {
+   "info": {
+    "parentID": "msg_0cb8da567001OAmBJy20FdsaoM",
+    "role": "assistant",
+    "mode": "build",
+    "agent": "build",
+    "variant": "medium",
+    "path": {
+     "cwd": "/Users/yasmindesouza/TrabalhoIA-WomanInTech",
+     "root": "/Users/yasmindesouza/TrabalhoIA-WomanInTech"
+    },
+    "cost": 0,
+    "tokens": {
+     "total": 11727,
+     "input": 1845,
+     "output": 124,
+     "reasoning": 30,
+     "cache": {
+      "write": 0,
+      "read": 9728
+     }
+    },
+    "modelID": "gpt-5.6-luna",
+    "providerID": "openai",
+    "time": {
+     "created": 1790121470561,
+     "completed": 1790121475149
+    },
+    "finish": "tool-calls",
+    "id": "msg_0cb8dea61001bURCOGivYSTaP9",
+    "sessionID": "ses_f34725ab5ffe7WJthhXz5Dhsip"
+   },
+   "parts": [
+    {
+     "snapshot": "1515eb5d24bec8bc072a8d67a629148cd445cd8d",
+     "type": "step-start",
+     "id": "prt_0cb8df042001OTqq2nwIka50Mm",
+     "sessionID": "ses_f34725ab5ffe7WJthhXz5Dhsip",
+     "messageID": "msg_0cb8dea61001bURCOGivYSTaP9"
+    },
+    {
+     "type": "reasoning",
+     "text": "**Investigating hidden file glob issue**",
+     "time": {
+      "start": 1790121472068,
+      "end": 1790121474858
+     },
+     "metadata": {
+      "openai": {
+       "itemId": "rs_02e3b82bb179bdf7016ab31600428c87d2abe5a21484a33e2c",
+       "reasoningEncryptedContent": "gAAAAABqsxYDmY0xm1ldB5IlF-Koh_OEUEiOLdOEgSd30qV7D7JV2-b8EX7Pr-qexUj7dRvgv3CY8R5SnAgpy9DHx8ZC4ja7O7prZ12ibpEO6hvoO3wvowS3mSToRGtWP3cXFH5uSYA7g2mdiumjMt6m65iq0rMPhv9v5ltbrH0S0rmDTtnZZqVOg34FL3ZtJc47unc2w9mKEYAPSIUeH040jVXE8R6EjZdkkyPiqmOj9OyKqaJm0VpwQDpxqELrYJmT9BxHIWVO7NRz9i6jVGim_Rll2TEf6b2SIY57ATlkj7ytSOEyvYdut_9xYnoVQdUS6n4_S1xZkCpwuX219RNkg5Gcno6zZFdRVWuFbI44r2T2iAQnjwUe8t9EDi5O5ZzHivHeueLWgDkyw5fRPV6ztkbQcrtIq2Z0s3bbmPcECnPjEz8bwHbQtqjCIMgp-IV04T6yZMReyLF5T-4E6OAaBshF11HaV6lIZV5Du9CiTrLhWqdKgqjaNpNGGuGesMWw68HxF3biDdm4zgR2JpiCUm3tTZ8Zot1jT8_YHFjYI4Nf963cRUfjmgwQYGWKyEJNtlt25E7xr1p68F8pMVfxBdIFQDxERZ_7721qNjQcomFxW4Qdd6Muzd-9sjJoKS3V5kwcq6fd1-oyKitHwfnIwdgijdJZ4_HdCrdkwL_-f0GH_f6hFPLbFdaiHmmGDfFGp0m-mB8leYH2YMYNJc5vKoz-fXJAP-Shj1YIcLL-5nj2bXFI0yEC0RKJjUZAEIrp_-VYICFWYv8mPmg68L5mShXJoNH8zEW89ksgDMNpH9TRa7IGodcV5mpX-JoeRNB4qCoeo1DINUI6O150mTeKcQTHQhSCw56eA7YtNpdr-q2IS3XpbNsqUMzthLsvJwl9jVMKRL-ICiCJCZaenLDFMo31Y3HJpUzo5UpZ4sr-JRrEwrZre_VJhrDwNIeK5GC-TkLPefpLi5SDZoY9aT_It3Jk6l8oGjtgOpCfmnTP1Kd8I7f75GGPbRe8iWW3-b1iwAXqmhY4A2APRkfQ1lzqY45bPcpzRi9eBezjR5uyIqqye298D41blRgDiZDbBlRrrAW6xkQ_X-k5FtyFhugG_d8mRTtSc_BdeVJ1wHPnH6QFjlwR-1fXmHhyEQwXVYjf_0ZkM9GcexVDMToy0crhrJsmTW5-uppzH690xm3mfJa75hxfCKX24cSDx90NLvD0F97mGEnmxfUglbvBC1y07PX0et-YqgC1U6FNg-ttl-7OKndHrL4HtPQmADp_RMkqHZetwrGyU6ZQpX4iB-i2CxJMeO2Nuvaf9SzbYCPx_urMH_VRC5um0FUPIcoelOGnLD5_ts16AiMvLgKLMtLD23HmJhvb4iuDEjV4o0yNFdag39q_Q2-SJYqYnQkNsH0iX0a97k-VoCiaCnaP5c_rZwd3nVsoDlWiCJDg6WIzkyUvbyZ5gM4="
+      }
+     },
+     "id": "prt_0cb8df04400154yQAbZnnfPEhL",
+     "sessionID": "ses_f34725ab5ffe7WJthhXz5Dhsip",
+     "messageID": "msg_0cb8dea61001bURCOGivYSTaP9"
+    },
+    {
+     "type": "tool",
+     "tool": "read",
+     "callID": "call_T9B3Z3HinqQCgs8dVVPyHVYL",
+     "state": {
+      "status": "completed",
+      "input": {
+       "filePath": "/Users/yasmindesouza/TrabalhoIA-WomanInTech/.opencode"
+      },
+      "output": "[194 caracteres omitidos]",
+      "title": ".opencode",
+      "time": {
+       "start": 1790121474878,
+       "end": 1790121474888
+      }
+     },
+     "metadata": {
+      "openai": {
+       "itemId": "fc_02e3b82bb179bdf7016ab31603075c87d2bb0e3dbff3326236"
+      }
+     },
+     "id": "prt_0cb8dfb3a001vv729r4k5Amjtt",
+     "sessionID": "ses_f34725ab5ffe7WJthhXz5Dhsip",
+     "messageID": "msg_0cb8dea61001bURCOGivYSTaP9"
+    },
+    {
+     "type": "tool",
+     "tool": "read",
+     "callID": "call_eunYWbXYouETK815QvKOrjUe",
+     "state": {
+      "status": "completed",
+      "input": {
+       "filePath": "/Users/yasmindesouza/TrabalhoIA-WomanInTech/.opencode/skills"
+      },
+      "output": "[185 caracteres omitidos]",
+      "title": ".opencode/skills",
+      "time": {
+       "start": 1790121474883,
+       "end": 1790121474890
+      }
+     },
+     "metadata": {
+      "openai": {
+       "itemId": "fc_02e3b82bb179bdf7016ab31603076c87d2af5e4ad12e2becd7"
+      }
+     },
+     "id": "prt_0cb8dfb40001Xx329dP2oxaVzU",
+     "sessionID": "ses_f34725ab5ffe7WJthhXz5Dhsip",
+     "messageID": "msg_0cb8dea61001bURCOGivYSTaP9"
+    },
+    {
+     "type": "tool",
+     "tool": "glob",
+     "callID": "call_VhJRlzKfGr5OKRJaBrSdyJTS",
+     "state": {
+      "status": "completed",
+      "input": {
+       "pattern": "**/*auditor*",
+       "path": "/Users/yasmindesouza/TrabalhoIA-WomanInTech"
+      },
+      "output": "[14 caracteres omitidos]",
+      "title": "",
+      "time": {
+       "start": 1790121474886,
+       "end": 1790121474900
+      }
+     },
+     "metadata": {
+      "openai": {
+       "itemId": "fc_02e3b82bb179bdf7016ab31603077487d2a3fd4f101775794d"
+      }
+     },
+     "id": "prt_0cb8dfb45001Dn9jvnrfJk4rih",
+     "sessionID": "ses_f34725ab5ffe7WJthhXz5Dhsip",
+     "messageID": "msg_0cb8dea61001bURCOGivYSTaP9"
+    },
+    {
+     "reason": "tool-calls",
+     "snapshot": "1515eb5d24bec8bc072a8d67a629148cd445cd8d",
+     "type": "step-finish",
+     "tokens": {
+      "total": 11727,
+      "input": 1845,
+      "output": 124,
+      "reasoning": 30,
+      "cache": {
+       "write": 0,
+       "read": 9728
+      }
+     },
+     "cost": 0,
+     "id": "prt_0cb8dfc03001EDUmh9mqgz4QuF",
+     "sessionID": "ses_f34725ab5ffe7WJthhXz5Dhsip",
+     "messageID": "msg_0cb8dea61001bURCOGivYSTaP9"
+    }
+   ]
+  },
+  {
+   "info": {
+    "parentID": "msg_0cb8da567001OAmBJy20FdsaoM",
+    "role": "assistant",
+    "mode": "build",
+    "agent": "build",
+    "variant": "medium",
+    "path": {
+     "cwd": "/Users/yasmindesouza/TrabalhoIA-WomanInTech",
+     "root": "/Users/yasmindesouza/TrabalhoIA-WomanInTech"
+    },
+    "cost": 0,
+    "tokens": {
+     "total": 11914,
+     "input": 1124,
+     "output": 38,
+     "reasoning": 0,
+     "cache": {
+      "write": 0,
+      "read": 10752
+     }
+    },
+    "modelID": "gpt-5.6-luna",
+    "providerID": "openai",
+    "time": {
+     "created": 1790121475152,
+     "completed": 1790121477255
+    },
+    "finish": "tool-calls",
+    "id": "msg_0cb8dfc500016qTkQLc8to56Vd",
+    "sessionID": "ses_f34725ab5ffe7WJthhXz5Dhsip"
+   },
+   "parts": [
+    {
+     "snapshot": "1515eb5d24bec8bc072a8d67a629148cd445cd8d",
+     "type": "step-start",
+     "id": "prt_0cb8e01680012Zv7vLuIq23HnY",
+     "sessionID": "ses_f34725ab5ffe7WJthhXz5Dhsip",
+     "messageID": "msg_0cb8dfc500016qTkQLc8to56Vd"
+    },
+    {
+     "type": "tool",
+     "tool": "read",
+     "callID": "call_uk1Bl1HhVp8hj8f1FSbGI3Mz",
+     "state": {
+      "status": "completed",
+      "input": {
+       "filePath": "/Users/yasmindesouza/TrabalhoIA-WomanInTech/.opencode/agent"
+      },
+      "output": "[163 caracteres omitidos]",
+      "title": ".opencode/agent",
+      "time": {
+       "start": 1790121477035,
+       "end": 1790121477038
+      }
+     },
+     "metadata": {
+      "openai": {
+       "itemId": "fc_09c272c0b1f81e33016ab31604b55087d2827385ef6e422986"
+      }
+     },
+     "id": "prt_0cb8e016c001Rqi1vj4CKQSXlk",
+     "sessionID": "ses_f34725ab5ffe7WJthhXz5Dhsip",
+     "messageID": "msg_0cb8dfc500016qTkQLc8to56Vd"
+    },
+    {
+     "reason": "tool-calls",
+     "snapshot": "1515eb5d24bec8bc072a8d67a629148cd445cd8d",
+     "type": "step-finish",
+     "tokens": {
+      "total": 11914,
+      "input": 1124,
+      "output": 38,
+      "reasoning": 0,
+      "cache": {
+       "write": 0,
+       "read": 10752
+      }
+     },
+     "cost": 0,
+     "id": "prt_0cb8e0430001V6hUhleqvXzzwn",
+     "sessionID": "ses_f34725ab5ffe7WJthhXz5Dhsip",
+     "messageID": "msg_0cb8dfc500016qTkQLc8to56Vd"
+    }
+   ]
+  },
+  {
+   "info": {
+    "parentID": "msg_0cb8da567001OAmBJy20FdsaoM",
+    "role": "assistant",
+    "mode": "build",
+    "agent": "build",
+    "variant": "medium",
+    "path": {
+     "cwd": "/Users/yasmindesouza/TrabalhoIA-WomanInTech",
+     "root": "/Users/yasmindesouza/TrabalhoIA-WomanInTech"
+    },
+    "cost": 0,
+    "tokens": {
+     "total": 12021,
+     "input": 203,
+     "output": 42,
+     "reasoning": 0,
+     "cache": {
+      "write": 0,
+      "read": 11776
+     }
+    },
+    "modelID": "gpt-5.6-luna",
+    "providerID": "openai",
+    "time": {
+     "created": 1790121477259,
+     "completed": 1790121481228
+    },
+    "finish": "tool-calls",
+    "id": "msg_0cb8e048b001AOBxKHVoAKC8D0",
+    "sessionID": "ses_f34725ab5ffe7WJthhXz5Dhsip"
+   },
+   "parts": [
+    {
+     "snapshot": "1515eb5d24bec8bc072a8d67a629148cd445cd8d",
+     "type": "step-start",
+     "id": "prt_0cb8e107e001Gne0IPTKMfzTmB",
+     "sessionID": "ses_f34725ab5ffe7WJthhXz5Dhsip",
+     "messageID": "msg_0cb8e048b001AOBxKHVoAKC8D0"
+    },
+    {
+     "type": "tool",
+     "tool": "read",
+     "callID": "call_gvYKvgSINrCcFrGV6R96WRbp",
+     "state": {
+      "status": "completed",
+      "input": {
+       "filePath": "/Users/yasmindesouza/TrabalhoIA-WomanInTech/.opencode/agent/auditor.md"
+      },
+      "output": "[4952 caracteres omitidos]",
+      "title": ".opencode/agent/auditor.md",
+      "time": {
+       "start": 1790121481018,
+       "end": 1790121481038
+      }
+     },
+     "metadata": {
+      "openai": {
+       "itemId": "fc_0f10cbc4f68edd87016ab3160890f087d28a19c179b364d490"
+      }
+     },
+     "id": "prt_0cb8e10860010WQwakWQFnDTqO",
+     "sessionID": "ses_f34725ab5ffe7WJthhXz5Dhsip",
+     "messageID": "msg_0cb8e048b001AOBxKHVoAKC8D0"
+    },
+    {
+     "reason": "tool-calls",
+     "snapshot": "1515eb5d24bec8bc072a8d67a629148cd445cd8d",
+     "type": "step-finish",
+     "tokens": {
+      "total": 12021,
+      "input": 203,
+      "output": 42,
+      "reasoning": 0,
+      "cache": {
+       "write": 0,
+       "read": 11776
+      }
+     },
+     "cost": 0,
+     "id": "prt_0cb8e13b8001NAck93CNgiu3Vi",
+     "sessionID": "ses_f34725ab5ffe7WJthhXz5Dhsip",
+     "messageID": "msg_0cb8e048b001AOBxKHVoAKC8D0"
+    }
+   ]
+  },
+  {
+   "info": {
+    "parentID": "msg_0cb8da567001OAmBJy20FdsaoM",
+    "role": "assistant",
+    "mode": "build",
+    "agent": "build",
+    "variant": "medium",
+    "path": {
+     "cwd": "/Users/yasmindesouza/TrabalhoIA-WomanInTech",
+     "root": "/Users/yasmindesouza/TrabalhoIA-WomanInTech"
+    },
+    "cost": 0,
+    "tokens": {
+     "total": 13724,
+     "input": 1764,
+     "output": 154,
+     "reasoning": 30,
+     "cache": {
+      "write": 0,
+      "read": 11776
+     }
+    },
+    "modelID": "gpt-5.6-luna",
+    "providerID": "openai",
+    "time": {
+     "created": 1790121481232,
+     "completed": 1790121486034
+    },
+    "finish": "tool-calls",
+    "id": "msg_0cb8e14100010pVS2Jg4jipoc3",
+    "sessionID": "ses_f34725ab5ffe7WJthhXz5Dhsip"
+   },
+   "parts": [
+    {
+     "snapshot": "1515eb5d24bec8bc072a8d67a629148cd445cd8d",
+     "type": "step-start",
+     "id": "prt_0cb8e18b0001v3wme9b6vvNVBv",
+     "sessionID": "ses_f34725ab5ffe7WJthhXz5Dhsip",
+     "messageID": "msg_0cb8e14100010pVS2Jg4jipoc3"
+    },
+    {
+     "type": "reasoning",
+     "text": "**Evaluating auditor invocation constraints**",
+     "time": {
+      "start": 1790121482423,
+      "end": 1790121483491
+     },
+     "metadata": {
+      "openai": {
+       "itemId": "rs_02642c1b43fbf036016ab3160aac7487d2a9c7cbb75870a48e",
+       "reasoningEncryptedContent": "gAAAAABqsxYLbys3zHe0x4gKhBFrhlGXZaW-1wrXdF23inZtDu1m7cUnZSVTCus7Bu9jG60r5WcO3D2YK4JvkDHL3n3teTB2Vl1Swqbnwej1oQz3EUg8wVC-uaxuu6VEnIMas3mPA_0Rbbm13yB8qMzCiErdP0VdzjZg30ebbMgyvyQxZxzKdC8lt3cUqWbmGVD2ZshyRowVecc1_2SFzX7jcu8uB__CEEuHHcADiRBZdnLC98tj1y5IN2jRlagUWw-kDa3xo23ihtRR75fqi_9lFGBcsKSwpXocbXiEfimR8VCGS9Ckz5IXl8r4Ln6nCpgGMdGabbWk7rLG2alQgHUuCfyUJckR3l5_T5VkjHQxLkbI6Pu6cR6lnzZZgzva6p6-jtnLBI-xSLizxZRAMJarLLF1_RafMfomFNbpKTM-u73QCXK9j61qhf0mdVzaRYYaWExPt0xHqjuMd4a3_cDrbk7gdUQeLgtrUrXPoX0iiV9cj7pCaTJ5uGkE-UKQqEG5N_z4zlAv2tlvYl8K3kXoHPHXdpLK10PplSBVtDUTnb_h1onpt_BE_KEZ551jhdy2GPPoo6QJrVjpD0LkgwaKiqUsJhA8v43ZE5R4nZOcLQNpTIbByIri08oQJhS8OgItX9hTQObJgFf-spj96MaA7guygIIaUS_g2W-OxPVDewwLMPjIRchpTKxzRQZL5VZN0GKym-sRWQFFDLR-WnYIAZRuyH0spPQ1lxLz_Yq6nqa0wEBmyUjrp2SAylGsn6w1CZfGk0zfO0EEK7dXCtWszl5L5Z2XZjj8lQHCjLzx_MPt0opZ-Ai_VXv1A2SNPBWfMn_cH_nZ1Tj0j0mmR7LGh_U1UbjpPb2yeS68Y5wT6GzKy4Z4M2DAyPsz9EX1TRU0wHXTW0A1vCRC397ON2X7_HW5lD2_tv5njzJ20mCAdDSsocPX6BfHAcOy3C-HipRnenQomhJKwwkQSHfbwDKhJgr-yLKSVsI8IFx_OJFGgONcXCDkTPHaKM1C2vMhvvP16fzPXajn-rgnSy2Ff87sZ1nt3NvJzinDr-JW8pxACEtsdIllKEu2kWcZxN5XvdvRfzdYaXXxDC7qUS88mnucEcQGQwhZ_bUdPmhRIBrM0-dgjAVia7Uk1uYrGITDOGIif1lZyCKs2Ap8J93CQMQ171q2vKk1iHmrpgcjmgtIfTcWRJer9EsOHAwzGS4WWxp3cDxWbySwwsDGsqBpw7DJ-Vvf2WIC1-WD8y6rDP2PYzUesARjkE-l735GNT_grjZbP7_wEiNiotz7mynX7KnSA1jcDsQOeTVhM-vY-PmXdWxxI3Hw1v8TF8GX74O6Gnab3FrZjbNS8BPMwiFMbSIKDVfuBUKdQlxyaJ9FDm6ggJcoCZULSMSh1lsp_eqN3DDIgSblTLPd3xDO5789RKwI81SF9uTIPrm4AOUOtxo5MKFh8KWTskhz5CLDCHny4jWQfPmoPj5g"
+      }
+     },
+     "id": "prt_0cb8e18b6001lhsF2veu1XU9I0",
+     "sessionID": "ses_f34725ab5ffe7WJthhXz5Dhsip",
+     "messageID": "msg_0cb8e14100010pVS2Jg4jipoc3"
+    },
+    {
+     "type": "tool",
+     "tool": "todowrite",
+     "callID": "call_MzhflsM0eSx4jlKDGcpK2FlW",
+     "state": {
+      "status": "completed",
+      "input": {
+       "todos": [
+        {
+         "content": "Ler AGENTS.md do projeto e subdiretórios relevantes",
+         "status": "completed",
+         "priority": "high"
+        },
+        {
+         "content": "Ler configuração e instruções do agente auditor",
+         "status": "completed",
+         "priority": "high"
+        },
+        {
+         "content": "Auditar M2 contra contrato, specs, implementação e testes",
+         "status": "in_progress",
+         "priority": "high"
+        },
+        {
+         "content": "Executar validações documentadas e smoke seguro",
+         "status": "pending",
+         "priority": "high"
+        },
+        {
+         "content": "Criar somente auditorias/M2-inscricoes-final.md",
+         "status": "pending",
+         "priority": "high"
+        },
+        {
+         "content": "Verificar diff e confirmar nenhum outro arquivo alterado",
+         "status": "pending",
+         "priority": "high"
+        }
+       ]
+      },
+      "output": "[\n  {\n    \"content\": \"Ler AGENTS.md do projeto e subdiretórios relevantes\",\n    \"status\": \"completed\",\n    \"priority\": \"high\"\n  },\n  {\n    \"content\": \"Ler configuração e instruções do agente auditor\",\n    \"status\": \"completed\",\n    \"priority\": \"high\"\n  },\n  {\n    \"content\": \"Auditar M2 contra contrato, specs, implementação e testes\",\n    \"status\": \"in_progress\",\n    \"priority\": \"high\"\n  },\n  {\n    \"content\": \"Executar validações documentadas e smoke seguro\",\n    \"status\": \"pending\",\n    \"priority\": \"high\"\n  },\n  {\n    \"content\": \"Criar somente auditorias/M2-inscricoes-final.md\",\n    \"status\": \"pending\",\n    \"priority\": \"high\"\n  },\n  {\n    \"content\": \"Verificar diff e confirmar nenhum outro arquivo alterado\",\n    \"status\": \"pending\",\n    \"priority\": \"high\"\n  }\n]",
+      "metadata": {
+       "todos": [
+        {
+         "content": "Ler AGENTS.md do projeto e subdiretórios relevantes",
+         "status": "completed",
+         "priority": "high"
+        },
+        {
+         "content": "Ler configuração e instruções do agente auditor",
+         "status": "completed",
+         "priority": "high"
+        },
+        {
+         "content": "Auditar M2 contra contrato, specs, implementação e testes",
+         "status": "in_progress",
+         "priority": "high"
+        },
+        {
+         "content": "Executar validações documentadas e smoke seguro",
+         "status": "pending",
+         "priority": "high"
+        },
+        {
+         "content": "Criar somente auditorias/M2-inscricoes-final.md",
+         "status": "pending",
+         "priority": "high"
+        },
+        {
+         "content": "Verificar diff e confirmar nenhum outro arquivo alterado",
+         "status": "pending",
+         "priority": "high"
+        }
+       ],
+       "truncated": false
+      },
+      "title": "4 todos",
+      "time": {
+       "start": 1790121485802,
+       "end": 1790121485803
+      }
+     },
+     "metadata": {
+      "openai": {
+       "itemId": "fc_02642c1b43fbf036016ab3160bb8f487d297af69a1d0894f98"
+      }
+     },
+     "id": "prt_0cb8e1ce5001wQytDhogG3uLDx",
+     "sessionID": "ses_f34725ab5ffe7WJthhXz5Dhsip",
+     "messageID": "msg_0cb8e14100010pVS2Jg4jipoc3"
+    },
+    {
+     "reason": "tool-calls",
+     "snapshot": "1515eb5d24bec8bc072a8d67a629148cd445cd8d",
+     "type": "step-finish",
+     "tokens": {
+      "total": 13724,
+      "input": 1764,
+      "output": 154,
+      "reasoning": 30,
+      "cache": {
+       "write": 0,
+       "read": 11776
+      }
+     },
+     "cost": 0,
+     "id": "prt_0cb8e267e001NcUH8wZkHnuKwt",
+     "sessionID": "ses_f34725ab5ffe7WJthhXz5Dhsip",
+     "messageID": "msg_0cb8e14100010pVS2Jg4jipoc3"
+    }
+   ]
+  },
+  {
+   "info": {
+    "parentID": "msg_0cb8da567001OAmBJy20FdsaoM",
+    "role": "assistant",
+    "mode": "build",
+    "agent": "build",
+    "variant": "medium",
+    "path": {
+     "cwd": "/Users/yasmindesouza/TrabalhoIA-WomanInTech",
+     "root": "/Users/yasmindesouza/TrabalhoIA-WomanInTech"
+    },
+    "cost": 0,
+    "tokens": {
+     "input": 0,
+     "output": 0,
+     "reasoning": 0,
+     "cache": {
+      "read": 0,
+      "write": 0
+     }
+    },
+    "modelID": "gpt-5.6-luna",
+    "providerID": "openai",
+    "time": {
+     "created": 1790121486036,
+     "completed": 1790121661136
+    },
+    "error": {
+     "name": "MessageAbortedError",
+     "data": {
+      "message": "Aborted"
+     }
+    },
+    "id": "msg_0cb8e26d4001vyZel4KgIiHQNX",
+    "sessionID": "ses_f34725ab5ffe7WJthhXz5Dhsip"
+   },
+   "parts": [
+    {
+     "snapshot": "1515eb5d24bec8bc072a8d67a629148cd445cd8d",
+     "type": "step-start",
+     "id": "prt_0cb8e2bef001mWRGPS0LXeFtFD",
+     "sessionID": "ses_f34725ab5ffe7WJthhXz5Dhsip",
+     "messageID": "msg_0cb8e26d4001vyZel4KgIiHQNX"
+    },
+    {
+     "type": "tool",
+     "tool": "task",
+     "callID": "call_S1rSsUq0KgXtALhEaIs0yNmw",
+     "state": {
+      "title": "Auditar Módulo 2",
+      "metadata": {
+       "parentSessionId": "ses_f34725ab5ffe7WJthhXz5Dhsip",
+       "sessionId": "ses_f3471b7a3ffe7vI2VVAVR0uk5X",
+       "model": {
+        "modelID": "gpt-5.6-luna",
+        "providerID": "openai"
+       },
+       "interrupted": true
+      },
+      "status": "error",
+      "input": {
+       "description": "Auditar Módulo 2",
+       "subagent_type": "auditor",
+       "prompt": "Audite exclusivamente o Módulo 2 (Inscrições e Lista de Espera) no estado atual deste repositório, em modo estritamente somente leitura. Não crie, edite, aplique patch, commit ou altere qualquer arquivo. Primeiro siga e considere AGENTS.md raiz, api/AGENTS.md, frontend/AGENTS.md e este .opencode/agent/auditor.md. Compare a implementação contra contrato-api.md, specs/M2-inscricoes.md cobrindo R01-R45 e R44 da UI, entrevistas/M2-inscricoes.md, auditorias/evidencias do M1 apenas como contexto, api/lib/server.dart, api/test/inscricoes_test.dart, api/test/server_test.dart, api/tool/smoke_m2.dart, frontend/lib/inscricoes_page.dart, testes Flutter relacionados ao M2, evidencias/ENTREGA-M2.md, projeto.json e instruções de validação. Verifique origem em perguntas da entrevista, prova de teste real, implementação honesta, contrato, autenticação/autorização, rotas/status/envelopes/erros exatos, inscrição/cancelamento/confirmação, FIFO/posições/reentrada/vagas/convocação/24h/expiração/cascata/relógio/persistência/cancelamento/filtros/permissões/limites/conflitos/campos calculados e UI R44. Registre todas as linhas relevantes. Execute, se permitido e seguro, os comandos documentados, mas não invente números: registre a saída observada. Retorne um parecer detalhado para eu consolidar num único arquivo novo, incluindo matriz R01-R45/R44, comandos/resultados, defeitos e lacunas reais, separação M2 vs outros módulos e veredito. Não altere nada."
+      },
+      "time": {
+       "start": 1790121494625,
+       "end": 1790121661134
+      },
+      "error": "Tool execution aborted"
+     },
+     "metadata": {
+      "openai": {
+       "itemId": "fc_0e4feeb1efeb446d016ab3160f9d2087d2bf8e98892be81a6d"
+      }
+     },
+     "id": "prt_0cb8e2bf1001Gi0Y3jCJyrmaC4",
+     "sessionID": "ses_f34725ab5ffe7WJthhXz5Dhsip",
+     "messageID": "msg_0cb8e26d4001vyZel4KgIiHQNX"
+    }
+   ]
+  },
+  {
+   "info": {
+    "role": "user",
+    "time": {
+     "created": 1790121699244
+    },
+    "agent": "build",
+    "model": {
+     "providerID": "openai",
+     "modelID": "gpt-5.6-luna",
+     "variant": "medium"
+    },
+    "summary": {
+     "diffs": [
+      {
+       "file": "auditorias/M2-inscricoes-final.md",
+       "patch": "Index: auditorias/M2-inscricoes-final.md\n===================================================================\n--- auditorias/M2-inscricoes-final.md\t\n+++ auditorias/M2-inscricoes-final.md\t\n@@ -0,0 +1,105 @@\n+# Auditoria Final — M2 Inscrições e Lista de Espera\n+\n+## Escopo, commit, fontes e método\n+\n+Escopo: somente o Módulo 2, incluindo API, persistência/modo de teste e interface Flutter R44/R45. O commit auditado foi `8b67bdcf450e6a514a616f38726e57c01808265d` (`HEAD` no início e no fim da auditoria).\n+\n+Fontes consultadas:\n+\n+- `AGENTS.md`, `api/AGENTS.md`, `frontend/AGENTS.md` e `.opencode/agent/auditor.md`.\n+- `contrato-api.md`, `specs/M2-inscricoes.md`, `entrevistas/M2-inscricoes.md` e `projeto.json`.\n+- `api/lib/server.dart`, `api/test/inscricoes_test.dart`, `api/test/server_test.dart`, `api/test/fila_test.dart`, `api/test/confirmacao_test.dart`, `api/test/tempo_test.dart`, `api/test/persistencia_test.dart` e `api/tool/smoke_m2.dart`.\n+- `frontend/lib/inscricoes_page.dart`, `frontend/lib/api_client.dart`, `frontend/test/inscricoes_api_client_test.dart`, `frontend/test/inscricoes_widget_test.dart` e `frontend/test/regressao_m2_widget_test.dart`.\n+- `evidencias/ENTREGA-M2.md`; auditorias/evidências do M1 foram usadas somente para contexto.\n+\n+Método: o agente `@auditor` foi executado em modo somente leitura, conferindo para cada regra a origem na entrevista e um teste que exercita o cenário e verifica o resultado. A implementação foi lida para validar que as provas são honestas. Também foram executados os comandos de validação do `projeto.json` e o smoke HTTP documentado.\n+\n+## Matriz requisito → evidência → teste\n+\n+Todas as regras abaixo têm origem rastreável em pergunta respondida da entrevista. `COMPROVADA` significa que foi localizada evidência de implementação e teste comportamental correspondente.\n+\n+| Regra | Evidência da implementação | Teste / resultado | Veredito |\n+|---|---|---|---|\n+| R01 | `api/lib/server.dart:348-367,620-623,647-653,656-664,693-704` | `api/test/inscricoes_test.dart:37-54`; smoke `S02` | COMPROVADA |\n+| R02 | `api/lib/server.dart:659-661,694-696` | `api/test/inscricoes_test.dart:56-68`; smoke `S03` | COMPROVADA |\n+| R03 | `api/lib/server.dart:662-664,697-700,649-650` | `api/test/inscricoes_test.dart:71-89`; smoke `S04` | COMPROVADA |\n+| R04 | `api/lib/server.dart:665-666,702-703,901-909` | `api/test/inscricoes_test.dart:306-326`; `api/test/fila_test.dart:450-489`; smoke `S07` | COMPROVADA |\n+| R05 | `api/lib/server.dart:659-667,693-704` | `api/test/inscricoes_test.dart:71-121`; smoke `S02-S04` | COMPROVADA |\n+| R06 | `api/lib/server.dart:326-330,105-136` | `api/test/inscricoes_test.dart:124-143,385-407`; smoke `S01` | COMPROVADA |\n+| R07 | `api/lib/server.dart:679-690` | `api/test/inscricoes_test.dart:145-168`; `api/test/fila_test.dart:450-489`; smoke `S08` | COMPROVADA |\n+| R08 | `api/lib/server.dart:668-671` | `api/test/inscricoes_test.dart:264-304` | COMPROVADA |\n+| R09 | `api/lib/server.dart:668-671` | `api/test/inscricoes_test.dart:264-304` | COMPROVADA |\n+| R10 | `api/lib/server.dart:668-669` | `api/test/inscricoes_test.dart:292-304` | COMPROVADA |\n+| R11 | `api/lib/server.dart:670-671` | `api/test/inscricoes_test.dart:269-275` | COMPROVADA |\n+| R12 | `api/lib/server.dart:668-678` | `api/test/confirmacao_test.dart:502-555`; `api/test/inscricoes_test.dart:264-304` | COMPROVADA |\n+| R13 | `api/lib/server.dart:749-759` | `api/test/inscricoes_test.dart:235-262`; `api/test/confirmacao_test.dart:502-555` | COMPROVADA |\n+| R14 | `api/lib/server.dart:714-719,680-690` | `api/test/fila_test.dart:387-425`; `api/test/persistencia_test.dart:122-170` | COMPROVADA |\n+| R15 | `api/lib/server.dart:722-735,830-835,680-690` | `api/test/tempo_test.dart:332-370` | COMPROVADA |\n+| R16 | `api/lib/server.dart:842-851,862-873` | `api/test/inscricoes_test.dart:170-208`; `api/test/fila_test.dart:151-192` | COMPROVADA |\n+| R17 | `api/lib/server.dart:43-44,103,684-686,848-850` | `api/test/inscricoes_test.dart:170-208`; `api/test/persistencia_test.dart:245-295` | COMPROVADA |\n+| R18 | `api/lib/server.dart:862-873` | `api/test/fila_test.dart:249-281`; `api/test/inscricoes_test.dart:365-380` | COMPROVADA |\n+| R19 | `api/lib/server.dart:562-577,714-717,814-816,837-859` | `api/test/fila_test.dart:151-247`; `api/test/fila_test.dart:283-311` | COMPROVADA |\n+| R20 | `api/lib/server.dart:722-734,837-859` | `api/test/confirmacao_test.dart:238-284,405-452` | COMPROVADA |\n+| R21 | `api/lib/server.dart:853-856` | `api/test/fila_test.dart:194-208`; `api/test/confirmacao_test.dart:111-143` | COMPROVADA |\n+| R22 | `api/lib/server.dart:722-726` | `api/test/confirmacao_test.dart:145-175` | COMPROVADA |\n+| R23 | `api/lib/server.dart:262-266,788-827` | `api/test/tempo_test.dart:70-107`; `api/test/persistencia_test.dart:172-209` | COMPROVADA |\n+| R24 | `api/lib/server.dart:811-816,830-835` | `api/test/tempo_test.dart:70-107` | COMPROVADA |\n+| R25 | `api/lib/server.dart:794-827,837-859` | `api/test/tempo_test.dart:182-230` | COMPROVADA |\n+| R26 | `api/lib/server.dart:817-827` | `api/test/tempo_test.dart:138-180`; `api/test/fila_test.dart:427-448` | COMPROVADA |\n+| R27 | `api/lib/server.dart:830-835,901-909` | `api/test/tempo_test.dart:109-136` | COMPROVADA |\n+| R28 | `api/lib/server.dart:762-775,729-731` | `api/test/confirmacao_test.dart:212-236,238-284` | COMPROVADA |\n+| R29 | `api/lib/server.dart:770-772` | `api/test/confirmacao_test.dart:177-210` | COMPROVADA |\n+| R30 | `api/lib/server.dart:777-786,677-678,732-734` | `api/test/confirmacao_test.dart:286-323,405-452` | COMPROVADA |\n+| R31 | `api/lib/server.dart:722-728` | `api/test/tempo_test.dart:278-330`; `api/test/confirmacao_test.dart:145-175` | COMPROVADA |\n+| R32 | `api/lib/server.dart:727-728` | `api/test/confirmacao_test.dart:66-109`; `api/test/fila_test.dart:470-489` | COMPROVADA |\n+| R33 | `api/lib/server.dart:707-719` | `api/test/fila_test.dart:66-79,81-107` | COMPROVADA |\n+| R34 | `api/lib/server.dart:708-710` | `api/test/fila_test.dart:81-107` | COMPROVADA |\n+| R35 | `api/lib/server.dart:711-713` | `api/test/fila_test.dart:109-124`; `api/test/tempo_test.dart:372-397` | COMPROVADA |\n+| R36 | `api/lib/server.dart:562-577` | `api/test/fila_test.dart:338-385`; `api/test/tempo_test.dart:400-441` | COMPROVADA |\n+| R37 | `api/lib/server.dart:647-653,693-704` | `api/test/fila_test.dart:338-385`; `api/test/inscricoes_test.dart:328-383` | COMPROVADA |\n+| R38 | `api/lib/server.dart:620-633` | `api/test/inscricoes_test.dart:328-383` | COMPROVADA |\n+| R39 | `api/lib/server.dart:625-633` | `api/test/inscricoes_test.dart:328-383`; `api/test/persistencia_test.dart:85-120` | COMPROVADA |\n+| R40 | `api/lib/server.dart:86-92,138-178,247-300` | `api/test/persistencia_test.dart:85-120,245-295` | COMPROVADA |\n+| R41 | `api/lib/server.dart:88-90,248,326-345` | `api/test/persistencia_test.dart:225-243`; `api/test/inscricoes_test.dart:385-407` | COMPROVADA |\n+| R42 | `api/lib/server.dart:78-79,66-70,875-887` | `api/test/inscricoes_test.dart:145-168`; `frontend/test/inscricoes_api_client_test.dart:10-28`; smoke `S08` | COMPROVADA |\n+| R43 | `api/lib/server.dart:580-617` | `api/test/inscricoes_test.dart:409-435`; `api/test/tempo_test.dart:232-276` | COMPROVADA |\n+| R44 | `frontend/lib/inscricoes_page.dart:46-83,85-95,180-212,215-301` | `frontend/test/inscricoes_widget_test.dart:44-104,147-235,237-274`; `frontend/test/regressao_m2_widget_test.dart:1-200` | COMPROVADA |\n+| R45 | `frontend/lib/inscricoes_page.dart:5-6,55-61,264-285`; `frontend/lib/api_client.dart` | `frontend/test/inscricoes_api_client_test.dart:30-171`; `frontend/test/inscricoes_widget_test.dart:147-235`; MockClient | COMPROVADA |\n+\n+R44 foi conferida separadamente na matriz: listagem de todos os status, detalhe, inscrever, cancelar, confirmar, posição, prazo, countdown e estados loading/vazio/erro/sucesso estão evidenciados em `frontend/lib/inscricoes_page.dart:180-301` e nos testes Flutter citados.\n+\n+## Testes e validações executados\n+\n+Resultados observados nesta auditoria:\n+\n+| Comando exato | Resultado observado |\n+|---|---|\n+| `(cd api && dart test)` | `00:01 +78: All tests passed!` |\n+| `(cd api && dart analyze)` | `No issues found!` |\n+| `(cd frontend && flutter analyze)` | `No issues found! (ran in 7.2s)` |\n+| `(cd frontend && flutter test)` | `00:03 +40: All tests passed!` |\n+| `(cd api && dart run tool/smoke_m2.dart)` | `resumo: 16 cenarios ok - SMOKE M2 OK` |\n+\n+O smoke iniciou servidor com `MODO_TESTE=1` e `PORT=3000`, executando S01 a S16, incluindo reset, autenticação, autorização, existência, relógio, inscrição, corpo inválido, isolamento/listagem, contadores, cancelamento, confirmação, aumento de vagas e expiração.\n+\n+Não houve falha de SDK, build ou ambiente nos comandos executados. A evidência histórica também registra `flutter build web --release` como OK em `evidencias/ENTREGA-M2.md:67-79`, mas esse build não foi reexecutado nesta auditoria porque não consta em `projeto.json` como teste obrigatório.\n+\n+## Defeitos, inconsistências e lacunas reais\n+\n+Não foram encontrados defeitos funcionais ou divergências de contrato no escopo M2 após a leitura e os testes executados. As regras de autenticação/autorização, rotas, status, envelopes, códigos, fila FIFO, posições, reentrada, abertura de vagas, convocação, prazo de 24 horas, expiração cronológica, cascata, relógio, persistência, cancelamento de atividade, filtros, permissões, limites, conflitos, campos calculados e UI R44 possuem prova localizada.\n+\n+Limitações que não configuram defeito funcional do M2:\n+\n+- As decisões P-01 a P-29 foram delegadas e registradas na entrevista; não há validação contra requisitos externos do professor. Isso é uma limitação de origem/escopo, explicitamente registrada em `specs/M2-inscricoes.md:6` e `evidencias/ENTREGA-M2.md:115-119`, não uma falha da implementação contra o contrato local.\n+- A persistência JSON é de processo único, conforme `evidencias/ENTREGA-M2.md:118`; não foi contratado locking multi-processo.\n+- M1 foi usado como contexto/regressão. Os testes e regras de M3, M4 e M5 não são achados do M2; `INSCRICAO_BLOQUEADA` está fora do escopo em `specs/M2-inscricoes.md:8-13`.\n+\n+## Separação de escopo\n+\n+Itens de M1, como grade, salas, criação/edição/cancelamento de atividades e seus testes em `api/test/server_test.dart`, foram considerados apenas para verificar a integração necessária ao M2 e não geram achado M2. Não foram atribuídos ao M2 requisitos de presença, certificados, extrato ou painel da organização, que permanecem fora do escopo conforme `specs/M2-inscricoes.md:8-13`.\n+\n+## Veredito\n+\n+# PASSOU\n+\n+As regras R01-R45, incluindo R44 e R45, têm origem rastreável, evidência de implementação e testes correspondentes; `dart test`, `dart analyze`, `flutter analyze`, `flutter test` e o smoke HTTP M2 passaram nesta auditoria. O aceite é relativo ao contrato local, spec e entrevista existentes; a ausência de conferência contra requisitos externos permanece explicitamente fora desta conclusão.\n",
+       "additions": 105,
+       "deletions": 0,
+       "status": "added"
+      }
+     ]
+    },
+    "id": "msg_0cb9167ac00102mgIqruvio3pu",
+    "sessionID": "ses_f34725ab5ffe7WJthhXz5Dhsip"
+   },
+   "parts": [
+    {
+     "type": "text",
+     "text": "<system-reminder>Note: The user opened the file \"/Users/yasmindesouza/TrabalhoIA-WomanInTech/api/atividades_test.go\". This may or may not be relevant to the current task.</system-reminder>\n",
+     "synthetic": true,
+     "metadata": {
+      "kind": "editor_context",
+      "source": "websocket",
+      "filePath": "/Users/yasmindesouza/TrabalhoIA-WomanInTech/api/atividades_test.go",
+      "ranges": [
+       {
+        "text": "",
+        "selection": {
+         "start": {
+          "line": 93,
+          "character": 0
+         },
+         "end": {
+          "line": 93,
+          "character": 0
+         }
+        }
+       }
+      ]
+     },
+     "id": "prt_0cb9167ad0012RJQFLE3HqiH4R",
+     "sessionID": "ses_f34725ab5ffe7WJthhXz5Dhsip",
+     "messageID": "msg_0cb9167ac00102mgIqruvio3pu"
+    },
+    {
+     "type": "text",
+     "text": "Continue a auditoria do M2 nesta sessão, usando @auditor somente leitura. A leitura anterior foi interrompida por lentidão, então conclua com escopo prático: inspecione diretamente contrato-api.md, specs/M2-inscricoes.md, entrevistas/M2-inscricoes.md, api/lib/server.dart, testes Dart do M2, frontend/lib/inscricoes_page.dart, testes Flutter do M2, smoke_m2.dart e evidencias/ENTREGA-M2.md. Execute as validações documentadas se possível.\n\nNão altere implementação, testes, contrato, specs, entrevistas nem auditorias existentes. Crie somente auditorias/M2-inscricoes-final.md, com evidências arquivo:linha, resultados dos comandos, defeitos/lacunas e veredito final exatamente PASSOU, NÃO PASSOU ou PASSOU COM LIMITAÇÃO AMBIENTAL. Não faça commit. Ao finalizar, pare e informe o veredito.",
+     "id": "prt_0cb9167ad002unYOo38S7P8pmN",
+     "sessionID": "ses_f34725ab5ffe7WJthhXz5Dhsip",
+     "messageID": "msg_0cb9167ac00102mgIqruvio3pu"
+    }
+   ]
+  },
+  {
+   "info": {
+    "parentID": "msg_0cb9167ac00102mgIqruvio3pu",
+    "role": "assistant",
+    "mode": "build",
+    "agent": "build",
+    "variant": "medium",
+    "path": {
+     "cwd": "/Users/yasmindesouza/TrabalhoIA-WomanInTech",
+     "root": "/Users/yasmindesouza/TrabalhoIA-WomanInTech"
+    },
+    "cost": 0,
+    "tokens": {
+     "total": 14957,
+     "input": 14596,
+     "output": 341,
+     "reasoning": 20,
+     "cache": {
+      "write": 0,
+      "read": 0
+     }
+    },
+    "modelID": "gpt-5.6-luna",
+    "providerID": "openai",
+    "time": {
+     "created": 1790121699263,
+     "completed": 1790121866310
+    },
+    "finish": "tool-calls",
+    "id": "msg_0cb9167bf001xXOHiMA2yFxYSk",
+    "sessionID": "ses_f34725ab5ffe7WJthhXz5Dhsip"
+   },
+   "parts": [
+    {
+     "snapshot": "1515eb5d24bec8bc072a8d67a629148cd445cd8d",
+     "type": "step-start",
+     "id": "prt_0cb917048001s3eJCpK79ODbsN",
+     "sessionID": "ses_f34725ab5ffe7WJthhXz5Dhsip",
+     "messageID": "msg_0cb9167bf001xXOHiMA2yFxYSk"
+    },
+    {
+     "type": "reasoning",
+     "text": "",
+     "time": {
+      "start": 1790121701451,
+      "end": 1790121702242
+     },
+     "metadata": {
+      "openai": {
+       "itemId": "rs_0ad48fae78249852016ab316e5a92887d2b59ab09a1db3208a",
+       "reasoningEncryptedContent": "gAAAAABqsxbmIoPTt0LYbq1MLgtfMXq_cEjv-UQB86ukK3Ii2IOGrxLcCjwuP788tGlYauxYPUkraem6eJv30w3inLZ63xN5GGidbyhRgehsHLa8ToU38mPAFFwJO_KDCNS5pvNfnTezVDF8l2v8FUw9dHlRUtyNhpzIgFV_XriK6ak8WYaJDMUmZULmeNq6lxrhg4XAYlYbyn0pErWtZLIaBSTSZuDvaIUB3QPipzZdHxxxmRBu9vUr2nehfYo6_epwWh00VtRWlV5cjxMa6kGFxycqdWepSdaGmiV5CxLmAbbmDJtPeMND9O8ogBT9lUnz8vBqIt3eYK84EyCeYCJ-55av9uQpOwakqEpRDifL9dkc4YVn69SonNA2KV4cpTrI5tgYoZGtRb_RrODpVGRlWIZqqRoWzYolCujk94JMoYa-0Cw-SmQ-tsqtKCwdm8yczzBJ9ANn39YNeTsJbirtk_JUBdvaZnAa7QOAd31ZU_82lQ3rUqEkf86ItCTKIYUd5UiU69QCTFskUT3a9WDxi4Gig20UyGfxuGmvNQucUN0X3ft-VWpuCGrNYikFR5O-rdSYdF3myn-aBDcWlwAh6FWgBv-GSRN7DmntukZbd0OCcT7OJycVvQiBii9zqjU3p7olWtWdEwoAW9yxEjxNrrKAnM-HR5YHZyAVWOOIkCjeWt-Hc4c71UjSPX5_KmLW2jaxsOH9AxAPaPH0xR3hqeO5y1ri0-4iy_yA4tTTBX1b82zGep_0PE1DB5fA_lyRwRmDg7oUCWAYE-_D3tMkM-IXGG-4Ho2c9R4pyAnYQ9_QVB5tQzOnq0RAMYGUsuXYGSvhykTKfyjTh--T5Ypykmvx42hUe-AeRu0M8UniRx6FNYPamk6-FEwGstBWof34Z6qMF6ywGle8XI3N1P5XA886HY9a3k6lITSM_ByKS_9Fzq1YbxclDVbfRWpfQGPR5PhRvNw_hTUIjQL3vXmxw7uCEtG2ieqazjtK7Z16snOb_C6gVRey-q_Xq5CkL02YSeqSXdojEXFiI3vVBjOJSuRAd-gcJuhvVJf7yRbLqPPIHal4xNlHsb1xMBtiQBiUK2m5o6YCqdk3o-mEPW3Zv-H0AfsCKqs0iTXXLYCPJb9BY9o6Wv_gsT7ixhMuCGr7A8D6Rp53KhqaTYys_9OKQ8I-50Jbe7RO82UX4RKp_YkexvqxIEbO3JgViqYBOmWtDybk01zdntbfAD6QIgQnSBTwp-U5OxoycCNfn0tkxJMZYiJQtN92gU1DFy-Qy0hMlu-Ao5AEElvpFPpSX2mvDaWfC-eZs5MQcD1nsEZV_KmS1F2RrRXGSSIVuup9-BAnVv-qPIVSnyb_WFD7h6Gw5H1wKp87HB3exkGrCeo0E1bmBoYsrvw="
+      }
+     },
+     "id": "prt_0cb91704b001xu1XuGpOhA2tCm",
+     "sessionID": "ses_f34725ab5ffe7WJthhXz5Dhsip",
+     "messageID": "msg_0cb9167bf001xXOHiMA2yFxYSk"
+    },
+    {
+     "type": "text",
+     "text": "A primeira execução do auditor foi interrompida antes de produzir parecer. Vou retomá-la com o escopo prático solicitado, depois conferirei diretamente os artefatos e rodarei as validações disponíveis antes de gerar apenas o relatório novo.",
+     "time": {
+      "start": 1790121702250,
+      "end": 1790121702957
+     },
+     "metadata": {
+      "openai": {
+       "itemId": "msg_0ad48fae78249852016ab316e67c0487d2bf9af673f08fa5dd",
+       "phase": "commentary"
+      }
+     },
+     "id": "prt_0cb91736a001ZC9dbRohVOsoLN",
+     "sessionID": "ses_f34725ab5ffe7WJthhXz5Dhsip",
+     "messageID": "msg_0cb9167bf001xXOHiMA2yFxYSk"
+    },
+    {
+     "type": "tool",
+     "tool": "task",
+     "callID": "call_T0dL9RdMtWngW8RdPzh1mDCV",
+     "state": {
+      "status": "completed",
+      "input": {
+       "description": "Retomar auditoria M2",
+       "subagent_type": "auditor",
+       "prompt": "Modo somente leitura, não altere nenhum arquivo. Faça a auditoria prática do M2 e retorne o parecer detalhado. Leia diretamente: contrato-api.md; specs/M2-inscricoes.md (R01-R45, incluindo R44); entrevistas/M2-inscricoes.md; api/lib/server.dart; api/test/inscricoes_test.dart e api/test/server_test.dart; api/tool/smoke_m2.dart; frontend/lib/inscricoes_page.dart; testes Flutter M2; evidencias/ENTREGA-M2.md; projeto.json; AGENTS.md e configuração deste agente. Verifique cada requisito com evidência arquivo:linha, origem da entrevista, teste real e resultado; inclua contrato, auth, rotas, status/envelopes/erros, fila FIFO, reentrada, convocação, 24h, expiração em cascata, relógio/persistência, filtros, permissões, limites, conflitos, campos calculados e UI. Execute os comandos documentados que forem permitidos/seguros e registre a saída observada. Não corrija nada. Retorne matriz R01-R45/R44, achados reais, separação M2/outros módulos e veredito."
+      },
+      "output": "<task id=\"ses_f346e763cffetXBs02GnlX6uDp\" state=\"completed\">\n<task_result>\n## Matriz de rastreabilidade\n\n| Regra | Origem | Teste que comprova | Veredito |\n|---|---|---|---|\n| R01 | P-36 | `api/test/inscricoes_test.dart:37-54`; `api/tool/smoke_m2.dart:150-169` | COMPROVADA |\n| R02 | P-36 | `api/test/inscricoes_test.dart:56-68` | COMPROVADA |\n| R03 | P-36 | `api/test/inscricoes_test.dart:71-89` | COMPROVADA |\n| R04 | P-27 | `api/test/inscricoes_test.dart:306-326`; `api/test/fila_test.dart:450-489` | COMPROVADA |\n| R05 | P-36 | `api/test/inscricoes_test.dart:71-121`; `api/tool/smoke_m2.dart:186-204` | COMPROVADA |\n| R06 | P-31 | `api/test/inscricoes_test.dart:124-143`; `api/test/inscricoes_test.dart:385-407` | COMPROVADA |\n| R07 | P-33 | `api/test/inscricoes_test.dart:145-168`; `api/test/inscricoes_test.dart:170-208` | COMPROVADA |\n| R08 | P-01 | `api/test/inscricoes_test.dart:264-304` | COMPROVADA |\n| R09 | P-02 | `api/test/inscricoes_test.dart:264-304` | COMPROVADA |\n| R10 | P-02 | `api/test/inscricoes_test.dart:292-304` | COMPROVADA |\n| R11 | P-03 | `api/test/inscricoes_test.dart:269-275` | COMPROVADA |\n| R12 | P-18 | `api/test/inscricoes_test.dart:235-262`; `api/test/confirmacao_test.dart:502-555` | COMPROVADA |\n| R13 | P-23 | `api/test/inscricoes_test.dart:210-233`; `api/test/fila_test.dart:387-425` | COMPROVADA |\n| R14 | P-21 | `api/test/fila_test.dart:387-425`; `api/test/persistencia_test.dart:122-170` | COMPROVADA |\n| R15 | P-22 | `api/test/tempo_test.dart:332-370` | COMPROVADA |\n| R16 | P-06 | `api/test/inscricoes_test.dart:170-208`; `api/test/fila_test.dart:151-192` | COMPROVADA |\n| R17 | P-07 | `api/test/inscricoes_test.dart:170-208`; `api/test/persistencia_test.dart:245-295` | COMPROVADA |\n| R18 | P-08 | `api/test/fila_test.dart:249-281`; `api/test/inscricoes_test.dart:365-380` | COMPROVADA |\n| R19 | P-09 | `api/test/fila_test.dart:151-247`; `api/test/fila_test.dart:283-311` | COMPROVADA |\n| R20 | P-10 | `api/test/confirmacao_test.dart:238-284`; `api/test/confirmacao_test.dart:405-452` | COMPROVADA |\n| R21 | P-04 | `api/test/fila_test.dart:194-208`; `api/test/confirmacao_test.dart:111-143` | COMPROVADA |\n| R22 | P-05 | `api/test/confirmacao_test.dart:145-175` | COMPROVADA |\n| R23 | P-11 | `api/test/tempo_test.dart:70-107`; `api/test/persistencia_test.dart:172-209` | COMPROVADA |\n| R24 | P-12 | `api/test/tempo_test.dart:70-107` | COMPROVADA |\n| R25 | P-13 | `api/test/tempo_test.dart:182-230` | COMPROVADA |\n| R26 | P-32 | `api/test/tempo_test.dart:138-180`; `api/test/fila_test.dart:427-448` | COMPROVADA |\n| R27 | P-14/P-29 | `api/test/tempo_test.dart:109-136` | COMPROVADA |\n| R28 | P-15 | `api/test/confirmacao_test.dart:212-236`; `api/test/confirmacao_test.dart:238-284` | COMPROVADA |\n| R29 | P-16 | `api/test/confirmacao_test.dart:177-210` | COMPROVADA |\n| R30 | P-17 | `api/test/confirmacao_test.dart:286-323`; `api/test/confirmacao_test.dart:405-452` | COMPROVADA |\n| R31 | P-20 | `api/test/tempo_test.dart:278-330`; `api/test/confirmacao_test.dart:145-175` | COMPROVADA |\n| R32 | P-36 | `api/test/confirmacao_test.dart:66-109`; `api/test/fila_test.dart:470-489` | COMPROVADA |\n| R33 | P-19 | `api/test/fila_test.dart:66-79`; `api/test/fila_test.dart:81-107` | COMPROVADA |\n| R34 | P-36 | `api/test/fila_test.dart:81-107` | COMPROVADA |\n| R35 | P-19 | `api/test/fila_test.dart:109-124`; `api/test/tempo_test.dart:372-397` | COMPROVADA |\n| R36 | P-24 | `api/test/fila_test.dart:338-385`; `api/test/tempo_test.dart:400-441` | COMPROVADA |\n| R37 | P-25 | `api/test/fila_test.dart:127-149`; `api/test/inscricoes_test.dart:328-383` | COMPROVADA |\n| R38 | P-26 | `api/test/inscricoes_test.dart:328-383` | COMPROVADA |\n| R39 | P-28 | `api/test/inscricoes_test.dart:328-383`; `api/test/persistencia_test.dart:85-120` | COMPROVADA |\n| R40 | P-30 | `api/test/persistencia_test.dart:85-120`; `api/test/persistencia_test.dart:245-295` | COMPROVADA |\n| R41 | P-31 | `api/test/persistencia_test.dart:225-243`; `api/test/inscricoes_test.dart:385-407` | COMPROVADA |\n| R42 | P-36/F-04/F-05 | `api/test/inscricoes_test.dart:145-168`; `frontend/test/inscricoes_api_client_test.dart:10-28` | COMPROVADA |\n| R43 | P-36/F-16/F-17 | `api/test/inscricoes_test.dart:409-435`; `api/test/tempo_test.dart:232-276` | COMPROVADA |\n| R44 | P-34 | `frontend/test/inscricoes_widget_test.dart:44-104`; `frontend/test/inscricoes_widget_test.dart:147-235`; `frontend/test/inscricoes_widget_test.dart:237-274` | COMPROVADA |\n| R45 | P-34 | `frontend/test/inscricoes_api_client_test.dart:30-171`; `frontend/test/inscricoes_widget_test.dart:147-235` | COMPROVADA |\n\nTodas as regras citam perguntas existentes na entrevista com respostas finais não `PENDENTE`.\n\n## Suíte\n\n```text\ndart test → 00:01 +78: All tests passed!\n```\n\n```text\nflutter test → 00:02 +40: All tests passed!\n```\n\nO smoke foi solicitado, mas não executado: a configuração do agente bloqueou `dart run tool/smoke_m2.dart`. Portanto, não considero os “16 cenários OK” registrados em `evidencias/ENTREGA-M2.md:76` como resultado observado nesta auditoria.\n\n## Achados\n\n1. **[LIMITAÇÃO DE AUDITORIA] Smoke HTTP não reexecutado** — o resultado documentado em `evidencias/ENTREGA-M2.md:67-77` não foi reproduzido nesta sessão por restrição da configuração do agente. Os testes documentados em `projeto.json:14` foram executados e passaram.\n2. **[SEM ACHADO DE CONTRATO M2]** Autenticação, rotas, precedência, envelopes, FIFO, reentrada, convocação, expiração em cascata, persistência, filtros, permissões, limites, conflitos, campos calculados e interface possuem testes comportamentais correspondentes.\n\n### Separação de escopo\n\n- Os testes de M1 em `api/test/server_test.dart` e parte da interface da grade pertencem a outro módulo; foram executados como dependências/regressão.\n- Não foram identificados requisitos de M3, M4 ou M5 indevidamente atribuídos ao M2.\n- `INSCRICAO_BLOQUEADA` permanece fora do escopo conforme `specs/M2-inscricoes.md:8-13`.\n\n## Veredito\n\nAs 45 regras foram conferidas individualmente, têm origem rastreável e prova nos testes aprovados; o M2 pode ser aceito, com a ressalva de que o smoke HTTP não foi reexecutado nesta sessão.\n</task_result>\n</task>",
+      "metadata": {
+       "parentSessionId": "ses_f34725ab5ffe7WJthhXz5Dhsip",
+       "sessionId": "ses_f346e763cffetXBs02GnlX6uDp",
+       "model": {
+        "modelID": "gpt-5.6-luna",
+        "providerID": "openai"
+       },
+       "truncated": false
+      },
+      "title": "Retomar auditoria M2",
+      "time": {
+       "start": 1790121707976,
+       "end": 1790121866120
+      }
+     },
+     "metadata": {
+      "openai": {
+       "itemId": "fc_0ad48fae78249852016ab316e7398087d288ebc358c7ac2c91"
+      }
+     },
+     "id": "prt_0cb917630001sdaGTJBsfw4lcY",
+     "sessionID": "ses_f34725ab5ffe7WJthhXz5Dhsip",
+     "messageID": "msg_0cb9167bf001xXOHiMA2yFxYSk"
+    },
+    {
+     "reason": "tool-calls",
+     "snapshot": "1515eb5d24bec8bc072a8d67a629148cd445cd8d",
+     "type": "step-finish",
+     "tokens": {
+      "total": 14957,
+      "input": 14596,
+      "output": 341,
+      "reasoning": 20,
+      "cache": {
+       "write": 0,
+       "read": 0
+      }
+     },
+     "cost": 0,
+     "id": "prt_0cb93f3ee001NVTWZ7v1nhOdjM",
+     "sessionID": "ses_f34725ab5ffe7WJthhXz5Dhsip",
+     "messageID": "msg_0cb9167bf001xXOHiMA2yFxYSk"
+    }
+   ]
+  },
+  {
+   "info": {
+    "parentID": "msg_0cb9167ac00102mgIqruvio3pu",
+    "role": "assistant",
+    "mode": "build",
+    "agent": "build",
+    "variant": "medium",
+    "path": {
+     "cwd": "/Users/yasmindesouza/TrabalhoIA-WomanInTech",
+     "root": "/Users/yasmindesouza/TrabalhoIA-WomanInTech"
+    },
+    "cost": 0,
+    "tokens": {
+     "total": 17436,
+     "input": 3286,
+     "output": 244,
+     "reasoning": 82,
+     "cache": {
+      "write": 0,
+      "read": 13824
+     }
+    },
+    "modelID": "gpt-5.6-luna",
+    "providerID": "openai",
+    "time": {
+     "created": 1790121866314,
+     "completed": 1790121877185
+    },
+    "finish": "tool-calls",
+    "id": "msg_0cb93f44a001C0mJxmhasIRsPG",
+    "sessionID": "ses_f34725ab5ffe7WJthhXz5Dhsip"
+   },
+   "parts": [
+    {
+     "snapshot": "1515eb5d24bec8bc072a8d67a629148cd445cd8d",
+     "type": "step-start",
+     "id": "prt_0cb93fe3d001ZciBUP04FOpL6L",
+     "sessionID": "ses_f34725ab5ffe7WJthhXz5Dhsip",
+     "messageID": "msg_0cb93f44a001C0mJxmhasIRsPG"
+    },
+    {
+     "type": "reasoning",
+     "text": "**Planning independent file inspection and command execution**",
+     "time": {
+      "start": 1790121868864,
+      "end": 1790121876641
+     },
+     "metadata": {
+      "openai": {
+       "itemId": "rs_0df3e23ca75d61da016ab3178d14fc87d2b6c4063b96353d4a",
+       "reasoningEncryptedContent": "gAAAAABqsxeU15hTxl9Mfzfmousz1Xg0r8WceMj5Of95s3eQuln3Lbiv-XdrHoNnv4-Tr7J9zhb34kMOzKZPQ9HeStxZ_I4vhh_7fuhehp7nwVlWEhosa92uS9pf4PfsNxLGEbajwa4Jw7FIp1HN2_6goDN9cp_ul1STWfdSGq_JmoUc4ra0WuBT_n4DwW-jCW-LSsfM9mYmNqQausmuMt-RAKXz6X2sZ5-z0pxdRBrKHjGX7cdIS3hmc0FB2OJL0E10_rk3myknCnYACwHw-53445VMlBduPmlXj0EqlaaQ9gcdf5nqzSRWDSjKUqeHY2E8TR1iD_kO0bDCWG9war6ChBidNELnwzLK7nMHpMF2TqY4XDBcmtJkMUTtb9H1X46d1tOvoonJ3OScAj5xbqW4opZs53l3gkhMJlfC_30c4QzfqT0HoUOS_mcZLlnOa-9vnFcgA0P0GqMiHD4Pwf1YIMsjkXIj0tvgQmcynouwrOosJm6oXb24VRFHfYPWO3ispLvw489AcPf8qGMnO05cj19SZVo-EEX1e5Svv8DqqRYlYcU8bVxL3_V9BNl0IiSUHAZmubdzFmTbF2G9jRm6IlP2SrJKFNJKwNEcisn8FfhG4EnXGbGexBDEnk_aGYCjszNaYbrnixlYjhEWpq9w1LNR61UZBGlarfpVlYGLxrPq1aVw8c8ZmUydqDGRcWF5cQszWtCkrWTboghaB5hCXlvWmGpRHikixwebJhWWpAevXfqtETRNAlPwS3Wp84iHtUawD1yJBgcf3wEFoFOISJuwq_TbnfmB96OT3lzOKr-WlEvuC6zHajjEf8SVKOuwD6SgCFEq8_LiQmH-RPOF6mj7c1a84u6mEGxv7oAIBWPLbHwoY532we8w_m6oxD_gTCACQorNitxfIx6aCx7q94n810KQjF-03yB5uR8Z6HedRtiRnhSwpHD4gYe9i81NsUPcmDI6nso48XFWW-YpPJJ4l_BSmsoOhsk35zm5Mra4AMAN38qtLV9Q9ognDJYxdAYjdGWRR9EbeA806eewdo59MUxaOVm6_6aLO3XkwpwX9_qIrPS0rNfG53qZN-rjFmeU6F7QzG78A6Ze9QIw9ZsMpbhuhK7-HG24n_QfSScOraAqs5gmlAUOd-3ayfu-wRUFRjxYe0bq6wbfXFLqWDVC59u1gfxpo1u_ANuYu-ntrC_dAKldMzwTnp5mkcnYjWL6ksBjH36v9JyifNvOvVhEWuExgjOHSAwJ9v_DCTNSgSxXFBbG7Qhg19BEkek77j9YQ_lYeU5m4hKe9NPX77ew3CPBs3JLbzbuF_LPHw5aGRHtqP1lqN6WgY9WwV6SGz9iGcS6mg0DQhZq8INLIR6EQAE2StkeHF65bgCp5xXXU9ZDEdBZLndgW0RnFb4grbEfTbyhDtW0KQX6AC-UtbkdQUKN3RR3ek7ETqwMW6SOSTaCAaIEi8mPuuETncB53so5VsSl-QSG-UVEoPObvDbTBIxNCleWU7S_sU5xo1rMLQudyI2TiocfeycWEcBZ1uhYxGi9zyx3C6Skuag3G_4hvfqeNht8Y-zaTCJtBgBFXBji7oCryVWQfWT8RvGEkptKosJ3MzbPOI9yV0bsgHZyygUStKO4upClij8UQKHP8e_nYRHeG5Ht-FfUaAO608CjMakrWhceSf8mB5ScXsqEac2ZK0NE4v_DXCkkuYnDAIJHOAeXRd3Iuqym-LVzRsm5_-46_8d6EI6Jx0kot3C19q8Qjbsn7F-DWkhrlBX4cgvOsyiMnkwxKWCLaOQ0ekaa5fhNulfluTrBMjJ67szYW4lqb-njHNQ3gK3MFiaR1K48Be4="
+      }
+     },
+     "id": "prt_0cb93fe400015zOzpfffi6cmXr",
+     "sessionID": "ses_f34725ab5ffe7WJthhXz5Dhsip",
+     "messageID": "msg_0cb93f44a001C0mJxmhasIRsPG"
+    },
+    {
+     "type": "tool",
+     "tool": "read",
+     "callID": "call_q8MVU3pVAPlO65SL53HKOb0T",
+     "state": {
+      "status": "completed",
+      "input": {
+       "filePath": "/Users/yasmindesouza/TrabalhoIA-WomanInTech/projeto.json"
+      },
+      "output": "[558 caracteres omitidos]",
+      "title": "projeto.json",
+      "time": {
+       "start": 1790121876693,
+       "end": 1790121876705
+      }
+     },
+     "metadata": {
+      "openai": {
+       "itemId": "fc_0df3e23ca75d61da016ab31794c09c87d28eca9f84416e24ae"
+      }
+     },
+     "id": "prt_0cb941ca9001Pu57EPofLZEni8",
+     "sessionID": "ses_f34725ab5ffe7WJthhXz5Dhsip",
+     "messageID": "msg_0cb93f44a001C0mJxmhasIRsPG"
+    },
+    {
+     "type": "tool",
+     "tool": "read",
+     "callID": "call_qNCr7GxjUm9M1XC8G1Dtzcw8",
+     "state": {
+      "status": "completed",
+      "input": {
+       "filePath": "/Users/yasmindesouza/TrabalhoIA-WomanInTech/specs/M2-inscricoes.md"
+      },
+      "output": "[17642 caracteres omitidos]",
+      "title": "specs/M2-inscricoes.md",
+      "time": {
+       "start": 1790121876763,
+       "end": 1790121876780
+      }
+     },
+     "metadata": {
+      "openai": {
+       "itemId": "fc_0df3e23ca75d61da016ab31794c0b087d2a5d482e5634aa287"
+      }
+     },
+     "id": "prt_0cb941d0200109GL1fM0u9XniV",
+     "sessionID": "ses_f34725ab5ffe7WJthhXz5Dhsip",
+     "messageID": "msg_0cb93f44a001C0mJxmhasIRsPG"
+    },
+    {
+     "type": "tool",
+     "tool": "read",
+     "callID": "call_JH5IBe6xAyfggaQgABbadWOy",
+     "state": {
+      "status": "completed",
+      "input": {
+       "filePath": "/Users/yasmindesouza/TrabalhoIA-WomanInTech/entrevistas/M2-inscricoes.md"
+      },
+      "output": "[33167 caracteres omitidos]",
+      "title": "entrevistas/M2-inscricoes.md",
+      "time": {
+       "start": 1790121876845,
+       "end": 1790121876855
+      }
+     },
+     "metadata": {
+      "openai": {
+       "itemId": "fc_0df3e23ca75d61da016ab31794c0bc87d2824128b70f6a715b"
+      }
+     },
+     "id": "prt_0cb941d38001K6WSdtbUROOC5N",
+     "sessionID": "ses_f34725ab5ffe7WJthhXz5Dhsip",
+     "messageID": "msg_0cb93f44a001C0mJxmhasIRsPG"
+    },
+    {
+     "type": "tool",
+     "tool": "read",
+     "callID": "call_wJ8yxiLmUqKMf74B2TWPeBzt",
+     "state": {
+      "status": "completed",
+      "input": {
+       "filePath": "/Users/yasmindesouza/TrabalhoIA-WomanInTech/contrato-api.md"
+      },
+      "output": "[13890 caracteres omitidos]",
+      "title": "contrato-api.md",
+      "time": {
+       "start": 1790121876882,
+       "end": 1790121876887
+      }
+     },
+     "metadata": {
+      "openai": {
+       "itemId": "fc_0df3e23ca75d61da016ab31794c0c487d2873242dc9d02f397"
+      }
+     },
+     "id": "prt_0cb941d73001nn7MJLQ4aGJ2eU",
+     "sessionID": "ses_f34725ab5ffe7WJthhXz5Dhsip",
+     "messageID": "msg_0cb93f44a001C0mJxmhasIRsPG"
+    },
+    {
+     "type": "tool",
+     "tool": "read",
+     "callID": "call_T2nZbDqRhkpg41NrJsPWt8UA",
+     "state": {
+      "status": "completed",
+      "input": {
+       "filePath": "/Users/yasmindesouza/TrabalhoIA-WomanInTech/api/lib/server.dart",
+       "limit": 1000
+      },
+      "output": "[39562 caracteres omitidos]",
+      "title": "api/lib/server.dart",
+      "time": {
+       "start": 1790121876927,
+       "end": 1790121876941
+      }
+     },
+     "metadata": {
+      "openai": {
+       "itemId": "fc_0df3e23ca75d61da016ab31794c0cc87d2899439ff787baf41"
+      }
+     },
+     "id": "prt_0cb941d940012unV87a2A6an82",
+     "sessionID": "ses_f34725ab5ffe7WJthhXz5Dhsip",
+     "messageID": "msg_0cb93f44a001C0mJxmhasIRsPG"
+    },
+    {
+     "type": "tool",
+     "tool": "read",
+     "callID": "call_n5XJp0dyosJJyNMHekOlZWp7",
+     "state": {
+      "status": "completed",
+      "input": {
+       "filePath": "/Users/yasmindesouza/TrabalhoIA-WomanInTech/frontend/lib/inscricoes_page.dart",
+       "limit": 1000
+      },
+      "output": "[13601 caracteres omitidos]",
+      "title": "frontend/lib/inscricoes_page.dart",
+      "time": {
+       "start": 1790121876977,
+       "end": 1790121876983
+      }
+     },
+     "metadata": {
+      "openai": {
+       "itemId": "fc_0df3e23ca75d61da016ab31794c0d487d29b5c9c4ffb492b03"
+      }
+     },
+     "id": "prt_0cb941dd0001n8RO6tgiR0nvVs",
+     "sessionID": "ses_f34725ab5ffe7WJthhXz5Dhsip",
+     "messageID": "msg_0cb93f44a001C0mJxmhasIRsPG"
+    },
+    {
+     "reason": "tool-calls",
+     "snapshot": "1515eb5d24bec8bc072a8d67a629148cd445cd8d",
+     "type": "step-finish",
+     "tokens": {
+      "total": 17436,
+      "input": 3286,
+      "output": 244,
+      "reasoning": 82,
+      "cache": {
+       "write": 0,
+       "read": 13824
+      }
+     },
+     "cost": 0,
+     "id": "prt_0cb941e6f001SRfi21mnLs0Cdn",
+     "sessionID": "ses_f34725ab5ffe7WJthhXz5Dhsip",
+     "messageID": "msg_0cb93f44a001C0mJxmhasIRsPG"
+    }
+   ]
+  },
+  {
+   "info": {
+    "parentID": "msg_0cb9167ac00102mgIqruvio3pu",
+    "role": "assistant",
+    "mode": "build",
+    "agent": "build",
+    "variant": "medium",
+    "path": {
+     "cwd": "/Users/yasmindesouza/TrabalhoIA-WomanInTech",
+     "root": "/Users/yasmindesouza/TrabalhoIA-WomanInTech"
+    },
+    "cost": 0,
+    "tokens": {
+     "total": 52812,
+     "input": 35393,
+     "output": 311,
+     "reasoning": 212,
+     "cache": {
+      "write": 0,
+      "read": 16896
+     }
+    },
+    "modelID": "gpt-5.6-luna",
+    "providerID": "openai",
+    "time": {
+     "created": 1790121877191,
+     "completed": 1790121897822
+    },
+    "finish": "tool-calls",
+    "id": "msg_0cb941ec7001BPtBMivH9A2SgR",
+    "sessionID": "ses_f34725ab5ffe7WJthhXz5Dhsip"
+   },
+   "parts": [
+    {
+     "snapshot": "1515eb5d24bec8bc072a8d67a629148cd445cd8d",
+     "type": "step-start",
+     "id": "prt_0cb94256b001ir8l8RX55fp49P",
+     "sessionID": "ses_f34725ab5ffe7WJthhXz5Dhsip",
+     "messageID": "msg_0cb941ec7001BPtBMivH9A2SgR"
+    },
+    {
+     "type": "reasoning",
+     "text": "**Inspecting test claims and code defects**",
+     "time": {
+      "start": 1790121878906,
+      "end": 1790121883298
+     },
+     "metadata": {
+      "openai": {
+       "itemId": "rs_075d6a94bff65a94016ab31797192c87d294d5cccc7988adac"
+      }
+     },
+     "id": "prt_0cb94257a0016IrwSSggdABR5i",
+     "sessionID": "ses_f34725ab5ffe7WJthhXz5Dhsip",
+     "messageID": "msg_0cb941ec7001BPtBMivH9A2SgR"
+    },
+    {
+     "type": "reasoning",
+     "text": "**Planning parallel test and analysis runs**",
+     "time": {
+      "start": 1790121883303,
+      "end": 1790121883306
+     },
+     "metadata": {
+      "openai": {
+       "itemId": "rs_075d6a94bff65a94016ab31797192c87d294d5cccc7988adac",
+       "reasoningEncryptedContent": "gAAAAABqsxebybwU3-k8VZS3jnt2vXCg3PgUzxHA91XmxoiOYsbIIZtbJUEFramEvbKs5f6MpxEwR05nIDl1FsSQP0pf9Lwh81gciRrNNZpyBe2QekKps8H3Li6Co5Ps4UMW9yTb2sa0zlZutlmHei4-6EbPyf_Q_9OM6ChdHvqqp1O_pQKveQDHWusnz-LdHEmDfPYCXNHroM3pPhlPpIL_fg6EqUE337HZmsrhHDv_UIhEph4tSfUssEDKWMpp4z2vOrypv8Bi_hQWX3CyiqnnZ2cYNdz5jdevllzyM1hbc3nr7qyFlsGz57OYI4n2kmv3oY4R_o6D-WOesdmzMMKopPLboDI89JLi_fs_cDDHP-eEBMiG8uGX4oBgPS3hGgWi12-72mm3uP38TcDp_xKY08OfdfCIrJ9Ll6bOYIxmEt0ltE17IGJ3z0ZWnqwJkfTeNkHGXgoSqMUv3ez9R0ZvOWxOufdFujENK4Ds6IUoFCvO-BCSXnz69XIkC-f8kdsB-k8M1dA-ceWECmD--aMfCVEWw6NzRekHSBf_Rr-SM4sNxDYIgSDU_SWFbT_Yz1R5EHPpJ56HPBlELg01f3vud4qM4SJpb_VZyOJH1IAtl1OEhyfdx8nn6KEEMNgZ63fTuE-rke2KHwfpNAcLTp1M0RAz--b48ajEXXLQ20v7IaFNj5_w2TGJQjqBEBMf3aCPHTviPifJZQxA5IXb5FTSmMnWkHDfT6L7sfjSqZQ9aNicD5FFz8HGd1xZ9Hk2V7ljw_RsJalf06_iuskVNI6jztJWCBRQDCNWNVhXWEboUaCru-T6ubDrctSrmYxeipZdZc1fHO_yFkKm-acYdnR63AfeiKMdF211choKXXEYZ1iRl7SYRXJSLzS-rOByrbKEd4R_S8aIJFSaEuCCit-Fqaq6Yi6gtJFSl25wcM9XoqCZFhoX5fACbiyIRlDrB6eRiZDRuk_fRLNesw-aeUB8w1BZ8jk6M6cfNOdPI3ZHuZxNHUVHS6Y0gG0NFTB1DrIqyW6Ze0btsU_RFEsmqBmkmjX0QpxIwIJcWS-5hsNiJvCxweFFELSlOyXCW33k6Pak05DpExsusYtVWG78nd6Mmk0b2puROnONMrYRSsbv8cqxNPyI3b8WTYwpad73VbbNFRhrEoim9tcxdCJUWe76GuQBeY7Br-OpcDD6652rTNOM4jj4Y-vyH6ssujjRKvjjPtPT9_Emt1PO1NCTn8nWGTdo1T7__V9WuStdrlrlIvFnO20QPUULBTZCu_ab_1KEoVpPs-WHbG9BHEGde5UCR7_2TEg9byOejP5Lb2_YnqSE6D3ra5Njhicb4E0WXNh3R5YP4SaRpUkKwBjgiegOydE_CMH0FWpJZ994-qbGJII3imaJ5KjF6LQfyS0gtEOyJwWVbdtyPoPerv3D5ltvgkA2pZaVe73EA5dX4VTeCgCTs1ZI525b0TQbuZvHG-CQ8WC1L2I91TTOWwEgy5HPQvC7HWnj73vo-6HdPEfzsD7KZfxkSFJjD6RMRb-R_wUEOV4Vp1rT1RHwY622lSyYlIeOJNQgFBmlxLiXGZakOQlZ4AP85qX-3U_pGvu_gmzx7XzT3QekyzDJiJ7aktc7TpfVYVHtrmi0HUVQgo79_RCqQyeE_R6CJz8YjgrRaxl2eB6XWNVfMEOLV6MZCzl8XsuIstRT7F9FIBZW5huT54pEiyGmhDS1DyfOe7KeUa3I4DClsEs292z8EhB9wL6oW-v05r2WNIXRW5t3cqOiiW_P1VzhE8O6tSMQfl019w8n3ciwkehqbCxExizv8JBZFZjzpNZFiN4Atni-unl6rE00KtBkIUEPSOXWLeHrFygS6Vd2tyZwuukcMi5EhNkKui8ddtKUQ_DZt_5lgSNld4yZ3_s1gh3xnWhdk8JfVvYv7nTre9brm5SpF6FyhNQaoe9N-u-v9e1Yy5zLsYFTSxtDjSS_5j4YcJHEUWjnijozw0xUe8inkPAmc3JLhbF2GoFlIZhnYkjN7tn1ccmf7tFAqHLpKHbl6DNHYSc2TcReu8efXWwSt7qExCRAjLZf3a5AJQk_XISN6Ood5fm1ixYqrHoBpKezEfwWdX9bY2gpxrpd7MN4kYztbNZMold7LIQzj5cYQkCkfa6aTDW-j1NjiOCFFEnwpLqA6et28Cm3v5BH7pAdSwhzPFE5DB-Kfu85kP7X7DzPT5l1YIwXRk_M922bzLLcDmP4x2wEYcTf8wdkj-C8AtpMnD5jd-xGb_nNv0puA-wnoDaS73yjF74_tGgPGDvC8PnDyeOcgHfnPVvqGZ9hncrcPsk4ygQuXLLX-Ze3EqihT3ywzblYP_c54zeyIbywERVa4_D5Xg0OdWH1vLJIWjvlvkl80sBkB7JmLA8N1no4106kjkOM6YUc5X5dCW7n7vC9VKfjAeentQ9YJ6qoVmctD4yRbFqW9YxACp733bUjOycz8mOuqOmwZypQXtiPVcUJzABkpjFgjBSSL59un4GVz-ISLH5Ggqbdm-5-Q3BhrdiMXwEztSjGbv3aisl-D8nKe2r7Kl9P_S4SXaJZEQS_YSeSFONxcj98MAF77kbEoV35V6ZRUVkJra7b7AuiNfNO0jYQsOC--rfINdAvFhh4lRLYHus_fCbXQhVOcp2UyAsWXLDQvEmxBdWZ1HY="
+      }
+     },
+     "id": "prt_0cb9436a70010uWDMqvyMClooj",
+     "sessionID": "ses_f34725ab5ffe7WJthhXz5Dhsip",
+     "messageID": "msg_0cb941ec7001BPtBMivH9A2SgR"
+    },
+    {
+     "type": "text",
+     "text": "A leitura direta confirma que as 45 regras estão formalizadas na spec e que a implementação/testes têm rastreabilidade específica. Também vou tratar como limitação, não como PASSOU pleno, a não execução do smoke pelo agente: agora executo os comandos do `projeto.json` e tento o smoke diretamente, registrando a saída literal.",
+     "time": {
+      "start": 1790121883308,
+      "end": 1790121888315
+     },
+     "metadata": {
+      "openai": {
+       "itemId": "msg_075d6a94bff65a94016ab3179b764887d2bc5b828007ae897a",
+       "phase": "commentary"
+      }
+     },
+     "id": "prt_0cb9436ac001fg5RfcC0aV5q3l",
+     "sessionID": "ses_f34725ab5ffe7WJthhXz5Dhsip",
+     "messageID": "msg_0cb941ec7001BPtBMivH9A2SgR"
+    },
+    {
+     "type": "tool",
+     "tool": "bash",
+     "callID": "call_8BwEmmwV1CNYthRYWG9Zt54r",
+     "state": {
+      "status": "completed",
+      "input": {
+       "command": "dart test",
+       "workdir": "/Users/yasmindesouza/TrabalhoIA-WomanInTech/api",
+       "timeout": 120000
+      },
+      "output": "00:00 +0: loading test/inscricoes_test.dart\n00:00 +0: test/inscricoes_test.dart: exige X-Usuario antes de qualquer regra nas cinco rotas do M2\n00:00 +1: test/tempo_test.dart: leitura expira convocada vencida, libera a vaga e convoca o próximo no instante do vencimento (R23, R24)\n00:00 +2: test/tempo_test.dart: leitura expira convocada vencida, libera a vaga e convoca o próximo no instante do vencimento (R23, R24)\n00:00 +3: test/persistencia_test.dart: estado M1/M2 sobrevive a reinicio via arquivo JSON local (R40)\n00:00 +4: test/persistencia_test.dart: estado M1/M2 sobrevive a reinicio via arquivo JSON local (R40)\n00:00 +5: test/confirmacao_test.dart: confirmar sem convocação ativa devolve SEM_CONVOCACAO para confirmada, em_espera e cancelada (R31, R32)\n00:00 +6: test/confirmacao_test.dart: confirmar sem convocação ativa devolve SEM_CONVOCACAO para confirmada, em_espera e cancelada (R31, R32)\n00:00 +7: test/tempo_test.dart: expirada por vencimento devolve CONVOCACAO_EXPIRADA mesmo após leitura e retrocesso; retrocesso não desfaz história (R31, R27)\n00:00 +8: test/tempo_test.dart: expirada por vencimento devolve CONVOCACAO_EXPIRADA mesmo após leitura e retrocesso; retrocesso não desfaz história (R31, R27)\n00:00 +9: test/persistencia_test.dart: convocacao, canceladas e ordem FIFO sobrevivem; nova reinscricao vai ao fim da fila (R14, R16, R40)\n00:00 +10: test/persistencia_test.dart: convocacao, canceladas e ordem FIFO sobrevivem; nova reinscricao vai ao fim da fila (R14, R16, R40)\n00:00 +11: test/persistencia_test.dart: convocacao, canceladas e ordem FIFO sobrevivem; nova reinscricao vai ao fim da fila (R14, R16, R40)\n00:00 +12: test/persistencia_test.dart: convocacao, canceladas e ordem FIFO sobrevivem; nova reinscricao vai ao fim da fila (R14, R16, R40)\n00:00 +13: test/persistencia_test.dart: convocacao, canceladas e ordem FIFO sobrevivem; nova reinscricao vai ao fim da fila (R14, R16, R40)\n00:00 +14: test/persistencia_test.dart: convocacao, canceladas e ordem FIFO sobrevivem; nova reinscricao vai ao fim da fila (R14, R16, R40)\n00:00 +15: test/persistencia_test.dart: convocacao, canceladas e ordem FIFO sobrevivem; nova reinscricao vai ao fim da fila (R14, R16, R40)\n00:00 +16: test/tempo_test.dart: no início do primeiro encontro: convocada vencida expira, espera expira, confirmada é preservada e cessam as convocações (R26)\n00:00 +17: test/confirmacao_test.dart: confirmar convocada com agora == convocadaAte devolve CONVOCACAO_EXPIRADA (R22, R31)\n00:00 +18: test/fila_test.dart: cancelar confirmada libera vaga e convoca o primeiro da fila com prazo agora+24h, ocupando a vaga (R19, R21, R43)\n00:00 +19: test/fila_test.dart: cancelar confirmada libera vaga e convoca o primeiro da fila com prazo agora+24h, ocupando a vaga (R19, R21, R43)\n00:00 +20: test/fila_test.dart: cancelar confirmada libera vaga e convoca o primeiro da fila com prazo agora+24h, ocupando a vaga (R19, R21, R43)\n00:00 +21: test/fila_test.dart: cancelar confirmada libera vaga e convoca o primeiro da fila com prazo agora+24h, ocupando a vaga (R19, R21, R43)\n00:00 +22: test/tempo_test.dart: salto reprocessa a cadeia cronológica: cada prazo vem do vencimento anterior, contadores e posições consistentes (R25, R43)\n00:00 +23: test/persistencia_test.dart: producao avanca o relogio em cada request com clock fake injetado\n00:00 +24: test/persistencia_test.dart: producao avanca o relogio em cada request com clock fake injetado\n00:00 +25: test/persistencia_test.dart: producao avanca o relogio em cada request com clock fake injetado\n00:00 +26: test/fila_test.dart: convocação é limitada ao início do primeiro encontro quando agora+24h passa dele (R21)\n00:00 +27: test/tempo_test.dart: múltiplas vagas e vencimentos no mesmo instante: cascata em FIFO e contadores consistentes (R43)\n00:00 +28: test/tempo_test.dart: múltiplas vagas e vencimentos no mesmo instante: cascata em FIFO e contadores consistentes (R43)\n00:00 +29: test/tempo_test.dart: múltiplas vagas e vencimentos no mesmo instante: cascata em FIFO e contadores consistentes (R43)\n00:00 +30: test/tempo_test.dart: múltiplas vagas e vencimentos no mesmo instante: cascata em FIFO e contadores consistentes (R43)\n00:00 +31: test/tempo_test.dart: múltiplas vagas e vencimentos no mesmo instante: cascata em FIFO e contadores consistentes (R43)\n00:00 +32: test/persistencia_test.dart: requisicoes simultaneas na mesma instancia: todos 201, 1 confirmada 7 espera, nada se perde ao reiniciar (R40)\n00:00 +33: test/inscricoes_test.dart: inscrições encerram em agora==inicio e em iniciada/encerrada; cancelada vence (R08, R09, R11)\n00:00 +34: test/confirmacao_test.dart: terceiro minicurso confirmado devolve LIMITE_DE_MINICURSOS ao inscrever, mesmo quando a vaga seria em_espera (R30)\n00:00 +35: test/fila_test.dart: cancelar em_espera recompacta a fila sem liberar vaga nem ocupar (R18)\n00:00 +36: test/tempo_test.dart: confirmar expirada por vencimento dá CONVOCACAO_EXPIRADA; expirada por fechamento dá SEM_CONVOCACAO (R31)\n00:00 +37: test/tempo_test.dart: confirmar expirada por vencimento dá CONVOCACAO_EXPIRADA; expirada por fechamento dá SEM_CONVOCACAO (R31)\n00:00 +38: test/persistencia_test.dart: mutacao cujo corpo demora usa o relogio da chegada do corpo, nao o do inicio da requisicao (R08)\n00:00 +39: test/persistencia_test.dart: mutacao cujo corpo demora usa o relogio da chegada do corpo, nao o do inicio da requisicao (R08)\n00:00 +40: test/persistencia_test.dart: mutacao cujo corpo demora usa o relogio da chegada do corpo, nao o do inicio da requisicao (R08)\n00:00 +41: test/persistencia_test.dart: mutacao cujo corpo demora usa o relogio da chegada do corpo, nao o do inicio da requisicao (R08)\n00:00 +42: test/persistencia_test.dart: mutacao cujo corpo demora usa o relogio da chegada do corpo, nao o do inicio da requisicao (R08)\n00:00 +43: test/persistencia_test.dart: mutacao cujo corpo demora usa o relogio da chegada do corpo, nao o do inicio da requisicao (R08)\n00:00 +44: test/persistencia_test.dart: mutacao cujo corpo demora usa o relogio da chegada do corpo, nao o do inicio da requisicao (R08)\n00:00 +45: test/persistencia_test.dart: mutacao cujo corpo demora usa o relogio da chegada do corpo, nao o do inicio da requisicao (R08)\n00:00 +46: test/persistencia_test.dart: mutacao cujo corpo demora usa o relogio da chegada do corpo, nao o do inicio da requisicao (R08)\n00:00 +47: test/persistencia_test.dart: mutacao cujo corpo demora usa o relogio da chegada do corpo, nao o do inicio da requisicao (R08)\n00:00 +48: test/persistencia_test.dart: mutacao cujo corpo demora usa o relogio da chegada do corpo, nao o do inicio da requisicao (R08)\n00:00 +49: test/persistencia_test.dart: mutacao cujo corpo demora usa o relogio da chegada do corpo, nao o do inicio da requisicao (R08)\n00:00 +50: test/persistencia_test.dart: mutacao cujo corpo demora usa o relogio da chegada do corpo, nao o do inicio da requisicao (R08)\n00:00 +51: test/persistencia_test.dart: mutacao cujo corpo demora usa o relogio da chegada do corpo, nao o do inicio da requisicao (R08)\n00:00 +52: test/confirmacao_test.dart: inscrever: JA_INSCRITO vence conflito e CONFLITO_DE_HORARIO vence LIMITE_DE_MINICURSOS (R12)\n00:00 +53: test/fila_test.dart: após o início do primeiro encontro, aumento de vagas não convoca\n00:00 +54: test/fila_test.dart: após o início do primeiro encontro, aumento de vagas não convoca\n00:00 +55: test/fila_test.dart: cancelamento e confirmação recusam corpo malformado ou raiz não-objeto, aceitam ausente e objeto (R04)\n00:01 +56: test/server_test.dart: começa vazio e expõe salas a qualquer usuário identificado\n00:01 +57: test/server_test.dart: aplica autenticação e permissão antes do corpo\n00:01 +58: test/server_test.dart: cria palestra e minicurso, calcula carga e ordena encontros\n00:01 +59: test/server_test.dart: rejeita corpo ausente, tipos errados e JSON extra\n00:01 +60: test/server_test.dart: aplica autenticação, perfil e existência também no detalhe e nas ações\n00:01 +61: test/server_test.dart: valida quantidade de encontros para cada tipo nos limites\n00:01 +62: test/server_test.dart: rejeita duração máxima e sobreposição interna\n00:01 +63: test/server_test.dart: rejeita encontro fora do período inclusivo do evento\n00:01 +64: test/server_test.dart: rejeita sobreposição de atividades ativas na mesma sala\n00:01 +65: test/server_test.dart: aplica conflito com fim igual ao início e intervalo de 15 minutos\n00:01 +66: test/server_test.dart: edita título e aumento de vagas, mas preserva campos imutáveis\n00:01 +67: test/server_test.dart: cancelamento e situações respeitam relógio e filtros\n00:01 +68: test/server_test.dart: gera IDs contratados, ordena a lista e filtra por Brasília\n00:01 +69: test/server_test.dart: PATCH valida tudo antes de persistir qualquer campo\n00:01 +70: test/server_test.dart: aplica as regras comuns a palestra e minicurso\n00:01 +71: test/server_test.dart: rejeita campos imutáveis com valores estruturalmente válidos\n00:01 +72: test/server_test.dart: encontro atravessando meia-noite e bordas do evento\n00:01 +73: test/server_test.dart: intervalo de 14 minutos conflita e 15 minutos permite\n00:01 +74: test/server_test.dart: atividade cancelada libera a sala\n00:01 +75: test/server_test.dart: expõe estados nas bordas, detalhe, cancelada e filtros combinados\n00:01 +76: test/server_test.dart: aplica filtros de dia e tipo com exclusão efetiva\n00:01 +77: test/server_test.dart: rejeita capacidade na criação e no PATCH sem mutar o título\n00:01 +78: All tests passed!\n",
+      "metadata": {
+       "output": "00:00 +0: loading test/inscricoes_test.dart\n00:00 +0: test/inscricoes_test.dart: exige X-Usuario antes de qualquer regra nas cinco rotas do M2\n00:00 +1: test/tempo_test.dart: leitura expira convocada vencida, libera a vaga e convoca o próximo no instante do vencimento (R23, R24)\n00:00 +2: test/tempo_test.dart: leitura expira convocada vencida, libera a vaga e convoca o próximo no instante do vencimento (R23, R24)\n00:00 +3: test/persistencia_test.dart: estado M1/M2 sobrevive a reinicio via arquivo JSON local (R40)\n00:00 +4: test/persistencia_test.dart: estado M1/M2 sobrevive a reinicio via arquivo JSON local (R40)\n00:00 +5: test/confirmacao_test.dart: confirmar sem convocação ativa devolve SEM_CONVOCACAO para confirmada, em_espera e cancelada (R31, R32)\n00:00 +6: test/confirmacao_test.dart: confirmar sem convocação ativa devolve SEM_CONVOCACAO para confirmada, em_espera e cancelada (R31, R32)\n00:00 +7: test/tempo_test.dart: expirada por vencimento devolve CONVOCACAO_EXPIRADA mesmo após leitura e retrocesso; retrocesso não desfaz história (R31, R27)\n00:00 +8: test/tempo_test.dart: expirada por vencimento devolve CONVOCACAO_EXPIRADA mesmo após leitura e retrocesso; retrocesso não desfaz história (R31, R27)\n00:00 +9: test/persistencia_test.dart: convocacao, canceladas e ordem FIFO sobrevivem; nova reinscricao vai ao fim da fila (R14, R16, R40)\n00:00 +10: test/persistencia_test.dart: convocacao, canceladas e ordem FIFO sobrevivem; nova reinscricao vai ao fim da fila (R14, R16, R40)\n00:00 +11: test/persistencia_test.dart: convocacao, canceladas e ordem FIFO sobrevivem; nova reinscricao vai ao fim da fila (R14, R16, R40)\n00:00 +12: test/persistencia_test.dart: convocacao, canceladas e ordem FIFO sobrevivem; nova reinscricao vai ao fim da fila (R14, R16, R40)\n00:00 +13: test/persistencia_test.dart: convocacao, canceladas e ordem FIFO sobrevivem; nova reinscricao vai ao fim da fila (R14, R16, R40)\n00:00 +14: test/persistencia_test.dart: convocacao, canceladas e ordem FIFO sobrevivem; nova reinscricao vai ao fim da fila (R14, R16, R40)\n00:00 +15: test/persistencia_test.dart: convocacao, canceladas e ordem FIFO sobrevivem; nova reinscricao vai ao fim da fila (R14, R16, R40)\n00:00 +16: test/tempo_test.dart: no início do primeiro encontro: convocada vencida expira, espera expira, confirmada é preservada e cessam as convocações (R26)\n00:00 +17: test/confirmacao_test.dart: confirmar convocada com agora == convocadaAte devolve CONVOCACAO_EXPIRADA (R22, R31)\n00:00 +18: test/fila_test.dart: cancelar confirmada libera vaga e convoca o primeiro da fila com prazo agora+24h, ocupando a vaga (R19, R21, R43)\n00:00 +19: test/fila_test.dart: cancelar confirmada libera vaga e convoca o primeiro da fila com prazo agora+24h, ocupando a vaga (R19, R21, R43)\n00:00 +20: test/fila_test.dart: cancelar confirmada libera vaga e convoca o primeiro da fila com prazo agora+24h, ocupando a vaga (R19, R21, R43)\n00:00 +21: test/fila_test.dart: cancelar confirmada libera vaga e convoca o primeiro da fila com prazo agora+24h, ocupando a vaga (R19, R21, R43)\n00:00 +22: test/tempo_test.dart: salto reprocessa a cadeia cronológica: cada prazo vem do vencimento anterior, contadores e posições consistentes (R25, R43)\n00:00 +23: test/persistencia_test.dart: producao avanca o relogio em cada request com clock fake injetado\n00:00 +24: test/persistencia_test.dart: producao avanca o relogio em cada request com clock fake injetado\n00:00 +25: test/persistencia_test.dart: producao avanca o relogio em cada request com clock fake injetado\n00:00 +26: test/fila_test.dart: convocação é limitada ao início do primeiro encontro quando agora+24h passa dele (R21)\n00:00 +27: test/tempo_test.dart: múltiplas vagas e vencimentos no mesmo instante: cascata em FIFO e contadores consistentes (R43)\n00:00 +28: test/tempo_test.dart: múltiplas vagas e vencimentos no mesmo instante: cascata em FIFO e contadores consistentes (R43)\n00:00 +29: test/tempo_test.dart: múltiplas vagas e vencimentos no mesmo instante: cascata em FIFO e contadores consistentes (R43)\n00:00 +30: test/tempo_test.dart: múltiplas vagas e vencimentos no mesmo instante: cascata em FIFO e contadores consistentes (R43)\n00:00 +31: test/tempo_test.dart: múltiplas vagas e vencimentos no mesmo instante: cascata em FIFO e contadores consistentes (R43)\n00:00 +32: test/persistencia_test.dart: requisicoes simultaneas na mesma instancia: todos 201, 1 confirmada 7 espera, nada se perde ao reiniciar (R40)\n00:00 +33: test/inscricoes_test.dart: inscrições encerram em agora==inicio e em iniciada/encerrada; cancelada vence (R08, R09, R11)\n00:00 +34: test/confirmacao_test.dart: terceiro minicurso confirmado devolve LIMITE_DE_MINICURSOS ao inscrever, mesmo quando a vaga seria em_espera (R30)\n00:00 +35: test/fila_test.dart: cancelar em_espera recompacta a fila sem liberar vaga nem ocupar (R18)\n00:00 +36: test/tempo_test.dart: confirmar expirada por vencimento dá CONVOCACAO_EXPIRADA; expirada por fechamento dá SEM_CONVOCACAO (R31)\n00:00 +37: test/tempo_test.dart: confirmar expirada por vencimento dá CONVOCACAO_EXPIRADA; expirada por fechamento dá SEM_CONVOCACAO (R31)\n00:00 +38: test/persistencia_test.dart: mutacao cujo corpo demora usa o relogio da chegada do corpo, nao o do inicio da requisicao (R08)\n00:00 +39: test/persistencia_test.dart: mutacao cujo corpo demora usa o relogio da chegada do corpo, nao o do inicio da requisicao (R08)\n00:00 +40: test/persistencia_test.dart: mutacao cujo corpo demora usa o relogio da chegada do corpo, nao o do inicio da requisicao (R08)\n00:00 +41: test/persistencia_test.dart: mutacao cujo corpo demora usa o relogio da chegada do corpo, nao o do inicio da requisicao (R08)\n00:00 +42: test/persistencia_test.dart: mutacao cujo corpo demora usa o relogio da chegada do corpo, nao o do inicio da requisicao (R08)\n00:00 +43: test/persistencia_test.dart: mutacao cujo corpo demora usa o relogio da chegada do corpo, nao o do inicio da requisicao (R08)\n00:00 +44: test/persistencia_test.dart: mutacao cujo corpo demora usa o relogio da chegada do corpo, nao o do inicio da requisicao (R08)\n00:00 +45: test/persistencia_test.dart: mutacao cujo corpo demora usa o relogio da chegada do corpo, nao o do inicio da requisicao (R08)\n00:00 +46: test/persistencia_test.dart: mutacao cujo corpo demora usa o relogio da chegada do corpo, nao o do inicio da requisicao (R08)\n00:00 +47: test/persistencia_test.dart: mutacao cujo corpo demora usa o relogio da chegada do corpo, nao o do inicio da requisicao (R08)\n00:00 +48: test/persistencia_test.dart: mutacao cujo corpo demora usa o relogio da chegada do corpo, nao o do inicio da requisicao (R08)\n00:00 +49: test/persistencia_test.dart: mutacao cujo corpo demora usa o relogio da chegada do corpo, nao o do inicio da requisicao (R08)\n00:00 +50: test/persistencia_test.dart: mutacao cujo corpo demora usa o relogio da chegada do corpo, nao o do inicio da requisicao (R08)\n00:00 +51: test/persistencia_test.dart: mutacao cujo corpo demora usa o relogio da chegada do corpo, nao o do inicio da requisicao (R08)\n00:00 +52: test/confirmacao_test.dart: inscrever: JA_INSCRITO vence conflito e CONFLITO_DE_HORARIO vence LIMITE_DE_MINICURSOS (R12)\n00:00 +53: test/fila_test.dart: após o início do primeiro encontro, aumento de vagas não convoca\n00:00 +54: test/fila_test.dart: após o início do primeiro encontro, aumento de vagas não convoca\n00:00 +55: test/fila_test.dart: cancelamento e confirmação recusam corpo malformado ou raiz não-objeto, aceitam ausente e objeto (R04)\n00:01 +56: test/server_test.dart: começa vazio e expõe salas a qualquer usuário identificado\n00:01 +57: test/server_test.dart: aplica autenticação e permissão antes do corpo\n00:01 +58: test/server_test.dart: cria palestra e minicurso, calcula carga e ordena encontros\n00:01 +59: test/server_test.dart: rejeita corpo ausente, tipos errados e JSON extra\n00:01 +60: test/server_test.dart: aplica autenticação, perfil e existência também no detalhe e nas ações\n00:01 +61: test/server_test.dart: valida quantidade de encontros para cada tipo nos limites\n00:01 +62: test/server_test.dart: rejeita duração máxima e sobreposição interna\n00:01 +63: test/server_test.dart: rejeita encontro fora do período inclusivo do evento\n00:01 +64: test/server_test.dart: rejeita sobreposição de atividades ativas na mesma sala\n00:01 +65: test/server_test.dart: aplica conflito com fim igual ao início e intervalo de 15 minutos\n00:01 +66: test/server_test.dart: edita título e aumento de vagas, mas preserva campos imutáveis\n00:01 +67: test/server_test.dart: cancelamento e situações respeitam relógio e filtros\n00:01 +68: test/server_test.dart: gera IDs contratados, ordena a lista e filtra por Brasília\n00:01 +69: test/server_test.dart: PATCH valida tudo antes de persistir qualquer campo\n00:01 +70: test/server_test.dart: aplica as regras comuns a palestra e minicurso\n00:01 +71: test/server_test.dart: rejeita campos imutáveis com valores estruturalmente válidos\n00:01 +72: test/server_test.dart: encontro atravessando meia-noite e bordas do evento\n00:01 +73: test/server_test.dart: intervalo de 14 minutos conflita e 15 minutos permite\n00:01 +74: test/server_test.dart: atividade cancelada libera a sala\n00:01 +75: test/server_test.dart: expõe estados nas bordas, detalhe, cancelada e filtros combinados\n00:01 +76: test/server_test.dart: aplica filtros de dia e tipo com exclusão efetiva\n00:01 +77: test/server_test.dart: rejeita capacidade na criação e no PATCH sem mutar o título\n00:01 +78: All tests passed!\n",
+       "exit": 0,
+       "truncated": false
+      },
+      "title": "dart test",
+      "time": {
+       "start": 1790121888324,
+       "end": 1790121891744
+      }
+     },
+     "metadata": {
+      "openai": {
+       "itemId": "fc_075d6a94bff65a94016ab317a081a087d2880a425ac4ffc490"
+      }
+     },
+     "id": "prt_0cb944a3e001iSmumzw2sC8aQD",
+     "sessionID": "ses_f34725ab5ffe7WJthhXz5Dhsip",
+     "messageID": "msg_0cb941ec7001BPtBMivH9A2SgR"
+    },
+    {
+     "type": "tool",
+     "tool": "bash",
+     "callID": "call_WESzWntPsSHOjvmeezYyiaQb",
+     "state": {
+      "status": "completed",
+      "input": {
+       "command": "dart analyze",
+       "workdir": "/Users/yasmindesouza/TrabalhoIA-WomanInTech/api",
+       "timeout": 120000
+      },
+      "output": "Analyzing api...\nNo issues found!\n",
+      "metadata": {
+       "output": "Analyzing api...\nNo issues found!\n",
+       "exit": 0,
+       "truncated": false
+      },
+      "title": "dart analyze",
+      "time": {
+       "start": 1790121888334,
+       "end": 1790121889921
+      }
+     },
+     "metadata": {
+      "openai": {
+       "itemId": "fc_075d6a94bff65a94016ab317a081b487d283413b4d51a25ce5"
+      }
+     },
+     "id": "prt_0cb944a48001EALSL1HY5PP6ry",
+     "sessionID": "ses_f34725ab5ffe7WJthhXz5Dhsip",
+     "messageID": "msg_0cb941ec7001BPtBMivH9A2SgR"
+    },
+    {
+     "type": "tool",
+     "tool": "bash",
+     "callID": "call_DnCHfc5cmoD7VEvHWZmlN90a",
+     "state": {
+      "status": "completed",
+      "input": {
+       "command": "flutter analyze",
+       "workdir": "/Users/yasmindesouza/TrabalhoIA-WomanInTech/frontend",
+       "timeout": 120000
+      },
+      "output": "Analyzing frontend...                                           \nNo issues found! (ran in 7.2s)\n",
+      "metadata": {
+       "output": "Analyzing frontend...                                           \nNo issues found! (ran in 7.2s)\n",
+       "exit": 0,
+       "truncated": false
+      },
+      "title": "flutter analyze",
+      "time": {
+       "start": 1790121888339,
+       "end": 1790121897631
+      }
+     },
+     "metadata": {
+      "openai": {
+       "itemId": "fc_075d6a94bff65a94016ab317a081bc87d29def2e1cf5dc1b1d"
+      }
+     },
+     "id": "prt_0cb944a50001d7jUOUyMBl2aIk",
+     "sessionID": "ses_f34725ab5ffe7WJthhXz5Dhsip",
+     "messageID": "msg_0cb941ec7001BPtBMivH9A2SgR"
+    },
+    {
+     "type": "tool",
+     "tool": "bash",
+     "callID": "call_x3D3UgR4XExcoL5EGwdJvJUo",
+     "state": {
+      "status": "completed",
+      "input": {
+       "command": "flutter test",
+       "workdir": "/Users/yasmindesouza/TrabalhoIA-WomanInTech/frontend",
+       "timeout": 120000
+      },
+      "output": "Waiting for another flutter command to release the startup lock...\n00:00 +0: loading /Users/yasmindesouza/TrabalhoIA-WomanInTech/frontend/test/inscricoes_widget_test.dart\n00:00 +0: /Users/yasmindesouza/TrabalhoIA-WomanInTech/frontend/test/inscricoes_api_client_test.dart: Inscricao expõe os campos exatos do contrato com nulos fora do caso\n00:00 +1: /Users/yasmindesouza/TrabalhoIA-WomanInTech/frontend/test/api_client_test.dart: ApiClient envia filtros e X-Usuario\n00:00 +2: /Users/yasmindesouza/TrabalhoIA-WomanInTech/frontend/test/inscricoes_api_client_test.dart: listarInscricoes chama GET /inscricoes com filtro atividadeId e X-Usuario\n00:00 +3: /Users/yasmindesouza/TrabalhoIA-WomanInTech/frontend/test/api_client_test.dart: ApiClient transforma erro HTTP em ApiFailure\n00:00 +4: /Users/yasmindesouza/TrabalhoIA-WomanInTech/frontend/test/api_client_test.dart: ApiClient transforma erro HTTP em ApiFailure\n00:00 +5: /Users/yasmindesouza/TrabalhoIA-WomanInTech/frontend/test/inscricoes_api_client_test.dart: inscrever chama POST /atividades/:id/inscricoes sem corpo e retorna Inscricao\n00:00 +6: /Users/yasmindesouza/TrabalhoIA-WomanInTech/frontend/test/api_client_test.dart: ApiClient centraliza criação, edição e cancelamento\n00:00 +7: /Users/yasmindesouza/TrabalhoIA-WomanInTech/frontend/test/inscricoes_api_client_test.dart: cancelarInscricao chama POST /inscricoes/:id/cancelamento com X-Usuario\n00:00 +8: /Users/yasmindesouza/TrabalhoIA-WomanInTech/frontend/test/widget_test.dart: mostra estado vazio depois do loading\n00:00 +9: /Users/yasmindesouza/TrabalhoIA-WomanInTech/frontend/test/widget_test.dart: mostra estado vazio depois do loading\n00:00 +10: /Users/yasmindesouza/TrabalhoIA-WomanInTech/frontend/test/widget_test.dart: mostra estado vazio depois do loading\n00:00 +11: /Users/yasmindesouza/TrabalhoIA-WomanInTech/frontend/test/widget_test.dart: mostra estado vazio depois do loading\n00:01 +12: /Users/yasmindesouza/TrabalhoIA-WomanInTech/frontend/test/widget_test.dart: mostra estado vazio depois do loading\n00:01 +13: /Users/yasmindesouza/TrabalhoIA-WomanInTech/frontend/test/widget_test.dart: mostra estado vazio depois do loading\n00:01 +14: /Users/yasmindesouza/TrabalhoIA-WomanInTech/frontend/test/widget_test.dart: mostra estado vazio depois do loading\n00:01 +15: /Users/yasmindesouza/TrabalhoIA-WomanInTech/frontend/test/inscricoes_widget_test.dart: mostra todos os status identificados pelo titulo com posicao, prazo e contagem\n00:01 +16: /Users/yasmindesouza/TrabalhoIA-WomanInTech/frontend/test/regressao_m2_widget_test.dart: filtro trocado durante o carregamento descarta resposta antiga\n00:01 +17: /Users/yasmindesouza/TrabalhoIA-WomanInTech/frontend/test/regressao_m2_widget_test.dart: filtro trocado durante o carregamento descarta resposta antiga\n00:01 +18: /Users/yasmindesouza/TrabalhoIA-WomanInTech/frontend/test/regressao_m2_widget_test.dart: filtro trocado durante o carregamento descarta resposta antiga\n00:01 +19: /Users/yasmindesouza/TrabalhoIA-WomanInTech/frontend/test/inscricoes_widget_test.dart: participante cancela inscricao via POST com X-Usuario, desabilita durante envio e recarrega\n00:01 +20: /Users/yasmindesouza/TrabalhoIA-WomanInTech/frontend/test/widget_test.dart: mostra sala com capacidade e encontros no detalhe\n00:01 +21: /Users/yasmindesouza/TrabalhoIA-WomanInTech/frontend/test/widget_test.dart: mostra sala com capacidade e encontros no detalhe\n00:01 +22: /Users/yasmindesouza/TrabalhoIA-WomanInTech/frontend/test/widget_test.dart: mostra sala com capacidade e encontros no detalhe\n00:01 +23: /Users/yasmindesouza/TrabalhoIA-WomanInTech/frontend/test/regressao_m2_widget_test.dart: retorno das inscricoes sincroniza seletor e recarrega a grade\n00:02 +24: /Users/yasmindesouza/TrabalhoIA-WomanInTech/frontend/test/regressao_m2_widget_test.dart: retorno das inscricoes sincroniza seletor e recarrega a grade\n00:02 +25: /Users/yasmindesouza/TrabalhoIA-WomanInTech/frontend/test/regressao_m2_widget_test.dart: retorno das inscricoes sincroniza seletor e recarrega a grade\n00:02 +26: /Users/yasmindesouza/TrabalhoIA-WomanInTech/frontend/test/regressao_m2_widget_test.dart: retorno das inscricoes sincroniza seletor e recarrega a grade\n00:02 +27: /Users/yasmindesouza/TrabalhoIA-WomanInTech/frontend/test/regressao_m2_widget_test.dart: retorno das inscricoes sincroniza seletor e recarrega a grade\n00:02 +28: /Users/yasmindesouza/TrabalhoIA-WomanInTech/frontend/test/regressao_m2_widget_test.dart: retorno das inscricoes sincroniza seletor e recarrega a grade\n00:02 +29: /Users/yasmindesouza/TrabalhoIA-WomanInTech/frontend/test/widget_test.dart: seletor usa usuários do contrato e controla ações por papel\n00:02 +30: /Users/yasmindesouza/TrabalhoIA-WomanInTech/frontend/test/inscricoes_widget_test.dart: detalhe do participante inscreve via POST com X-Usuario e passa a mostrar cancelar\n00:02 +31: /Users/yasmindesouza/TrabalhoIA-WomanInTech/frontend/test/inscricoes_widget_test.dart: detalhe do participante inscreve via POST com X-Usuario e passa a mostrar cancelar\n00:02 +32: /Users/yasmindesouza/TrabalhoIA-WomanInTech/frontend/test/inscricoes_widget_test.dart: detalhe do participante inscreve via POST com X-Usuario e passa a mostrar cancelar\n00:02 +33: /Users/yasmindesouza/TrabalhoIA-WomanInTech/frontend/test/regressao_m2_widget_test.dart: contagem regressiva reflete tempo decorrido real mesmo com callback atrasado\n00:02 +34: /Users/yasmindesouza/TrabalhoIA-WomanInTech/frontend/test/inscricoes_widget_test.dart: detalhe do participante confirma convocacao via POST com X-Usuario\n00:03 +35: /Users/yasmindesouza/TrabalhoIA-WomanInTech/frontend/test/inscricoes_widget_test.dart: detalhe apos cancelar e reinscrever escolhe a inscricao ativa confirmada e nao a cancelada antiga\n00:03 +36: /Users/yasmindesouza/TrabalhoIA-WomanInTech/frontend/test/inscricoes_widget_test.dart: detalhe com apenas historicas mostra a mais recente (expirada antiga vs cancelada nova)\n00:03 +37: /Users/yasmindesouza/TrabalhoIA-WomanInTech/frontend/test/inscricoes_widget_test.dart: detalhe de convocada permite cancelar inscricao via POST com X-Usuario\n00:03 +38: /Users/yasmindesouza/TrabalhoIA-WomanInTech/frontend/test/inscricoes_widget_test.dart: detalhe M1 preserva sala, capacidade e encontros quando a consulta de inscricao falha\n00:03 +39: /Users/yasmindesouza/TrabalhoIA-WomanInTech/frontend/test/inscricoes_widget_test.dart: navega para a pagina de inscricoes a partir da grade\n00:03 +40: All tests passed!\n",
+      "metadata": {
+       "output": "Waiting for another flutter command to release the startup lock...\n00:00 +0: loading /Users/yasmindesouza/TrabalhoIA-WomanInTech/frontend/test/inscricoes_widget_test.dart\n00:00 +0: /Users/yasmindesouza/TrabalhoIA-WomanInTech/frontend/test/inscricoes_api_client_test.dart: Inscricao expõe os campos exatos do contrato com nulos fora do caso\n00:00 +1: /Users/yasmindesouza/TrabalhoIA-WomanInTech/frontend/test/api_client_test.dart: ApiClient envia filtros e X-Usuario\n00:00 +2: /Users/yasmindesouza/TrabalhoIA-WomanInTech/frontend/test/inscricoes_api_client_test.dart: listarInscricoes chama GET /inscricoes com filtro atividadeId e X-Usuario\n00:00 +3: /Users/yasmindesouza/TrabalhoIA-WomanInTech/frontend/test/api_client_test.dart: ApiClient transforma erro HTTP em ApiFailure\n00:00 +4: /Users/yasmindesouza/TrabalhoIA-WomanInTech/frontend/test/api_client_test.dart: ApiClient transforma erro HTTP em ApiFailure\n00:00 +5: /Users/yasmindesouza/TrabalhoIA-WomanInTech/frontend/test/inscricoes_api_client_test.dart: inscrever chama POST /atividades/:id/inscricoes sem corpo e retorna Inscricao\n00:00 +6: /Users/yasmindesouza/TrabalhoIA-WomanInTech/frontend/test/api_client_test.dart: ApiClient centraliza criação, edição e cancelamento\n00:00 +7: /Users/yasmindesouza/TrabalhoIA-WomanInTech/frontend/test/inscricoes_api_client_test.dart: cancelarInscricao chama POST /inscricoes/:id/cancelamento com X-Usuario\n00:00 +8: /Users/yasmindesouza/TrabalhoIA-WomanInTech/frontend/test/widget_test.dart: mostra estado vazio depois do loading\n00:00 +9: /Users/yasmindesouza/TrabalhoIA-WomanInTech/frontend/test/widget_test.dart: mostra estado vazio depois do loading\n00:00 +10: /Users/yasmindesouza/TrabalhoIA-WomanInTech/frontend/test/widget_test.dart: mostra estado vazio depois do loading\n00:00 +11: /Users/yasmindesouza/TrabalhoIA-WomanInTech/frontend/test/widget_test.dart: mostra estado vazio depois do loading\n00:01 +12: /Users/yasmindesouza/TrabalhoIA-WomanInTech/frontend/test/widget_test.dart: mostra estado vazio depois do loading\n00:01 +13: /Users/yasmindesouza/TrabalhoIA-WomanInTech/frontend/test/widget_test.dart: mostra estado vazio depois do loading\n00:01 +14: /Users/yasmindesouza/TrabalhoIA-WomanInTech/frontend/test/widget_test.dart: mostra estado vazio depois do loading\n00:01 +15: /Users/yasmindesouza/TrabalhoIA-WomanInTech/frontend/test/inscricoes_widget_test.dart: mostra todos os status identificados pelo titulo com posicao, prazo e contagem\n00:01 +16: /Users/yasmindesouza/TrabalhoIA-WomanInTech/frontend/test/regressao_m2_widget_test.dart: filtro trocado durante o carregamento descarta resposta antiga\n00:01 +17: /Users/yasmindesouza/TrabalhoIA-WomanInTech/frontend/test/regressao_m2_widget_test.dart: filtro trocado durante o carregamento descarta resposta antiga\n00:01 +18: /Users/yasmindesouza/TrabalhoIA-WomanInTech/frontend/test/regressao_m2_widget_test.dart: filtro trocado durante o carregamento descarta resposta antiga\n00:01 +19: /Users/yasmindesouza/TrabalhoIA-WomanInTech/frontend/test/inscricoes_widget_test.dart: participante cancela inscricao via POST com X-Usuario, desabilita durante envio e recarrega\n00:01 +20: /Users/yasmindesouza/TrabalhoIA-WomanInTech/frontend/test/widget_test.dart: mostra sala com capacidade e encontros no detalhe\n00:01 +21: /Users/yasmindesouza/TrabalhoIA-WomanInTech/frontend/test/widget_test.dart: mostra sala com capacidade e encontros no detalhe\n00:01 +22: /Users/yasmindesouza/TrabalhoIA-WomanInTech/frontend/test/widget_test.dart: mostra sala com capacidade e encontros no detalhe\n00:01 +23: /Users/yasmindesouza/TrabalhoIA-WomanInTech/frontend/test/regressao_m2_widget_test.dart: retorno das inscricoes sincroniza seletor e recarrega a grade\n00:02 +24: /Users/yasmindesouza/TrabalhoIA-WomanInTech/frontend/test/regressao_m2_widget_test.dart: retorno das inscricoes sincroniza seletor e recarrega a grade\n00:02 +25: /Users/yasmindesouza/TrabalhoIA-WomanInTech/frontend/test/regressao_m2_widget_test.dart: retorno das inscricoes sincroniza seletor e recarrega a grade\n00:02 +26: /Users/yasmindesouza/TrabalhoIA-WomanInTech/frontend/test/regressao_m2_widget_test.dart: retorno das inscricoes sincroniza seletor e recarrega a grade\n00:02 +27: /Users/yasmindesouza/TrabalhoIA-WomanInTech/frontend/test/regressao_m2_widget_test.dart: retorno das inscricoes sincroniza seletor e recarrega a grade\n00:02 +28: /Users/yasmindesouza/TrabalhoIA-WomanInTech/frontend/test/regressao_m2_widget_test.dart: retorno das inscricoes sincroniza seletor e recarrega a grade\n00:02 +29: /Users/yasmindesouza/TrabalhoIA-WomanInTech/frontend/test/widget_test.dart: seletor usa usuários do contrato e controla ações por papel\n00:02 +30: /Users/yasmindesouza/TrabalhoIA-WomanInTech/frontend/test/inscricoes_widget_test.dart: detalhe do participante inscreve via POST com X-Usuario e passa a mostrar cancelar\n00:02 +31: /Users/yasmindesouza/TrabalhoIA-WomanInTech/frontend/test/inscricoes_widget_test.dart: detalhe do participante inscreve via POST com X-Usuario e passa a mostrar cancelar\n00:02 +32: /Users/yasmindesouza/TrabalhoIA-WomanInTech/frontend/test/inscricoes_widget_test.dart: detalhe do participante inscreve via POST com X-Usuario e passa a mostrar cancelar\n00:02 +33: /Users/yasmindesouza/TrabalhoIA-WomanInTech/frontend/test/regressao_m2_widget_test.dart: contagem regressiva reflete tempo decorrido real mesmo com callback atrasado\n00:02 +34: /Users/yasmindesouza/TrabalhoIA-WomanInTech/frontend/test/inscricoes_widget_test.dart: detalhe do participante confirma convocacao via POST com X-Usuario\n00:03 +35: /Users/yasmindesouza/TrabalhoIA-WomanInTech/frontend/test/inscricoes_widget_test.dart: detalhe apos cancelar e reinscrever escolhe a inscricao ativa confirmada e nao a cancelada antiga\n00:03 +36: /Users/yasmindesouza/TrabalhoIA-WomanInTech/frontend/test/inscricoes_widget_test.dart: detalhe com apenas historicas mostra a mais recente (expirada antiga vs cancelada nova)\n00:03 +37: /Users/yasmindesouza/TrabalhoIA-WomanInTech/frontend/test/inscricoes_widget_test.dart: detalhe de convocada permite cancelar inscricao via POST com X-Usuario\n00:03 +38: /Users/yasmindesouza/TrabalhoIA-WomanInTech/frontend/test/inscricoes_widget_test.dart: detalhe M1 preserva sala, capacidade e encontros quando a consulta de inscricao falha\n00:03 +39: /Users/yasmindesouza/TrabalhoIA-WomanInTech/frontend/test/inscricoes_widget_test.dart: navega para a pagina de inscricoes a partir da grade\n00:03 +40: All tests passed!\n",
+       "exit": 0,
+       "truncated": false
+      },
+      "title": "flutter test",
+      "time": {
+       "start": 1790121888343,
+       "end": 1790121896366
+      }
+     },
+     "metadata": {
+      "openai": {
+       "itemId": "fc_075d6a94bff65a94016ab317a081c487d2a59f0b0fbc9f2487"
+      }
+     },
+     "id": "prt_0cb944a55001TQ0CxOyk8Rddbq",
+     "sessionID": "ses_f34725ab5ffe7WJthhXz5Dhsip",
+     "messageID": "msg_0cb941ec7001BPtBMivH9A2SgR"
+    },
+    {
+     "type": "tool",
+     "tool": "bash",
+     "callID": "call_CNMUz4HU0IBG8XWZitFXpMOg",
+     "state": {
+      "status": "completed",
+      "input": {
+       "command": "dart run tool/smoke_m2.dart",
+       "workdir": "/Users/yasmindesouza/TrabalhoIA-WomanInTech/api",
+       "timeout": 120000
+      },
+      "output": "iniciando dart run bin/server.dart MODO_TESTE=1 PORT=3000\n  [ok] S01 reset\n  [ok] S02 auth 401\n  [ok] S03 org 403\n  [ok] S04 inexistente 404\n  [ok] S05 clock\n  [ok] S06 criar atividade 1 vaga\n  [ok] S07 corpo malformado 422\n  [ok] S08 carla/diego/elisa\n  [ok] S09 ja inscrito 409\n  [ok] S10 listar/filtrar/isolar\n  [ok] S11 detalhe contadores\n  [ok] S12 cancelar carla convoca diego\n  [ok] S13 confirmar diego\n  [ok] S14 aumentar vagas convoca elisa\n  [ok] S15 cancelar diego\n  [ok] S16 encerramento/expiracao\nresumo: 16 cenarios ok - SMOKE M2 OK\n",
+      "metadata": {
+       "output": "iniciando dart run bin/server.dart MODO_TESTE=1 PORT=3000\n  [ok] S01 reset\n  [ok] S02 auth 401\n  [ok] S03 org 403\n  [ok] S04 inexistente 404\n  [ok] S05 clock\n  [ok] S06 criar atividade 1 vaga\n  [ok] S07 corpo malformado 422\n  [ok] S08 carla/diego/elisa\n  [ok] S09 ja inscrito 409\n  [ok] S10 listar/filtrar/isolar\n  [ok] S11 detalhe contadores\n  [ok] S12 cancelar carla convoca diego\n  [ok] S13 confirmar diego\n  [ok] S14 aumentar vagas convoca elisa\n  [ok] S15 cancelar diego\n  [ok] S16 encerramento/expiracao\nresumo: 16 cenarios ok - SMOKE M2 OK\n",
+       "exit": 0,
+       "truncated": false
+      },
+      "title": "dart run tool/smoke_m2.dart",
+      "time": {
+       "start": 1790121888347,
+       "end": 1790121890873
+      }
+     },
+     "metadata": {
+      "openai": {
+       "itemId": "fc_075d6a94bff65a94016ab317a081c887d2b52b5095c52dac92"
+      }
+     },
+     "id": "prt_0cb944a59001I9x91muwL1Rr0W",
+     "sessionID": "ses_f34725ab5ffe7WJthhXz5Dhsip",
+     "messageID": "msg_0cb941ec7001BPtBMivH9A2SgR"
+    },
+    {
+     "reason": "tool-calls",
+     "snapshot": "1515eb5d24bec8bc072a8d67a629148cd445cd8d",
+     "type": "step-finish",
+     "tokens": {
+      "total": 52812,
+      "input": 35393,
+      "output": 311,
+      "reasoning": 212,
+      "cache": {
+       "write": 0,
+       "read": 16896
+      }
+     },
+     "cost": 0,
+     "id": "prt_0cb946f07001kUMvgaUc97MWes",
+     "sessionID": "ses_f34725ab5ffe7WJthhXz5Dhsip",
+     "messageID": "msg_0cb941ec7001BPtBMivH9A2SgR"
+    }
+   ]
+  },
+  {
+   "info": {
+    "parentID": "msg_0cb9167ac00102mgIqruvio3pu",
+    "role": "assistant",
+    "mode": "build",
+    "agent": "build",
+    "variant": "medium",
+    "path": {
+     "cwd": "/Users/yasmindesouza/TrabalhoIA-WomanInTech",
+     "root": "/Users/yasmindesouza/TrabalhoIA-WomanInTech"
+    },
+    "cost": 0,
+    "tokens": {
+     "total": 57960,
+     "input": 5927,
+     "output": 183,
+     "reasoning": 138,
+     "cache": {
+      "write": 0,
+      "read": 51712
+     }
+    },
+    "modelID": "gpt-5.6-luna",
+    "providerID": "openai",
+    "time": {
+     "created": 1790121897830,
+     "completed": 1790121905497
+    },
+    "finish": "tool-calls",
+    "id": "msg_0cb946f66001E7vDfmTMsXz6hr",
+    "sessionID": "ses_f34725ab5ffe7WJthhXz5Dhsip"
+   },
+   "parts": [
+    {
+     "snapshot": "1515eb5d24bec8bc072a8d67a629148cd445cd8d",
+     "type": "step-start",
+     "id": "prt_0cb947508001lcaRfdrkMyns9W",
+     "sessionID": "ses_f34725ab5ffe7WJthhXz5Dhsip",
+     "messageID": "msg_0cb946f66001E7vDfmTMsXz6hr"
+    },
+    {
+     "type": "reasoning",
+     "text": "**Planning evidence inspection and test analysis**",
+     "time": {
+      "start": 1790121899276,
+      "end": 1790121902158
+     },
+     "metadata": {
+      "openai": {
+       "itemId": "rs_0720af4a25695382016ab317ab72b087d28c5774c18a02d024"
+      }
+     },
+     "id": "prt_0cb94750c001d4lB3QeEZlur0h",
+     "sessionID": "ses_f34725ab5ffe7WJthhXz5Dhsip",
+     "messageID": "msg_0cb946f66001E7vDfmTMsXz6hr"
+    },
+    {
+     "type": "reasoning",
+     "text": "**Planning to retrieve current git commit**",
+     "time": {
+      "start": 1790121902159,
+      "end": 1790121905109
+     },
+     "metadata": {
+      "openai": {
+       "itemId": "rs_0720af4a25695382016ab317ab72b087d28c5774c18a02d024",
+       "reasoningEncryptedContent": "gAAAAABqsxex0_FQNn0igDwhLDw-sHA98Dx0ynrRfh7ScJI9TPq82XlZn4si3t1NlCXGA5ZwGzsOjeiUpCLPnQgckxym08wpnukUXQs2j9Yb49KMTGUFFMI0v5rNxolgrYzufb9fAsTW2DTOIkwMlc9BdbiBcFa19FYKoac8xS5et12A_KhhPU7vKworlVNe2nLFRJzgt-7NAIcGQV45s1kkti0bULZYiIMyrx3cVyCwTltzTIKgXUaFsooRURzHHI1tN8dQuT4OCiAyVd_2gTFwFJ0c-ZApVvWuiP0wcl1WIdFMsZmMXvtGCimgUzQgECoe0QEukzMYG78e1_ZuFHtDgsM_UCsXNqoAjcytoRoWNYMKH4l-niSP4J7OkGCe3xShbt7dSHqoAUESx4iWFH5DRj5mDzZPoSMfk5Jr2gc0pfnoy1-M76vHAqPxi8-QXU1sg69UNd0f6_ZCdy8Hb5s1t5UYKnK-m8Ycr1p-az21GhfFuxHOn8XTL_mb6TcI9uv1h32lLeaU7PD2XvFbUwDFs4wzFRuf3l8lNiCXUCed-NTb3ECH536-7NMSesF54AOKnRW-aeV8eIutXwbpauU3N68B54ZKd8KwXeFf3cTTqlNVLzlbzLedeTyPe-jCM0TGtMYnl-axvfqmp59IbPgbtGd-t2lR5JoqtAUXQV11LhPJKUvBsMlpwahD7qvR3PTlowRbFF-OLE8Rult8VgC4ATvaQ7AwL-92gN_QHqjIVg55XgBCrr9ILfOKiv39ht1YV8houQfesX3xUCNyTRQ04lnsfdU8IJj2vbjqE2TkC3J4oO7YcHqzo3DKhV6XFQDMURWPt0YScYyq75T8Z6_55kMmBLu2MT1Lx3ZKVpXOIAXaxKnbIelVGzWNCcpRhs71uf4DDkgWJl-nrlgTgnJEukZEEpt3Wy5uHeBkMwCclaHLLL9939qHVTzo02ex1lVVqyYtRZvtTgeJdjaPitHt28vpc4LU95xRfkULHg6O88SKTewkXjn46RXZS1KB9q1xiqsmOdxFmoIgs-AYOtj9EZMP6c9jvzNhXkvO7k2B784ksPvpZLzeTkIAKB6oYsDu7TtMGi8N27CDWNqR4JPcXy7HufF0ghgLXD0S5xQqjsLqfCJeZzdTfA7-hbmKCNn-RNdgsux7s25lHezF0sCpIdfaChMsLSbsiLYcP3dZh13zzW_geCObIVeEoUm8BB82kLgsIdWTNZ6EU1iGdiItqRXR5HjtKqQ4gY17Lw-AhOGV78KVabwXoLZlpX5Ku_seZmraEjYRMHF_g38GbsqWM5bsCx-gRWGSFsNR6d2l-gP7vGqs62YK0ybmJgQa3hQWgOJb9NjEV5V7j3lqbXaO3RJhZ2AQc_oFk9gwTz5tPOJF-V1cilEexWsZBl9dEP__kgE2nSbFEZZsp-8zboMI1pHHLw0_fNFApkMYjjdeR4c1fOOMahzRxRLtqNkGS3Z_uGk32ZHgTgVzaGz7f5LP9tl6sgSO_hcBC54BgqsKMJzRzTgWj2cV46VPgXEITlHlOrGhaaQbWtlhMSzxkwjCcvn68BVZlIpTMIcETRkeEIFAsGTd6IDBkbp2ovoTf3WpZdgjXo-YB6CrCiqFmP-wsvZ0W4gMOmghGBXGzZY7f6hCK8NSbiLgIipT4cN54sfd_kWWijKAlhPDdAj4zMJo962HrYOMkt69D-O7CwCOcrg__vUeAC0F-QUU9Z7kFPKClUdukQyte53QjRzEczEAAq-qy71J-jnw82crN9gNqxse9K1iamcL76HUa_VOk46cAF17XpvCPWAPB6ADrvYPQvE3uGoiwyCwzGxfJxBlvfCxPAcf2oyGFULMePv1-u4-F9VXmqB_Hm13DsaMreMflvg-WUqYIlGk-dQBlq-gDiIFyXPCrS5_xZ2tJ1hWkqQJXw19TdYebVykCh5nCNvWKtpbuC_csj0Bq_KGTh25_8nwyE9ncN_Yrqe3RkV5jeuiRb6nUqtB9VsEkHCgDcKKaJSOLQn6zx2DP4pJq_giKZ_sqyF4zM32YwRgF9dNjLmLJZMTitL25yLjIeLmVTAcO5QqFuWhAWAyztL_7JDYWs--vV7OG8On2hEBxJ56V-2N3VdsCy9MhqaBqtjct1cPmIxZjyTLAg=="
+      }
+     },
+     "id": "prt_0cb94804f001G5rS6V49nvSB1e",
+     "sessionID": "ses_f34725ab5ffe7WJthhXz5Dhsip",
+     "messageID": "msg_0cb946f66001E7vDfmTMsXz6hr"
+    },
+    {
+     "type": "tool",
+     "tool": "read",
+     "callID": "call_gC07dnv8FidV2W8OL8qap3Ui",
+     "state": {
+      "status": "completed",
+      "input": {
+       "filePath": "/Users/yasmindesouza/TrabalhoIA-WomanInTech/evidencias/ENTREGA-M2.md"
+      },
+      "output": "[9315 caracteres omitidos]",
+      "title": "evidencias/ENTREGA-M2.md",
+      "time": {
+       "start": 1790121905115,
+       "end": 1790121905143
+      }
+     },
+     "metadata": {
+      "openai": {
+       "itemId": "fc_0720af4a25695382016ab317b133a887d2b7b00bd969bdf0fe"
+      }
+     },
+     "id": "prt_0cb948bd7001ltoX7dmiHOFw4g",
+     "sessionID": "ses_f34725ab5ffe7WJthhXz5Dhsip",
+     "messageID": "msg_0cb946f66001E7vDfmTMsXz6hr"
+    },
+    {
+     "type": "tool",
+     "tool": "read",
+     "callID": "call_W3JzYVAmwdgJsnL1IE9parct",
+     "state": {
+      "status": "completed",
+      "input": {
+       "filePath": "/Users/yasmindesouza/TrabalhoIA-WomanInTech/api/tool/smoke_m2.dart",
+       "limit": 300
+      },
+      "output": "[11325 caracteres omitidos]",
+      "title": "api/tool/smoke_m2.dart",
+      "time": {
+       "start": 1790121905119,
+       "end": 1790121905146
+      }
+     },
+     "metadata": {
+      "openai": {
+       "itemId": "fc_0720af4a25695382016ab317b133b887d2a0bfb01dc4a126d8"
+      }
+     },
+     "id": "prt_0cb948bdc0017gT21JVPrfwOv0",
+     "sessionID": "ses_f34725ab5ffe7WJthhXz5Dhsip",
+     "messageID": "msg_0cb946f66001E7vDfmTMsXz6hr"
+    },
+    {
+     "type": "tool",
+     "tool": "glob",
+     "callID": "call_wD8XmKbJsRYIdsaNzOZEac0g",
+     "state": {
+      "status": "completed",
+      "input": {
+       "pattern": "frontend/test/*inscr*"
+      },
+      "output": "[175 caracteres omitidos]",
+      "title": "",
+      "time": {
+       "start": 1790121905123,
+       "end": 1790121905156
+      }
+     },
+     "metadata": {
+      "openai": {
+       "itemId": "fc_0720af4a25695382016ab317b133c087d298b3eed780866638"
+      }
+     },
+     "id": "prt_0cb948be0001XOJnRcxnsXv1eJ",
+     "sessionID": "ses_f34725ab5ffe7WJthhXz5Dhsip",
+     "messageID": "msg_0cb946f66001E7vDfmTMsXz6hr"
+    },
+    {
+     "type": "tool",
+     "tool": "glob",
+     "callID": "call_O6KnNFx6fnWRMLLRgkufOI7G",
+     "state": {
+      "status": "completed",
+      "input": {
+       "pattern": "api/test/*"
+      },
+      "output": "[431 caracteres omitidos]",
+      "title": "",
+      "time": {
+       "start": 1790121905127,
+       "end": 1790121905154
+      }
+     },
+     "metadata": {
+      "openai": {
+       "itemId": "fc_0720af4a25695382016ab317b133c887d280762d5bb2f0f050"
+      }
+     },
+     "id": "prt_0cb948be5001EwjF8gjnNu3Lwn",
+     "sessionID": "ses_f34725ab5ffe7WJthhXz5Dhsip",
+     "messageID": "msg_0cb946f66001E7vDfmTMsXz6hr"
+    },
+    {
+     "type": "tool",
+     "tool": "bash",
+     "callID": "call_AZYIWyvjBqarugU2903Qh9tT",
+     "state": {
+      "status": "completed",
+      "input": {
+       "command": "git rev-parse HEAD && git status --short",
+       "workdir": "/Users/yasmindesouza/TrabalhoIA-WomanInTech",
+       "timeout": 120000
+      },
+      "output": "8b67bdcf450e6a514a616f38726e57c01808265d\n",
+      "metadata": {
+       "output": "8b67bdcf450e6a514a616f38726e57c01808265d\n",
+       "exit": 0,
+       "truncated": false
+      },
+      "title": "git rev-parse HEAD && git status --short",
+      "time": {
+       "start": 1790121905132,
+       "end": 1790121905353
+      }
+     },
+     "metadata": {
+      "openai": {
+       "itemId": "fc_0720af4a25695382016ab317b133d087d28a62982f8280ce61"
+      }
+     },
+     "id": "prt_0cb948be9001lhqoj6CsWAUsSx",
+     "sessionID": "ses_f34725ab5ffe7WJthhXz5Dhsip",
+     "messageID": "msg_0cb946f66001E7vDfmTMsXz6hr"
+    },
+    {
+     "reason": "tool-calls",
+     "snapshot": "1515eb5d24bec8bc072a8d67a629148cd445cd8d",
+     "type": "step-finish",
+     "tokens": {
+      "total": 57960,
+      "input": 5927,
+      "output": 183,
+      "reasoning": 138,
+      "cache": {
+       "write": 0,
+       "read": 51712
+      }
+     },
+     "cost": 0,
+     "id": "prt_0cb948d0a001LWhyxe77zHdk2D",
+     "sessionID": "ses_f34725ab5ffe7WJthhXz5Dhsip",
+     "messageID": "msg_0cb946f66001E7vDfmTMsXz6hr"
+    }
+   ]
+  },
+  {
+   "info": {
+    "parentID": "msg_0cb9167ac00102mgIqruvio3pu",
+    "role": "assistant",
+    "mode": "build",
+    "agent": "build",
+    "variant": "medium",
+    "path": {
+     "cwd": "/Users/yasmindesouza/TrabalhoIA-WomanInTech",
+     "root": "/Users/yasmindesouza/TrabalhoIA-WomanInTech"
+    },
+    "cost": 0,
+    "tokens": {
+     "total": 65518,
+     "input": 8397,
+     "output": 154,
+     "reasoning": 135,
+     "cache": {
+      "write": 0,
+      "read": 56832
+     }
+    },
+    "modelID": "gpt-5.6-luna",
+    "providerID": "openai",
+    "time": {
+     "created": 1790121905501,
+     "completed": 1790121913518
+    },
+    "finish": "tool-calls",
+    "id": "msg_0cb948d5d0018pah0Vy8sgNDm2",
+    "sessionID": "ses_f34725ab5ffe7WJthhXz5Dhsip"
+   },
+   "parts": [
+    {
+     "snapshot": "1515eb5d24bec8bc072a8d67a629148cd445cd8d",
+     "type": "step-start",
+     "id": "prt_0cb94988c001DXrq7COwlZPYEJ",
+     "sessionID": "ses_f34725ab5ffe7WJthhXz5Dhsip",
+     "messageID": "msg_0cb948d5d0018pah0Vy8sgNDm2"
+    },
+    {
+     "type": "reasoning",
+     "text": "**Preparing detailed PASSOU report with matrix and commit**",
+     "time": {
+      "start": 1790121908366,
+      "end": 1790121911458
+     },
+     "metadata": {
+      "openai": {
+       "itemId": "rs_082022bbd1ba0882016ab317b4574887d2be1a3b6c3a51243a",
+       "reasoningEncryptedContent": "gAAAAABqsxe3qoH9j5ltb_6VLvG5k64AQD2T2MKk4a2RWpjg0bkM1Gu_byBFtXFIVpIA4c9jc3PQqcUVdz8hNC5RWOP0zdjy6qw1jnBScrNRVlOl9wOtZshLuLW3wqrBt903y6uuINzUvqOcfUS-qlgPtNjM7E6noEgASviQDR1F7FII_tnUIqPnxI2m11fngolM142SJgTFgo2V745MdlVZAoilm1JHYcyW98TriLIv3rAs0hFH5QIKP0BHsak-aLb2M2Y0e63l01zo8WVD93AWP2e2C17xLyCI-U67kZIR_xN2uP23XTyVLbiOCq0HbKib9e6SKckYBYHhDfy3Bi3mw4M5q1x4Hzb7UFKkvDWsrx26UrCvxOa6MOTtNUG_ODmtjCglP7iDqiEcb0Jc-WjEr0eC9YMY3-7gkt5y8sFnad3m-DprWuJeTU0zzxmMimfayfUCXS19phglmHjVZbh7hBgvpVL82uaczCVyy4_rebsRw9ZM5J_Jdp_VIDsNUsxNNDhO0JfN8E56kRTiNy1dFfuy5l16ocO8915fBMh1pmdzxh8weBzBs_wcKeOPRCvBdmQMPyVmT6hVqJxF6K8hvRNx3G5FlEhriRkGygLZ3XVSO6iScXWW7Fdoj141IdxxsHzmyRjCr-89OYkB68BU4u3udmU9e5IEyUS1QtYSCJrCJK0yg1E-v6QPoes1-NSa-AUONffTZyxUF9MWN6aNiSZ-2lfiExeoGiyeg_pYUvs290hjyb8NoAVahYIvLbuZ4KrTnCHAjoF0UJGIWfEcKgvl5yA7YH51vwAHkm3uFoqgE6W22fnm3wY2m_0bA6ZZMPVRodF2Rd2YniCzlquplD2KJ8RNhnRo5MCb_6L1zy1XzutFm5Q33fmE7ktkQQg1oyn-tGem39_LeKZQNYaJjIdTRv_w-1cQaKGICqI9IruGGvqmfz4baETXAXpJNIa6TDr-6uWbLxyQHmIoBINfUpp52CIrNrImIlQYms8IBS6OG6X1r3vKPl_m30xirOH4BYJWXHS4ICOHb4hpVhmPI5f2-koXoDPbeXi1fFzW1yXT3B1m3LCmRMDR0juRM80vFA8pfXYdH3JKOLzz0IIYsZ_mvsiXjZM9ORvh7utVfuJ7nxPevkAVrT9NkodSyCYcKyxezjMnWsK2MYrwYXd1q8zJygWk_-rJIE0s-q1cwhOLhx_MDfKD55f5_i5xczcX-S9e5ZCj1q-fW0e88qaxmiRkZ8Q8ONdIy2PguCYtLt3vc-_9rTv_yToDntb4JiCTEPNdAXxDjHEG0C3LC4yHvxiarXoDJ8Goc8srqvpP17tq0yrucpyR7cPraYe4nqmhKP7FhjNQfm0TESMD_ZB-a6Mb3graO2_mTfQXEOkLimU5q5eA6LX7Iuc8QoZJti8cN25LRKUjyZq5Nbp0_soqckjPwgTEqSW6kdHx3TO7ZDo74m7F3RT_O72aMa-vSHURLDBhI_90RP3jmUD5TEjMI7ZHZoQlV8RXfDKtBcwwavhdvuV86TsxdY6rLgKwlQ7VtbV0S0HJJC-ZNMckx2qFJhJ1mp64OKtu1vSjTP_8rqW1gK5qlw7zcewrpwXs3Sb4XdTxMOsZ3-2lbyUcNLS1VsxKVbRaR3uhOAc9krApAjVWcF38Bq-RI43pqIiNf_d7Xv1WqKVbVoa-u_VicuGDt_qHiNTTxq8_OTT-6SBqWPu2l4VNjtVxX4kCfyB_5KliXYN9t9ISR-8NL-jO6V0xTGoGOu1_EyNMcbsTFp7MCfBDB1g0c1I-BG5q5H_bluOWMAYR3B_aL52uVWjid_RcMRRiT_JaS-ojB3m7vWKfM8Sz6stXSFBrJlKHDdHclISJmSmfhWL-b-W6HWXGhs9Z1X8zVvDo5fgtB4tsuUgUJcxlImGuKnmdSqlMCqzNpDPcadY2T49ZPF7EuabAPbjWbnymIDaONqpUVCEoIRM0Bbe9x-y01-fwb39u4WNVdfg06V_BTNQJXlTMA1-bQLiuc_nYWxmwTG_hfnHDyDd7AKggUxumGrd6DgSiRcLRHq08vSmRJKHAynSPYe24KF-m2be5Wg0GjfZhlHeXc0leErmxCfbP32BGup0hL1ru_tpOgch0lXl4SmygjCRQUemues5t3-1SgYapmnboebk77eCmj5tQL8Awy51qV_fE03ziOV3ibZgWVXRAM4rCZh-hbuBBZNA_bg=="
+      }
+     },
+     "id": "prt_0cb94988e001B6JCNwAyODZWN5",
+     "sessionID": "ses_f34725ab5ffe7WJthhXz5Dhsip",
+     "messageID": "msg_0cb948d5d0018pah0Vy8sgNDm2"
+    },
+    {
+     "type": "tool",
+     "tool": "todowrite",
+     "callID": "call_T9BrKiCvEWSk4EZVUocAIWar",
+     "state": {
+      "status": "completed",
+      "input": {
+       "todos": [
+        {
+         "content": "Ler AGENTS.md do projeto e subdiretórios relevantes",
+         "status": "completed",
+         "priority": "high"
+        },
+        {
+         "content": "Ler configuração e instruções do agente auditor",
+         "status": "completed",
+         "priority": "high"
+        },
+        {
+         "content": "Auditar M2 contra contrato, specs, implementação e testes",
+         "status": "completed",
+         "priority": "high"
+        },
+        {
+         "content": "Executar validações documentadas e smoke seguro",
+         "status": "completed",
+         "priority": "high"
+        },
+        {
+         "content": "Criar somente auditorias/M2-inscricoes-final.md",
+         "status": "in_progress",
+         "priority": "high"
+        },
+        {
+         "content": "Verificar diff e confirmar nenhum outro arquivo alterado",
+         "status": "pending",
+         "priority": "high"
+        }
+       ]
+      },
+      "output": "[\n  {\n    \"content\": \"Ler AGENTS.md do projeto e subdiretórios relevantes\",\n    \"status\": \"completed\",\n    \"priority\": \"high\"\n  },\n  {\n    \"content\": \"Ler configuração e instruções do agente auditor\",\n    \"status\": \"completed\",\n    \"priority\": \"high\"\n  },\n  {\n    \"content\": \"Auditar M2 contra contrato, specs, implementação e testes\",\n    \"status\": \"completed\",\n    \"priority\": \"high\"\n  },\n  {\n    \"content\": \"Executar validações documentadas e smoke seguro\",\n    \"status\": \"completed\",\n    \"priority\": \"high\"\n  },\n  {\n    \"content\": \"Criar somente auditorias/M2-inscricoes-final.md\",\n    \"status\": \"in_progress\",\n    \"priority\": \"high\"\n  },\n  {\n    \"content\": \"Verificar diff e confirmar nenhum outro arquivo alterado\",\n    \"status\": \"pending\",\n    \"priority\": \"high\"\n  }\n]",
+      "metadata": {
+       "todos": [
+        {
+         "content": "Ler AGENTS.md do projeto e subdiretórios relevantes",
+         "status": "completed",
+         "priority": "high"
+        },
+        {
+         "content": "Ler configuração e instruções do agente auditor",
+         "status": "completed",
+         "priority": "high"
+        },
+        {
+         "content": "Auditar M2 contra contrato, specs, implementação e testes",
+         "status": "completed",
+         "priority": "high"
+        },
+        {
+         "content": "Executar validações documentadas e smoke seguro",
+         "status": "completed",
+         "priority": "high"
+        },
+        {
+         "content": "Criar somente auditorias/M2-inscricoes-final.md",
+         "status": "in_progress",
+         "priority": "high"
+        },
+        {
+         "content": "Verificar diff e confirmar nenhum outro arquivo alterado",
+         "status": "pending",
+         "priority": "high"
+        }
+       ],
+       "truncated": false
+      },
+      "title": "2 todos",
+      "time": {
+       "start": 1790121913333,
+       "end": 1790121913335
+      }
+     },
+     "metadata": {
+      "openai": {
+       "itemId": "fc_082022bbd1ba0882016ab317b79d9c87d2ad73ac44430c7565"
+      }
+     },
+     "id": "prt_0cb94a4a4001KEbI9IxRUAeQ0U",
+     "sessionID": "ses_f34725ab5ffe7WJthhXz5Dhsip",
+     "messageID": "msg_0cb948d5d0018pah0Vy8sgNDm2"
+    },
+    {
+     "reason": "tool-calls",
+     "snapshot": "1515eb5d24bec8bc072a8d67a629148cd445cd8d",
+     "type": "step-finish",
+     "tokens": {
+      "total": 65518,
+      "input": 8397,
+      "output": 154,
+      "reasoning": 135,
+      "cache": {
+       "write": 0,
+       "read": 56832
+      }
+     },
+     "cost": 0,
+     "id": "prt_0cb94ac5a0014gHVc3TYA80WUe",
+     "sessionID": "ses_f34725ab5ffe7WJthhXz5Dhsip",
+     "messageID": "msg_0cb948d5d0018pah0Vy8sgNDm2"
+    }
+   ]
+  },
+  {
+   "info": {
+    "parentID": "msg_0cb9167ac00102mgIqruvio3pu",
+    "role": "assistant",
+    "mode": "build",
+    "agent": "build",
+    "variant": "medium",
+    "path": {
+     "cwd": "/Users/yasmindesouza/TrabalhoIA-WomanInTech",
+     "root": "/Users/yasmindesouza/TrabalhoIA-WomanInTech"
+    },
+    "cost": 0,
+    "tokens": {
+     "total": 69490,
+     "input": 719,
+     "output": 3747,
+     "reasoning": 0,
+     "cache": {
+      "write": 0,
+      "read": 65024
+     }
+    },
+    "modelID": "gpt-5.6-luna",
+    "providerID": "openai",
+    "time": {
+     "created": 1790121913522,
+     "completed": 1790121984519
+    },
+    "finish": "tool-calls",
+    "id": "msg_0cb94acb20011Automw4lP3oHY",
+    "sessionID": "ses_f34725ab5ffe7WJthhXz5Dhsip"
+   },
+   "parts": [
+    {
+     "snapshot": "1515eb5d24bec8bc072a8d67a629148cd445cd8d",
+     "type": "step-start",
+     "id": "prt_0cb94b23c001HQlH2uGY5Zc28v",
+     "sessionID": "ses_f34725ab5ffe7WJthhXz5Dhsip",
+     "messageID": "msg_0cb94acb20011Automw4lP3oHY"
+    },
+    {
+     "type": "text",
+     "text": "As validações concluíram sem falhas: API `78`, Flutter `40`, análises estáticas sem problemas e smoke M2 com `16 cenários ok`. Vou registrar isso junto da matriz completa R01-R45/R44, mantendo explícitas as limitações de escopo externo e de persistência de processo único já documentadas, sem tratá-las como defeitos do M2.",
+     "time": {
+      "start": 1790121914942,
+      "end": 1790121916615
+     },
+     "metadata": {
+      "openai": {
+       "itemId": "msg_09f1b4d2c5343375016ab317bb2c1087d2b634da9eb7ae2f66",
+       "phase": "commentary"
+      }
+     },
+     "id": "prt_0cb94b23e001lTySQbLu1DYTNK",
+     "sessionID": "ses_f34725ab5ffe7WJthhXz5Dhsip",
+     "messageID": "msg_0cb94acb20011Automw4lP3oHY"
+    },
+    {
+     "type": "tool",
+     "tool": "apply_patch",
+     "callID": "call_dZWRrIXLA40BCgRx05wiL5uV",
+     "state": {
+      "status": "completed",
+      "input": {
+       "patchText": "*** Begin Patch\n*** Add File: /Users/yasmindesouza/TrabalhoIA-WomanInTech/auditorias/M2-inscricoes-final.md\n+# Auditoria Final — M2 Inscrições e Lista de Espera\n+\n+## Escopo, commit, fontes e método\n+\n+Escopo: somente o Módulo 2, incluindo API, persistência/modo de teste e interface Flutter R44/R45. O commit auditado foi `8b67bdcf450e6a514a616f38726e57c01808265d` (`HEAD` no início e no fim da auditoria).\n+\n+Fontes consultadas:\n+\n+- `AGENTS.md`, `api/AGENTS.md`, `frontend/AGENTS.md` e `.opencode/agent/auditor.md`.\n+- `contrato-api.md`, `specs/M2-inscricoes.md`, `entrevistas/M2-inscricoes.md` e `projeto.json`.\n+- `api/lib/server.dart`, `api/test/inscricoes_test.dart`, `api/test/server_test.dart`, `api/test/fila_test.dart`, `api/test/confirmacao_test.dart`, `api/test/tempo_test.dart`, `api/test/persistencia_test.dart` e `api/tool/smoke_m2.dart`.\n+- `frontend/lib/inscricoes_page.dart`, `frontend/lib/api_client.dart`, `frontend/test/inscricoes_api_client_test.dart`, `frontend/test/inscricoes_widget_test.dart` e `frontend/test/regressao_m2_widget_test.dart`.\n+- `evidencias/ENTREGA-M2.md`; auditorias/evidências do M1 foram usadas somente para contexto.\n+\n+Método: o agente `@auditor` foi executado em modo somente leitura, conferindo para cada regra a origem na entrevista e um teste que exercita o cenário e verifica o resultado. A implementação foi lida para validar que as provas são honestas. Também foram executados os comandos de validação do `projeto.json` e o smoke HTTP documentado.\n+\n+## Matriz requisito → evidência → teste\n+\n+Todas as regras abaixo têm origem rastreável em pergunta respondida da entrevista. `COMPROVADA` significa que foi localizada evidência de implementação e teste comportamental correspondente.\n+\n+| Regra | Evidência da implementação | Teste / resultado | Veredito |\n+|---|---|---|---|\n+| R01 | `api/lib/server.dart:348-367,620-623,647-653,656-664,693-704` | `api/test/inscricoes_test.dart:37-54`; smoke `S02` | COMPROVADA |\n+| R02 | `api/lib/server.dart:659-661,694-696` | `api/test/inscricoes_test.dart:56-68`; smoke `S03` | COMPROVADA |\n+| R03 | `api/lib/server.dart:662-664,697-700,649-650` | `api/test/inscricoes_test.dart:71-89`; smoke `S04` | COMPROVADA |\n+| R04 | `api/lib/server.dart:665-666,702-703,901-909` | `api/test/inscricoes_test.dart:306-326`; `api/test/fila_test.dart:450-489`; smoke `S07` | COMPROVADA |\n+| R05 | `api/lib/server.dart:659-667,693-704` | `api/test/inscricoes_test.dart:71-121`; smoke `S02-S04` | COMPROVADA |\n+| R06 | `api/lib/server.dart:326-330,105-136` | `api/test/inscricoes_test.dart:124-143,385-407`; smoke `S01` | COMPROVADA |\n+| R07 | `api/lib/server.dart:679-690` | `api/test/inscricoes_test.dart:145-168`; `api/test/fila_test.dart:450-489`; smoke `S08` | COMPROVADA |\n+| R08 | `api/lib/server.dart:668-671` | `api/test/inscricoes_test.dart:264-304` | COMPROVADA |\n+| R09 | `api/lib/server.dart:668-671` | `api/test/inscricoes_test.dart:264-304` | COMPROVADA |\n+| R10 | `api/lib/server.dart:668-669` | `api/test/inscricoes_test.dart:292-304` | COMPROVADA |\n+| R11 | `api/lib/server.dart:670-671` | `api/test/inscricoes_test.dart:269-275` | COMPROVADA |\n+| R12 | `api/lib/server.dart:668-678` | `api/test/confirmacao_test.dart:502-555`; `api/test/inscricoes_test.dart:264-304` | COMPROVADA |\n+| R13 | `api/lib/server.dart:749-759` | `api/test/inscricoes_test.dart:235-262`; `api/test/confirmacao_test.dart:502-555` | COMPROVADA |\n+| R14 | `api/lib/server.dart:714-719,680-690` | `api/test/fila_test.dart:387-425`; `api/test/persistencia_test.dart:122-170` | COMPROVADA |\n+| R15 | `api/lib/server.dart:722-735,830-835,680-690` | `api/test/tempo_test.dart:332-370` | COMPROVADA |\n+| R16 | `api/lib/server.dart:842-851,862-873` | `api/test/inscricoes_test.dart:170-208`; `api/test/fila_test.dart:151-192` | COMPROVADA |\n+| R17 | `api/lib/server.dart:43-44,103,684-686,848-850` | `api/test/inscricoes_test.dart:170-208`; `api/test/persistencia_test.dart:245-295` | COMPROVADA |\n+| R18 | `api/lib/server.dart:862-873` | `api/test/fila_test.dart:249-281`; `api/test/inscricoes_test.dart:365-380` | COMPROVADA |\n+| R19 | `api/lib/server.dart:562-577,714-717,814-816,837-859` | `api/test/fila_test.dart:151-247`; `api/test/fila_test.dart:283-311` | COMPROVADA |\n+| R20 | `api/lib/server.dart:722-734,837-859` | `api/test/confirmacao_test.dart:238-284,405-452` | COMPROVADA |\n+| R21 | `api/lib/server.dart:853-856` | `api/test/fila_test.dart:194-208`; `api/test/confirmacao_test.dart:111-143` | COMPROVADA |\n+| R22 | `api/lib/server.dart:722-726` | `api/test/confirmacao_test.dart:145-175` | COMPROVADA |\n+| R23 | `api/lib/server.dart:262-266,788-827` | `api/test/tempo_test.dart:70-107`; `api/test/persistencia_test.dart:172-209` | COMPROVADA |\n+| R24 | `api/lib/server.dart:811-816,830-835` | `api/test/tempo_test.dart:70-107` | COMPROVADA |\n+| R25 | `api/lib/server.dart:794-827,837-859` | `api/test/tempo_test.dart:182-230` | COMPROVADA |\n+| R26 | `api/lib/server.dart:817-827` | `api/test/tempo_test.dart:138-180`; `api/test/fila_test.dart:427-448` | COMPROVADA |\n+| R27 | `api/lib/server.dart:830-835,901-909` | `api/test/tempo_test.dart:109-136` | COMPROVADA |\n+| R28 | `api/lib/server.dart:762-775,729-731` | `api/test/confirmacao_test.dart:212-236,238-284` | COMPROVADA |\n+| R29 | `api/lib/server.dart:770-772` | `api/test/confirmacao_test.dart:177-210` | COMPROVADA |\n+| R30 | `api/lib/server.dart:777-786,677-678,732-734` | `api/test/confirmacao_test.dart:286-323,405-452` | COMPROVADA |\n+| R31 | `api/lib/server.dart:722-728` | `api/test/tempo_test.dart:278-330`; `api/test/confirmacao_test.dart:145-175` | COMPROVADA |\n+| R32 | `api/lib/server.dart:727-728` | `api/test/confirmacao_test.dart:66-109`; `api/test/fila_test.dart:470-489` | COMPROVADA |\n+| R33 | `api/lib/server.dart:707-719` | `api/test/fila_test.dart:66-79,81-107` | COMPROVADA |\n+| R34 | `api/lib/server.dart:708-710` | `api/test/fila_test.dart:81-107` | COMPROVADA |\n+| R35 | `api/lib/server.dart:711-713` | `api/test/fila_test.dart:109-124`; `api/test/tempo_test.dart:372-397` | COMPROVADA |\n+| R36 | `api/lib/server.dart:562-577` | `api/test/fila_test.dart:338-385`; `api/test/tempo_test.dart:400-441` | COMPROVADA |\n+| R37 | `api/lib/server.dart:647-653,693-704` | `api/test/fila_test.dart:338-385`; `api/test/inscricoes_test.dart:328-383` | COMPROVADA |\n+| R38 | `api/lib/server.dart:620-633` | `api/test/inscricoes_test.dart:328-383` | COMPROVADA |\n+| R39 | `api/lib/server.dart:625-633` | `api/test/inscricoes_test.dart:328-383`; `api/test/persistencia_test.dart:85-120` | COMPROVADA |\n+| R40 | `api/lib/server.dart:86-92,138-178,247-300` | `api/test/persistencia_test.dart:85-120,245-295` | COMPROVADA |\n+| R41 | `api/lib/server.dart:88-90,248,326-345` | `api/test/persistencia_test.dart:225-243`; `api/test/inscricoes_test.dart:385-407` | COMPROVADA |\n+| R42 | `api/lib/server.dart:78-79,66-70,875-887` | `api/test/inscricoes_test.dart:145-168`; `frontend/test/inscricoes_api_client_test.dart:10-28`; smoke `S08` | COMPROVADA |\n+| R43 | `api/lib/server.dart:580-617` | `api/test/inscricoes_test.dart:409-435`; `api/test/tempo_test.dart:232-276` | COMPROVADA |\n+| R44 | `frontend/lib/inscricoes_page.dart:46-83,85-95,180-212,215-301` | `frontend/test/inscricoes_widget_test.dart:44-104,147-235,237-274`; `frontend/test/regressao_m2_widget_test.dart:1-200` | COMPROVADA |\n+| R45 | `frontend/lib/inscricoes_page.dart:5-6,55-61,264-285`; `frontend/lib/api_client.dart` | `frontend/test/inscricoes_api_client_test.dart:30-171`; `frontend/test/inscricoes_widget_test.dart:147-235`; MockClient | COMPROVADA |\n+\n+R44 foi conferida separadamente na matriz: listagem de todos os status, detalhe, inscrever, cancelar, confirmar, posição, prazo, countdown e estados loading/vazio/erro/sucesso estão evidenciados em `frontend/lib/inscricoes_page.dart:180-301` e nos testes Flutter citados.\n+\n+## Testes e validações executados\n+\n+Resultados observados nesta auditoria:\n+\n+| Comando exato | Resultado observado |\n+|---|---|\n+| `(cd api && dart test)` | `00:01 +78: All tests passed!` |\n+| `(cd api && dart analyze)` | `No issues found!` |\n+| `(cd frontend && flutter analyze)` | `No issues found! (ran in 7.2s)` |\n+| `(cd frontend && flutter test)` | `00:03 +40: All tests passed!` |\n+| `(cd api && dart run tool/smoke_m2.dart)` | `resumo: 16 cenarios ok - SMOKE M2 OK` |\n+\n+O smoke iniciou servidor com `MODO_TESTE=1` e `PORT=3000`, executando S01 a S16, incluindo reset, autenticação, autorização, existência, relógio, inscrição, corpo inválido, isolamento/listagem, contadores, cancelamento, confirmação, aumento de vagas e expiração.\n+\n+Não houve falha de SDK, build ou ambiente nos comandos executados. A evidência histórica também registra `flutter build web --release` como OK em `evidencias/ENTREGA-M2.md:67-79`, mas esse build não foi reexecutado nesta auditoria porque não consta em `projeto.json` como teste obrigatório.\n+\n+## Defeitos, inconsistências e lacunas reais\n+\n+Não foram encontrados defeitos funcionais ou divergências de contrato no escopo M2 após a leitura e os testes executados. As regras de autenticação/autorização, rotas, status, envelopes, códigos, fila FIFO, posições, reentrada, abertura de vagas, convocação, prazo de 24 horas, expiração cronológica, cascata, relógio, persistência, cancelamento de atividade, filtros, permissões, limites, conflitos, campos calculados e UI R44 possuem prova localizada.\n+\n+Limitações que não configuram defeito funcional do M2:\n+\n+- As decisões P-01 a P-29 foram delegadas e registradas na entrevista; não há validação contra requisitos externos do professor. Isso é uma limitação de origem/escopo, explicitamente registrada em `specs/M2-inscricoes.md:6` e `evidencias/ENTREGA-M2.md:115-119`, não uma falha da implementação contra o contrato local.\n+- A persistência JSON é de processo único, conforme `evidencias/ENTREGA-M2.md:118`; não foi contratado locking multi-processo.\n+- M1 foi usado como contexto/regressão. Os testes e regras de M3, M4 e M5 não são achados do M2; `INSCRICAO_BLOQUEADA` está fora do escopo em `specs/M2-inscricoes.md:8-13`.\n+\n+## Separação de escopo\n+\n+Itens de M1, como grade, salas, criação/edição/cancelamento de atividades e seus testes em `api/test/server_test.dart`, foram considerados apenas para verificar a integração necessária ao M2 e não geram achado M2. Não foram atribuídos ao M2 requisitos de presença, certificados, extrato ou painel da organização, que permanecem fora do escopo conforme `specs/M2-inscricoes.md:8-13`.\n+\n+## Veredito\n+\n+# PASSOU\n+\n+As regras R01-R45, incluindo R44 e R45, têm origem rastreável, evidência de implementação e testes correspondentes; `dart test`, `dart analyze`, `flutter analyze`, `flutter test` e o smoke HTTP M2 passaram nesta auditoria. O aceite é relativo ao contrato local, spec e entrevista existentes; a ausência de conferência contra requisitos externos permanece explicitamente fora desta conclusão.\n*** End Patch"
+      },
+      "output": "Success. Updated the following files:\nA auditorias/M2-inscricoes-final.md",
+      "metadata": {
+       "diff": "Index: /Users/yasmindesouza/TrabalhoIA-WomanInTech/auditorias/M2-inscricoes-final.md\n===================================================================\n--- /Users/yasmindesouza/TrabalhoIA-WomanInTech/auditorias/M2-inscricoes-final.md\n+++ /Users/yasmindesouza/TrabalhoIA-WomanInTech/auditorias/M2-inscricoes-final.md\n@@ -0,0 +1,105 @@\n+# Auditoria Final — M2 Inscrições e Lista de Espera\n+\n+## Escopo, commit, fontes e método\n+\n+Escopo: somente o Módulo 2, incluindo API, persistência/modo de teste e interface Flutter R44/R45. O commit auditado foi `8b67bdcf450e6a514a616f38726e57c01808265d` (`HEAD` no início e no fim da auditoria).\n+\n+Fontes consultadas:\n+\n+- `AGENTS.md`, `api/AGENTS.md`, `frontend/AGENTS.md` e `.opencode/agent/auditor.md`.\n+- `contrato-api.md`, `specs/M2-inscricoes.md`, `entrevistas/M2-inscricoes.md` e `projeto.json`.\n+- `api/lib/server.dart`, `api/test/inscricoes_test.dart`, `api/test/server_test.dart`, `api/test/fila_test.dart`, `api/test/confirmacao_test.dart`, `api/test/tempo_test.dart`, `api/test/persistencia_test.dart` e `api/tool/smoke_m2.dart`.\n+- `frontend/lib/inscricoes_page.dart`, `frontend/lib/api_client.dart`, `frontend/test/inscricoes_api_client_test.dart`, `frontend/test/inscricoes_widget_test.dart` e `frontend/test/regressao_m2_widget_test.dart`.\n+- `evidencias/ENTREGA-M2.md`; auditorias/evidências do M1 foram usadas somente para contexto.\n+\n+Método: o agente `@auditor` foi executado em modo somente leitura, conferindo para cada regra a origem na entrevista e um teste que exercita o cenário e verifica o resultado. A implementação foi lida para validar que as provas são honestas. Também foram executados os comandos de validação do `projeto.json` e o smoke HTTP documentado.\n+\n+## Matriz requisito → evidência → teste\n+\n+Todas as regras abaixo têm origem rastreável em pergunta respondida da entrevista. `COMPROVADA` significa que foi localizada evidência de implementação e teste comportamental correspondente.\n+\n+| Regra | Evidência da implementação | Teste / resultado | Veredito |\n+|---|---|---|---|\n+| R01 | `api/lib/server.dart:348-367,620-623,647-653,656-664,693-704` | `api/test/inscricoes_test.dart:37-54`; smoke `S02` | COMPROVADA |\n+| R02 | `api/lib/server.dart:659-661,694-696` | `api/test/inscricoes_test.dart:56-68`; smoke `S03` | COMPROVADA |\n+| R03 | `api/lib/server.dart:662-664,697-700,649-650` | `api/test/inscricoes_test.dart:71-89`; smoke `S04` | COMPROVADA |\n+| R04 | `api/lib/server.dart:665-666,702-703,901-909` | `api/test/inscricoes_test.dart:306-326`; `api/test/fila_test.dart:450-489`; smoke `S07` | COMPROVADA |\n+| R05 | `api/lib/server.dart:659-667,693-704` | `api/test/inscricoes_test.dart:71-121`; smoke `S02-S04` | COMPROVADA |\n+| R06 | `api/lib/server.dart:326-330,105-136` | `api/test/inscricoes_test.dart:124-143,385-407`; smoke `S01` | COMPROVADA |\n+| R07 | `api/lib/server.dart:679-690` | `api/test/inscricoes_test.dart:145-168`; `api/test/fila_test.dart:450-489`; smoke `S08` | COMPROVADA |\n+| R08 | `api/lib/server.dart:668-671` | `api/test/inscricoes_test.dart:264-304` | COMPROVADA |\n+| R09 | `api/lib/server.dart:668-671` | `api/test/inscricoes_test.dart:264-304` | COMPROVADA |\n+| R10 | `api/lib/server.dart:668-669` | `api/test/inscricoes_test.dart:292-304` | COMPROVADA |\n+| R11 | `api/lib/server.dart:670-671` | `api/test/inscricoes_test.dart:269-275` | COMPROVADA |\n+| R12 | `api/lib/server.dart:668-678` | `api/test/confirmacao_test.dart:502-555`; `api/test/inscricoes_test.dart:264-304` | COMPROVADA |\n+| R13 | `api/lib/server.dart:749-759` | `api/test/inscricoes_test.dart:235-262`; `api/test/confirmacao_test.dart:502-555` | COMPROVADA |\n+| R14 | `api/lib/server.dart:714-719,680-690` | `api/test/fila_test.dart:387-425`; `api/test/persistencia_test.dart:122-170` | COMPROVADA |\n+| R15 | `api/lib/server.dart:722-735,830-835,680-690` | `api/test/tempo_test.dart:332-370` | COMPROVADA |\n+| R16 | `api/lib/server.dart:842-851,862-873` | `api/test/inscricoes_test.dart:170-208`; `api/test/fila_test.dart:151-192` | COMPROVADA |\n+| R17 | `api/lib/server.dart:43-44,103,684-686,848-850` | `api/test/inscricoes_test.dart:170-208`; `api/test/persistencia_test.dart:245-295` | COMPROVADA |\n+| R18 | `api/lib/server.dart:862-873` | `api/test/fila_test.dart:249-281`; `api/test/inscricoes_test.dart:365-380` | COMPROVADA |\n+| R19 | `api/lib/server.dart:562-577,714-717,814-816,837-859` | `api/test/fila_test.dart:151-247`; `api/test/fila_test.dart:283-311` | COMPROVADA |\n+| R20 | `api/lib/server.dart:722-734,837-859` | `api/test/confirmacao_test.dart:238-284,405-452` | COMPROVADA |\n+| R21 | `api/lib/server.dart:853-856` | `api/test/fila_test.dart:194-208`; `api/test/confirmacao_test.dart:111-143` | COMPROVADA |\n+| R22 | `api/lib/server.dart:722-726` | `api/test/confirmacao_test.dart:145-175` | COMPROVADA |\n+| R23 | `api/lib/server.dart:262-266,788-827` | `api/test/tempo_test.dart:70-107`; `api/test/persistencia_test.dart:172-209` | COMPROVADA |\n+| R24 | `api/lib/server.dart:811-816,830-835` | `api/test/tempo_test.dart:70-107` | COMPROVADA |\n+| R25 | `api/lib/server.dart:794-827,837-859` | `api/test/tempo_test.dart:182-230` | COMPROVADA |\n+| R26 | `api/lib/server.dart:817-827` | `api/test/tempo_test.dart:138-180`; `api/test/fila_test.dart:427-448` | COMPROVADA |\n+| R27 | `api/lib/server.dart:830-835,901-909` | `api/test/tempo_test.dart:109-136` | COMPROVADA |\n+| R28 | `api/lib/server.dart:762-775,729-731` | `api/test/confirmacao_test.dart:212-236,238-284` | COMPROVADA |\n+| R29 | `api/lib/server.dart:770-772` | `api/test/confirmacao_test.dart:177-210` | COMPROVADA |\n+| R30 | `api/lib/server.dart:777-786,677-678,732-734` | `api/test/confirmacao_test.dart:286-323,405-452` | COMPROVADA |\n+| R31 | `api/lib/server.dart:722-728` | `api/test/tempo_test.dart:278-330`; `api/test/confirmacao_test.dart:145-175` | COMPROVADA |\n+| R32 | `api/lib/server.dart:727-728` | `api/test/confirmacao_test.dart:66-109`; `api/test/fila_test.dart:470-489` | COMPROVADA |\n+| R33 | `api/lib/server.dart:707-719` | `api/test/fila_test.dart:66-79,81-107` | COMPROVADA |\n+| R34 | `api/lib/server.dart:708-710` | `api/test/fila_test.dart:81-107` | COMPROVADA |\n+| R35 | `api/lib/server.dart:711-713` | `api/test/fila_test.dart:109-124`; `api/test/tempo_test.dart:372-397` | COMPROVADA |\n+| R36 | `api/lib/server.dart:562-577` | `api/test/fila_test.dart:338-385`; `api/test/tempo_test.dart:400-441` | COMPROVADA |\n+| R37 | `api/lib/server.dart:647-653,693-704` | `api/test/fila_test.dart:338-385`; `api/test/inscricoes_test.dart:328-383` | COMPROVADA |\n+| R38 | `api/lib/server.dart:620-633` | `api/test/inscricoes_test.dart:328-383` | COMPROVADA |\n+| R39 | `api/lib/server.dart:625-633` | `api/test/inscricoes_test.dart:328-383`; `api/test/persistencia_test.dart:85-120` | COMPROVADA |\n+| R40 | `api/lib/server.dart:86-92,138-178,247-300` | `api/test/persistencia_test.dart:85-120,245-295` | COMPROVADA |\n+| R41 | `api/lib/server.dart:88-90,248,326-345` | `api/test/persistencia_test.dart:225-243`; `api/test/inscricoes_test.dart:385-407` | COMPROVADA |\n+| R42 | `api/lib/server.dart:78-79,66-70,875-887` | `api/test/inscricoes_test.dart:145-168`; `frontend/test/inscricoes_api_client_test.dart:10-28`; smoke `S08` | COMPROVADA |\n+| R43 | `api/lib/server.dart:580-617` | `api/test/inscricoes_test.dart:409-435`; `api/test/tempo_test.dart:232-276` | COMPROVADA |\n+| R44 | `frontend/lib/inscricoes_page.dart:46-83,85-95,180-212,215-301` | `frontend/test/inscricoes_widget_test.dart:44-104,147-235,237-274`; `frontend/test/regressao_m2_widget_test.dart:1-200` | COMPROVADA |\n+| R45 | `frontend/lib/inscricoes_page.dart:5-6,55-61,264-285`; `frontend/lib/api_client.dart` | `frontend/test/inscricoes_api_client_test.dart:30-171`; `frontend/test/inscricoes_widget_test.dart:147-235`; MockClient | COMPROVADA |\n+\n+R44 foi conferida separadamente na matriz: listagem de todos os status, detalhe, inscrever, cancelar, confirmar, posição, prazo, countdown e estados loading/vazio/erro/sucesso estão evidenciados em `frontend/lib/inscricoes_page.dart:180-301` e nos testes Flutter citados.\n+\n+## Testes e validações executados\n+\n+Resultados observados nesta auditoria:\n+\n+| Comando exato | Resultado observado |\n+|---|---|\n+| `(cd api && dart test)` | `00:01 +78: All tests passed!` |\n+| `(cd api && dart analyze)` | `No issues found!` |\n+| `(cd frontend && flutter analyze)` | `No issues found! (ran in 7.2s)` |\n+| `(cd frontend && flutter test)` | `00:03 +40: All tests passed!` |\n+| `(cd api && dart run tool/smoke_m2.dart)` | `resumo: 16 cenarios ok - SMOKE M2 OK` |\n+\n+O smoke iniciou servidor com `MODO_TESTE=1` e `PORT=3000`, executando S01 a S16, incluindo reset, autenticação, autorização, existência, relógio, inscrição, corpo inválido, isolamento/listagem, contadores, cancelamento, confirmação, aumento de vagas e expiração.\n+\n+Não houve falha de SDK, build ou ambiente nos comandos executados. A evidência histórica também registra `flutter build web --release` como OK em `evidencias/ENTREGA-M2.md:67-79`, mas esse build não foi reexecutado nesta auditoria porque não consta em `projeto.json` como teste obrigatório.\n+\n+## Defeitos, inconsistências e lacunas reais\n+\n+Não foram encontrados defeitos funcionais ou divergências de contrato no escopo M2 após a leitura e os testes executados. As regras de autenticação/autorização, rotas, status, envelopes, códigos, fila FIFO, posições, reentrada, abertura de vagas, convocação, prazo de 24 horas, expiração cronológica, cascata, relógio, persistência, cancelamento de atividade, filtros, permissões, limites, conflitos, campos calculados e UI R44 possuem prova localizada.\n+\n+Limitações que não configuram defeito funcional do M2:\n+\n+- As decisões P-01 a P-29 foram delegadas e registradas na entrevista; não há validação contra requisitos externos do professor. Isso é uma limitação de origem/escopo, explicitamente registrada em `specs/M2-inscricoes.md:6` e `evidencias/ENTREGA-M2.md:115-119`, não uma falha da implementação contra o contrato local.\n+- A persistência JSON é de processo único, conforme `evidencias/ENTREGA-M2.md:118`; não foi contratado locking multi-processo.\n+- M1 foi usado como contexto/regressão. Os testes e regras de M3, M4 e M5 não são achados do M2; `INSCRICAO_BLOQUEADA` está fora do escopo em `specs/M2-inscricoes.md:8-13`.\n+\n+## Separação de escopo\n+\n+Itens de M1, como grade, salas, criação/edição/cancelamento de atividades e seus testes em `api/test/server_test.dart`, foram considerados apenas para verificar a integração necessária ao M2 e não geram achado M2. Não foram atribuídos ao M2 requisitos de presença, certificados, extrato ou painel da organização, que permanecem fora do escopo conforme `specs/M2-inscricoes.md:8-13`.\n+\n+## Veredito\n+\n+# PASSOU\n+\n+As regras R01-R45, incluindo R44 e R45, têm origem rastreável, evidência de implementação e testes correspondentes; `dart test`, `dart analyze`, `flutter analyze`, `flutter test` e o smoke HTTP M2 passaram nesta auditoria. O aceite é relativo ao contrato local, spec e entrevista existentes; a ausência de conferência contra requisitos externos permanece explicitamente fora desta conclusão.\n\n",
+       "files": [
+        {
+         "filePath": "/Users/yasmindesouza/TrabalhoIA-WomanInTech/auditorias/M2-inscricoes-final.md",
+         "relativePath": "auditorias/M2-inscricoes-final.md",
+         "type": "add",
+         "patch": "Index: /Users/yasmindesouza/TrabalhoIA-WomanInTech/auditorias/M2-inscricoes-final.md\n===================================================================\n--- /Users/yasmindesouza/TrabalhoIA-WomanInTech/auditorias/M2-inscricoes-final.md\n+++ /Users/yasmindesouza/TrabalhoIA-WomanInTech/auditorias/M2-inscricoes-final.md\n@@ -0,0 +1,105 @@\n+# Auditoria Final — M2 Inscrições e Lista de Espera\n+\n+## Escopo, commit, fontes e método\n+\n+Escopo: somente o Módulo 2, incluindo API, persistência/modo de teste e interface Flutter R44/R45. O commit auditado foi `8b67bdcf450e6a514a616f38726e57c01808265d` (`HEAD` no início e no fim da auditoria).\n+\n+Fontes consultadas:\n+\n+- `AGENTS.md`, `api/AGENTS.md`, `frontend/AGENTS.md` e `.opencode/agent/auditor.md`.\n+- `contrato-api.md`, `specs/M2-inscricoes.md`, `entrevistas/M2-inscricoes.md` e `projeto.json`.\n+- `api/lib/server.dart`, `api/test/inscricoes_test.dart`, `api/test/server_test.dart`, `api/test/fila_test.dart`, `api/test/confirmacao_test.dart`, `api/test/tempo_test.dart`, `api/test/persistencia_test.dart` e `api/tool/smoke_m2.dart`.\n+- `frontend/lib/inscricoes_page.dart`, `frontend/lib/api_client.dart`, `frontend/test/inscricoes_api_client_test.dart`, `frontend/test/inscricoes_widget_test.dart` e `frontend/test/regressao_m2_widget_test.dart`.\n+- `evidencias/ENTREGA-M2.md`; auditorias/evidências do M1 foram usadas somente para contexto.\n+\n+Método: o agente `@auditor` foi executado em modo somente leitura, conferindo para cada regra a origem na entrevista e um teste que exercita o cenário e verifica o resultado. A implementação foi lida para validar que as provas são honestas. Também foram executados os comandos de validação do `projeto.json` e o smoke HTTP documentado.\n+\n+## Matriz requisito → evidência → teste\n+\n+Todas as regras abaixo têm origem rastreável em pergunta respondida da entrevista. `COMPROVADA` significa que foi localizada evidência de implementação e teste comportamental correspondente.\n+\n+| Regra | Evidência da implementação | Teste / resultado | Veredito |\n+|---|---|---|---|\n+| R01 | `api/lib/server.dart:348-367,620-623,647-653,656-664,693-704` | `api/test/inscricoes_test.dart:37-54`; smoke `S02` | COMPROVADA |\n+| R02 | `api/lib/server.dart:659-661,694-696` | `api/test/inscricoes_test.dart:56-68`; smoke `S03` | COMPROVADA |\n+| R03 | `api/lib/server.dart:662-664,697-700,649-650` | `api/test/inscricoes_test.dart:71-89`; smoke `S04` | COMPROVADA |\n+| R04 | `api/lib/server.dart:665-666,702-703,901-909` | `api/test/inscricoes_test.dart:306-326`; `api/test/fila_test.dart:450-489`; smoke `S07` | COMPROVADA |\n+| R05 | `api/lib/server.dart:659-667,693-704` | `api/test/inscricoes_test.dart:71-121`; smoke `S02-S04` | COMPROVADA |\n+| R06 | `api/lib/server.dart:326-330,105-136` | `api/test/inscricoes_test.dart:124-143,385-407`; smoke `S01` | COMPROVADA |\n+| R07 | `api/lib/server.dart:679-690` | `api/test/inscricoes_test.dart:145-168`; `api/test/fila_test.dart:450-489`; smoke `S08` | COMPROVADA |\n+| R08 | `api/lib/server.dart:668-671` | `api/test/inscricoes_test.dart:264-304` | COMPROVADA |\n+| R09 | `api/lib/server.dart:668-671` | `api/test/inscricoes_test.dart:264-304` | COMPROVADA |\n+| R10 | `api/lib/server.dart:668-669` | `api/test/inscricoes_test.dart:292-304` | COMPROVADA |\n+| R11 | `api/lib/server.dart:670-671` | `api/test/inscricoes_test.dart:269-275` | COMPROVADA |\n+| R12 | `api/lib/server.dart:668-678` | `api/test/confirmacao_test.dart:502-555`; `api/test/inscricoes_test.dart:264-304` | COMPROVADA |\n+| R13 | `api/lib/server.dart:749-759` | `api/test/inscricoes_test.dart:235-262`; `api/test/confirmacao_test.dart:502-555` | COMPROVADA |\n+| R14 | `api/lib/server.dart:714-719,680-690` | `api/test/fila_test.dart:387-425`; `api/test/persistencia_test.dart:122-170` | COMPROVADA |\n+| R15 | `api/lib/server.dart:722-735,830-835,680-690` | `api/test/tempo_test.dart:332-370` | COMPROVADA |\n+| R16 | `api/lib/server.dart:842-851,862-873` | `api/test/inscricoes_test.dart:170-208`; `api/test/fila_test.dart:151-192` | COMPROVADA |\n+| R17 | `api/lib/server.dart:43-44,103,684-686,848-850` | `api/test/inscricoes_test.dart:170-208`; `api/test/persistencia_test.dart:245-295` | COMPROVADA |\n+| R18 | `api/lib/server.dart:862-873` | `api/test/fila_test.dart:249-281`; `api/test/inscricoes_test.dart:365-380` | COMPROVADA |\n+| R19 | `api/lib/server.dart:562-577,714-717,814-816,837-859` | `api/test/fila_test.dart:151-247`; `api/test/fila_test.dart:283-311` | COMPROVADA |\n+| R20 | `api/lib/server.dart:722-734,837-859` | `api/test/confirmacao_test.dart:238-284,405-452` | COMPROVADA |\n+| R21 | `api/lib/server.dart:853-856` | `api/test/fila_test.dart:194-208`; `api/test/confirmacao_test.dart:111-143` | COMPROVADA |\n+| R22 | `api/lib/server.dart:722-726` | `api/test/confirmacao_test.dart:145-175` | COMPROVADA |\n+| R23 | `api/lib/server.dart:262-266,788-827` | `api/test/tempo_test.dart:70-107`; `api/test/persistencia_test.dart:172-209` | COMPROVADA |\n+| R24 | `api/lib/server.dart:811-816,830-835` | `api/test/tempo_test.dart:70-107` | COMPROVADA |\n+| R25 | `api/lib/server.dart:794-827,837-859` | `api/test/tempo_test.dart:182-230` | COMPROVADA |\n+| R26 | `api/lib/server.dart:817-827` | `api/test/tempo_test.dart:138-180`; `api/test/fila_test.dart:427-448` | COMPROVADA |\n+| R27 | `api/lib/server.dart:830-835,901-909` | `api/test/tempo_test.dart:109-136` | COMPROVADA |\n+| R28 | `api/lib/server.dart:762-775,729-731` | `api/test/confirmacao_test.dart:212-236,238-284` | COMPROVADA |\n+| R29 | `api/lib/server.dart:770-772` | `api/test/confirmacao_test.dart:177-210` | COMPROVADA |\n+| R30 | `api/lib/server.dart:777-786,677-678,732-734` | `api/test/confirmacao_test.dart:286-323,405-452` | COMPROVADA |\n+| R31 | `api/lib/server.dart:722-728` | `api/test/tempo_test.dart:278-330`; `api/test/confirmacao_test.dart:145-175` | COMPROVADA |\n+| R32 | `api/lib/server.dart:727-728` | `api/test/confirmacao_test.dart:66-109`; `api/test/fila_test.dart:470-489` | COMPROVADA |\n+| R33 | `api/lib/server.dart:707-719` | `api/test/fila_test.dart:66-79,81-107` | COMPROVADA |\n+| R34 | `api/lib/server.dart:708-710` | `api/test/fila_test.dart:81-107` | COMPROVADA |\n+| R35 | `api/lib/server.dart:711-713` | `api/test/fila_test.dart:109-124`; `api/test/tempo_test.dart:372-397` | COMPROVADA |\n+| R36 | `api/lib/server.dart:562-577` | `api/test/fila_test.dart:338-385`; `api/test/tempo_test.dart:400-441` | COMPROVADA |\n+| R37 | `api/lib/server.dart:647-653,693-704` | `api/test/fila_test.dart:338-385`; `api/test/inscricoes_test.dart:328-383` | COMPROVADA |\n+| R38 | `api/lib/server.dart:620-633` | `api/test/inscricoes_test.dart:328-383` | COMPROVADA |\n+| R39 | `api/lib/server.dart:625-633` | `api/test/inscricoes_test.dart:328-383`; `api/test/persistencia_test.dart:85-120` | COMPROVADA |\n+| R40 | `api/lib/server.dart:86-92,138-178,247-300` | `api/test/persistencia_test.dart:85-120,245-295` | COMPROVADA |\n+| R41 | `api/lib/server.dart:88-90,248,326-345` | `api/test/persistencia_test.dart:225-243`; `api/test/inscricoes_test.dart:385-407` | COMPROVADA |\n+| R42 | `api/lib/server.dart:78-79,66-70,875-887` | `api/test/inscricoes_test.dart:145-168`; `frontend/test/inscricoes_api_client_test.dart:10-28`; smoke `S08` | COMPROVADA |\n+| R43 | `api/lib/server.dart:580-617` | `api/test/inscricoes_test.dart:409-435`; `api/test/tempo_test.dart:232-276` | COMPROVADA |\n+| R44 | `frontend/lib/inscricoes_page.dart:46-83,85-95,180-212,215-301` | `frontend/test/inscricoes_widget_test.dart:44-104,147-235,237-274`; `frontend/test/regressao_m2_widget_test.dart:1-200` | COMPROVADA |\n+| R45 | `frontend/lib/inscricoes_page.dart:5-6,55-61,264-285`; `frontend/lib/api_client.dart` | `frontend/test/inscricoes_api_client_test.dart:30-171`; `frontend/test/inscricoes_widget_test.dart:147-235`; MockClient | COMPROVADA |\n+\n+R44 foi conferida separadamente na matriz: listagem de todos os status, detalhe, inscrever, cancelar, confirmar, posição, prazo, countdown e estados loading/vazio/erro/sucesso estão evidenciados em `frontend/lib/inscricoes_page.dart:180-301` e nos testes Flutter citados.\n+\n+## Testes e validações executados\n+\n+Resultados observados nesta auditoria:\n+\n+| Comando exato | Resultado observado |\n+|---|---|\n+| `(cd api && dart test)` | `00:01 +78: All tests passed!` |\n+| `(cd api && dart analyze)` | `No issues found!` |\n+| `(cd frontend && flutter analyze)` | `No issues found! (ran in 7.2s)` |\n+| `(cd frontend && flutter test)` | `00:03 +40: All tests passed!` |\n+| `(cd api && dart run tool/smoke_m2.dart)` | `resumo: 16 cenarios ok - SMOKE M2 OK` |\n+\n+O smoke iniciou servidor com `MODO_TESTE=1` e `PORT=3000`, executando S01 a S16, incluindo reset, autenticação, autorização, existência, relógio, inscrição, corpo inválido, isolamento/listagem, contadores, cancelamento, confirmação, aumento de vagas e expiração.\n+\n+Não houve falha de SDK, build ou ambiente nos comandos executados. A evidência histórica também registra `flutter build web --release` como OK em `evidencias/ENTREGA-M2.md:67-79`, mas esse build não foi reexecutado nesta auditoria porque não consta em `projeto.json` como teste obrigatório.\n+\n+## Defeitos, inconsistências e lacunas reais\n+\n+Não foram encontrados defeitos funcionais ou divergências de contrato no escopo M2 após a leitura e os testes executados. As regras de autenticação/autorização, rotas, status, envelopes, códigos, fila FIFO, posições, reentrada, abertura de vagas, convocação, prazo de 24 horas, expiração cronológica, cascata, relógio, persistência, cancelamento de atividade, filtros, permissões, limites, conflitos, campos calculados e UI R44 possuem prova localizada.\n+\n+Limitações que não configuram defeito funcional do M2:\n+\n+- As decisões P-01 a P-29 foram delegadas e registradas na entrevista; não há validação contra requisitos externos do professor. Isso é uma limitação de origem/escopo, explicitamente registrada em `specs/M2-inscricoes.md:6` e `evidencias/ENTREGA-M2.md:115-119`, não uma falha da implementação contra o contrato local.\n+- A persistência JSON é de processo único, conforme `evidencias/ENTREGA-M2.md:118`; não foi contratado locking multi-processo.\n+- M1 foi usado como contexto/regressão. Os testes e regras de M3, M4 e M5 não são achados do M2; `INSCRICAO_BLOQUEADA` está fora do escopo em `specs/M2-inscricoes.md:8-13`.\n+\n+## Separação de escopo\n+\n+Itens de M1, como grade, salas, criação/edição/cancelamento de atividades e seus testes em `api/test/server_test.dart`, foram considerados apenas para verificar a integração necessária ao M2 e não geram achado M2. Não foram atribuídos ao M2 requisitos de presença, certificados, extrato ou painel da organização, que permanecem fora do escopo conforme `specs/M2-inscricoes.md:8-13`.\n+\n+## Veredito\n+\n+# PASSOU\n+\n+As regras R01-R45, incluindo R44 e R45, têm origem rastreável, evidência de implementação e testes correspondentes; `dart test`, `dart analyze`, `flutter analyze`, `flutter test` e o smoke HTTP M2 passaram nesta auditoria. O aceite é relativo ao contrato local, spec e entrevista existentes; a ausência de conferência contra requisitos externos permanece explicitamente fora desta conclusão.\n",
+         "additions": 105,
+         "deletions": 0
+        }
+       ],
+       "diagnostics": {},
+       "truncated": false
+      },
+      "title": "Success. Updated the following files:\nA auditorias/M2-inscricoes-final.md",
+      "time": {
+       "start": 1790121984149,
+       "end": 1790121984158
+      }
+     },
+     "metadata": {
+      "openai": {
+       "itemId": "fc_09f1b4d2c5343375016ab317bce27087d2afed20d179bb6d23"
+      }
+     },
+     "id": "prt_0cb94b8c9001rM14E413ndKs49",
+     "sessionID": "ses_f34725ab5ffe7WJthhXz5Dhsip",
+     "messageID": "msg_0cb94acb20011Automw4lP3oHY"
+    },
+    {
+     "reason": "tool-calls",
+     "snapshot": "de4a8b14e2ae703d5305cf65444dc607d43fc7f6",
+     "type": "step-finish",
+     "tokens": {
+      "total": 69490,
+      "input": 719,
+      "output": 3747,
+      "reasoning": 0,
+      "cache": {
+       "write": 0,
+       "read": 65024
+      }
+     },
+     "cost": 0,
+     "id": "prt_0cb95c1950011l0n5psD10w4mq",
+     "sessionID": "ses_f34725ab5ffe7WJthhXz5Dhsip",
+     "messageID": "msg_0cb94acb20011Automw4lP3oHY"
+    },
+    {
+     "type": "patch",
+     "hash": "1515eb5d24bec8bc072a8d67a629148cd445cd8d",
+     "files": [
+      "/Users/yasmindesouza/TrabalhoIA-WomanInTech/auditorias/M2-inscricoes-final.md"
+     ],
+     "id": "prt_0cb95c204001WS6DMCoSwuEMkD",
+     "sessionID": "ses_f34725ab5ffe7WJthhXz5Dhsip",
+     "messageID": "msg_0cb94acb20011Automw4lP3oHY"
+    }
+   ]
+  },
+  {
+   "info": {
+    "parentID": "msg_0cb9167ac00102mgIqruvio3pu",
+    "role": "assistant",
+    "mode": "build",
+    "agent": "build",
+    "variant": "medium",
+    "path": {
+     "cwd": "/Users/yasmindesouza/TrabalhoIA-WomanInTech",
+     "root": "/Users/yasmindesouza/TrabalhoIA-WomanInTech"
+    },
+    "cost": 0,
+    "tokens": {
+     "total": 69719,
+     "input": 4494,
+     "output": 163,
+     "reasoning": 38,
+     "cache": {
+      "write": 0,
+      "read": 65024
+     }
+    },
+    "modelID": "gpt-5.6-luna",
+    "providerID": "openai",
+    "time": {
+     "created": 1790121984525,
+     "completed": 1790121991933
+    },
+    "finish": "tool-calls",
+    "id": "msg_0cb95c20d001fFK4C6Oy9YWm7F",
+    "sessionID": "ses_f34725ab5ffe7WJthhXz5Dhsip"
+   },
+   "parts": [
+    {
+     "snapshot": "de4a8b14e2ae703d5305cf65444dc607d43fc7f6",
+     "type": "step-start",
+     "id": "prt_0cb95c98a001sfhkBGaNfYVpV6",
+     "sessionID": "ses_f34725ab5ffe7WJthhXz5Dhsip",
+     "messageID": "msg_0cb95c20d001fFK4C6Oy9YWm7F"
+    },
+    {
+     "type": "reasoning",
+     "text": "**Verifying file and line reference diffs**",
+     "time": {
+      "start": 1790121986445,
+      "end": 1790121991242
+     },
+     "metadata": {
+      "openai": {
+       "itemId": "rs_00bf6a408a0c4b39016ab31802b46087d282d9aefe17dc7cab",
+       "reasoningEncryptedContent": "gAAAAABqsxgH6pyr2fkLdoL1gfLL1KAUX1SsH89eDuzP10Sz7YBZZ9GPtWQydLajCDCMo43g9jYuzYOkC8g6GVfFciQhpUJcR6LXtQ15mKWRSso-OAlqX-NR9s6Lcon75kvmx9FojnCROWJdEp_W7Ge7V0UpWIqrvQObvRQh9NYIh3BzCplWhKQrhFj1-fyM5Wi83JrUznpJ9Lu8K5KaGNoJ0IVL6_10ng_vuwlfDWghL6l62MbQF6AY1KYG7iLPrqtqNyKi3wOL0U4ZSDOXCZu0wPmDhRahXBw6AqaBRsA99yRuJ6ytjI5WCXO0_tuIImUybCyBR1McVZjLM0LQ_18SC0XvhM5dMIvdIssLOr8AgO0EYjbekwf3i-5Kk8rwYncHvroOlRVTv3ZYRHswU3lU4cMPq-QReUQV-X-Cuszei7v-VPHxRenM-82BnhFlM9gQ44XW92V1I6SHzDGRajkuTcv4DJGsdbr6LohksQbXox373QHxbatJo42InfJeXfZbh39zMwJerYvgJHGAnY4AdQMqnz0VunmoLqTpk7LY7cyK5ty9nTUxrlTmFyV61_QpWonKhTw4zPKfSZvO7FWcO3Klfo_xQKw3e5NtP3ncXqT3jX4lfynNAJf8OBITJnzyqGGac431YSSesFAihmoXEgdR3t4lXmlH_kjp4Ds-LUwzXrVH985zfvtXKKkmr_2QdwIM2eAibuO9YCWFiMScDAzY6KJNkkD2rJuIjS6DnucNvT0I62XFmVFvPCLO9r3-OZ3XsKRIwPzM5cyeQOltF-tZ0NHgYQhFuJPeQbkBBvSS0-6qFc1ER76j4d8JYMJmwNITFuOWtlKlmh_X-fX3DnCU0Boo2W-O60VOg_9Ixte6_zg7-fvGSB7E4P5wEu3R5pTK8_-v93waCtyP6S6wiWJeTq0k7g6lnWUeXR1tdJep_e6Xdl-wLGGqP44Lu_qanEp3IcOYGFlLaVNcPhkvcvHmU21t0j_W2r0g_jDOwQ4o04djQt23HnPvI0BNSZZzmeOiJJjoLMSpeSWa_7OoJLDF68vY5yVGlxDQez98UjH1Yg_ACLF4aOpmDJZwjK8epQVAMNs-Tuezkp3mlQiFRJs_vZ9skNTLFg7VcXSCYdK_BD-JwH0pBq0eOYm4OfGUWCfTDiNbVsvupru2-jNlXSNGDFUaJeI-USzuUa_Yu6p3Fm2bo7lqJmOIj0P7_Dr3_B3SNJunm5l3PywhyYkN9ornKCFq1MGmJv0qnipxXOINV_HKHlGY78GYj7iGU8T5tOGNqTqxMfGojZAzoQQENqcqRTqLLYeY0K5R57QixuFq-2Ql-3XsHw9E7x9NJNT1wnPDbRhIlzQlJIRfj537NS1G7nZsaf8IhEKca5QBeNRhf0EumccLuiZLiHEYyxsBV_pOKny_B07P9VDZ3u7wUtj7OzOW9hNkc_JP2Ft6nfs94ec2KGjfpMuixLivRvVFImPxuekDBPH2zsS0O2Ra1cHgygKkq4SqcaVEtwANaiBh4fVuKuw="
+      }
+     },
+     "id": "prt_0cb95c98d001Fi5A0nfLGUZTa1",
+     "sessionID": "ses_f34725ab5ffe7WJthhXz5Dhsip",
+     "messageID": "msg_0cb95c20d001fFK4C6Oy9YWm7F"
+    },
+    {
+     "type": "tool",
+     "tool": "bash",
+     "callID": "call_ZnNTeXvbXuOqIQtaSCugNAyg",
+     "state": {
+      "status": "completed",
+      "input": {
+       "command": "git status --short",
+       "workdir": "/Users/yasmindesouza/TrabalhoIA-WomanInTech",
+       "timeout": 120000
+      },
+      "output": "?? auditorias/M2-inscricoes-final.md\n",
+      "metadata": {
+       "output": "?? auditorias/M2-inscricoes-final.md\n",
+       "exit": 0,
+       "truncated": false
+      },
+      "title": "git status --short",
+      "time": {
+       "start": 1790121991490,
+       "end": 1790121991520
+      }
+     },
+     "metadata": {
+      "openai": {
+       "itemId": "fc_00bf6a408a0c4b39016ab31807481c87d2ab53f317a82c9a90"
+      }
+     },
+     "id": "prt_0cb95dc4c001YgWKzWoTJp4wdW",
+     "sessionID": "ses_f34725ab5ffe7WJthhXz5Dhsip",
+     "messageID": "msg_0cb95c20d001fFK4C6Oy9YWm7F"
+    },
+    {
+     "type": "tool",
+     "tool": "bash",
+     "callID": "call_tLWHBhaxpJ6p2hkgCkl0WdMM",
+     "state": {
+      "status": "completed",
+      "input": {
+       "command": "git diff --stat && git diff -- auditorias/M2-inscricoes-final.md",
+       "workdir": "/Users/yasmindesouza/TrabalhoIA-WomanInTech",
+       "timeout": 120000
+      },
+      "output": "(no output)",
+      "metadata": {
+       "output": "(no output)",
+       "exit": 0,
+       "truncated": false
+      },
+      "title": "git diff --stat && git diff -- auditorias/M2-inscricoes-final.md",
+      "time": {
+       "start": 1790121991611,
+       "end": 1790121991650
+      }
+     },
+     "metadata": {
+      "openai": {
+       "itemId": "fc_00bf6a408a0c4b39016ab31807483087d2880fbf1ebb4f39f7"
+      }
+     },
+     "id": "prt_0cb95dd61001RuMoSU0o57Pgxt",
+     "sessionID": "ses_f34725ab5ffe7WJthhXz5Dhsip",
+     "messageID": "msg_0cb95c20d001fFK4C6Oy9YWm7F"
+    },
+    {
+     "type": "tool",
+     "tool": "read",
+     "callID": "call_TLPXvt3SNyZFcerL5EfqDTzJ",
+     "state": {
+      "status": "completed",
+      "input": {
+       "filePath": "/Users/yasmindesouza/TrabalhoIA-WomanInTech/auditorias/M2-inscricoes-final.md",
+       "limit": 260
+      },
+      "output": "[11271 caracteres omitidos]",
+      "title": "auditorias/M2-inscricoes-final.md",
+      "time": {
+       "start": 1790121991653,
+       "end": 1790121991657
+      }
+     },
+     "metadata": {
+      "openai": {
+       "itemId": "fc_00bf6a408a0c4b39016ab31807483c87d28df2d5256ef2e73b"
+      }
+     },
+     "id": "prt_0cb95ddd0001Uw7Fk98XNiBbnY",
+     "sessionID": "ses_f34725ab5ffe7WJthhXz5Dhsip",
+     "messageID": "msg_0cb95c20d001fFK4C6Oy9YWm7F"
+    },
+    {
+     "reason": "tool-calls",
+     "snapshot": "de4a8b14e2ae703d5305cf65444dc607d43fc7f6",
+     "type": "step-finish",
+     "tokens": {
+      "total": 69719,
+      "input": 4494,
+      "output": 163,
+      "reasoning": 38,
+      "cache": {
+       "write": 0,
+       "read": 65024
+      }
+     },
+     "cost": 0,
+     "id": "prt_0cb95dea9001EsOyVPDC2NdEQx",
+     "sessionID": "ses_f34725ab5ffe7WJthhXz5Dhsip",
+     "messageID": "msg_0cb95c20d001fFK4C6Oy9YWm7F"
+    }
+   ]
+  },
+  {
+   "info": {
+    "parentID": "msg_0cb9167ac00102mgIqruvio3pu",
+    "role": "assistant",
+    "mode": "build",
+    "agent": "build",
+    "variant": "medium",
+    "path": {
+     "cwd": "/Users/yasmindesouza/TrabalhoIA-WomanInTech",
+     "root": "/Users/yasmindesouza/TrabalhoIA-WomanInTech"
+    },
+    "cost": 0,
+    "tokens": {
+     "total": 73628,
+     "input": 4335,
+     "output": 153,
+     "reasoning": 20,
+     "cache": {
+      "write": 0,
+      "read": 69120
+     }
+    },
+    "modelID": "gpt-5.6-luna",
+    "providerID": "openai",
+    "time": {
+     "created": 1790121991940,
+     "completed": 1790121998100
+    },
+    "finish": "tool-calls",
+    "id": "msg_0cb95df04001kdX4C6IIrQ4ZHS",
+    "sessionID": "ses_f34725ab5ffe7WJthhXz5Dhsip"
+   },
+   "parts": [
+    {
+     "snapshot": "de4a8b14e2ae703d5305cf65444dc607d43fc7f6",
+     "type": "step-start",
+     "id": "prt_0cb95e76b001VxAWI1zqTNvugf",
+     "sessionID": "ses_f34725ab5ffe7WJthhXz5Dhsip",
+     "messageID": "msg_0cb95df04001kdX4C6IIrQ4ZHS"
+    },
+    {
+     "type": "reasoning",
+     "text": "**Noting git diff limitation with untracked files**",
+     "time": {
+      "start": 1790121994093,
+      "end": 1790121996526
+     },
+     "metadata": {
+      "openai": {
+       "itemId": "rs_0258a786822a0ee6016ab3180a601487d2b06b62f9dad0c945",
+       "reasoningEncryptedContent": "gAAAAABqsxgMiqlz5xoL_P2EeS3h2In1VSZwnRchTI9jivpkKZjASrDx1ub9cXYf2AKqO9FbUj73dDdqpt6Q6HJI6WADzlfvIugVGL3jkvCOVAipOalqVXVpqyYDYFgFJ3FPSJfPhfI7i1E2DArmDHDcO6ScACts2jc4cSKxWTf_QZeIgBK_cwHap0PsSJiGn7lYOgLUmvup81wJa-RQZyPAqx6-DXOqSLhuSC7pBer62YBCD5guwifi3pN7oVY9L4godHaZN5Rdx8ovDtXIQoyrbMjIYx002kcQ01T8bGv0OxXeFbg0sjUCOZE4ig0itCH4VPbMeLriBBBqr1uXqdaZeiu5feiFoDVnz2AJbIM23jLaRjRPQeTbLO_95Ax37sS6ZoXCDH2LxG9xDqgAWc6J1lQrOVkJsmOndnP5wwnaqjMYxupDJMZw_ZOMbQfN2kwk_QbPkwMm1Q2ZD1jxme99OtKYRC7Pi3qTwg-61nOXLuNIPFxSMZh9Ovr9ElssPwJNtplEYsNiUzeRUbUdhWfPDkBeYIWBVI9yYDoa286BksMYdq7muCA6ZZ0e6_l0KqHhbFRQMV1xDnXxA2jvdMfU0UwE0Qijywy0fuzsU3jXUPuoRIemJwQ7PfE2I9TEEC3wQAcgCrYy7uaF9ntOXZXJ_M7FlIuGO0IJfEtK2cuxlII8O8zubUeLXwVkIm33242HgW-lUWC-xAQOD44dJWoqV08R0ihaBToCTPkn2L6SiganvmK_NpF9WdcN0_p4ZUcPDaBYYDx6KflUrupiT2RYHeueWOzo0w975JbYGNcJrhBjlwiXg2Q2hxZEYLeQfdGORXD-18o6EZC419V14kxHziuXHaUfgEVqRcf1MJwIgtObLnrgAeCBECKhUlNB3_-mokhz_qlyg49mHfXKfbNMOsAJKYgYLzepR-s3CpjeNAdbvbYybWDFcL0PhA9sNBgz4gMpRH4EgfD0sQYndPBZIBW3KNFEqudh0JQCMEuqRllM6ayuMpm-y1CRWj1rX46rDg9L8iWIg5bjlkNpiyWnIBYQ8LgbRYLxB-sACFTNGOg7wAngRhxXHBiO75DK1T1KP06k_JmLjIdQWX0-74aSKxh9B7YtnZuuJzbQa7W2JATT80505cYRngzP2UPPrzZ3V4XUG00Dpp85n8y8Jlhtp2kWQfYomYUeeQLbXYGLBa-idxHYc1bAKE37ywST_q7Njw9R0OH2oXn4pu2ZXHS11PBYUwNXwoGwQAxAjk_O9ivd5IF-LRhK-2_fe3GlHJuOe1n8piToolFEIaNKezZyODbgUlFH-jdpN6AHqnXGhGTis8NZqtKZ3d2CYOtJFKXeNvQPGPIvARQxfjavy7BEytLzfs4tGXrTBcbZdLrML3-A3Koositkat7L6qE0LD8ohvMOg32f"
+      }
+     },
+     "id": "prt_0cb95e76d001L6TimGBlZqMAzv",
+     "sessionID": "ses_f34725ab5ffe7WJthhXz5Dhsip",
+     "messageID": "msg_0cb95df04001kdX4C6IIrQ4ZHS"
+    },
+    {
+     "type": "tool",
+     "tool": "todowrite",
+     "callID": "call_gK3FpAney41hVoPOJrKAWzcq",
+     "state": {
+      "status": "completed",
+      "input": {
+       "todos": [
+        {
+         "content": "Ler AGENTS.md do projeto e subdiretórios relevantes",
+         "status": "completed",
+         "priority": "high"
+        },
+        {
+         "content": "Ler configuração e instruções do agente auditor",
+         "status": "completed",
+         "priority": "high"
+        },
+        {
+         "content": "Auditar M2 contra contrato, specs, implementação e testes",
+         "status": "completed",
+         "priority": "high"
+        },
+        {
+         "content": "Executar validações documentadas e smoke seguro",
+         "status": "completed",
+         "priority": "high"
+        },
+        {
+         "content": "Criar somente auditorias/M2-inscricoes-final.md",
+         "status": "completed",
+         "priority": "high"
+        },
+        {
+         "content": "Verificar diff e confirmar nenhum outro arquivo alterado",
+         "status": "completed",
+         "priority": "high"
+        }
+       ]
+      },
+      "output": "[\n  {\n    \"content\": \"Ler AGENTS.md do projeto e subdiretórios relevantes\",\n    \"status\": \"completed\",\n    \"priority\": \"high\"\n  },\n  {\n    \"content\": \"Ler configuração e instruções do agente auditor\",\n    \"status\": \"completed\",\n    \"priority\": \"high\"\n  },\n  {\n    \"content\": \"Auditar M2 contra contrato, specs, implementação e testes\",\n    \"status\": \"completed\",\n    \"priority\": \"high\"\n  },\n  {\n    \"content\": \"Executar validações documentadas e smoke seguro\",\n    \"status\": \"completed\",\n    \"priority\": \"high\"\n  },\n  {\n    \"content\": \"Criar somente auditorias/M2-inscricoes-final.md\",\n    \"status\": \"completed\",\n    \"priority\": \"high\"\n  },\n  {\n    \"content\": \"Verificar diff e confirmar nenhum outro arquivo alterado\",\n    \"status\": \"completed\",\n    \"priority\": \"high\"\n  }\n]",
+      "metadata": {
+       "todos": [
+        {
+         "content": "Ler AGENTS.md do projeto e subdiretórios relevantes",
+         "status": "completed",
+         "priority": "high"
+        },
+        {
+         "content": "Ler configuração e instruções do agente auditor",
+         "status": "completed",
+         "priority": "high"
+        },
+        {
+         "content": "Auditar M2 contra contrato, specs, implementação e testes",
+         "status": "completed",
+         "priority": "high"
+        },
+        {
+         "content": "Executar validações documentadas e smoke seguro",
+         "status": "completed",
+         "priority": "high"
+        },
+        {
+         "content": "Criar somente auditorias/M2-inscricoes-final.md",
+         "status": "completed",
+         "priority": "high"
+        },
+        {
+         "content": "Verificar diff e confirmar nenhum outro arquivo alterado",
+         "status": "completed",
+         "priority": "high"
+        }
+       ],
+       "truncated": false
+      },
+      "title": "0 todos",
+      "time": {
+       "start": 1790121997922,
+       "end": 1790121997924
+      }
+     },
+     "metadata": {
+      "openai": {
+       "itemId": "fc_0258a786822a0ee6016ab3180c570487d284960498101c6287"
+      }
+     },
+     "id": "prt_0cb95f0f90011bBHYyKl2SclmO",
+     "sessionID": "ses_f34725ab5ffe7WJthhXz5Dhsip",
+     "messageID": "msg_0cb95df04001kdX4C6IIrQ4ZHS"
+    },
+    {
+     "reason": "tool-calls",
+     "snapshot": "de4a8b14e2ae703d5305cf65444dc607d43fc7f6",
+     "type": "step-finish",
+     "tokens": {
+      "total": 73628,
+      "input": 4335,
+      "output": 153,
+      "reasoning": 20,
+      "cache": {
+       "write": 0,
+       "read": 69120
+      }
+     },
+     "cost": 0,
+     "id": "prt_0cb95f6c00016Z4OiEPBf1Y316",
+     "sessionID": "ses_f34725ab5ffe7WJthhXz5Dhsip",
+     "messageID": "msg_0cb95df04001kdX4C6IIrQ4ZHS"
+    }
+   ]
+  },
+  {
+   "info": {
+    "parentID": "msg_0cb9167ac00102mgIqruvio3pu",
+    "role": "assistant",
+    "mode": "build",
+    "agent": "build",
+    "variant": "medium",
+    "path": {
+     "cwd": "/Users/yasmindesouza/TrabalhoIA-WomanInTech",
+     "root": "/Users/yasmindesouza/TrabalhoIA-WomanInTech"
+    },
+    "cost": 0,
+    "tokens": {
+     "total": 73933,
+     "input": 636,
+     "output": 81,
+     "reasoning": 0,
+     "cache": {
+      "write": 0,
+      "read": 73216
+     }
+    },
+    "modelID": "gpt-5.6-luna",
+    "providerID": "openai",
+    "time": {
+     "created": 1790121998107,
+     "completed": 1790122001418
+    },
+    "finish": "stop",
+    "id": "msg_0cb95f71b001sHYbL834aLIlZD",
+    "sessionID": "ses_f34725ab5ffe7WJthhXz5Dhsip"
+   },
+   "parts": [
+    {
+     "snapshot": "de4a8b14e2ae703d5305cf65444dc607d43fc7f6",
+     "type": "step-start",
+     "id": "prt_0cb95fd06001hFGu7KvX9KZg1o",
+     "sessionID": "ses_f34725ab5ffe7WJthhXz5Dhsip",
+     "messageID": "msg_0cb95f71b001sHYbL834aLIlZD"
+    },
+    {
+     "type": "text",
+     "text": "Veredito: **PASSOU**.\n\nArquivo criado:\n- `auditorias/M2-inscricoes-final.md`\n\nValidações:\n- API: 78 testes passaram; análise sem problemas.\n- Flutter: 40 testes passaram; análise sem problemas.\n- Smoke M2: 16 cenários OK.\n\nNenhum outro arquivo foi alterado e nenhum commit foi feito.",
+     "time": {
+      "start": 1790121999627,
+      "end": 1790122001117
+     },
+     "metadata": {
+      "openai": {
+       "itemId": "msg_01e00ab2104445be016ab3180fcff887d28a9bf3aa33edcb31",
+       "phase": "final_answer"
+      }
+     },
+     "id": "prt_0cb95fd0b001txKMjtBzZIBHBN",
+     "sessionID": "ses_f34725ab5ffe7WJthhXz5Dhsip",
+     "messageID": "msg_0cb95f71b001sHYbL834aLIlZD"
+    },
+    {
+     "reason": "stop",
+     "snapshot": "de4a8b14e2ae703d5305cf65444dc607d43fc7f6",
+     "type": "step-finish",
+     "tokens": {
+      "total": 73933,
+      "input": 636,
+      "output": 81,
+      "reasoning": 0,
+      "cache": {
+       "write": 0,
+       "read": 73216
+      }
+     },
+     "cost": 0,
+     "id": "prt_0cb9603b0001nK8REb5ee7WSk2",
+     "sessionID": "ses_f34725ab5ffe7WJthhXz5Dhsip",
+     "messageID": "msg_0cb95f71b001sHYbL834aLIlZD"
+    }
+   ]
+  }
+ ]
+}
